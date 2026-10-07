@@ -62,8 +62,8 @@ export const sourcesHook = {
   apply: (draft, { chunkIds }) => pass({ ...draft, sources: [...new Set(draft.sources)].filter((id) => chunkIds.has(id)).slice(0, 3) }),
 };
 
-/** Answers are short by design; a runaway one is cut at a sentence end. */
-export const MAX_ANSWER_CHARS = 700;
+/** Answers stay readable in a chat bubble; a runaway one is cut at a sentence end. */
+export const MAX_ANSWER_CHARS = 900;
 
 function cap(text) {
   if (text.length <= MAX_ANSWER_CHARS) return text;
@@ -79,6 +79,8 @@ export const styleHook = {
     const answer = cap(
       draft.answer
         .replace(/\s*[–—]\s*/g, " - ")
+        .replace(/\u2011/g, "-")
+        .replace(/[\u202f\u00a0]/g, " ")
         .replace(/\*\*|__|`/g, "")
         .replace(/^\s{0,3}#{1,6}\s+/gm, "")
         .replace(/^\s*[*•]\s+/gm, "- ")

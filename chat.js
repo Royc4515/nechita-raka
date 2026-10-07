@@ -223,7 +223,7 @@ class ChatPanel {
     this.list.append(typing);
     this.scroll();
 
-    const messages = this.log.filter((m) => m.role === "user" || m.role === "assistant").slice(-MAX_TURNS).map((m) => ({ role: m.role, content: m.content.slice(0, 800) }));
+    const messages = this.log.filter((m) => m.role === "user" || m.role === "assistant").slice(-MAX_TURNS).map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
     while (messages.length && messages[0].role !== "user") messages.shift();
     let reply;
     try {

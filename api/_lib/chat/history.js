@@ -2,8 +2,8 @@
 export const MAX_TURNS = 12;
 /** Per question; also the input box's limit in the panel. */
 export const MAX_TURN_CHARS = 500;
-/** An assistant turn echoed back can be longer than a question (answers are capped at 700). */
-const MAX_ASSISTANT_CHARS = 800;
+/** An assistant turn echoed back can be longer than a question (answers are capped at 900). */
+const MAX_ASSISTANT_CHARS = 1000;
 /** Invisible and bidi control characters. */
 const UNSAFE = /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u115f\u1160\u200b-\u200f\u2028-\u202e\u2060-\u206f\u3164\ufeff\uffa0]/g;
 
