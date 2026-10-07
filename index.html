@@ -575,6 +575,58 @@ footer { padding-block-end: 0; }
   #calendar .cal-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 0 var(--s7); align-items: start; }
   #calendar .cal-body .cal-cta .btn-large { align-self: flex-start; }
 }
+
+/* ---------- Special days: a Doodle on the logo, a banner and a short effect ---------- */
+.brand { position: relative; }
+.doodle { position: absolute; inset-block-start: -12px; inset-inline-start: 32px; z-index: 1; display: grid; place-items: center; inline-size: 32px; block-size: 32px; padding: 0; border: 0; border-radius: 50%; background: var(--surface); box-shadow: 0 2px 8px -2px rgb(15 27 45 / 30%); font-size: 18px; line-height: 1; cursor: pointer; }
+@media (min-width: 768px) { .doodle { inset-inline-start: 20px; inset-block-start: -16px; } }
+.special { position: relative; overflow: hidden; display: flex; align-items: center; gap: var(--s3); margin-block-end: var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid color-mix(in srgb, var(--sp-a) 40%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, var(--sp-a) 14%, var(--surface)), color-mix(in srgb, var(--sp-b) 18%, var(--surface))); }
+.special.tone-quiet, .special.tone-memorial { border-color: var(--border); background: var(--surface-2); }
+.special-icon { flex: none; display: grid; place-items: center; inline-size: 44px; block-size: 44px; padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--surface) 70%, transparent); font-size: 24px; line-height: 1; }
+button.special-icon { cursor: pointer; }
+.special-text { flex: 1; min-inline-size: 0; }
+.special-title { font-size: 1.125rem; font-weight: 800; line-height: 1.3; }
+.special.tone-memorial .special-title, .special.tone-quiet .special-title { font-weight: 700; }
+.special-sub { color: var(--muted); font-size: var(--fs-meta); }
+/* Chanukah: candle 1 is the rightmost, the shamash stands taller in the middle */
+.menorah { flex: none; display: flex; align-items: flex-end; gap: 5px; block-size: 46px; padding-inline: 4px; }
+.candle { position: relative; inline-size: 6px; block-size: 20px; border-radius: 2px; background: linear-gradient(90deg, #7fb0e6, #3f7fc8); }
+.candle.shamash { block-size: 30px; }
+.candle.lit::before { content: ""; position: absolute; left: 50%; bottom: 100%; inline-size: 8px; block-size: 13px; translate: -50% -1px; border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; background: radial-gradient(circle at 50% 72%, #fff6c2, #ffc04d 50%, #ff7a1a); box-shadow: 0 0 10px 2px rgb(255 170 60 / 55%); transform-origin: 50% 100%; }
+/* Memorial days: the page turns grey, and nothing celebrates */
+:root[data-day="memorial"] { --accent: #4b5563; --accent-hover: #374151; --accent-ink: #ffffff; --accent-text: #3f4752; --accent-soft: #eceff3; --focus: #4b5563; }
+@media (prefers-color-scheme: dark) {
+  :root[data-day="memorial"]:not([data-theme="light"]) { --accent: #9ca3af; --accent-hover: #b6bcc6; --accent-ink: #111827; --accent-text: #c3c8d0; --accent-soft: #1f2937; --focus: #c3c8d0; }
+}
+:root[data-day="memorial"][data-theme="dark"] { --accent: #9ca3af; --accent-hover: #b6bcc6; --accent-ink: #111827; --accent-text: #c3c8d0; --accent-soft: #1f2937; --focus: #c3c8d0; }
+:root[data-day="memorial"] .tick.bday { animation: none; }
+/* The effect layer: above the page, never in the way of a tap */
+.fx { position: fixed; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+.fx > * { position: absolute; inset-block-start: 0; left: var(--x); opacity: 0; }
+.fx-confetti > i { inline-size: 8px; block-size: 12px; border-radius: 2px; background: var(--c); }
+.fx-drift > span { font-size: var(--size, 24px); line-height: 1; }
+.fx-drift.code > span { font-family: var(--mono); font-weight: 700; color: var(--accent-text); }
+.fx-embers > i { inset-block-start: auto; bottom: 0; inline-size: var(--size, 5px); block-size: var(--size, 5px); border-radius: 50%; background: var(--c); box-shadow: 0 0 8px 2px color-mix(in srgb, var(--c) 60%, transparent); }
+.egg-toast { position: fixed; z-index: 45; inset-inline: var(--gutter); inset-block-end: calc(84px + env(safe-area-inset-bottom)); max-inline-size: 420px; margin-inline: auto; padding: var(--s3) var(--s4); border-radius: var(--r); background: var(--text); color: var(--bg); font-size: var(--fs-meta); font-weight: 600; text-align: center; box-shadow: var(--shadow-2); }
+#content.egg-askew { rotate: 1.5deg; }
+@media (prefers-reduced-motion: no-preference) {
+  .fx-confetti > i { animation: fx-fall var(--dur) cubic-bezier(.3, .1, .7, 1) var(--d) both; }
+  .fx-drift > span { animation: fx-drift var(--dur) ease-in-out var(--d) both; }
+  .fx-embers > i { animation: fx-rise var(--dur) ease-out var(--d) both; }
+  @keyframes fx-fall { 0% { opacity: 1; translate: 0 -5vh; rotate: var(--r); } 85% { opacity: 1; } 100% { opacity: 0; translate: var(--sway) 105vh; rotate: calc(var(--r) + 720deg); } }
+  @keyframes fx-drift { 0% { opacity: 0; translate: 0 -8vh; } 10% { opacity: 1; } 35% { translate: var(--sway) 30vh; rotate: 20deg; } 65% { translate: calc(var(--sway) * -1) 65vh; rotate: -15deg; } 90% { opacity: 1; } 100% { opacity: 0; translate: 0 108vh; rotate: 10deg; } }
+  @keyframes fx-rise { 0% { opacity: 0; translate: 0 0; } 15% { opacity: 1; } 100% { opacity: 0; translate: var(--sway) -70vh; } }
+  .candle.lit::before { animation: flicker 1.6s ease-in-out infinite alternate; }
+  .candle.lit:nth-child(odd)::before { animation-duration: 1.2s; animation-delay: -.4s; }
+  @keyframes flicker { 0% { scale: 1 1; } 40% { scale: .92 1.08; opacity: .9; } 100% { scale: 1.04 .95; } }
+  .doodle { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both .6s; }
+  .brand h1.fx-flip { animation: flip 2.6s cubic-bezier(.5, 0, .3, 1) both 1s; }
+  @keyframes flip { 25%, 75% { rotate: 180deg; } }
+  #content.egg-roll { animation: roll 1.2s cubic-bezier(.45, 0, .25, 1); }
+  @keyframes roll { to { rotate: 360deg; } }
+  #content { transition: rotate .4s ease; }
+  .egg-toast { animation: rise .3s cubic-bezier(.2, .8, .2, 1) both; }
+}
 </style>
 <script src="./data.js"></script>
 </head>
@@ -1659,13 +1711,243 @@ footer { padding-block-end: 0; }
     const dateLine = el("p", { class: "now-date" }, iconNode("calendar"),
       el("time", { datetime: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`, text: civil }),
       hebrew ? el("span", { class: "now-hebrew", text: hebrew }) : null);
-    inner.replaceChildren(...[dateLine, partyBanner, head,
+    const specialBanners = renderSpecialDays(specialDays(terms, today), today);
+    inner.replaceChildren(...[dateLine, partyBanner, ...specialBanners, head,
       headlineGuide ? el("a", { class: "ev-guide", href: `#guide-${headlineGuide}`, text: "איך מתכוננים ←" }) : null,
       terms.length ? yearBar(terms, events, today) : null,
       after ? el("a", { class: "now-next", href: "#calendar" },
         el("span", { text: "אחר כך:" }), el("strong", { text: after.title }), el("span", { class: "when", text: `· ${relativeLabel(after, today)}` })) : null].filter(Boolean));
     box.hidden = false;
     countUp(num, stat);
+  }
+
+  // ---------- Special days: a Doodle on the logo, a banner and a short effect, like Google's ----------
+  // Holidays come from the Hebrew calendar, so they arrive every year without editing data.js.
+  // To preview one, add ?today= to the address, for example ?today=2026-12-08 for Chanukah.
+  const HEBREW_PARTS = (() => {
+    try { return new Intl.DateTimeFormat("en-u-ca-hebrew", { day: "numeric", month: "long" }); } catch (err) { return null; }
+  })();
+  const hebrewDayCache = new Map();
+
+  // { day: 25, month: "Kislev" }. Without a Hebrew calendar in the browser the month is a civil one and nothing matches.
+  function hebrewDay(date) {
+    const key = date.getTime();
+    if (!hebrewDayCache.has(key)) {
+      let value = null;
+      if (HEBREW_PARTS) {
+        const parts = HEBREW_PARTS.formatToParts(date);
+        const part = (type) => (parts.find((p) => p.type === type) || {}).value || "";
+        // Purim falls in Adar II in a leap year, and in Adar otherwise.
+        value = { day: Number(part("day")), month: part("month") === "Adar II" ? "Adar" : part("month") };
+      }
+      hebrewDayCache.set(key, value);
+    }
+    return hebrewDayCache.get(key);
+  }
+
+  const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
+  const isHebrew = (date, month, day) => { const h = hebrewDay(date); return !!h && h.month === month && h.day === day; };
+  const inHebrew = (date, month, from, to) => { const h = hebrewDay(date); return !!h && h.month === month && h.day >= from && h.day <= to; };
+
+  // Some days move when they would fall next to Shabbat. moves: weekday of the Hebrew date -> how many days it moves.
+  function observedOn(date, month, day, moves = {}) {
+    if (isHebrew(date, month, day)) return !(date.getDay() in moves);
+    return Object.entries(moves).some(([weekday, shift]) => {
+      const original = addDays(date, -shift);
+      return original.getDay() === Number(weekday) && isHebrew(original, month, day);
+    });
+  }
+
+  const FAST_MOVES = { 6: 1 }; // a fast that falls on Shabbat is kept on Sunday
+  const ATZMAUT_MOVES = { 5: -1, 6: -2, 1: 1 }; // Friday or Shabbat -> Thursday, Monday -> Tuesday
+  const SHOAH_MOVES = { 5: -1, 0: 1 }; // Friday -> Thursday, Sunday -> Monday
+  const CANDLE_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שביעי", "שמיני"];
+  const FESTIVE = ["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"];
+
+  // tone: festive (colour and an effect), quiet (a fast, Shabbat) or memorial (the page turns grey).
+  // effect: confetti, drift (falling emoji) or embers. doodle: the emoji on the logo.
+  const HOLIDAYS = [
+    { on: (d) => inHebrew(d, "Tishri", 1, 2), doodle: "🍎", title: "שנה טובה ומתוקה!", sub: "ראש השנה", colors: ["#d63a3a", "#e0a526"], effect: { type: "drift", glyphs: ["🍎", "🍯", "🍎"] } },
+    { on: (d) => observedOn(d, "Tishri", 3, FAST_MOVES), icon: "🕊️", title: "צום גדליה", sub: "צום קל", tone: "quiet" },
+    { on: (d) => isHebrew(d, "Tishri", 10), icon: "🤍", title: "גמר חתימה טובה", sub: "יום כיפור", tone: "quiet" },
+    { on: (d) => inHebrew(d, "Tishri", 15, 21), doodle: "🍋", title: "חג סוכות שמח!", sub: "מועדים לשמחה", colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🍋", "🌿", "🌴"] } },
+    { on: (d) => isHebrew(d, "Tishri", 22), doodle: "📜", title: "חג שמח!", sub: "שמחת תורה", colors: ["#0b5fae", "#e0a526"], effect: { type: "confetti" } },
+    { on: (d) => isHebrew(d, "Tevet", 10) && d.getDay() !== 6, icon: "🕯️", title: "צום עשרה בטבת", sub: "צום קל", tone: "quiet" },
+    { on: (d) => isHebrew(d, "Shevat", 15), doodle: "🌱", title: "ט״ו בשבט שמח!", sub: "ראש השנה לאילנות", colors: ["#3f9b4a", "#ff8fb1"], effect: { type: "drift", glyphs: ["🌸", "🌱", "🍃", "🌸"] } },
+    { on: (d) => observedOn(d, "Adar", 13, { 6: -2 }), icon: "📜", title: "תענית אסתר", sub: "צום קל, ומחר פורים", tone: "quiet" },
+    { on: (d) => isHebrew(d, "Adar", 14), doodle: "🎭", title: "פורים שמח!", sub: "ונהפוכו", colors: ["#8e44ad", "#ff5f8f"], effect: { type: "drift", glyphs: ["🎭", "🎉", "🍬", "👑"] }, flip: true },
+    { on: (d) => inHebrew(d, "Nisan", 15, 21), doodle: "🍷", title: "חג פסח שמח!", sub: "חג החירות", colors: ["#3f9b4a", "#b8336a"], effect: { type: "drift", glyphs: ["🌸", "🌼", "🌷"] } },
+    { on: (d) => observedOn(d, "Nisan", 27, SHOAH_MOVES), icon: "🕯️", title: "יום הזיכרון לשואה ולגבורה", sub: "זוכרים", tone: "memorial" },
+    { on: (d) => observedOn(addDays(d, 1), "Iyar", 5, ATZMAUT_MOVES), icon: "🕯️", title: "יום הזיכרון לחללי מערכות ישראל ונפגעי פעולות האיבה", sub: "יהי זכרם ברוך", tone: "memorial" },
+    { on: (d) => observedOn(d, "Iyar", 5, ATZMAUT_MOVES), doodle: "🇮🇱", title: "חג עצמאות שמח!", sub: "יום העצמאות", colors: ["#0038b8", "#5cb8f0"], effect: { type: "confetti", colors: ["#0038b8", "#ffffff", "#5cb8f0", "#0038b8"] } },
+    { on: (d) => isHebrew(d, "Iyar", 18), doodle: "🔥", title: "ל״ג בעומר שמח!", sub: "שימו לב לגחלים", colors: ["#e8590c", "#ffb347"], effect: { type: "embers" } },
+    { on: (d) => isHebrew(d, "Iyar", 28), doodle: "✨", title: "יום ירושלים", sub: "ירושלים של זהב", colors: ["#c99a2e", "#e8c872"], effect: { type: "drift", glyphs: ["✨", "✨", "💛"] } },
+    { on: (d) => isHebrew(d, "Sivan", 6), doodle: "🌾", title: "חג שבועות שמח!", sub: "חג מתן תורה", colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🌾", "🌸", "🧀"] } },
+    { on: (d) => observedOn(d, "Tamuz", 17, FAST_MOVES), icon: "🕯️", title: "צום י״ז בתמוז", sub: "צום קל", tone: "quiet" },
+    { on: (d) => observedOn(d, "Av", 9, FAST_MOVES), icon: "🕯️", title: "תשעה באב", sub: "צום קל", tone: "memorial" },
+    { on: (d) => isHebrew(d, "Av", 15), doodle: "💗", title: "ט״ו באב", sub: "חג האהבה", colors: ["#d63a6e", "#ff8fb1"], effect: { type: "drift", glyphs: ["💗", "💕", "🌹"] } },
+    { on: (d) => d.getMonth() === 9 && d.getDate() === 7, icon: "🕯️", title: "7 באוקטובר", sub: "זוכרים את הנרצחים והנופלים. יהי זכרם ברוך.", tone: "memorial" },
+  ];
+
+  // Days since the eve of Chanukah (24 Kislev): 0 is the eve, 8 is the eighth day. -1 outside Chanukah.
+  function chanukahDay(date) {
+    for (let k = 0; k <= 8; k++) if (isHebrew(addDays(date, -k), "Kislev", 24)) return k;
+    return -1;
+  }
+
+  function specialDays(terms, today) {
+    const list = [];
+    const k = chanukahDay(today);
+    if (k >= 0) {
+      const lit = Math.min(k + 1, 8);
+      list.push({ id: "chanukah", doodle: "🕎", title: "חנוכה שמח!", colors: ["#0b5fae", "#ffb347"], menorah: lit,
+        sub: k === 0 ? "ערב חנוכה · הערב מדליקים נר ראשון" : k === 8 ? "זאת חנוכה, היום השמיני" : `הערב מדליקים נר ${CANDLE_NAMES[k]}`,
+        effect: { type: "embers", colors: ["#ffc04d", "#ff7a1a", "#fff6c2"] } });
+    }
+    HOLIDAYS.forEach((h, i) => { if (h.on(today)) list.push({ id: `h${i}`, tone: "festive", ...h }); });
+    const sameDay = (iso) => parseDate(iso).getTime() === today.getTime();
+    for (const t of terms) {
+      if (t.kind === "semester" && sameDay(t.from)) list.push({ id: "term-start", doodle: "🎒", title: "בהצלחה בסמסטר!", sub: `היום הראשון של ${t.label}`, effect: { type: "confetti" } });
+      else if (t.kind === "semester" && sameDay(t.to)) list.push({ id: "term-end", doodle: "🎉", title: "יום אחרון של הסמסטר!", sub: `היום האחרון של ${t.label}. בהצלחה בבחינות`, effect: { type: "confetti" } });
+      else if (t.kind === "exams" && sameDay(t.to)) list.push({ id: "exams-end", doodle: "🎓", title: "סיימתם את תקופת הבחינות!", sub: `היום האחרון של ${t.label}. כל הכבוד`, effect: { type: "confetti" } });
+    }
+    if (!list.length && today.getDay() === 5) list.push({ id: "shabbat", icon: "🕯️", title: "שבת שלום", sub: "נתראה ביום ראשון", tone: "quiet" });
+    for (const sp of list) sp.tone = sp.tone || "festive";
+    // A memorial day is not a day for confetti: other days keep their banner, without an effect or a Doodle.
+    if (list.some((sp) => sp.tone === "memorial")) for (const sp of list) { delete sp.effect; delete sp.doodle; delete sp.flip; }
+    return list;
+  }
+
+  const rand = (min, max) => min + Math.random() * (max - min);
+
+  // Plays an effect over the page for a few seconds, then removes it. Nothing at all with reduced motion.
+  function playEffect(effect) {
+    if (!effect || reducedMotion()) return;
+    document.querySelectorAll(".fx").forEach((node) => node.remove());
+    const colors = effect.colors || FESTIVE;
+    let pieces;
+    if (effect.type === "drift") {
+      const glyphs = effect.glyphs || ["✨"];
+      pieces = Array.from({ length: 22 }, (_, i) => el("span", { text: glyphs[i % glyphs.length],
+        style: `--x:${rand(0, 96)}%;--d:${rand(0, 2.5)}s;--dur:${rand(5, 7.5)}s;--sway:${rand(-40, 40)}px;--size:${Math.round(rand(18, 32))}px` }));
+    } else if (effect.type === "embers") {
+      pieces = Array.from({ length: 36 }, (_, i) => el("i", {
+        style: `--x:${rand(0, 100)}%;--d:${rand(0, 3)}s;--dur:${rand(3, 5.5)}s;--sway:${rand(-60, 60)}px;--size:${Math.round(rand(3, 7))}px;--c:${colors === FESTIVE ? ["#ffb347", "#ff7a1a", "#ffd166"][i % 3] : colors[i % colors.length]}` }));
+    } else {
+      pieces = Array.from({ length: 70 }, (_, i) => el("i", {
+        style: `--x:${rand(0, 100)}%;--d:${rand(0, 1.4)}s;--dur:${rand(2.6, 4.2)}s;--sway:${rand(-80, 80)}px;--r:${Math.round(rand(0, 360))}deg;--c:${colors[i % colors.length]}` }));
+    }
+    const layer = el("div", { class: `fx fx-${effect.type === "drift" || effect.type === "embers" ? effect.type : "confetti"}${effect.code ? " code" : ""}`, "aria-hidden": "true" }, ...pieces);
+    document.body.append(layer);
+    setTimeout(() => layer.remove(), 11000);
+  }
+
+  // The effect plays once a day on its own. After that the Doodle or the banner's emoji plays it again.
+  function playOncePerDay(sp, today) {
+    const key = `${today.getTime()}:${sp.id}`;
+    try {
+      if (localStorage.getItem("nr-fx-seen") === key) return;
+      localStorage.setItem("nr-fx-seen", key);
+    } catch (err) { /* storage blocked: play it every visit */ }
+    playEffect(sp.effect);
+    if (sp.flip) flipTitle();
+  }
+
+  function flipTitle() {
+    const h1 = $(".brand h1");
+    if (!h1 || reducedMotion()) return;
+    h1.classList.remove("fx-flip");
+    void h1.offsetWidth; // restart the animation
+    h1.classList.add("fx-flip");
+  }
+
+  function menorah(lit) {
+    // Left to right on screen: candles 8..5, the shamash, candles 4..1. Candle 1 is the rightmost.
+    const order = [8, 7, 6, 5, 0, 4, 3, 2, 1];
+    return el("span", { class: "menorah", dir: "ltr", role: "img", "aria-label": `חנוכייה עם ${lit} נרות דולקים` },
+      ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
+  }
+
+  function specialBanner(sp) {
+    const glyph = sp.doodle || sp.icon || "✨";
+    const replay = () => { playEffect(sp.effect); if (sp.flip) flipTitle(); };
+    const icon = sp.effect
+      ? el("button", { class: "special-icon", type: "button", "aria-label": "להפעיל שוב את החגיגה", text: glyph })
+      : el("span", { class: "special-icon", "aria-hidden": "true", text: glyph });
+    if (sp.effect) icon.addEventListener("click", replay);
+    const [a, b] = sp.colors || ["#d63a6e", "#d9701a"];
+    return el("div", { class: `special tone-${sp.tone}`, role: "status", style: `--sp-a:${a};--sp-b:${b}` },
+      icon,
+      el("div", { class: "special-text" }, el("p", { class: "special-title", text: sp.title }), el("p", { class: "special-sub", text: sp.sub })),
+      sp.menorah ? menorah(sp.menorah) : null);
+  }
+
+  function renderSpecialDays(specials, today) {
+    if (specials.some((sp) => sp.tone === "memorial")) document.documentElement.dataset.day = "memorial";
+    const lead = specials.find((sp) => sp.doodle);
+    if (lead) {
+      const brand = $(".brand");
+      const doodle = el("button", { class: "doodle", type: "button", title: lead.title, "aria-label": `${lead.title} להפעיל שוב את החגיגה`, text: lead.doodle });
+      doodle.addEventListener("click", () => { playEffect(lead.effect); if (lead.flip) flipTitle(); });
+      brand.append(doodle);
+    }
+    const festive = specials.find((sp) => sp.effect);
+    if (festive) playOncePerDay(festive, today);
+    return specials.map(specialBanner);
+  }
+
+  // ---------- Easter eggs: a few words in the search box do something, like on Google ----------
+  function eggToast(text) {
+    document.querySelectorAll(".egg-toast").forEach((node) => node.remove());
+    const toast = el("div", { class: "egg-toast", role: "status", text });
+    document.body.append(toast);
+    setTimeout(() => toast.remove(), 4500);
+  }
+
+  function rollContent() {
+    const content = $("#content");
+    if (reducedMotion()) return;
+    content.classList.remove("egg-roll");
+    void content.offsetWidth; // restart the animation
+    content.classList.add("egg-roll");
+    content.addEventListener("animationend", () => content.classList.remove("egg-roll"), { once: true });
+  }
+
+  const EASTER_EGGS = [
+    { words: ["do a barrel roll", "barrel roll", "סלטה", "תעשה סלטה"], run: rollContent },
+    { words: ["askew", "tilt", "עקומ", "עקמומי"], hold: "egg-askew" },
+    { words: ["hello world", "print hello world", "שלומ עולמ"], run: () => { playEffect({ type: "drift", code: true, glyphs: ["{ }", ";", "</>", "0", "1", "λ", "()", "=>"] }); eggToast("Hello, CS! 👋"); } },
+    { words: ["sudo", "sudo su", "sudo rm rf"], run: () => eggToast("sudo: אינך בקובץ ה-sudoers. האירוע ידווח לרועי 😉") },
+    { words: ["42"], run: () => eggToast("42: התשובה לשאלה הגדולה של החיים, היקום וכל השאר. לשאר השאלות יש את האתר הזה 🙂") },
+  ];
+  const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+
+  function setupEasterEggs() {
+    const input = $("#q");
+    const content = $("#content");
+    let timer = 0;
+    let last = null;
+    input.addEventListener("input", () => {
+      clearTimeout(timer);
+      // Wait until typing stops, so "sudo" does not fire halfway through a longer word.
+      timer = setTimeout(() => {
+        const key = normalize(input.value);
+        const egg = EASTER_EGGS.find((e) => e.words.includes(key)) || null;
+        content.classList.toggle("egg-askew", !!egg && egg.hold === "egg-askew" && !reducedMotion());
+        if (egg && egg !== last && egg.run) egg.run();
+        last = egg;
+      }, 450);
+    });
+    let step = 0;
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      step = key === KONAMI[step] ? step + 1 : key === KONAMI[0] ? 1 : 0;
+      if (step === KONAMI.length) {
+        step = 0;
+        playEffect({ type: "confetti" });
+        eggToast("↑↑↓↓←→←→BA · קיבלתם 30 חיים נוספים לסמסטר 🎮");
+      }
+    });
   }
 
   // ---------- Command palette (Ctrl/Cmd+K) ----------
@@ -2184,6 +2466,7 @@ footer { padding-block-end: 0; }
     nav.router = setupGuideRouting(data, itemsById, () => requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode)));
     renderNow(data);
     setupPalette(searchIndex, nav);
+    setupEasterEggs();
     setupPointerGlow();
     setupNav();
     setupTheme();

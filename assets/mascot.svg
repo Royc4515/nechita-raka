@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 470" role="img" aria-labelledby="mascot-title">
+  <title id="mascot-title">הקמע של נחיתה רכה: סטודנט שנוחת במצנח עשוי קוד</title>
+  <defs>
+    <linearGradient id="canopy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1e4f8c"/>
+      <stop offset="1" stop-color="#0b5fae"/>
+    </linearGradient>
+    <linearGradient id="hoodie" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f7482"/>
+      <stop offset="1" stop-color="#245a66"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#1b2a40" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- Parachute lines -->
+    <g stroke="#7f91ab" stroke-width="2.2" fill="none">
+      <path d="M62 150 L116 206"/>
+      <path d="M132 152 L120 202"/>
+      <path d="M338 150 L284 206"/>
+      <path d="M268 152 L280 202"/>
+    </g>
+
+    <!-- Canopy: the code parachute -->
+    <path d="M58 150 Q56 44 200 38 Q344 44 342 150 Q306 130 270 150 Q235 130 200 150 Q165 130 130 150 Q94 130 58 150 Z" fill="url(#canopy)" stroke-width="4"/>
+    <path d="M130 150 Q138 80 200 38 M270 150 Q262 80 200 38 M200 150 L200 38" fill="none" stroke="#5cb8f0" stroke-width="3" opacity=".7"/>
+    <path d="M58 150 Q94 130 130 150 Q136 90 200 38 Q110 50 58 150 Z" fill="#2e9e8f" stroke="none" opacity=".85"/>
+    <path d="M270 150 Q306 130 342 150 Q290 50 200 38 Q262 90 270 150 Z" fill="#2e9e8f" stroke="none" opacity=".85"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-weight="700" stroke="none" text-anchor="middle">
+      <text x="98" y="122" font-size="22" fill="#ffffff">{ }</text>
+      <text x="166" y="104" font-size="18" fill="#ffd43b">&lt;/&gt;</text>
+      <text x="234" y="104" font-size="18" fill="#ffffff">( )</text>
+      <text x="302" y="122" font-size="22" fill="#ffd43b">;</text>
+    </g>
+    <path d="M58 150 Q56 44 200 38 Q344 44 342 150" fill="none" stroke-width="4"/>
+
+    <!-- Legs, dangling -->
+    <path d="M184 368 Q180 400 168 424" fill="none" stroke-width="30"/>
+    <path d="M184 368 Q180 400 168 424" fill="none" stroke="#3b3256" stroke-width="22"/>
+    <path d="M216 368 Q226 396 240 418" fill="none" stroke-width="30"/>
+    <path d="M216 368 Q226 396 240 418" fill="none" stroke="#3b3256" stroke-width="22"/>
+    <!-- Sneakers -->
+    <path d="M146 430 Q148 414 168 414 Q186 416 190 430 Q190 440 176 440 L152 440 Q144 440 146 430 Z" fill="#d2732f" stroke-width="4"/>
+    <path d="M147 434 L189 434" stroke="#ffffff" stroke-width="4"/>
+    <path d="M222 424 Q226 408 244 410 Q262 414 264 428 Q264 437 250 437 L228 435 Q220 433 222 424 Z" fill="#d2732f" stroke-width="4"/>
+    <path d="M223 429 L263 431" stroke="#ffffff" stroke-width="4"/>
+
+    <!-- Backpack peeking out on both sides -->
+    <rect x="132" y="304" width="26" height="58" rx="10" fill="#9a6331" stroke-width="4"/>
+    <rect x="242" y="304" width="26" height="58" rx="10" fill="#9a6331" stroke-width="4"/>
+
+    <!-- Hoodie -->
+    <path d="M148 302 Q200 284 252 302 L262 372 Q200 388 138 372 Z" fill="url(#hoodie)" stroke-width="4"/>
+    <path d="M150 368 Q200 380 250 368" fill="none" stroke="#1d4853" stroke-width="5" stroke-linecap="butt" opacity=".7"/>
+    <!-- Pocket -->
+    <path d="M176 346 L224 346 L230 366 Q200 372 170 366 Z" fill="#2a6874" stroke-width="3"/>
+    <!-- Backpack straps -->
+    <path d="M162 300 L170 362" stroke="#7a4b22" stroke-width="9" stroke-linecap="butt"/>
+    <path d="M238 300 L230 362" stroke="#7a4b22" stroke-width="9" stroke-linecap="butt"/>
+    <!-- Hood around the neck and drawstrings -->
+    <path d="M168 292 Q200 318 232 292" fill="none" stroke="#1d4853" stroke-width="10"/>
+    <path d="M190 308 L188 330 M210 308 L212 330" fill="none" stroke="#e6edf7" stroke-width="3"/>
+    <!-- Python patch -->
+    <g transform="translate(204 322)" stroke="none">
+      <rect x="0" y="0" width="13" height="13" rx="4" fill="#3776ab"/>
+      <rect x="7" y="7" width="13" height="13" rx="4" fill="#ffd43b"/>
+      <circle cx="4" cy="4" r="1.6" fill="#ffffff"/>
+      <circle cx="16" cy="16" r="1.6" fill="#ffffff"/>
+    </g>
+    <!-- CS pin -->
+    <circle cx="180" cy="330" r="11" fill="#f4f7fb" stroke-width="3"/>
+    <text x="180" y="334.5" font-family="system-ui, Arial, sans-serif" font-size="11" font-weight="800" fill="#0b5fae" stroke="none" text-anchor="middle">CS</text>
+
+    <!-- Arms up, holding the lines -->
+    <path d="M154 310 Q126 280 120 216" fill="none" stroke-width="28"/>
+    <path d="M154 310 Q126 280 120 216" fill="none" stroke="#2f7482" stroke-width="20"/>
+    <path d="M246 310 Q274 280 280 216" fill="none" stroke-width="28"/>
+    <path d="M246 310 Q274 280 280 216" fill="none" stroke="#2f7482" stroke-width="20"/>
+    <circle cx="120" cy="206" r="13" fill="#f6cfa6" stroke-width="4"/>
+    <circle cx="280" cy="206" r="13" fill="#f6cfa6" stroke-width="4"/>
+
+    <!-- Head -->
+    <circle cx="139" cy="242" r="12" fill="#f6cfa6" stroke-width="4"/>
+    <circle cx="261" cy="242" r="12" fill="#f6cfa6" stroke-width="4"/>
+    <ellipse cx="200" cy="236" rx="62" ry="58" fill="#f6cfa6" stroke-width="4"/>
+    <!-- Hair -->
+    <path d="M138 238 Q124 186 158 168 Q176 150 200 158 Q216 146 238 158 Q270 172 264 236 Q260 216 250 206 L244 218 Q236 200 222 196 L216 210 Q206 194 190 196 L182 212 Q172 198 160 204 L154 218 Q144 224 138 238 Z" fill="#6b4226" stroke-width="4"/>
+    <path d="M190 160 Q190 132 222 136 Q206 146 210 158" fill="#6b4226" stroke-width="4"/>
+    <path d="M168 182 Q182 172 198 174 M218 176 Q238 176 248 190" fill="none" stroke="#8a5a36" stroke-width="3"/>
+
+    <!-- Eyebrows -->
+    <path d="M164 214 Q174 208 186 212 M214 212 Q226 208 236 214" fill="none" stroke="#4a2e1a" stroke-width="4"/>
+    <!-- Eyes -->
+    <ellipse cx="176" cy="243" rx="6.5" ry="8.5" fill="#1b2a40" stroke="none"/>
+    <ellipse cx="224" cy="243" rx="6.5" ry="8.5" fill="#1b2a40" stroke="none"/>
+    <circle cx="178.5" cy="239.5" r="2.4" fill="#ffffff" stroke="none"/>
+    <circle cx="226.5" cy="239.5" r="2.4" fill="#ffffff" stroke="none"/>
+    <!-- Glasses -->
+    <circle cx="176" cy="242" r="19" fill="#ffffff" fill-opacity=".18" stroke-width="4.5"/>
+    <circle cx="224" cy="242" r="19" fill="#ffffff" fill-opacity=".18" stroke-width="4.5"/>
+    <path d="M195 240 Q200 236 205 240 M157 238 L141 234 M243 238 L259 234" fill="none" stroke-width="4"/>
+    <!-- Cheeks -->
+    <ellipse cx="156" cy="266" rx="9" ry="5.5" fill="#ff8fa3" stroke="none" opacity=".5"/>
+    <ellipse cx="244" cy="266" rx="9" ry="5.5" fill="#ff8fa3" stroke="none" opacity=".5"/>
+    <!-- Smile -->
+    <path d="M181 266 Q200 290 219 266 Q200 272 181 266 Z" fill="#8b2f3a" stroke-width="3.5"/>
+    <path d="M186 268.5 Q200 273 214 268.5" fill="none" stroke="#ffffff" stroke-width="3"/>
+  </g>
+</svg>
