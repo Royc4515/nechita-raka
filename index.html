@@ -1665,6 +1665,21 @@ footer { padding-block-end: 0; }
     paint();
   }
 
+  // site.whatsapp: the mentor's number in international format (972...), digits only.
+  function mentorItem(site) {
+    const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
+    if (!/^\d{9,15}$/.test(number)) return null;
+    const text = site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : "";
+    return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url: `https://wa.me/${number}${text}` };
+  }
+
+  function renderContact(data) {
+    const mentor = mentorItem(data.site);
+    if (!mentor) return;
+    $(".contact").replaceChildren("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או ",
+      el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: "בהודעה פרטית בוואטסאפ" }), ".");
+  }
+
   function renderCredit(data) {
     const site = data.site || {};
     if (!isSafeUrl(site.authorUrl)) return;
@@ -1839,6 +1854,8 @@ footer { padding-block-end: 0; }
 
   function start(data) {
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
+    const mentor = mentorItem(data.site);
+    if (mentor) itemsById.set(mentor.id, mentor);
     const saved = createSaved(itemsById);
     renderFeatured(data, itemsById);
     const guides = renderGuides(data);
@@ -1847,6 +1864,7 @@ footer { padding-block-end: 0; }
     const faq = renderFaq(data, itemsById);
     saved.render();
     renderCredit(data);
+    renderContact(data);
     renderInstall();
     watchSticky();
     const nav = { router: null };

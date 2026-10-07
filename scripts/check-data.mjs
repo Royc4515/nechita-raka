@@ -85,18 +85,25 @@ for (const id of data.featured || []) {
   if (!itemIds.has(id)) error(`"${id}" ברשימת featured לא קיים באף קטגוריה.`, `\`${id}\``);
 }
 
+// "mentor" is the private WhatsApp link built from site.whatsapp
+const site = data.site || {};
+const hasMentor = /^\d{9,15}$/.test(String(site.whatsapp || "").replace(/\D/g, ""));
+if (site.whatsapp && !hasMentor) error("site.whatsapp צריך להיות מספר בפורמט בינלאומי, למשל 972501234567.", "whatsapp:");
+
 const guideIds = new Set((data.guides || []).map((g) => g && g.id));
-function checkLinks(links, owner) {
+function checkLinks(links, owner, at) {
   if (links == null) return;
-  if (!isList(links)) { error(`ב-${owner} השדה links צריך להיות רשימה.`, owner); return; }
+  if (!isList(links)) { error(`ב${owner} השדה links צריך להיות רשימה.`, owner); return; }
   for (const link of links) {
-    if (typeof link === "string") {
-      if (!itemIds.has(link)) error(`ב-${owner} הקישור "${link}" לא קיים באף קטגוריה.`, `\`${link}\``);
+    if (link === "mentor") {
+      if (!hasMentor) warn(`ב${owner} יש כפתור "mentor", והוא יופיע רק כשימולא site.whatsapp.`, at);
+    } else if (typeof link === "string") {
+      if (!itemIds.has(link)) error(`ב${owner} הקישור "${link}" לא קיים באף קטגוריה.`, `\`${link}\``);
     } else if (link && link.guide) {
-      if (!guideIds.has(link.guide)) error(`ב-${owner} יש קישור למדריך "${link.guide}" שלא קיים.`, link.guide);
-      if (!isText(link.label)) error(`ב-${owner} לקישור למדריך "${link.guide}" חסר label.`, link.guide);
+      if (!guideIds.has(link.guide)) error(`ב${owner} יש קישור למדריך "${link.guide}" שלא קיים.`, link.guide);
+      if (!isText(link.label)) error(`ב${owner} לקישור למדריך "${link.guide}" חסר label.`, link.guide);
     } else if (!link || !isText(link.label) || !isHttps(link.url)) {
-      error(`ב-${owner} יש קישור בלי label, או עם כתובת שלא מתחילה ב-https://.`, (link && (link.label || link.url)) || owner);
+      error(`ב${owner} יש קישור בלי label, או עם כתובת שלא מתחילה ב-https://.`, (link && (link.label || link.url)) || owner);
     }
   }
 }
@@ -112,7 +119,7 @@ for (const g of data.guides || []) {
   if (!isList(g.steps) || !g.steps.length) error(`למדריך "${where}" חסרים steps, ולכן הוא לא יוצג.`, where);
   else g.steps.forEach((s, i) => { if (!isText(s)) error(`בצעד ${i + 1} של "${where}" אין טקסט.`, where); });
   if (g.tips != null && !isList(g.tips)) error(`ב"${where}" השדה tips צריך להיות רשימה.`, where);
-  checkLinks(g.links, `המדריך "${where}"`);
+  checkLinks(g.links, `מדריך "${where}"`, where);
   for (const src of g.sources || []) if (!isHttps(src.url)) error(`מקור עם כתובת לא תקינה במדריך "${where}".`, src.label || where);
   if (!isList(g.sources) || !g.sources.length) warn(`למדריך "${where}" אין sources. כדאי לציין מאיפה המידע.`, where);
 }
@@ -136,7 +143,7 @@ for (const ev of events) {
 if (data.faq != null && !isList(data.faq)) error("faq צריך להיות רשימה בתוך [ ].", "faq:");
 for (const f of data.faq || []) {
   if (!isText(f.q) || !isText(f.a)) error(`לשאלה "${f.q || f.a || "?"}" חסר q או a, ולכן היא לא תוצג.`, f.q || f.a);
-  checkLinks(f.links, `השאלה "${f.q}"`);
+  checkLinks(f.links, `שאלה "${f.q}"`, f.q);
   if (f.guide && !guideIds.has(f.guide)) error(`השאלה "${f.q}" מקושרת למדריך "${f.guide}" שלא קיים.`, f.q);
 }
 
