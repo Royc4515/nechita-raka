@@ -1,5 +1,6 @@
-# Publishes the site to GitHub Pages, but only after data.js passes the check.
-# If the check fails, nothing is published and the previous version stays live.
+# The site lives on Vercel now (https://nechita-raka.vercel.app). GitHub Pages only serves
+# redirect/, a page that forwards old links (with their #guide-... and ?q=...) to the new
+# address, after data.js and the chat tests pass.
 # Requires Settings > Pages > Source: "GitHub Actions".
 name: Deploy site
 
@@ -26,6 +27,8 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/check-data.mjs
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
 
   deploy:
     needs: check
@@ -38,6 +41,6 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: redirect
       - id: deployment
         uses: actions/deploy-pages@v4
