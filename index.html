@@ -6,6 +6,15 @@
 <title>נחיתה רכה - מדמ"ח בר אילן</title>
 <meta name="description" content="קישורים, מדריכים, תאריכים ותשובות לסטודנטים בשנה א' במדעי המחשב בבר אילן">
 <meta name="author" content="רועי כרמלי">
+<meta property="og:type" content="website">
+<meta property="og:title" content="נחיתה רכה - מדמ&quot;ח בר אילן">
+<meta property="og:description" content="קישורים, מדריכים, תאריכים ותשובות לסטודנטים בשנה א' במדעי המחשב בבר אילן">
+<meta property="og:url" content="https://royc4515.github.io/nechita-raka/">
+<meta property="og:image" content="https://royc4515.github.io/nechita-raka/assets/og-image.jpg">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:image:alt" content="נחיתה רכה: סטודנט נוחת במצנח עשוי קוד">
+<meta property="og:locale" content="he_IL">
 <meta name="robots" content="noindex, nofollow">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
@@ -240,6 +249,16 @@ main { padding-block: var(--s2) var(--s8); }
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-block-end: var(--s4); }
 .chip { min-block-size: 48px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent-text); font-weight: 600; cursor: pointer; }
 .empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
+
+/* Mascot: decorative only (alt=""), sized in px so it stays small when the text is zoomed */
+.mascot { display: block; inline-size: auto; pointer-events: none; user-select: none; }
+.empty-mascot { block-size: 88px; margin: 0 auto var(--s3); }
+.start-here { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-block-end: var(--s4); padding: var(--s2) var(--s4); border-radius: var(--r-lg); background: var(--accent-soft); color: var(--accent-text); text-decoration: none; font-size: var(--fs-meta); }
+.start-here .mascot { flex: none; block-size: 64px; }
+.start-here:hover strong { text-decoration: underline; }
+.special-mascot { flex: none; block-size: 64px; margin-block: -8px; }
+footer .contact-row { display: flex; align-items: center; gap: var(--s3); }
+footer .contact-row .mascot { flex: none; block-size: 44px; }
 
 /* Footer */
 footer { border-block-start: 1px solid var(--border); margin-block-start: var(--s9); padding-block: var(--s7) max(var(--s7), calc(env(safe-area-inset-bottom) + var(--s4))); color: var(--muted); font-size: var(--fs-meta); }
@@ -701,6 +720,10 @@ button.special-icon { cursor: pointer; }
     <section class="section" id="guides" aria-labelledby="guides-h" hidden>
       <h2 id="guides-h">מה צריך לעשות?</h2>
       <p class="section-lead">מדריכים קצרים, צעד אחר צעד, מתוך האתרים הרשמיים של האוניברסיטה.</p>
+      <a class="start-here" href="#guide-first-week">
+        <span><strong>חדשים כאן?</strong> מתחילים מ„לפני השיעור הראשון” ←</span>
+        <img class="mascot" src="./assets/mascot/mascot-point.webp" alt="" width="56" height="88" loading="lazy" decoding="async">
+      </a>
       <div class="guide-grid" id="guide-grid"></div>
     </section>
 
@@ -734,6 +757,7 @@ button.special-icon { cursor: pointer; }
   <article class="guide-view" id="guide-view" hidden></article>
 
   <div class="empty" id="empty" hidden>
+    <img class="mascot empty-mascot" src="./assets/mascot/mascot-think.webp" alt="" width="37" height="88" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
     <p class="try">אולי ננסה:</p>
     <div class="chips" id="empty-chips"></div>
@@ -744,7 +768,10 @@ button.special-icon { cursor: pointer; }
 
 <footer>
   <div class="wrap">
-    <p class="contact">חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה.</p>
+    <div class="contact-row">
+      <img class="mascot" src="./assets/mascot/mascot-wave.webp" alt="" width="25" height="44" loading="lazy" decoding="async">
+      <p class="contact">חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה.</p>
+    </div>
     <section class="install" aria-labelledby="install-h">
       <h2 id="install-h">להוסיף את האתר למסך הבית</h2>
       <p id="install-mine" hidden></p>
@@ -1807,9 +1834,9 @@ button.special-icon { cursor: pointer; }
     HOLIDAYS.forEach((h, i) => { if (h.on(today)) list.push({ id: `h${i}`, tone: "festive", ...h }); });
     const sameDay = (iso) => parseDate(iso).getTime() === today.getTime();
     for (const t of terms) {
-      if (t.kind === "semester" && sameDay(t.from)) list.push({ id: "term-start", doodle: "🎒", title: "בהצלחה בסמסטר!", sub: `היום הראשון של ${t.label}`, effect: { type: "confetti" } });
-      else if (t.kind === "semester" && sameDay(t.to)) list.push({ id: "term-end", doodle: "🎉", title: "יום אחרון של הסמסטר!", sub: `היום האחרון של ${t.label}. בהצלחה בבחינות`, effect: { type: "confetti" } });
-      else if (t.kind === "exams" && sameDay(t.to)) list.push({ id: "exams-end", doodle: "🎓", title: "סיימתם את תקופת הבחינות!", sub: `היום האחרון של ${t.label}. כל הכבוד`, effect: { type: "confetti" } });
+      if (t.kind === "semester" && sameDay(t.from)) list.push({ id: "term-start", doodle: "🎒", mascot: "wave", title: "בהצלחה בסמסטר!", sub: `היום הראשון של ${t.label}`, effect: { type: "confetti" } });
+      else if (t.kind === "semester" && sameDay(t.to)) list.push({ id: "term-end", doodle: "🎉", mascot: "celebrate", title: "יום אחרון של הסמסטר!", sub: `היום האחרון של ${t.label}. בהצלחה בבחינות`, effect: { type: "confetti" } });
+      else if (t.kind === "exams" && sameDay(t.to)) list.push({ id: "exams-end", doodle: "🎓", mascot: "celebrate", title: "סיימתם את תקופת הבחינות!", sub: `היום האחרון של ${t.label}. כל הכבוד`, effect: { type: "confetti" } });
     }
     if (!list.length && today.getDay() === 5) list.push({ id: "shabbat", icon: "🕯️", title: "שבת שלום", sub: "נתראה ביום ראשון", tone: "quiet" });
     for (const sp of list) sp.tone = sp.tone || "festive";
@@ -1868,6 +1895,9 @@ button.special-icon { cursor: pointer; }
       ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
   }
 
+  // Width of each banner mascot at 64px tall, so the banner keeps its size while the image loads.
+  const MASCOT_WIDTH_AT_64 = { wave: 36, celebrate: 50 };
+
   function specialBanner(sp) {
     const glyph = sp.doodle || sp.icon || "✨";
     const replay = () => { playEffect(sp.effect); if (sp.flip) flipTitle(); };
@@ -1879,7 +1909,8 @@ button.special-icon { cursor: pointer; }
     return el("div", { class: `special tone-${sp.tone}`, role: "status", style: `--sp-a:${a};--sp-b:${b}` },
       icon,
       el("div", { class: "special-text" }, el("p", { class: "special-title", text: sp.title }), el("p", { class: "special-sub", text: sp.sub })),
-      sp.menorah ? menorah(sp.menorah) : null);
+      sp.menorah ? menorah(sp.menorah) : null,
+      sp.mascot ? el("img", { class: "mascot special-mascot", src: `./assets/mascot/mascot-${sp.mascot}.webp`, alt: "", width: String(MASCOT_WIDTH_AT_64[sp.mascot]), height: "64", decoding: "async" }) : null);
   }
 
   function renderSpecialDays(specials, today) {
