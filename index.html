@@ -203,9 +203,15 @@ main { padding-block: var(--s2) var(--s8); }
 
 /* FAQ: hairline list */
 .faq { display: grid; gap: 0 var(--s7); grid-template-columns: 1fr; margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--border); }
-.faq li { padding-block: var(--s5); border-block-end: 1px solid var(--border); }
+.faq li { padding-block: var(--s2); border-block-end: 1px solid var(--border); }
+.faq summary { display: flex; align-items: center; gap: var(--s3); min-block-size: 48px; cursor: pointer; list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: ""; flex: none; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: var(--muted); -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; rotate: -90deg; }
+.faq details[open] > summary::after { rotate: 90deg; }
+.faq summary:hover h3 { color: var(--accent-text); }
 .faq h3 { font-size: var(--fs-title); font-weight: 600; line-height: 1.4; }
-.faq p { margin-block-start: var(--s1); color: var(--text); }
+.faq .faq-a { padding-block-end: var(--s3); }
+.faq p { color: var(--text); }
 .faq .actions { padding-block-start: var(--s3); }
 .faq .actions .btn { flex: 0 1 auto; }
 
@@ -355,6 +361,7 @@ footer a { color: inherit; }
   @keyframes grow { from { scale: 1 0; opacity: 0; } }
   .today { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both 1s; }
   @keyframes pop { from { scale: 0; } }
+  .faq summary::after { transition: rotate .2s ease; }
   .ring .ring-fg { transition: stroke-dasharray .6s cubic-bezier(.2, .8, .2, 1); }
   .btn:active, .tile:active, .guide-card:active, .chip:active, .star:active { scale: .97; }
   .btn, .tile, .guide-card, .chip, .star { transition: scale .12s ease, background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease; }
@@ -374,7 +381,7 @@ body { background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, tran
 .mono { font-family: var(--mono); }
 .section > h2::before, .cat > h2::before { content: "// "; font-family: var(--mono); font-weight: 500; color: var(--accent-text); }
 #featured > h2::before, #saved > h2::before { content: "// "; font-family: var(--mono); color: var(--accent-text); }
-.count { font-family: var(--mono); direction: ltr; background: none; color: var(--faint); padding-inline: 0; min-inline-size: 0; }
+.count { display: inline; font-family: var(--mono); direction: ltr; background: none; color: var(--faint); padding-inline: 0; min-inline-size: 0; }
 .count::before { content: "["; } .count::after { content: "]"; }
 .now-num, .datechip .day, .event time, .badge, .open-now, .palette-foot { font-family: var(--mono); }
 .step input::before { font-family: var(--mono); }
@@ -1132,15 +1139,22 @@ footer { padding-block-end: 0; }
   function renderFaq(data, itemsById) {
     const list = $("#faq-list");
     return (data.faq || []).map((entry) => {
-      const linked = (entry.links || []).map((id) => itemsById.get(id)).filter(Boolean);
-      const li = el("li", {},
-        el("h3", { text: entry.q }),
-        el("p", {}, bidiText(entry.a)),
-        (linked.length || entry.guide) ? el("div", { class: "actions" },
-          ...linked.map((item) => openLink(item.url, item.name, `פתיחת ${item.name}`)),
-          entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null);
+      const linked = resolveLinks(entry, itemsById);
+      const details = el("details", {},
+        el("summary", {}, el("h3", { text: entry.q })),
+        el("div", { class: "faq-a" },
+          el("p", {}, bidiText(entry.a)),
+          (linked.length || entry.guide) ? el("div", { class: "actions" },
+            ...linked.map((link) => openLink(link.url, link.label, `פתיחת ${link.label}`)),
+            entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null));
+      const li = el("li", {}, details);
       list.append(li);
-      return { node: li, hay: normalize([entry.q, entry.a, ...(entry.keywords || [])].join(" ")) };
+      // Search opens matching answers, and closes only the ones it opened.
+      const expand = (on) => {
+        if (on && !details.open) { details.open = true; details.dataset.auto = ""; }
+        else if (!on && "auto" in details.dataset) { details.open = false; delete details.dataset.auto; }
+      };
+      return { node: li, expand, hay: normalize([entry.q, entry.a, ...(entry.keywords || [])].join(" ")) };
     });
   }
 
@@ -1197,8 +1211,8 @@ footer { padding-block-end: 0; }
     if (meta) meta.replaceChildren(...guideMeta(guide));
   }
 
-  function resolveGuideLinks(guide, itemsById) {
-    return (guide.links || []).map((link) => {
+  function resolveLinks(entry, itemsById) {
+    return (entry.links || []).map((link) => {
       if (typeof link === "string") {
         const item = itemsById.get(link);
         return item ? { label: item.name, url: item.url } : null;
@@ -1231,7 +1245,7 @@ footer { padding-block-end: 0; }
   }
 
   function renderGuideView(guide, itemsById) {
-    const links = resolveGuideLinks(guide, itemsById);
+    const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
     const shareUrl = `${location.origin}${location.pathname}#guide-${guide.id}`;
     $("#guide-view").replaceChildren(
@@ -1487,6 +1501,8 @@ footer { padding-block-end: 0; }
       if (nav.router && nav.router.isOpen()) nav.router.close();
       const q = $("#q");
       if (q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
+      const details = entry.node.querySelector(":scope > details");
+      if (details) details.open = true;
       entry.node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
       flashNode(entry.node);
     }
@@ -1658,6 +1674,7 @@ footer { padding-block-end: 0; }
       const show = (entry) => {
         const ok = !active || matches(entry.hay, query);
         entry.node.hidden = !ok;
+        if (entry.expand) entry.expand(active && ok);
         return ok ? 1 : 0;
       };
       let total = 0;
