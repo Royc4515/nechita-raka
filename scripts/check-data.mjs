@@ -138,6 +138,8 @@ for (const ev of events) {
   if (isRealDate(ev.date) && isRealDate(ev.until) && ev.until < ev.date) error(`ב"${where}" תאריך הסיום לפני תאריך ההתחלה.`, where);
   if (ev.time != null && !/^\d{1,2}:\d{2}$/.test(ev.time)) error(`השעה "${ev.time}" של "${where}" לא תקינה. הפורמט: 14:00.`, where);
   if (ev.guide && !guideIds.has(ev.guide)) error(`"${where}" מקושר למדריך "${ev.guide}" שלא קיים.`, where);
+  if (ev.kind != null && ev.kind !== "birthday") error(`ב"${where}" הערך של kind צריך להיות birthday (או בלי kind בכלל).`, where);
+  if (ev.celebrate != null && !isRealDate(ev.celebrate)) error(`תאריך החגיגה "${ev.celebrate}" של "${where}" לא תקין.`, where);
 }
 
 if (data.faq != null && !isList(data.faq)) error("faq צריך להיות רשימה בתוך [ ].", "faq:");

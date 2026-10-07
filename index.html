@@ -273,6 +273,30 @@ footer a { color: inherit; }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .now { -webkit-backdrop-filter: blur(10px) saturate(1.3); backdrop-filter: blur(10px) saturate(1.3); }
 }
+.now-date { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--s2); margin-block-end: var(--s3); padding-block-end: var(--s3); border-block-end: 1px solid var(--border); font-size: var(--fs-title); }
+.now-date svg { inline-size: 20px; block-size: 20px; flex: none; color: var(--accent-text); }
+.now-date time { font-weight: 700; }
+.now-hebrew { flex-basis: 100%; padding-inline-start: 28px; color: var(--muted); font-weight: 500; }
+@media (min-width: 640px) {
+  .now-hebrew { flex-basis: auto; padding-inline-start: 0; }
+  .now-hebrew::before { content: "·"; margin-inline-end: var(--s2); }
+}
+/* Birthdays */
+:root { --party: linear-gradient(120deg, #d63a6e, #d9701a); }
+.event.birthday .datechip { border-color: #d63a6e; }
+.event.birthday .datechip .mon { background: var(--party); }
+.event.birthday .title { font-weight: 700; }
+.bday-badge { display: inline-block; margin-block-start: 6px; padding: 2px 10px; border-radius: 999px; background: var(--party); color: #fff; font-size: var(--fs-small); font-weight: 600; }
+.yearbar-wrap.has-bday { margin-block-start: var(--s6); }
+.tick.bday { inline-size: auto; block-size: auto; inset-block-start: -26px; margin-inline-start: -8px; background: none; font-size: 15px; line-height: 1; cursor: pointer; }
+.tick.bday::before { inset: -6px; }
+.tick.bday:hover, .tick.bday.open { background: none; box-shadow: none; }
+.party { position: relative; overflow: hidden; margin-block-end: var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid color-mix(in srgb, #d63a6e 40%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, #ff5f8f 14%, var(--surface)), color-mix(in srgb, #ffb347 18%, var(--surface))); }
+.party-title { font-size: 1.125rem; font-weight: 800; }
+.party-sub { color: var(--muted); font-size: var(--fs-meta); }
+.party-btn { position: relative; margin-block-start: var(--s3); border: 0; background: var(--party); color: #fff; }
+.confetti { position: absolute; inset: 0; pointer-events: none; }
+.confetti i { position: absolute; inset-block-start: -10px; inset-inline-start: var(--x); inline-size: 7px; block-size: 11px; border-radius: 2px; background: var(--c); rotate: var(--r); opacity: 0; }
 .now-head { display: flex; align-items: center; gap: var(--s4); text-decoration: none; color: inherit; }
 .now-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; min-inline-size: 76px; padding: var(--s2) var(--s3); border-radius: 16px; background: linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); color: var(--accent-ink); box-shadow: 0 8px 22px -12px color-mix(in srgb, var(--accent) 80%, transparent); }
 .now-num { font-size: 2.25rem; line-height: 1; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
@@ -287,9 +311,19 @@ footer a { color: inherit; }
 .seg.semester { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 85%, transparent), var(--accent)); }
 .seg.exams { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 4px, color-mix(in srgb, var(--accent) 25%, transparent) 4px 8px); }
 .seg.passed { filter: saturate(.35); opacity: .55; }
-.tick { position: absolute; inset-block-start: -7px; inline-size: 4px; block-size: 4px; margin-inline-start: -2px; border-radius: 50%; background: var(--faint); }
-.today { position: absolute; inset-block: -6px; inline-size: 3px; margin-inline-start: -1.5px; border-radius: 3px; background: var(--text); box-shadow: 0 0 0 3px var(--surface); }
-.today::after { content: "היום"; position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 50%; translate: 50% 0; font-size: .75rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tick { position: absolute; inset-block-start: -7px; inline-size: 4px; block-size: 4px; margin-inline-start: -2px; border-radius: 50%; background: var(--faint); cursor: default; transition: background-color .15s ease, box-shadow .15s ease; }
+.tick.past { opacity: .55; }
+.today.tip-start::after { inset-inline-start: 0; translate: 0 0; }
+.today.tip-end::after { inset-inline-start: auto; inset-inline-end: 0; translate: 0 0; }
+.tick::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; }
+.tick::after { content: attr(data-tip); position: absolute; z-index: 3; inset-block-end: calc(100% + 10px); inset-inline-start: 50%; translate: 50% 4px; max-inline-size: 15rem; inline-size: max-content; padding: 4px 10px; border-radius: 8px; background: var(--text); color: var(--bg); font-size: .75rem; font-weight: 600; line-height: 1.5; white-space: pre-line; text-align: start; box-shadow: var(--shadow-2); opacity: 0; pointer-events: none; transition: opacity .15s ease, translate .15s ease; }
+.tick.tip-start::after { inset-inline-start: -6px; translate: 0 4px; }
+.tick.tip-end::after { inset-inline-start: auto; inset-inline-end: -6px; translate: 0 4px; }
+.tick:hover, .tick.open { z-index: 2; opacity: 1; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.tick:hover::after, .tick.open::after { opacity: 1; translate: 50% 0; }
+.tick.tip-start:hover::after, .tick.tip-end:hover::after, .tick.tip-start.open::after, .tick.tip-end.open::after { translate: 0 0; }
+.today { position: absolute; pointer-events: none; inset-block: -6px; inline-size: 3px; margin-inline-start: -1.5px; border-radius: 3px; background: var(--text); box-shadow: 0 0 0 3px var(--surface); }
+.today::after { content: attr(data-label); position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 50%; translate: 50% 0; font-size: .75rem; font-weight: 700; color: var(--text); white-space: nowrap; }
 .months { position: relative; block-size: 1.4em; margin-block-start: 22px; font-size: .75rem; color: var(--faint); }
 .months span { position: absolute; translate: 50% 0; white-space: nowrap; }
 @media (max-width: 479px) { .months span:nth-child(even) { display: none; } }
@@ -378,6 +412,10 @@ footer a { color: inherit; }
   @keyframes grow { from { scale: 1 0; opacity: 0; } }
   .today { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both 1s; }
   @keyframes pop { from { scale: 0; } }
+  .confetti i { animation: confetti 2.6s ease-in var(--d) 2 both; }
+  @keyframes confetti { 0% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: 12px 160px; rotate: calc(var(--r) + 300deg); } }
+  .tick.bday:not(:hover):not(.open) { animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { translate: 0 -3px; } }
   .faq summary::after { transition: rotate .2s ease; }
   .ring .ring-fg { transition: stroke-dasharray .6s cubic-bezier(.2, .8, .2, 1); }
   .btn:active, .tile:active, .guide-card:active, .chip:active, .star:active { scale: .97; }
@@ -779,7 +817,6 @@ footer { padding-block-end: 0; }
     link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
     sun: svgIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
     moon: svgIcon('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
-    auto: svgIcon('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/>'),
     star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
   };
 
@@ -1190,13 +1227,14 @@ footer { padding-block-end: 0; }
       const current = !isPast && isCurrent(ev, today);
       const range = formatRange(ev);
       const start = parseDate(ev.date);
-      const li = el("li", { class: `event${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`, "aria-current": current ? "date" : null },
+      const li = el("li", { class: `event${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}${ev.kind === "birthday" ? " birthday" : ""}`, "aria-current": current ? "date" : null },
         el("span", { class: "datechip", "aria-hidden": "true" },
           el("span", { class: "mon", text: MONTH_FMT.format(start) }), el("span", { class: "day", text: String(start.getDate()) })),
         el("div", {},
           isNext && !current ? el("span", { class: "sr-only", text: "האירוע הבא:" }) : null,
           el("time", { datetime: ev.date }, el("span", { class: "ltr", text: range })),
           el("div", { class: "title", text: ev.title }),
+          ev.kind === "birthday" ? el("span", { class: "bday-badge", text: "🎂 יום הולדת" }) : null,
           ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
           (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
           isPast ? el("span", { class: "sr-only", text: "(עבר)" }) : null,
@@ -1478,11 +1516,43 @@ footer { padding-block-end: 0; }
       const to = parseDate(t.to);
       bar.append(el("span", { class: `seg ${t.kind === "exams" ? "exams" : "semester"}${to < today ? " passed" : ""}`, style: `inset-inline-start:${pos(from)}%;inline-size:${Math.max(0.8, pos(to) - pos(from))}%` }));
     }
-    for (const ev of events) {
+    // Events a few days apart would sit on top of each other, so they share one dot and one label.
+    const groups = [];
+    const birthdays = [];
+    for (const ev of [...events].sort((a, b) => a.date.localeCompare(b.date))) {
       const d = parseDate(ev.date);
-      if (d >= start && d <= end) bar.append(el("span", { class: "tick", style: `inset-inline-start:${pos(d)}%` }));
+      if (d < start || d > end) continue;
+      if (ev.kind === "birthday") { birthdays.push(ev); continue; }
+      const at = pos(d);
+      const last = groups[groups.length - 1];
+      if (last && at - last.at < 1.6) last.events.push(ev);
+      else groups.push({ at, events: [ev] });
     }
-    if (today <= end) bar.append(el("span", { class: "today", style: `inset-inline-start:${pos(today)}%` }));
+    // Labels near either end of the bar open inward so they stay inside the card.
+    const edge = (at) => (at < 15 ? " tip-start" : at > 85 ? " tip-end" : "");
+    for (const g of groups) {
+      const past = g.events.every((ev) => parseDate(ev.until || ev.date) < today);
+      bar.append(el("span", { class: `tick${past ? " past" : ""}${edge(g.at)}`, style: `inset-inline-start:${g.at}%`,
+        // LRI…PDI keep a date range like 22–24.3.2027 in order inside the Hebrew label
+        "data-tip": g.events.map((ev) => `${ev.title} · \u2066${formatRange(ev)}\u2069`).join("\n") }));
+    }
+    for (const ev of birthdays) {
+      const at = pos(parseDate(ev.date));
+      bar.append(el("span", { class: `tick bday${edge(at)}`, style: `inset-inline-start:${at}%`,
+        "data-tip": `${ev.title} · \u2066${formatRange(ev)}\u2069`, text: "🎂" }));
+    }
+    if (today <= end) {
+      const at = pos(today);
+      bar.append(el("span", { class: `today${at < 8 ? " tip-start" : at > 92 ? " tip-end" : ""}`, style: `inset-inline-start:${at}%`,
+        "data-label": `היום · \u2066${today.getDate()}.${today.getMonth() + 1}\u2069` }));
+    }
+    // Touch screens have no hover: a tap opens a dot's label, a tap anywhere else closes it.
+    bar.addEventListener("click", (e) => {
+      const tick = e.target.closest(".tick");
+      bar.querySelectorAll(".tick.open").forEach((t) => { if (t !== tick) t.classList.remove("open"); });
+      if (tick) tick.classList.toggle("open");
+    });
+    document.addEventListener("click", (e) => { if (!bar.contains(e.target)) bar.querySelectorAll(".tick.open").forEach((t) => t.classList.remove("open")); });
 
     const months = el("div", { class: "months" });
     const fmt = new Intl.DateTimeFormat("he-IL", { month: "short" });
@@ -1492,9 +1562,32 @@ footer { padding-block-end: 0; }
     const legend = el("div", { class: "legend" },
       el("span", { class: "l-sem", text: "סמסטר" }), el("span", { class: "l-exam", text: "בחינות" }), el("span", { class: "l-ev", text: "אירוע בלוח" }));
     const pct = Math.round(pos(today));
-    return el("div", { class: "yearbar-wrap" },
+    return el("div", { class: `yearbar-wrap${birthdays.length ? " has-bday" : ""}` },
       el("p", { class: "sr-only", text: today < start ? "השנה עוד לא התחילה." : `עברו ${pct}% מהשנה האקדמית.` }),
       el("div", { "aria-hidden": "true" }, bar, months), legend);
+  }
+
+  // Hebrew numerals: 26 -> כ״ו, 787 -> תשפ״ז (15 and 16 are written ט״ו and ט״ז).
+  function gematria(n) {
+    const ones = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"];
+    const tens = ["", "י", "כ", "ל", "מ", "נ", "ס", "ע", "פ", "צ"];
+    let out = "";
+    let hundreds = Math.floor(n / 100);
+    for (; hundreds >= 4; hundreds -= 4) out += "ת";
+    out += ["", "ק", "ר", "ש"][hundreds];
+    const rest = n % 100;
+    out += rest === 15 ? "טו" : rest === 16 ? "טז" : tens[Math.floor(rest / 10)] + ones[rest % 10];
+    return out.length === 1 ? `${out}׳` : `${out.slice(0, -1)}״${out.slice(-1)}`;
+  }
+
+  function hebrewDate(date) {
+    try {
+      const parts = new Intl.DateTimeFormat("he-IL-u-ca-hebrew", { day: "numeric", month: "long", year: "numeric" }).formatToParts(date);
+      const part = (type) => parts.find((p) => p.type === type).value;
+      return `${gematria(Number(part("day")))} ב${part("month")} ${gematria(Number(part("year")) % 1000)}`;
+    } catch (err) {
+      return ""; // no Hebrew calendar in this browser: show the civil date alone
+    }
   }
 
   function renderNow(data) {
@@ -1547,7 +1640,20 @@ footer { padding-block-end: 0; }
     const chrome = el("div", { class: "now-chrome", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("span", { text: "~/year-1 › status" }));
     const inner = el("div", { class: "now-inner" });
     box.replaceChildren(chrome, inner);
-    inner.replaceChildren(...[head,
+    const civil = new Intl.DateTimeFormat("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(today);
+    const hebrew = hebrewDate(today);
+    const party = cal.events.find((ev) => ev.kind === "birthday" && parseDate(ev.celebrate || ev.date).getTime() === today.getTime());
+    const partyUrl = party ? mentorUrl(data.site, "מזל טוב רועי! 🎂🎉") : "";
+    const confetti = el("span", { class: "confetti", "aria-hidden": "true" },
+      ...Array.from({ length: 18 }, (_, i) => el("i", { style: `--x:${(i * 37) % 100}%;--d:${(i % 6) * 0.35}s;--r:${(i * 53) % 360}deg;--c:${["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"][i % 4]}` })));
+    const partyBanner = party ? el("div", { class: "party", role: "status" }, confetti,
+      el("p", { class: "party-title", text: "🎉 היום חוגגים לרועי!" }),
+      el("p", { class: "party-sub", text: party.title }),
+      partyUrl ? el("a", { class: "btn party-btn", href: partyUrl, target: "_blank", rel: "noopener noreferrer", text: "שלחו מזל טוב בוואטסאפ 🎂" }) : null) : null;
+    const dateLine = el("p", { class: "now-date" }, iconNode("calendar"),
+      el("time", { datetime: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`, text: civil }),
+      hebrew ? el("span", { class: "now-hebrew", text: hebrew }) : null);
+    inner.replaceChildren(...[dateLine, partyBanner, head,
       headlineGuide ? el("a", { class: "ev-guide", href: `#guide-${headlineGuide}`, text: "איך מתכוננים ←" }) : null,
       terms.length ? yearBar(terms, events, today) : null,
       after ? el("a", { class: "now-next", href: "#calendar" },
@@ -1730,36 +1836,47 @@ footer { padding-block-end: 0; }
 
   // ---------- Theme: auto → dark → light ----------
   const THEME_KEY = "nr-theme";
-  const THEME_LABEL = { auto: "ערכת צבעים: לפי המכשיר", dark: "ערכת צבעים: כהה", light: "ערכת צבעים: בהירה" };
+  const THEME_LABEL = { dark: "מעבר לערכה בהירה", light: "מעבר לערכה כהה" };
+  // Follows the device by default. The button only flips between light and dark; flipping back
+  // to whatever the device uses drops the override, so the site follows the device again.
   function setupTheme() {
     const btn = $("#theme-btn");
+    const root = document.documentElement;
     const metas = document.querySelectorAll('meta[name="theme-color"]');
     const originals = [...metas].map((m) => m.content);
-    let mode = document.documentElement.dataset.theme || "auto";
+    const deviceDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const current = () => root.dataset.theme || (deviceDark.matches ? "dark" : "light");
     const paint = () => {
-      btn.innerHTML = ICONS[mode === "dark" ? "moon" : mode === "light" ? "sun" : "auto"];
+      const mode = current();
+      btn.innerHTML = ICONS[mode === "dark" ? "moon" : "sun"];
       btn.setAttribute("aria-label", THEME_LABEL[mode]);
       btn.title = THEME_LABEL[mode];
-      metas.forEach((m, i) => { m.content = mode === "auto" ? originals[i] : getComputedStyle(document.documentElement).getPropertyValue("--bg").trim(); });
+      metas.forEach((m, i) => { m.content = root.dataset.theme ? getComputedStyle(root).getPropertyValue("--bg").trim() : originals[i]; });
     };
     btn.addEventListener("click", () => {
-      mode = mode === "auto" ? "dark" : mode === "dark" ? "light" : "auto";
-      if (mode === "auto") delete document.documentElement.dataset.theme;
-      else document.documentElement.dataset.theme = mode;
-      if (mode === "auto") { try { localStorage.removeItem(THEME_KEY); } catch (err) { console.warn("Could not clear theme", err); } }
-      else { try { localStorage.setItem(THEME_KEY, mode); } catch (err) { console.warn("Could not save theme", err); } }
+      const next = current() === "dark" ? "light" : "dark";
+      const followDevice = next === (deviceDark.matches ? "dark" : "light");
+      try {
+        if (followDevice) localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, next);
+      } catch (err) { console.warn("Could not save theme", err); }
+      if (followDevice) delete root.dataset.theme; else root.dataset.theme = next;
       paint();
-      announce(THEME_LABEL[mode]);
+      announce(next === "dark" ? "עברנו לערכה כהה" : "עברנו לערכה בהירה");
     });
+    deviceDark.addEventListener("change", paint);
     paint();
   }
 
   // site.whatsapp: the mentor's number in international format (972...), digits only.
-  function mentorItem(site) {
+  function mentorUrl(site, text) {
     const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
-    if (!/^\d{9,15}$/.test(number)) return null;
-    const text = site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : "";
-    return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url: `https://wa.me/${number}${text}` };
+    if (!/^\d{9,15}$/.test(number)) return "";
+    return `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+  }
+
+  function mentorItem(site) {
+    const url = mentorUrl(site, site && site.whatsappText);
+    return url ? { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url } : null;
   }
 
   function renderContact(data) {
@@ -2025,7 +2142,18 @@ footer { padding-block-end: 0; }
     }
   }
 
+  // Dates on the page are worked out once, at load. A tab or home-screen app left open overnight
+  // would keep showing yesterday, so when the page comes back on screen on a new day, reload it.
+  function watchForNewDay() {
+    if (new URLSearchParams(location.search).has("today")) return;
+    const loadedOn = getToday().getTime();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && getToday().getTime() !== loadedOn) location.reload();
+    });
+  }
+
   function start(data) {
+    watchForNewDay();
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
     const mentor = mentorItem(data.site);
     if (mentor) itemsById.set(mentor.id, mentor);
