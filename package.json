@@ -6,7 +6,7 @@
   "scripts": {
     "check": "node scripts/check-data.mjs",
     "test": "node --test \"api/_tests/*.test.js\"",
-    "build": "node scripts/check-data.mjs && node --test \"api/_tests/*.test.js\""
+    "build": "node scripts/check-data.mjs && node --test \"api/_tests/*.test.js\" && node scripts/build-public.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0"
