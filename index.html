@@ -126,6 +126,7 @@ main { padding-block: var(--s2) var(--s8); }
 .guide-view { max-inline-size: 46rem; margin-block-start: var(--s4); view-transition-name: guide; }
 .back { display: inline-flex; align-items: center; gap: var(--s1); min-block-size: 48px; color: var(--accent-text); font-weight: 600; text-decoration: none; }
 .guide-view h2 { font-size: calc(var(--fs-h1) * .95); line-height: 1.25; letter-spacing: -.015em; margin-block-start: var(--s2); }
+#guide-title:focus:not(:focus-visible) { outline: none; }
 .guide-summary { color: var(--muted); margin-block-start: var(--s2); }
 .steps { list-style: none; margin: var(--s6) 0 0; display: grid; padding: var(--s2) var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
 .step { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: var(--s3); align-items: start; padding-block: var(--s3); }
@@ -381,7 +382,7 @@ body { background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, tran
 .mono { font-family: var(--mono); }
 .section > h2::before, .cat > h2::before { content: "// "; font-family: var(--mono); font-weight: 500; color: var(--accent-text); }
 #featured > h2::before, #saved > h2::before { content: "// "; font-family: var(--mono); color: var(--accent-text); }
-.count { display: inline; font-family: var(--mono); direction: ltr; background: none; color: var(--faint); padding-inline: 0; min-inline-size: 0; }
+.count { display: inline; font-family: var(--mono); unicode-bidi: isolate; background: none; color: var(--faint); padding-inline: 0; min-inline-size: 0; }
 .count::before { content: "["; } .count::after { content: "]"; }
 .now-num, .datechip .day, .event time, .badge, .open-now, .palette-foot { font-family: var(--mono); }
 .step input::before { font-family: var(--mono); }
@@ -519,6 +520,7 @@ footer { padding-block-end: 0; }
   #calendar .cal-body .cal-cta .btn-large { align-self: flex-start; }
 }
 </style>
+<script src="./data.js"></script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -674,7 +676,6 @@ footer { padding-block-end: 0; }
   </symbol>
 </svg>
 
-<script src="./data.js"></script>
 <script>
 (() => {
   "use strict";
@@ -716,8 +717,12 @@ footer { padding-block-end: 0; }
     const frag = document.createDocumentFragment();
     const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
     let last = 0;
-    for (const match of String(text).matchAll(pattern)) {
-      frag.append(text.slice(last, match.index), el("bdi", { dir: "ltr", class: "run", text: match[0] }));
+    text = String(text ?? "");
+    for (const match of text.matchAll(pattern)) {
+      const run = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(match[0])
+        ? el("a", { href: `mailto:${match[0]}`, dir: "ltr", class: "run", text: match[0] })
+        : el("bdi", { dir: "ltr", class: "run", text: match[0] });
+      frag.append(text.slice(last, match.index), run);
       last = match.index + match[0].length;
     }
     frag.append(text.slice(last));
@@ -771,7 +776,8 @@ footer { padding-block-end: 0; }
     get(key, fallback) {
       try {
         const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
+        const value = raw ? JSON.parse(raw) : fallback;
+        return Array.isArray(fallback) && !Array.isArray(value) ? fallback : value;
       } catch (err) {
         console.warn("Local storage unavailable, using defaults", err);
         return fallback;
@@ -796,13 +802,26 @@ footer { padding-block-end: 0; }
         return ok;
       }),
     }));
-    const events = ((data.calendar && data.calendar.events) || []).filter((ev) => {
+    const asList = (value, name) => {
+      if (value == null) return [];
+      if (Array.isArray(value)) return value;
+      console.warn(`data.js: "${name}" should be a list in [ ]`);
+      return [];
+    };
+    data.featured = asList(data.featured, "featured");
+    data.faq = asList(data.faq, "faq").filter((entry) => {
+      const ok = entry && entry.q && entry.a;
+      if (!ok) console.warn("data.js: skipped FAQ entry (needs q and a)", entry);
+      return ok;
+    });
+    const events = asList(data.calendar && data.calendar.events, "calendar.events").filter((ev) => {
       const ok = ev && ev.title && ISO_DATE.test(ev.date || "") && (!ev.until || ISO_DATE.test(ev.until));
       if (!ok) console.warn("data.js: skipped event with a bad date (use YYYY-MM-DD)", ev);
       return ok;
     });
     const guides = (Array.isArray(data.guides) ? data.guides : []).filter((g) => {
-      const ok = g && /^[a-z0-9-]+$/.test(g.id || "") && g.title && Array.isArray(g.steps) && g.steps.length > 0;
+      const ok = g && /^[a-z0-9-]+$/.test(g.id || "") && g.title && Array.isArray(g.steps) && g.steps.length > 0
+        && (g.tips == null || Array.isArray(g.tips)) && (g.links == null || Array.isArray(g.links));
       if (!ok) console.warn("data.js: skipped guide (needs an English id, a title and at least one step)", g);
       return ok;
     });
@@ -837,7 +856,10 @@ footer { padding-block-end: 0; }
     ["מבחנים", "מבחן", "בחינות", "בחינה"],
     ["שכל", "שכר לימוד", "תשלום", "תשלומים", "כסף"],
     ["כרטיס סטודנט", "תעודת סטודנט"],
-    ["וואטסאפ", "ווטסאפ", "ואטסאפ", "whatsapp", "וצאפ"],
+    ["וואטסאפ", "ווטסאפ", "ואטסאפ", "whatsapp", "וצאפ", "ווצאפ", "וואצאפ", "ווצפ"],
+    ["סיסמה", "סיסמא", "password"],
+    ["חנייה", "חניה", "חניון", "parking"],
+    ["מילואים", "מילואימניק", "מילואימניקים"],
     ["wifi", "וויפי", "ויפי", "אינטרנט"],
     ["אינפי", "חדוא", "חשבון אינפיניטסימלי"],
   ];
@@ -1145,7 +1167,7 @@ footer { padding-block-end: 0; }
         el("div", { class: "faq-a" },
           el("p", {}, bidiText(entry.a)),
           (linked.length || entry.guide) ? el("div", { class: "actions" },
-            ...linked.map((link) => openLink(link.url, link.label, `פתיחת ${link.label}`)),
+            ...linked.map((link) => linkButton(link, `פתיחת ${link.label}`)),
             entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null));
       const li = el("li", {}, details);
       list.append(li);
@@ -1217,9 +1239,15 @@ footer { padding-block-end: 0; }
         const item = itemsById.get(link);
         return item ? { label: item.name, url: item.url } : null;
       }
+      if (link && link.guide && link.label && /^[a-z0-9-]+$/.test(link.guide)) return link;
       return link && isSafeUrl(link.url) && link.label ? link : null;
     }).filter(Boolean);
   }
+
+  // A button for a resolved link: another guide opens in place, anything else in a new tab.
+  const linkButton = (link, text) => link.guide
+    ? el("a", { class: "btn", href: `#guide-${link.guide}`, text: link.label })
+    : openLink(link.url, link.label, text);
 
   function stepsList(guide) {
     let checked = guideProgress(guide);
@@ -1248,7 +1276,7 @@ footer { padding-block-end: 0; }
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
     const shareUrl = `${location.origin}${location.pathname}#guide-${guide.id}`;
-    $("#guide-view").replaceChildren(
+    $("#guide-view").replaceChildren(...[
       el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
@@ -1256,11 +1284,12 @@ footer { padding-block-end: 0; }
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         el("h3", { id: "tips-h", text: "כדאי לדעת" }),
         el("ul", {}, ...guide.tips.map((tip) => el("li", {}, bidiText(tip))))) : null,
-      links.length ? el("div", { class: "actions" }, ...links.map((l) => openLink(l.url, l.label, l.label))) : null,
+      links.length ? el("div", { class: "actions" }, ...links.map((l) => linkButton(l, l.label))) : null,
       el("div", { class: "actions" }, shareButton(shareUrl, guide.title)),
       sources.length ? el("p", { class: "source" }, "מקור: ",
         ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),
-        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null);
+        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null,
+    ].filter(Boolean));
   }
 
   function withTransition(update) {
@@ -1293,18 +1322,26 @@ footer { padding-block-end: 0; }
       listParts.forEach((part) => { part.hidden = false; });
       document.title = BASE_TITLE;
       onLeaveGuide();
+      const q = new URLSearchParams(location.search).get("q");
+      const input = $("#q");
+      if (q && !input.value) { input.value = q; input.dispatchEvent(new Event("input")); }
       const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
       if (target) target.scrollIntoView();
       else window.scrollTo(0, listScroll);
     }
 
+    let current = null;
     function route(animate) {
       const match = location.hash.match(GUIDE_HASH);
       const guide = match && byId.get(match[1]);
+      if ((guide || null) === current && (guide || view.hidden)) return;
+      current = guide || null;
       const update = () => { if (guide) show(guide); else if (!view.hidden) hide(); };
       if (animate && (guide || !view.hidden)) withTransition(update); else update();
     }
+    // A guide opened from search rewrites the URL, so Back may not fire hashchange.
     window.addEventListener("hashchange", () => route(true));
+    window.addEventListener("popstate", () => route(true));
     route(false);
     return {
       isOpen: () => !view.hidden,
@@ -1381,7 +1418,7 @@ footer { padding-block-end: 0; }
       eyebrow = "עכשיו";
       title = term.label;
       if (term.kind === "semester") {
-        stat = Math.floor((today - from) / DAY_MS / 7) + 1;
+        stat = Math.floor(Math.round((today - from) / DAY_MS) / 7) + 1;
         unit = "שבוע";
         sub = `עברו ${Math.round((passed / total) * 100)}% מהסמסטר · עוד ${total - passed} ימים עד היום האחרון`;
       } else {
@@ -1503,6 +1540,7 @@ footer { padding-block-end: 0; }
       if (q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
       const details = entry.node.querySelector(":scope > details");
       if (details) details.open = true;
+      if (entry.node.closest(".timeline.collapsed") && !entry.node.offsetParent) $("#timeline-box .tl-toggle")?.click();
       entry.node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
       flashNode(entry.node);
     }
@@ -1732,6 +1770,7 @@ footer { padding-block-end: 0; }
     function clear() {
       input.value = "";
       apply();
+      syncUrl();
       input.focus();
     }
 
@@ -1744,21 +1783,23 @@ footer { padding-block-end: 0; }
     $("#empty-clear").addEventListener("click", clear);
     $("#empty-chips").replaceChildren(...EMPTY_SUGGESTIONS.map((word) => {
       const chip = el("button", { type: "button", class: "chip", text: word });
-      chip.addEventListener("click", () => { input.value = word; apply(); });
+      chip.addEventListener("click", () => { input.value = word; apply(); syncUrl(); });
       return chip;
     }));
 
     const initial = new URLSearchParams(location.search).get("q");
     if (initial) { input.value = initial; apply(); }
     let urlTimer = 0;
+    function syncUrl() {
+      clearTimeout(urlTimer);
+      const params = new URLSearchParams(location.search);
+      if (input.value.trim()) params.set("q", input.value.trim()); else params.delete("q");
+      const qs = params.toString();
+      history.replaceState(null, "", `${location.pathname}${qs ? `?${qs}` : ""}${location.hash}`);
+    }
     input.addEventListener("input", () => {
       clearTimeout(urlTimer);
-      urlTimer = setTimeout(() => {
-        const params = new URLSearchParams(location.search);
-        if (input.value.trim()) params.set("q", input.value.trim()); else params.delete("q");
-        const qs = params.toString();
-        history.replaceState(null, "", `${location.pathname}${qs ? `?${qs}` : ""}${location.hash}`);
-      }, 400);
+      urlTimer = setTimeout(syncUrl, 400);
     });
 
     document.addEventListener("keydown", (e) => {
@@ -1785,9 +1826,18 @@ footer { padding-block-end: 0; }
     const data = loadData();
     if (!data) {
       console.error("SITE_DATA is missing. data.js probably has a syntax error (a missing comma or backtick).");
-      showFatal("נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו (פסיק או גרש חסרים).");
+      showFatal("נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו: פסיק חסר, או גרשיים שהמקלדת בטלפון החליפה (‘ ’ או “ ” במקום `).");
       return;
     }
+    try {
+      start(data);
+    } catch (err) {
+      console.error(err);
+      showFatal("משהו בקובץ data.js לא בפורמט הנכון, כנראה שדה חסר או ריק. כדאי לבדוק את השינוי האחרון שנעשה בו.");
+    }
+  }
+
+  function start(data) {
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
     const saved = createSaved(itemsById);
     renderFeatured(data, itemsById);

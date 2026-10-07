@@ -1,0 +1,23 @@
+# Checks data.js on every change. A failed run shows a red X on the commit and
+# GitHub emails the person who pushed it, with the problem and its line number.
+name: Check data.js
+
+on:
+  push:
+    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
+  pull_request:
+    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-data.mjs
