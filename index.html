@@ -287,9 +287,19 @@ footer a { color: inherit; }
 .seg.semester { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 85%, transparent), var(--accent)); }
 .seg.exams { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 4px, color-mix(in srgb, var(--accent) 25%, transparent) 4px 8px); }
 .seg.passed { filter: saturate(.35); opacity: .55; }
-.tick { position: absolute; inset-block-start: -7px; inline-size: 4px; block-size: 4px; margin-inline-start: -2px; border-radius: 50%; background: var(--faint); }
-.today { position: absolute; inset-block: -6px; inline-size: 3px; margin-inline-start: -1.5px; border-radius: 3px; background: var(--text); box-shadow: 0 0 0 3px var(--surface); }
-.today::after { content: "היום"; position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 50%; translate: 50% 0; font-size: .75rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tick { position: absolute; inset-block-start: -7px; inline-size: 4px; block-size: 4px; margin-inline-start: -2px; border-radius: 50%; background: var(--faint); cursor: default; transition: background-color .15s ease, box-shadow .15s ease; }
+.tick.past { opacity: .55; }
+.today.tip-start::after { inset-inline-start: 0; translate: 0 0; }
+.today.tip-end::after { inset-inline-start: auto; inset-inline-end: 0; translate: 0 0; }
+.tick::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; }
+.tick::after { content: attr(data-tip); position: absolute; z-index: 3; inset-block-end: calc(100% + 10px); inset-inline-start: 50%; translate: 50% 4px; max-inline-size: 15rem; inline-size: max-content; padding: 4px 10px; border-radius: 8px; background: var(--text); color: var(--bg); font-size: .75rem; font-weight: 600; line-height: 1.5; white-space: pre-line; text-align: start; box-shadow: var(--shadow-2); opacity: 0; pointer-events: none; transition: opacity .15s ease, translate .15s ease; }
+.tick.tip-start::after { inset-inline-start: -6px; translate: 0 4px; }
+.tick.tip-end::after { inset-inline-start: auto; inset-inline-end: -6px; translate: 0 4px; }
+.tick:hover, .tick.open { z-index: 2; opacity: 1; background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+.tick:hover::after, .tick.open::after { opacity: 1; translate: 50% 0; }
+.tick.tip-start:hover::after, .tick.tip-end:hover::after, .tick.tip-start.open::after, .tick.tip-end.open::after { translate: 0 0; }
+.today { position: absolute; pointer-events: none; inset-block: -6px; inline-size: 3px; margin-inline-start: -1.5px; border-radius: 3px; background: var(--text); box-shadow: 0 0 0 3px var(--surface); }
+.today::after { content: attr(data-label); position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 50%; translate: 50% 0; font-size: .75rem; font-weight: 700; color: var(--text); white-space: nowrap; }
 .months { position: relative; block-size: 1.4em; margin-block-start: 22px; font-size: .75rem; color: var(--faint); }
 .months span { position: absolute; translate: 50% 0; white-space: nowrap; }
 @media (max-width: 479px) { .months span:nth-child(even) { display: none; } }
@@ -1477,11 +1487,36 @@ footer { padding-block-end: 0; }
       const to = parseDate(t.to);
       bar.append(el("span", { class: `seg ${t.kind === "exams" ? "exams" : "semester"}${to < today ? " passed" : ""}`, style: `inset-inline-start:${pos(from)}%;inline-size:${Math.max(0.8, pos(to) - pos(from))}%` }));
     }
-    for (const ev of events) {
+    // Events a few days apart would sit on top of each other, so they share one dot and one label.
+    const groups = [];
+    for (const ev of [...events].sort((a, b) => a.date.localeCompare(b.date))) {
       const d = parseDate(ev.date);
-      if (d >= start && d <= end) bar.append(el("span", { class: "tick", style: `inset-inline-start:${pos(d)}%` }));
+      if (d < start || d > end) continue;
+      const at = pos(d);
+      const last = groups[groups.length - 1];
+      if (last && at - last.at < 1.6) last.events.push(ev);
+      else groups.push({ at, events: [ev] });
     }
-    if (today <= end) bar.append(el("span", { class: "today", style: `inset-inline-start:${pos(today)}%` }));
+    // Labels near either end of the bar open inward so they stay inside the card.
+    const edge = (at) => (at < 15 ? " tip-start" : at > 85 ? " tip-end" : "");
+    for (const g of groups) {
+      const past = g.events.every((ev) => parseDate(ev.until || ev.date) < today);
+      bar.append(el("span", { class: `tick${past ? " past" : ""}${edge(g.at)}`, style: `inset-inline-start:${g.at}%`,
+        // LRI…PDI keep a date range like 22–24.3.2027 in order inside the Hebrew label
+        "data-tip": g.events.map((ev) => `${ev.title} · \u2066${formatRange(ev)}\u2069`).join("\n") }));
+    }
+    if (today <= end) {
+      const at = pos(today);
+      bar.append(el("span", { class: `today${at < 8 ? " tip-start" : at > 92 ? " tip-end" : ""}`, style: `inset-inline-start:${at}%`,
+        "data-label": `היום · \u2066${today.getDate()}.${today.getMonth() + 1}\u2069` }));
+    }
+    // Touch screens have no hover: a tap opens a dot's label, a tap anywhere else closes it.
+    bar.addEventListener("click", (e) => {
+      const tick = e.target.closest(".tick");
+      bar.querySelectorAll(".tick.open").forEach((t) => { if (t !== tick) t.classList.remove("open"); });
+      if (tick) tick.classList.toggle("open");
+    });
+    document.addEventListener("click", (e) => { if (!bar.contains(e.target)) bar.querySelectorAll(".tick.open").forEach((t) => t.classList.remove("open")); });
 
     const months = el("div", { class: "months" });
     const fmt = new Intl.DateTimeFormat("he-IL", { month: "short" });
@@ -2031,7 +2066,18 @@ footer { padding-block-end: 0; }
     }
   }
 
+  // Dates on the page are worked out once, at load. A tab or home-screen app left open overnight
+  // would keep showing yesterday, so when the page comes back on screen on a new day, reload it.
+  function watchForNewDay() {
+    if (new URLSearchParams(location.search).has("today")) return;
+    const loadedOn = getToday().getTime();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && getToday().getTime() !== loadedOn) location.reload();
+    });
+  }
+
   function start(data) {
+    watchForNewDay();
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
     const mentor = mentorItem(data.site);
     if (mentor) itemsById.set(mentor.id, mentor);
