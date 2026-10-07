@@ -116,9 +116,24 @@ test("config is off without all secrets, or with the kill switch", () => {
   assert.equal(readChatConfig({ ...env, CHAT_ENABLED: "false" }), null);
 });
 
-test("client IP comes from x-real-ip, else the last forwarded hop", () => {
+test("client IP comes from x-real-ip, else Vercel's x-forwarded-for", () => {
   assert.equal(clientIp(new Request("https://a.b", { headers: { "x-real-ip": "1.1.1.1", "x-forwarded-for": "9.9.9.9" } })), "1.1.1.1");
-  assert.equal(clientIp(new Request("https://a.b", { headers: { "x-forwarded-for": "9.9.9.9, 2.2.2.2" } })), "2.2.2.2");
+  assert.equal(clientIp(new Request("https://a.b", { headers: { "x-forwarded-for": "2.2.2.2" } })), "2.2.2.2");
+  assert.equal(clientIp(new Request("https://a.b")), null);
+});
+
+test("a body over the limit is refused even without Content-Length", async () => {
+  const big = new ReadableStream({
+    start(controller) {
+      for (let i = 0; i < 10; i++) controller.enqueue(new TextEncoder().encode("x".repeat(8000)));
+      controller.close();
+    },
+  });
+  const res = await handleChat(
+    new Request("https://nechita-raka.vercel.app/api/chat", { method: "POST", headers: { "content-type": "application/json", origin: "https://nechita-raka.vercel.app" }, body: big, duplex: "half" }),
+    fakeDeps(),
+  );
+  assert.equal(res.status, 400);
 });
 
 test("limiter counts per visitor and per site", async () => {

@@ -12,14 +12,13 @@ export function visitorBucket(ip, day, salt) {
 }
 
 /**
- * The caller's IP as Vercel's edge reports it. x-real-ip is set by Vercel; the last
- * x-forwarded-for entry is the one Vercel appended (the first can be forged by the client).
+ * The caller's IP as Vercel's edge reports it. Vercel sets x-real-ip, and overwrites (does not
+ * append to) x-forwarded-for, so a client can't forge either; `null` outside Vercel (tests).
  */
 export function clientIp(request) {
   const real = request.headers.get("x-real-ip")?.trim();
   if (real) return real;
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",").map((s) => s.trim()).filter(Boolean);
-  return forwarded?.length ? forwarded[forwarded.length - 1] : null;
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
 }
 
 // Idempotent: the first chat request creates the table.
