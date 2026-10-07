@@ -281,6 +281,22 @@ footer a { color: inherit; }
   .now-hebrew { flex-basis: auto; padding-inline-start: 0; }
   .now-hebrew::before { content: "·"; margin-inline-end: var(--s2); }
 }
+/* Birthdays */
+:root { --party: linear-gradient(120deg, #d63a6e, #d9701a); }
+.event.birthday .datechip { border-color: #d63a6e; }
+.event.birthday .datechip .mon { background: var(--party); }
+.event.birthday .title { font-weight: 700; }
+.bday-badge { display: inline-block; margin-block-start: 6px; padding: 2px 10px; border-radius: 999px; background: var(--party); color: #fff; font-size: var(--fs-small); font-weight: 600; }
+.yearbar-wrap.has-bday { margin-block-start: var(--s6); }
+.tick.bday { inline-size: auto; block-size: auto; inset-block-start: -26px; margin-inline-start: -8px; background: none; font-size: 15px; line-height: 1; cursor: pointer; }
+.tick.bday::before { inset: -6px; }
+.tick.bday:hover, .tick.bday.open { background: none; box-shadow: none; }
+.party { position: relative; overflow: hidden; margin-block-end: var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid color-mix(in srgb, #d63a6e 40%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, #ff5f8f 14%, var(--surface)), color-mix(in srgb, #ffb347 18%, var(--surface))); }
+.party-title { font-size: 1.125rem; font-weight: 800; }
+.party-sub { color: var(--muted); font-size: var(--fs-meta); }
+.party-btn { position: relative; margin-block-start: var(--s3); border: 0; background: var(--party); color: #fff; }
+.confetti { position: absolute; inset: 0; pointer-events: none; }
+.confetti i { position: absolute; inset-block-start: -10px; inset-inline-start: var(--x); inline-size: 7px; block-size: 11px; border-radius: 2px; background: var(--c); rotate: var(--r); opacity: 0; }
 .now-head { display: flex; align-items: center; gap: var(--s4); text-decoration: none; color: inherit; }
 .now-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; min-inline-size: 76px; padding: var(--s2) var(--s3); border-radius: 16px; background: linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); color: var(--accent-ink); box-shadow: 0 8px 22px -12px color-mix(in srgb, var(--accent) 80%, transparent); }
 .now-num { font-size: 2.25rem; line-height: 1; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
@@ -396,6 +412,10 @@ footer a { color: inherit; }
   @keyframes grow { from { scale: 1 0; opacity: 0; } }
   .today { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both 1s; }
   @keyframes pop { from { scale: 0; } }
+  .confetti i { animation: confetti 2.6s ease-in var(--d) 2 both; }
+  @keyframes confetti { 0% { opacity: 1; translate: 0 0; } 100% { opacity: 0; translate: 12px 160px; rotate: calc(var(--r) + 300deg); } }
+  .tick.bday:not(:hover):not(.open) { animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { translate: 0 -3px; } }
   .faq summary::after { transition: rotate .2s ease; }
   .ring .ring-fg { transition: stroke-dasharray .6s cubic-bezier(.2, .8, .2, 1); }
   .btn:active, .tile:active, .guide-card:active, .chip:active, .star:active { scale: .97; }
@@ -1207,13 +1227,14 @@ footer { padding-block-end: 0; }
       const current = !isPast && isCurrent(ev, today);
       const range = formatRange(ev);
       const start = parseDate(ev.date);
-      const li = el("li", { class: `event${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`, "aria-current": current ? "date" : null },
+      const li = el("li", { class: `event${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}${ev.kind === "birthday" ? " birthday" : ""}`, "aria-current": current ? "date" : null },
         el("span", { class: "datechip", "aria-hidden": "true" },
           el("span", { class: "mon", text: MONTH_FMT.format(start) }), el("span", { class: "day", text: String(start.getDate()) })),
         el("div", {},
           isNext && !current ? el("span", { class: "sr-only", text: "האירוע הבא:" }) : null,
           el("time", { datetime: ev.date }, el("span", { class: "ltr", text: range })),
           el("div", { class: "title", text: ev.title }),
+          ev.kind === "birthday" ? el("span", { class: "bday-badge", text: "🎂 יום הולדת" }) : null,
           ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
           (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
           isPast ? el("span", { class: "sr-only", text: "(עבר)" }) : null,
@@ -1497,9 +1518,11 @@ footer { padding-block-end: 0; }
     }
     // Events a few days apart would sit on top of each other, so they share one dot and one label.
     const groups = [];
+    const birthdays = [];
     for (const ev of [...events].sort((a, b) => a.date.localeCompare(b.date))) {
       const d = parseDate(ev.date);
       if (d < start || d > end) continue;
+      if (ev.kind === "birthday") { birthdays.push(ev); continue; }
       const at = pos(d);
       const last = groups[groups.length - 1];
       if (last && at - last.at < 1.6) last.events.push(ev);
@@ -1512,6 +1535,11 @@ footer { padding-block-end: 0; }
       bar.append(el("span", { class: `tick${past ? " past" : ""}${edge(g.at)}`, style: `inset-inline-start:${g.at}%`,
         // LRI…PDI keep a date range like 22–24.3.2027 in order inside the Hebrew label
         "data-tip": g.events.map((ev) => `${ev.title} · \u2066${formatRange(ev)}\u2069`).join("\n") }));
+    }
+    for (const ev of birthdays) {
+      const at = pos(parseDate(ev.date));
+      bar.append(el("span", { class: `tick bday${edge(at)}`, style: `inset-inline-start:${at}%`,
+        "data-tip": `${ev.title} · \u2066${formatRange(ev)}\u2069`, text: "🎂" }));
     }
     if (today <= end) {
       const at = pos(today);
@@ -1534,7 +1562,7 @@ footer { padding-block-end: 0; }
     const legend = el("div", { class: "legend" },
       el("span", { class: "l-sem", text: "סמסטר" }), el("span", { class: "l-exam", text: "בחינות" }), el("span", { class: "l-ev", text: "אירוע בלוח" }));
     const pct = Math.round(pos(today));
-    return el("div", { class: "yearbar-wrap" },
+    return el("div", { class: `yearbar-wrap${birthdays.length ? " has-bday" : ""}` },
       el("p", { class: "sr-only", text: today < start ? "השנה עוד לא התחילה." : `עברו ${pct}% מהשנה האקדמית.` }),
       el("div", { "aria-hidden": "true" }, bar, months), legend);
   }
@@ -1614,10 +1642,18 @@ footer { padding-block-end: 0; }
     box.replaceChildren(chrome, inner);
     const civil = new Intl.DateTimeFormat("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(today);
     const hebrew = hebrewDate(today);
+    const party = cal.events.find((ev) => ev.kind === "birthday" && parseDate(ev.celebrate || ev.date).getTime() === today.getTime());
+    const partyUrl = party ? mentorUrl(data.site, "מזל טוב רועי! 🎂🎉") : "";
+    const confetti = el("span", { class: "confetti", "aria-hidden": "true" },
+      ...Array.from({ length: 18 }, (_, i) => el("i", { style: `--x:${(i * 37) % 100}%;--d:${(i % 6) * 0.35}s;--r:${(i * 53) % 360}deg;--c:${["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"][i % 4]}` })));
+    const partyBanner = party ? el("div", { class: "party", role: "status" }, confetti,
+      el("p", { class: "party-title", text: "🎉 היום חוגגים לרועי!" }),
+      el("p", { class: "party-sub", text: party.title }),
+      partyUrl ? el("a", { class: "btn party-btn", href: partyUrl, target: "_blank", rel: "noopener noreferrer", text: "שלחו מזל טוב בוואטסאפ 🎂" }) : null) : null;
     const dateLine = el("p", { class: "now-date" }, iconNode("calendar"),
       el("time", { datetime: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`, text: civil }),
       hebrew ? el("span", { class: "now-hebrew", text: hebrew }) : null);
-    inner.replaceChildren(...[dateLine, head,
+    inner.replaceChildren(...[dateLine, partyBanner, head,
       headlineGuide ? el("a", { class: "ev-guide", href: `#guide-${headlineGuide}`, text: "איך מתכוננים ←" }) : null,
       terms.length ? yearBar(terms, events, today) : null,
       after ? el("a", { class: "now-next", href: "#calendar" },
@@ -1832,11 +1868,15 @@ footer { padding-block-end: 0; }
   }
 
   // site.whatsapp: the mentor's number in international format (972...), digits only.
-  function mentorItem(site) {
+  function mentorUrl(site, text) {
     const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
-    if (!/^\d{9,15}$/.test(number)) return null;
-    const text = site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : "";
-    return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url: `https://wa.me/${number}${text}` };
+    if (!/^\d{9,15}$/.test(number)) return "";
+    return `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+  }
+
+  function mentorItem(site) {
+    const url = mentorUrl(site, site && site.whatsappText);
+    return url ? { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url } : null;
   }
 
   function renderContact(data) {
