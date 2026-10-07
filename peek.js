@@ -1,34 +1,34 @@
 /*
-  The chat launcher: Bit or Byte peeks over the bottom bar (or the bottom of the screen on a
-  computer) and now and then says something in a speech bubble. A click opens the chat, which
-  is loaded only then (chat.js + chat.css). One mascot per visit, picked at random; the chat
-  panel can switch it.
+  The chat launcher: Bit or Byte peeks over the bottom bar (or a small ledge on a computer).
+  Hovering (or focusing) the mascot shows a short line in a pill; a click opens the chat, which
+  is loaded only then (chat.js + chat.css).
+  Who: the same mascot for the whole visit (this tab). The first visit picks at random, and each
+  new visit gets the other one, so everyone meets both. The chat panel can switch it too.
 */
 const NAMES = { bit: "ביט", byte: "בייט" };
 const LINES = {
-  bit: ["היי! צריכים משהו? אני פה, עם קפה ☕", "לא מוצאים משהו באתר? תשאלו אותי, אני חופר", "מתי המבחנים? מה זה למדה? בואו נעשה debug", "טיפ מניסיון: לא להשאיר את הרישום לרגע האחרון. סמכו עליי", "שבוע ראשון? גם אני הייתי אבוד. תשאלו!"],
-  byte: ["היי 👋 יש שאלה? אני מבטיחה תשובה מסודרת", "לא מוצאים משהו? תשאלו אותי, יש לי רשימה לכל דבר", "מבחנים, רישום, למדה, תבחרו נושא 🙂", "ביט שוב שכח את הסיסמה ללמדה. אתם לא חייבים 😉", "שבוע ראשון זה בלגן, ויחד מסדרים אותו"],
+  bit: ["יש שאלה? 👀", "מבחנים, רישום, למדה? תשאלו", "אני פה, עם קפה ☕", "בואו נעשה debug לשבוע הראשון", "לחצו, אני לא נושך 😄"],
+  byte: ["יש שאלה? 👋", "מבחנים, רישום, למדה? תשאלו", "בואו נסדר את זה 🙂", "יש לי רשימה לכל דבר", "לחצו ונתחיל"],
 };
-const GUIDE_LINE = "שאלה על המדריך הזה? תשאלו אותי 🙂";
-const FIRST_DELAY_MS = 5000;
-const SHOW_MS = 7000;
-const GAP_MS = 25000;
-const MAX_PER_PAGE = 5;
+const GUIDE_LINE = "שאלה על המדריך הזה?";
 
-const session = {
-  get(key) { try { return JSON.parse(sessionStorage.getItem(key)); } catch { return null; } },
-  set(key, value) { try { sessionStorage.setItem(key, JSON.stringify(value)); } catch { /* storage blocked */ } },
-};
+const store = (area) => ({
+  get(key) { try { return JSON.parse(area().getItem(key)); } catch { return null; } },
+  set(key, value) { try { area().setItem(key, JSON.stringify(value)); } catch { /* storage blocked */ } },
+});
+const session = store(() => sessionStorage);
+const local = store(() => localStorage);
 
 let persona = session.get("nr-chat-persona");
 if (!NAMES[persona]) {
-  persona = Math.random() < 0.5 ? "bit" : "byte";
+  const last = local.get("nr-chat-last");
+  persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
   session.set("nr-chat-persona", persona);
+  local.set("nr-chat-last", persona);
 }
 
 const launcher = document.getElementById("chat-launcher");
 const bubble = document.getElementById("peek-bubble");
-const say = bubble.querySelector(".peek-say");
 
 function showPersona(id) {
   persona = id;
@@ -37,57 +37,32 @@ function showPersona(id) {
 }
 showPersona(persona);
 // The panel announces a switch so the peeking mascot follows it.
-window.addEventListener("nr-chat-persona", (e) => showPersona(e.detail));
-
-// ---------- Speech bubbles: a few per page, never on memorial days, never after "×" ----------
-let shown = 0;
-let timer = 0;
-const quiet = () => session.get("nr-peek-quiet") || document.documentElement.dataset.day === "memorial" || document.body.classList.contains("chat-open");
-
-function nextLine() {
-  if (location.hash.startsWith("#guide-") && shown === 0) return GUIDE_LINE;
-  const lines = LINES[persona];
-  const i = (session.get("nr-peek-line") ?? Math.floor(Math.random() * lines.length)) % lines.length;
-  session.set("nr-peek-line", i + 1);
-  return lines[i];
-}
-
-function hideBubble() {
-  bubble.hidden = true;
-  launcher.classList.remove("talking");
-}
-
-function cycle() {
-  if (quiet() || shown >= MAX_PER_PAGE) return hideBubble();
-  if (document.hidden) {
-    timer = setTimeout(cycle, GAP_MS);
-    return;
-  }
-  say.querySelector(".peek-who").textContent = NAMES[persona];
-  say.querySelector(".peek-text").textContent = nextLine();
-  bubble.hidden = false;
-  launcher.classList.add("talking");
-  shown++;
-  timer = setTimeout(() => {
-    hideBubble();
-    timer = setTimeout(cycle, GAP_MS);
-  }, SHOW_MS);
-}
-timer = setTimeout(cycle, FIRST_DELAY_MS);
-
-bubble.querySelector(".peek-x").addEventListener("click", () => {
-  session.set("nr-peek-quiet", true);
-  clearTimeout(timer);
-  hideBubble();
+window.addEventListener("nr-chat-persona", (e) => {
+  showPersona(e.detail);
+  local.set("nr-chat-last", e.detail);
 });
+
+// ---------- The hover line: a new one each time, never on memorial days ----------
+let lineIndex = Math.floor(Math.random() * LINES.bit.length);
+
+function showBubble() {
+  if (document.documentElement.dataset.day === "memorial" || document.body.classList.contains("chat-open")) return;
+  bubble.querySelector(".peek-who").textContent = NAMES[persona];
+  bubble.querySelector(".peek-text").textContent = location.hash.startsWith("#guide-") ? GUIDE_LINE : LINES[persona][lineIndex++ % LINES[persona].length];
+  bubble.hidden = false;
+}
+const hideBubble = () => { bubble.hidden = true; };
+
+launcher.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") showBubble(); });
+launcher.addEventListener("pointerleave", hideBubble);
+launcher.addEventListener("focus", () => { if (launcher.matches(":focus-visible")) showBubble(); });
+launcher.addEventListener("blur", hideBubble);
 
 // ---------- Opening the chat ----------
 let loading = null;
 
-async function openChat() {
-  clearTimeout(timer);
+launcher.addEventListener("click", async () => {
   hideBubble();
-  session.set("nr-peek-quiet", true);
   loading ??= Promise.all([
     import("./chat.js"),
     new Promise((resolve) => {
@@ -101,7 +76,4 @@ async function openChat() {
     loading = null;
     console.error("chat failed to load", err);
   }
-}
-
-launcher.addEventListener("click", openChat);
-say.addEventListener("click", openChat);
+});
