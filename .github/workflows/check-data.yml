@@ -1,14 +1,14 @@
 # Checks data.js on every change outside main (main is checked by deploy.yml,
 # which only publishes when the check passes). A failed run shows a red X on the
 # commit and GitHub emails the person who pushed it, with the problem and its line.
-name: Check data.js
+name: Check data.js and the chat
 
 on:
   push:
     branches-ignore: [main]
-    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
+    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", "api/**", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   pull_request:
-    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
+    paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", "api/**", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   workflow_dispatch:
 
 permissions:
@@ -23,3 +23,5 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/check-data.mjs
+      - run: npm ci --no-audit --no-fund
+      - run: npm test

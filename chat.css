@@ -1,0 +1,92 @@
+/* The Bit and Byte chat panel. Uses the page's tokens (index.html :root), so both themes work. */
+.chat-panel {
+  position: fixed; z-index: 36; inset: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+  block-size: 100dvh; padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
+  background: var(--surface);
+}
+.chat-panel[hidden] { display: none; }
+@media (min-width: 900px) {
+  .chat-panel {
+    inset: auto var(--s6) calc(var(--s6) + 64px) auto; inset-inline-start: auto; inset-inline-end: var(--s6);
+    inline-size: 400px; block-size: min(640px, calc(100dvh - 140px)); padding: 0;
+    border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+    box-shadow: 0 24px 60px -20px rgb(4 20 40 / 45%);
+  }
+}
+.chat-chrome { flex: none; }
+.chat-head { flex: none; display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); border-block-end: 1px solid var(--border); }
+.chat-avatar { flex: none; border-radius: 50%; background: var(--accent-soft); object-fit: cover; }
+.chat-head .chat-avatar { inline-size: 40px; block-size: 40px; }
+.chat-avatar.small { inline-size: 24px; block-size: 24px; }
+.chat-who { flex: 1; min-inline-size: 0; }
+.chat-title { font-size: var(--fs-title); font-weight: 800; line-height: 1.2; }
+.chat-sub { color: var(--faint); font-size: var(--fs-small); }
+.chat-switch { flex: none; min-block-size: 40px; padding-inline: var(--s3); border-radius: 999px; border: 1px solid var(--border-strong); background: transparent; color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
+.chat-switch:hover { background: var(--accent-soft); }
+.chat-close { flex: none; display: grid; place-items: center; inline-size: 44px; block-size: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); cursor: pointer; }
+.chat-close:hover { background: var(--surface-2); }
+.chat-close svg { inline-size: 22px; block-size: 22px; }
+
+.chat-log { flex: 1; overflow-y: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: var(--s4); display: flex; flex-direction: column; gap: var(--s4); }
+
+/* The student's question: a compact accent bubble on the reading-start side. */
+.chat-msg.user { align-self: flex-start; max-inline-size: 85%; }
+.bubble { padding: 10px 14px; border-radius: 16px; border-start-start-radius: 4px; background: var(--accent); color: var(--accent-ink); line-height: 1.5; overflow-wrap: anywhere; }
+
+/* The mascot's answer: a document-style card, full width, the answer first. */
+.chat-msg.bot { align-self: stretch; }
+.answer { padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid var(--border); background: var(--surface-2); }
+.answer.greeting { background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 25%, var(--border)); }
+.answer-head { display: flex; align-items: center; gap: var(--s2); margin-block-end: 6px; }
+.answer-who { flex: 1; font-family: var(--mono); font-size: .8125rem; font-weight: 700; color: var(--accent-text); }
+.answer-copy { display: grid; place-items: center; inline-size: 32px; block-size: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--faint); cursor: pointer; }
+.answer-copy:hover { background: var(--surface); color: var(--text); }
+.answer-copy.done { color: var(--accent-text); }
+.answer-copy svg { inline-size: 16px; block-size: 16px; }
+.answer-text { line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+.answer-text a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.chat-sources { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block-start: var(--s3); padding-block-start: var(--s2); border-block-start: 1px dashed var(--border-strong); }
+.sources-label { color: var(--faint); font-size: .75rem; font-family: var(--mono); }
+.chat-sources a, .chat-sources > span:not(.sources-label) { display: inline-flex; align-items: center; gap: 4px; min-block-size: 32px; padding-inline: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
+.chat-sources a:hover { border-color: var(--accent); }
+.chat-sources svg { inline-size: 14px; block-size: 14px; flex: none; }
+
+.chat-event { align-self: center; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-small); }
+
+/* Suggested questions look like shell commands. */
+.chat-suggest { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.chat-suggest-label { color: var(--faint); font-size: var(--fs-small); }
+.chat-cmd { display: flex; align-items: center; gap: var(--s2); min-block-size: 44px; padding-inline: var(--s3); border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-meta); text-align: start; cursor: pointer; }
+.chat-cmd:hover { border-color: var(--accent); background: var(--accent-soft); }
+.chat-cmd .prompt, .chat-typing .prompt { font-family: var(--mono); color: var(--accent-text); font-weight: 700; }
+.chat-cmd.small { align-self: flex-start; min-block-size: 36px; font-size: var(--fs-small); }
+
+/* Thinking: a terminal line with a blinking cursor. */
+.chat-typing { display: flex; align-items: center; gap: var(--s2); color: var(--muted); }
+.chat-typing code { font-family: var(--mono); font-size: .875rem; }
+.cursor { display: inline-block; inline-size: .55em; block-size: 1.05em; margin-inline-start: 2px; vertical-align: text-bottom; background: var(--accent); }
+
+/* Errors read like terminal output, with a retry when it makes sense. */
+.chat-error { display: flex; flex-direction: column; gap: 6px; padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid color-mix(in srgb, #d14343 35%, var(--border)); background: color-mix(in srgb, #d14343 7%, var(--surface)); }
+.chat-error code { font-family: var(--mono); font-size: .8125rem; color: #c03a3a; align-self: flex-end; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chat-error code { color: #ff8a8a; } }
+:root[data-theme="dark"] .chat-error code { color: #ff8a8a; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .cursor { animation: chat-blink 1s steps(2, start) infinite; }
+  .bob { animation: chat-bob 1.2s ease-in-out infinite; }
+  @keyframes chat-blink { to { visibility: hidden; } }
+  @keyframes chat-bob { 50% { translate: 0 -3px; } }
+  .chat-msg, .chat-error, .chat-event { animation: chat-in .18s ease-out; }
+  @keyframes chat-in { from { opacity: 0; translate: 0 4px; } }
+}
+
+.chat-form { flex: none; display: flex; align-items: flex-end; gap: var(--s2); padding: var(--s3) var(--s4) var(--s2); border-block-start: 1px solid var(--border); }
+/* 16px stops iOS from zooming the page when the input gets focus. */
+.chat-input { flex: 1; min-block-size: 48px; max-block-size: 120px; resize: none; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font: inherit; font-size: 16px; line-height: 1.4; }
+.chat-input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.chat-send { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.chat-send:disabled { opacity: .5; cursor: progress; }
+.chat-send svg { inline-size: 22px; block-size: 22px; }
+.chat-note { flex: none; padding: 0 var(--s4) var(--s3); color: var(--faint); font-size: .75rem; }

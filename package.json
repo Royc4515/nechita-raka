@@ -1,0 +1,14 @@
+{
+  "name": "nechita-raka",
+  "private": true,
+  "type": "module",
+  "description": "Student hub for first-year CS students at Bar-Ilan, with the Bit and Byte chat",
+  "scripts": {
+    "check": "node scripts/check-data.mjs",
+    "test": "node --test \"api/_tests/*.test.js\"",
+    "build": "node scripts/check-data.mjs && node --test \"api/_tests/*.test.js\""
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
+  }
+}
