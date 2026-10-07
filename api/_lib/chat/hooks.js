@@ -107,13 +107,13 @@ export function runOutputHooks(draft, ctx, hooks = OUTPUT_HOOKS) {
 }
 
 /** In-character replies for blocked answers, in the student's language. */
-export function cannedReply(reason, hebrew) {
+export function cannedReply(reason, hebrew, personaId = "bit") {
   if (reason === "empty") {
     return hebrew
       ? "משהו השתבש לי בתשובה. אפשר לנסות לשאול שוב, או לכתוב לרועי בקבוצת הוואטסאפ."
       : "Something went wrong with that answer. Try again, or ask Roy in the WhatsApp group.";
   }
   return hebrew
-    ? "ניסיון יפה 🙂 אבל אני כאן בשביל שאלות על הלימודים: רישום, מערכות, מבחנים, תאריכים. במה אפשר לעזור?"
-    : "Nice try 🙂 but I'm here for questions about your studies: registration, systems, exams, dates. How can I help?";
+    ? `חחח ניסיון יפה 😄 אבל אני ${personaId === "byte" ? "נשארת" : "נשאר"} אני. אז, מה באמת מעניין אותך? רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון?`
+    : "Haha, nice try 😄 but I'm staying me. So what do you actually want to know? Registration, exams, Lemida, or how to survive week one?";
 }

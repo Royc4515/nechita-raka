@@ -47,7 +47,7 @@ export async function handleChat(request, deps) {
 
   const latest = turns[turns.length - 1].content;
   const hebrew = isHebrew(latest) || !/[a-z]/i.test(latest);
-  const blocked = (reason) => json({ reply: cannedReply(reason, hebrew), sources: [], blocked: true });
+  const blocked = (reason) => json({ reply: cannedReply(reason, hebrew, personaId), sources: [], blocked: true });
 
   const today = israelToday(deps.now());
   // Fails closed: without the counter there is nothing between a script and the free quota.

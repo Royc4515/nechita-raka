@@ -102,7 +102,8 @@ test("hooks keep data.js links, cut others, and fix style", () => {
 });
 
 test("canned replies follow the language", () => {
-  assert.match(cannedReply("injection", true), /לימודים/);
+  assert.match(cannedReply("injection", true, "bit"), /נשאר אני/);
+  assert.match(cannedReply("injection", true, "byte"), /נשארת אני/);
   assert.match(cannedReply("empty", false), /WhatsApp/);
 });
 

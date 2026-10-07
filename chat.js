@@ -4,8 +4,8 @@
   The conversation lives in this tab only (sessionStorage); the server stores nothing.
 */
 const PERSONAS = {
-  bit: { name: "ביט", avatar: "./assets/mascot/avatar-bit.webp", joined: "ביט הצטרף לשיחה", hello: "היי, אני ביט 👋 אני עונה על שאלות על שנה א' במדמ\"ח בבר אילן, רק מתוך מה שכתוב באתר. על מה תרצו לשאול?" },
-  byte: { name: "בייט", avatar: "./assets/mascot/avatar-byte.webp", joined: "בייט הצטרפה לשיחה", hello: "היי, אני בייט 👋 אני עונה על שאלות על שנה א' במדמ\"ח בבר אילן, רק מתוך מה שכתוב באתר. על מה תרצו לשאול?" },
+  bit: { name: "ביט", avatar: "./assets/mascot/avatar-bit.webp", joined: "ביט הצטרף לשיחה", hello: "היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. שואלים אותי על רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון. מה קורה?" },
+  byte: { name: "בייט", avatar: "./assets/mascot/avatar-byte.webp", joined: "בייט הצטרפה לשיחה", hello: "היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. אפשר לשאול אותי כל דבר על שנה א': רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות. במה אני עוזרת?" },
 };
 const OTHER = { bit: "byte", byte: "bit" };
 const SUGGESTIONS = ["מתי מתחילות הבחינות?", "איך משנים קורס באינ-בר?", "שכחתי סיסמה ללמדה", "מה עושים עם מבחן במילואים?"];
@@ -101,10 +101,10 @@ class ChatPanel {
 
     this.root = el("section", { class: "chat-panel", role: "dialog", "aria-modal": "false", "aria-labelledby": "chat-title", hidden: true },
       el("div", { class: "now-chrome chat-chrome", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("span", { class: "chat-path" })),
-      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: "עונה מתוך האתר" })), this.switchBtn, close),
+      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: "קמע AI של נחיתה רכה" })), this.switchBtn, close),
       this.list,
       form,
-      el("p", { class: "chat-note", text: "תשובות של AI: כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום. השיחה לא נשמרת בשרת." }));
+      el("p", { class: "chat-note", text: "ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת." }));
     this.root.addEventListener("keydown", (e) => { if (e.key === "Escape") this.close(); });
     document.body.append(this.root);
   }
@@ -185,7 +185,7 @@ class ChatPanel {
     const p = PERSONAS[this.persona];
     return el("li", { class: "chat-typing", role: "status" },
       el("img", { class: "chat-avatar small bob", src: p.avatar, alt: "", width: "24", height: "24" }),
-      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${this.persona === "byte" ? "מחפשת" : "מחפש"} במדריכים…`, el("span", { class: "cursor", "aria-hidden": "true" })));
+      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${this.persona === "byte" ? "מקלידה" : "חושב"}…`, el("span", { class: "cursor", "aria-hidden": "true" })));
   }
 
   autosize() {
