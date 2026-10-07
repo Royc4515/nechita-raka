@@ -4,9 +4,46 @@
   The conversation lives in this tab only (sessionStorage); the server stores nothing.
 */
 const PERSONAS = {
-  bit: { name: "ביט", avatar: "./assets/mascot/avatar-bit.webp", joined: "ביט הצטרף לשיחה", hello: "היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. שואלים אותי על רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון. מה קורה?" },
-  byte: { name: "בייט", avatar: "./assets/mascot/avatar-byte.webp", joined: "בייט הצטרפה לשיחה", hello: "היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. אפשר לשאול אותי כל דבר על שנה א': רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות. במה אני עוזרת?" },
+  bit: {
+    name: "ביט", avatar: "./assets/mascot/avatar-bit.webp", joined: "ביט הצטרף לשיחה",
+    hellos: [
+      "היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון? יאללה, שאלו.",
+      "מה קורה? 😄 ביט כאן. הייתי אבוד בדיוק כמוכם בשבוע הראשון, אז כנראה כבר נפלתי בכל בור. על מה נדבר?",
+      "שלום שלום! אני ביט, מומחה עולמי לדחיינות ולמציאת כפתורים מוחבאים באינ-בר. מה צריך?",
+      "היי 👋 בדיוק סיימתי את הקפה השלישי של היום, אז אני ער לגמרי. מה רציתם לשאול?",
+      "ביט מדבר ☕ שאלה על מבחנים, למדה, רישום, או רק צריכים מישהו שיגיד שיהיה בסדר? (יהיה בסדר.)",
+    ],
+    timely: {
+      morning: "בוקר טוב! ☀️ ביט כאן, עדיין מחמם מנועים עם קפה. מה על הפרק היום?",
+      evening: "ערב טוב 🌙 ביט כאן. יום ארוך? ספרו מה צריך ונסדר.",
+      night: "עוד ערים? 🦉 גם אני, מסתבר. מה מטריד אתכם בשעה כזאת?",
+    },
+  },
+  byte: {
+    name: "בייט", avatar: "./assets/mascot/avatar-byte.webp", joined: "בייט הצטרפה לשיחה",
+    hellos: [
+      "היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות? במה אני עוזרת?",
+      "שלום 🙂 בייט כאן. יש לי רשימה לכל דבר, כנראה גם לשאלה שלכם. מה נבדוק?",
+      "היי! אני בייט. נשמו רגע, שנה א' נראית מפחידה רק מבחוץ. מה רציתם לדעת?",
+      "בייט מדברת 👋 תשאלו ישר, אני אענה ישר. ואם ביט כבר בלבל אתכם, הגעתם למקום הנכון.",
+      "היי 🙂 מבחנים, למדה, אינ-בר או סתם עצה לשבוע הראשון? תבחרו, אני על זה.",
+    ],
+    timely: {
+      morning: "בוקר טוב ☀️ בייט כאן, עם תה ורשימת משימות. מה מוסיפים לה היום?",
+      evening: "ערב טוב 🌙 בייט כאן. בואו נסגור את מה שנשאר פתוח מהיום.",
+      night: "לילה טוב... או שעדיין לא? 🦉 בייט כאן. מה צריך לפני שהולכים לישון?",
+    },
+  },
 };
+
+/** A fresh opening line each time the chat opens: one in three times it fits the hour. */
+function pickGreeting(persona) {
+  const p = PERSONAS[persona];
+  const hour = new Date().getHours();
+  const slot = hour >= 5 && hour < 11 ? "morning" : hour >= 18 && hour < 23 ? "evening" : hour >= 23 || hour < 5 ? "night" : null;
+  if (slot && Math.random() < 1 / 3) return p.timely[slot];
+  return p.hellos[Math.floor(Math.random() * p.hellos.length)];
+}
 const OTHER = { bit: "byte", byte: "bit" };
 const SUGGESTIONS = ["מתי מתחילות הבחינות?", "איך משנים קורס באינ-בר?", "שכחתי סיסמה ללמדה", "מה עושים עם מבחן במילואים?"];
 const ERRORS = {
@@ -79,6 +116,7 @@ class ChatPanel {
   constructor(launcher) {
     this.launcher = launcher;
     this.persona = currentPersona();
+    this.greeting = pickGreeting(this.persona);
     this.log = Array.isArray(store.get(STORE_LOG)) ? store.get(STORE_LOG) : [];
     this.busy = false;
     this.build();
@@ -120,7 +158,7 @@ class ChatPanel {
 
   render() {
     this.setHeader();
-    const items = [this.botItem(PERSONAS[this.persona].hello, this.persona, [], true)];
+    const items = [this.botItem(this.greeting, this.persona, [], true)];
     for (const m of this.log) {
       if (m.role === "user") items.push(this.userItem(m.content));
       else if (m.role === "assistant") items.push(this.botItem(m.content, m.persona, m.sources || []));
@@ -203,6 +241,7 @@ class ChatPanel {
 
   switchPersona() {
     this.persona = OTHER[this.persona];
+    this.greeting = pickGreeting(this.persona);
     store.set(STORE_PERSONA, this.persona);
     if (this.log.length) this.log.push({ role: "event", content: PERSONAS[this.persona].joined });
     this.save();
@@ -252,6 +291,11 @@ class ChatPanel {
   }
 
   open() {
+    // Until the student writes something, every opening of the chat gets a new hello.
+    if (!this.log.some((m) => m.role === "user")) {
+      this.greeting = pickGreeting(this.persona);
+      this.render();
+    }
     this.root.hidden = false;
     this.launcher.setAttribute("aria-expanded", "true");
     document.body.classList.add("chat-open");
