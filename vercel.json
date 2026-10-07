@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "npm run build",
-  "outputDirectory": ".",
+  "outputDirectory": "public",
   "regions": ["fra1"],
   "functions": {
     "api/chat.js": { "includeFiles": "data.js", "maxDuration": 30 }
