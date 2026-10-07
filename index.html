@@ -719,7 +719,10 @@ footer { padding-block-end: 0; }
     let last = 0;
     text = String(text ?? "");
     for (const match of text.matchAll(pattern)) {
-      frag.append(text.slice(last, match.index), el("bdi", { dir: "ltr", class: "run", text: match[0] }));
+      const run = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(match[0])
+        ? el("a", { href: `mailto:${match[0]}`, dir: "ltr", class: "run", text: match[0] })
+        : el("bdi", { dir: "ltr", class: "run", text: match[0] });
+      frag.append(text.slice(last, match.index), run);
       last = match.index + match[0].length;
     }
     frag.append(text.slice(last));
@@ -1164,7 +1167,7 @@ footer { padding-block-end: 0; }
         el("div", { class: "faq-a" },
           el("p", {}, bidiText(entry.a)),
           (linked.length || entry.guide) ? el("div", { class: "actions" },
-            ...linked.map((link) => openLink(link.url, link.label, `פתיחת ${link.label}`)),
+            ...linked.map((link) => linkButton(link, `פתיחת ${link.label}`)),
             entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null));
       const li = el("li", {}, details);
       list.append(li);
@@ -1236,9 +1239,15 @@ footer { padding-block-end: 0; }
         const item = itemsById.get(link);
         return item ? { label: item.name, url: item.url } : null;
       }
+      if (link && link.guide && link.label && /^[a-z0-9-]+$/.test(link.guide)) return link;
       return link && isSafeUrl(link.url) && link.label ? link : null;
     }).filter(Boolean);
   }
+
+  // A button for a resolved link: another guide opens in place, anything else in a new tab.
+  const linkButton = (link, text) => link.guide
+    ? el("a", { class: "btn", href: `#guide-${link.guide}`, text: link.label })
+    : openLink(link.url, link.label, text);
 
   function stepsList(guide) {
     let checked = guideProgress(guide);
@@ -1275,7 +1284,7 @@ footer { padding-block-end: 0; }
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         el("h3", { id: "tips-h", text: "כדאי לדעת" }),
         el("ul", {}, ...guide.tips.map((tip) => el("li", {}, bidiText(tip))))) : null,
-      links.length ? el("div", { class: "actions" }, ...links.map((l) => openLink(l.url, l.label, l.label))) : null,
+      links.length ? el("div", { class: "actions" }, ...links.map((l) => linkButton(l, l.label))) : null,
       el("div", { class: "actions" }, shareButton(shareUrl, guide.title)),
       sources.length ? el("p", { class: "source" }, "מקור: ",
         ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),

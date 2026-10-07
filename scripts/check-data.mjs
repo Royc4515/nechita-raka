@@ -155,7 +155,7 @@ try {
     const found = ev.time
       ? icsStarts.has(compact(ev.date))
       : icsRanges.has(`${compact(ev.date)}-${compact(dayAfter(ev.until || ev.date))}`);
-    if (!found) warn(`"${ev.title}" (${ev.date}) לא מופיע בקובץ היומן ${ICS_FILE}. מי שמוריד את היומן לא יראה אותו.`, ev.title);
+    if (!found) warn(`"${ev.title}" (${ev.date}) לא מופיע בקובץ היומן ${ICS_FILE}. מי שמוריד את היומן לא יראה אותו.`, `\`${ev.date}\``);
   }
 } catch (err) {
   warn(`לא הצלחתי לקרוא את ${ICS_FILE}: ${err.message}`);

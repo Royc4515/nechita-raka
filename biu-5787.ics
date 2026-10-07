@@ -215,4 +215,55 @@ SUMMARY:מתפרסמים חלונות הזמן האישיים לתקופ
  ת השינויים (אינ-בר)
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:tuition-20261115@biu-cs-5787
+DTSTAMP:20261007T120000Z
+DTSTART;VALUE=DATE:20261115
+DTEND;VALUE=DATE:20261116
+SUMMARY:תשלום שכר לימוד
+DESCRIPTION:הסכום מתעדכן באינ-בר כשבועיים לפני
+ . מקור: מועדים ואמצעי תשלום\, biu.ac.il
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:tuition-20261215@biu-cs-5787
+DTSTAMP:20261007T120000Z
+DTSTART;VALUE=DATE:20261215
+DTEND;VALUE=DATE:20261216
+SUMMARY:תשלום שכר לימוד
+DESCRIPTION:הסכום מתעדכן באינ-בר כשבועיים לפני
+ . מקור: מועדים ואמצעי תשלום\, biu.ac.il
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:tuition-20270215@biu-cs-5787
+DTSTAMP:20261007T120000Z
+DTSTART;VALUE=DATE:20270215
+DTEND;VALUE=DATE:20270216
+SUMMARY:תשלום שכר לימוד
+DESCRIPTION:הסכום מתעדכן באינ-בר כשבועיים לפני
+ . מקור: מועדים ואמצעי תשלום\, biu.ac.il
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:tuition-20270315@biu-cs-5787
+DTSTAMP:20261007T120000Z
+DTSTART;VALUE=DATE:20270315
+DTEND;VALUE=DATE:20270316
+SUMMARY:תשלום שכר לימוד
+DESCRIPTION:הסכום מתעדכן באינ-בר כשבועיים לפני
+ . מקור: מועדים ואמצעי תשלום\, biu.ac.il
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:tuition-20270415@biu-cs-5787
+DTSTAMP:20261007T120000Z
+DTSTART;VALUE=DATE:20270415
+DTEND;VALUE=DATE:20270416
+SUMMARY:תשלום שכר לימוד (אחרון)
+DESCRIPTION:עד 100% משכר הלימוד השנתי. הסכום מתעד
+ כן באינ-בר כשבועיים לפני. מקור: מועדים וא
+ מצעי תשלום\, biu.ac.il
+TRANSP:TRANSPARENT
+END:VEVENT
 END:VCALENDAR
