@@ -99,6 +99,15 @@ h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing
 @media (hover: hover) and (pointer: fine) { .search input:placeholder-shown ~ .kbd-hint { display: block; } }
 .status { color: var(--muted); font-size: var(--fs-meta); margin-block-start: var(--s2); }
 .status:empty { display: none; }
+.top-hits { margin-block: var(--s5) var(--s2); }
+.top-hits h2 { font-size: var(--fs-h2); margin-block-end: var(--s3); }
+.top-hits ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+.hit { display: flex; align-items: center; gap: var(--s3); inline-size: 100%; min-block-size: 56px; padding: var(--s2) var(--s4); border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); color: var(--text); text-align: start; font: inherit; text-decoration: none; cursor: pointer; box-shadow: var(--shadow-1); }
+.hit:hover { border-color: var(--border-strong); }
+.hit .p-main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; }
+.hit .p-title { font-weight: 600; }
+.hit .p-sub { color: var(--muted); font-size: var(--fs-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hit > svg { inline-size: 16px; block-size: 16px; flex: none; color: var(--faint); }
 
 
 /* Sections */
@@ -146,17 +155,24 @@ main { padding-block: var(--s2) var(--s8); }
 .guide-view .actions { padding-block-start: var(--s5); }
 .guide-view .actions .btn { flex: 0 1 auto; }
 
-/* Link cards */
-.card { position: relative; display: flex; flex-direction: column; gap: 2px; padding: var(--s4) var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
-.card h3 { font-size: var(--fs-title); line-height: 1.4; font-weight: 600; padding-inline-end: 40px; }
-.card .name { font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--muted); }
+/* Link cards: one row, the whole card opens the link */
+.card { position: relative; display: flex; align-items: center; gap: var(--s2); padding: var(--s3) var(--s4); padding-inline-end: var(--s2); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
+.card-text { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
+.card h3 { font-size: var(--fs-title); line-height: 1.4; font-weight: 600; }
+.card-link { color: inherit; text-decoration: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.card-link:focus-visible { outline: none; }
+.card:has(.card-link:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
+.card .name { display: flex; align-items: center; gap: 6px; font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--muted); }
+.card .name svg { inline-size: 14px; block-size: 14px; flex: none; opacity: .7; }
+.card-tools { flex: none; display: flex; position: relative; z-index: 1; }
+.tool { display: grid; place-items: center; inline-size: 44px; block-size: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--faint); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tool svg { inline-size: 20px; block-size: 20px; }
+.tool:hover, .card-tools .star:hover { background: var(--surface-2); color: var(--text); }
+.tool.is-done { color: var(--accent-text); }
+.card-tools .star { position: static; inline-size: 44px; block-size: 44px; }
 .card .note { margin-block-start: var(--s2); font-size: var(--fs-meta); line-height: 1.5; color: var(--muted); background: var(--surface-2); border-radius: var(--r-sm); padding: var(--s2) var(--s3); }
-.card:has(.btn-primary:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
-.card .btn-primary::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-.card .btn-primary:focus-visible { outline: none; }
-.card .btn:not(.btn-primary), .card .star { position: relative; z-index: 1; }
 .star { position: absolute; inset-block-start: 6px; inset-inline-end: 6px; inline-size: 48px; block-size: 48px; display: grid; place-items: center; border: 0; background: transparent; border-radius: 12px; color: var(--faint); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.card .star { position: absolute; }
 .star svg { inline-size: 22px; block-size: 22px; }
 .star[aria-pressed="true"] { color: var(--accent-text); }
 .star[aria-pressed="true"] svg { fill: currentColor; }
@@ -332,7 +348,7 @@ footer a { color: inherit; }
 .palette ul { list-style: none; margin: 0; padding: var(--s2); max-block-size: min(420px, 55dvh); overflow-y: auto; }
 .palette li { display: flex; align-items: center; gap: var(--s3); min-block-size: 52px; padding: var(--s2) var(--s3); border-radius: 12px; cursor: pointer; }
 .palette li[aria-selected="true"] { background: var(--accent-soft); }
-.palette .p-type { flex: none; font-size: .75rem; font-weight: 700; color: var(--accent-text); background: var(--accent-soft); border-radius: 6px; padding: 1px 8px; }
+.palette .p-type, .hit .p-type { flex: none; font-size: .75rem; font-weight: 700; color: var(--accent-text); background: var(--accent-soft); border-radius: 6px; padding: 1px 8px; }
 .palette li[aria-selected="true"] .p-type { background: var(--surface); }
 .palette .p-main { display: flex; flex-direction: column; min-inline-size: 0; }
 .palette .p-title { font-weight: 600; line-height: 1.35; }
@@ -485,7 +501,7 @@ footer { padding-block-end: 0; }
   .btn-primary:hover { background: var(--accent); color: var(--accent-ink); }
   .btn-solid:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .card:hover, .guide-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-2); }
-  .card:hover .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .card:hover h3 { color: var(--accent-text); }
   .star:hover { color: var(--accent-text); background: var(--surface-2); }
   .search .clear:hover, .chip:hover { background: var(--surface-2); }
 }
@@ -571,6 +587,10 @@ footer { padding-block-end: 0; }
 </div>
 
 <main id="content" class="wrap" tabindex="-1">
+  <section class="top-hits" id="top-hits" aria-labelledby="top-hits-h" hidden>
+    <h2 id="top-hits-h">הכי מתאים</h2>
+    <ol></ol>
+  </section>
   <div id="jump-nav">
     <section class="now" id="now" aria-label="איפה אנחנו בשנה" hidden></section>
   </div>
@@ -839,16 +859,6 @@ footer { padding-block-end: 0; }
       .trim();
   }
 
-  function tokenMatches(haystack, token) {
-    const options = SYNONYMS.get(token) || [token];
-    return options.some((option) => tokenMatchesOne(haystack, option));
-  }
-
-  function tokenMatchesOne(haystack, token) {
-    if (haystack.includes(token)) return true;
-    return token.length > 3 && HEB_PREFIXES.includes(token[0]) && haystack.includes(token.slice(1));
-  }
-
   const FINAL_LETTERS = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
   const SYNONYM_GROUPS = [
     ["למדה", "lemida", "moodle", "מודל"],
@@ -869,7 +879,83 @@ footer { padding-block-end: 0; }
     forms.forEach((form) => SYNONYMS.set(form, forms));
   }
 
-  const matches = (haystack, query) => query.split(" ").every((token) => tokenMatches(haystack, token));
+  // ---------- Search ranking ----------
+  // Everything searchable has three fields: title (t), keywords (k) and body (b).
+  // A word found in the title counts most and a whole-word hit beats a partial one,
+  // so "מבחן" puts the exams guide above a page that only mentions exams in passing.
+  const FIELD_WEIGHT = { t: 4, k: 3, b: 1 };
+  const searchDoc = (title, keys, body, boost = 0, kind = "") => ({ t: normalize(title), k: normalize(keys), b: normalize(body), boost, kind });
+  // Question words: they don't have to appear in a result, but "מתי" means the answer is probably a date.
+  const QUESTION_WORDS = new Set(["מתי", "איפה", "איך", "מה", "למה", "כמה", "האם", "יש", "אני", "צריך", "רוצה", "אפשר", "של", "עם", "על", "את",
+    "רואים", "מוצאים", "עושים", "לעשות"].map((w) => normalize(w)));
+
+  // 3 = whole word, 2 = start of a word (a Hebrew prefix letter is allowed before it), 1 = inside a word
+  function wordHit(field, word) {
+    let best = 0;
+    for (let i = field.indexOf(word); i !== -1 && best < 3; i = field.indexOf(word, i + 1)) {
+      const before = field[i - 1];
+      const starts = i === 0 || before === " " || (HEB_PREFIXES.includes(before) && (i === 1 || field[i - 2] === " "));
+      const end = i + word.length;
+      const ends = end === field.length || field[end] === " ";
+      best = Math.max(best, starts ? (ends ? 3 : 2) : 1);
+    }
+    return best;
+  }
+
+  function tokenScore(doc, token) {
+    let best = 0;
+    for (const option of SYNONYMS.get(token) || [token]) {
+      for (const field of ["t", "k", "b"]) best = Math.max(best, wordHit(doc[field], option) * FIELD_WEIGHT[field]);
+      // "במילואים" typed with a prefix letter: also try without it, but trust that less
+      if (option.length > 3 && HEB_PREFIXES.includes(option[0])) {
+        const bare = option.slice(1);
+        for (const field of ["t", "k", "b"]) best = Math.max(best, wordHit(doc[field], bare) * FIELD_WEIGHT[field] * 0.6);
+      }
+    }
+    return best;
+  }
+
+  // One-letter words ("ב" in "מועד ב") are too common to require, but still count as part of the phrase.
+  function parseQuery(normalized) {
+    const words = normalized.split(" ").filter(Boolean);
+    const required = words.filter((w) => w.length > 1 && !QUESTION_WORDS.has(w));
+    return { phrase: normalized, words, required: required.length ? required : words, when: words.includes("מתי") };
+  }
+
+  // 0 = no match. mode "all": every word must be found; "any": at least one (the fallback).
+  function scoreDoc(doc, query, mode = "all") {
+    let score = 0;
+    let hits = 0;
+    for (const token of query.required) {
+      const s = tokenScore(doc, token);
+      if (s) { hits++; score += s; } else if (mode === "all") return 0;
+    }
+    if (!hits) return 0;
+    if (query.words.length > 1) {
+      if (doc.t.includes(query.phrase)) score += 8;
+      else if (doc.k.includes(query.phrase) || doc.b.includes(query.phrase)) score += 3;
+    }
+    if (doc.t === query.phrase) score += 10;
+    if (query.when && doc.kind === "event") score += 5;
+    return score + doc.boost;
+  }
+
+  const isLatin = (raw) => /^[a-z;,.' ]+$/i.test(raw);
+
+  // Ranks entries ({ doc }) for what the user typed: every word, then the keyboard-layout fix, then any word.
+  function rankEntries(entries, raw) {
+    const run = (query, mode) => entries.map((e) => [e, scoreDoc(e.doc, query, mode)]).filter(([, s]) => s > 0)
+      .sort((a, b) => b[1] - a[1]).map(([e]) => e);
+    const query = parseQuery(normalize(raw));
+    let list = run(query, "all");
+    if (list.length) return { list, query, mode: "all" };
+    if (isLatin(raw)) {
+      const alt = parseQuery(normalize(toHebrewLayout(raw)));
+      list = run(alt, "all");
+      if (list.length) return { list, query: alt, mode: "all", remapped: toHebrewLayout(raw) };
+    }
+    return { list: run(query, "any"), query, mode: "any" };
+  }
   const toHebrewLayout = (text) => [...text.toLowerCase()].map((ch) => QWERTY_TO_HEBREW[ch] || ch).join("");
 
   // ---------- Dates ----------
@@ -961,16 +1047,20 @@ footer { padding-block-end: 0; }
     }, COPY_RESET_MS);
   }
 
-  function copyButton(url, label) {
-    const btn = el("button", { type: "button", class: "btn", "aria-label": `העתק קישור: ${label}` });
-    btn.append(iconLabel("copy", "העתק קישור"));
+  function copyIconButton(url, label) {
+    const btn = el("button", { type: "button", class: "tool", "aria-label": `העתקת הקישור: ${label}`, title: "העתקת הקישור" });
+    btn.append(iconNode("copy"));
     btn.addEventListener("click", async () => {
       const ok = await copyText(url);
-      flashButton(btn, ok, "copy", "העתק קישור", "הקישור הועתק");
+      btn.replaceChildren(iconNode(ok ? "check" : "copy"));
+      btn.classList.toggle("is-done", ok);
+      clearTimeout(btn._timer);
+      btn._timer = setTimeout(() => { btn.replaceChildren(iconNode("copy")); btn.classList.remove("is-done"); }, COPY_RESET_MS);
       announce(ok ? `הקישור של ${label} הועתק` : "ההעתקה נכשלה");
     });
     return btn;
   }
+
 
   function shareButton(url, title) {
     const canShare = typeof navigator.share === "function";
@@ -1069,13 +1159,14 @@ footer { padding-block-end: 0; }
       const section = el("section", { class: "cat", "aria-labelledby": `cat-${cat.id}` }, heading, grid);
       const children = cat.items.map((item) => {
         const card = el("article", { class: "card" },
-          el("h3", { text: item.desc }),
-          el("p", { class: "name", text: item.name }),
-          item.note ? el("p", { class: "note" }, bidiText(item.note)) : null,
-          saved.starButton(item),
-          el("div", { class: "actions" }, openLink(item.url, item.name), copyButton(item.url, item.name)));
+          el("div", { class: "card-text" },
+            el("h3", {}, el("a", { class: "card-link", href: item.url, target: "_blank", rel: "noopener noreferrer",
+              "aria-label": `${item.desc}: ${item.name} (נפתח בלשונית חדשה)`, text: item.desc })),
+            el("p", { class: "name" }, item.name, iconNode("external")),
+            item.note ? el("p", { class: "note" }, bidiText(item.note)) : null),
+          el("div", { class: "card-tools" }, copyIconButton(item.url, item.name), saved.starButton(item)));
         grid.append(card);
-        return { node: card, hay: normalize([item.desc, item.name, item.note, cat.title, ...(item.keywords || [])].join(" ")) };
+        return { node: card, doc: itemDoc(item, cat.title) };
       });
       root.append(section);
       return { node: section, children };
@@ -1112,7 +1203,7 @@ footer { padding-block-end: 0; }
       if (!isPast && !isNext) upcomingCount++;
       if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");
       list.append(li);
-      return { node: li, hay: normalize([ev.title, ev.note, range].join(" ")) };
+      return { node: li, doc: searchDoc(ev.title, ev.note, range, 0, "event") };
     });
 
     const link = $("#ics-link");
@@ -1176,7 +1267,7 @@ footer { padding-block-end: 0; }
         if (on && !details.open) { details.open = true; details.dataset.auto = ""; }
         else if (!on && "auto" in details.dataset) { details.open = false; delete details.dataset.auto; }
       };
-      return { node: li, expand, hay: normalize([entry.q, entry.a, ...(entry.keywords || [])].join(" ")) };
+      return { node: li, expand, doc: searchDoc(entry.q, (entry.keywords || []).join(" "), entry.a) };
     });
   }
 
@@ -1209,6 +1300,9 @@ footer { padding-block-end: 0; }
     return total === 1 ? "צעד אחד" : `${total} צעדים`;
   }
 
+  const guideDoc = (guide) => searchDoc(guide.title, [guide.summary, ...(guide.keywords || [])].join(" "), [...guide.steps, ...(guide.tips || [])].join(" "), 1);
+  const itemDoc = (item, extra = "") => searchDoc(`${item.desc} ${item.name}`, [...(item.keywords || []), extra].join(" "), item.note);
+
   function renderGuides(data) {
     const today = getToday();
     const openNow = new Set(data.calendar.events.filter((ev) => ev.guide && isCurrent(ev, today)).map((ev) => ev.guide));
@@ -1223,8 +1317,7 @@ footer { padding-block-end: 0; }
         guide.summary ? el("p", {}, bidiText(guide.summary)) : null,
         el("span", { class: "guide-meta" }, ...guideMeta(guide)));
       grid.append(card);
-      const hay = normalize([guide.title, guide.summary, ...guide.steps, ...(guide.tips || []), ...(guide.keywords || [])].join(" "));
-      return { node: card, hay };
+      return { node: card, doc: guideDoc(guide) };
     });
   }
 
@@ -1312,7 +1405,9 @@ footer { padding-block-end: 0; }
       listParts.forEach((part) => { part.hidden = true; });
       view.hidden = false;
       document.title = `${guide.title} · נחיתה רכה`;
-      window.scrollTo(0, 0);
+      // Start at the guide itself (just below the sticky search bar), not at the top of the page.
+      const sticky = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 0;
+      window.scrollTo(0, Math.max(0, view.getBoundingClientRect().top + window.scrollY - sticky - 8));
       $("#guide-title").focus({ preventScroll: true });
     }
 
@@ -1471,21 +1566,19 @@ footer { padding-block-end: 0; }
     const featured = new Set(data.featured || []);
     const index = [];
     for (const guide of data.guides) {
-      index.push({ type: "מדריך", title: guide.title, sub: guide.summary || "", suggest: true,
-        hay: normalize([guide.title, guide.summary, ...(guide.keywords || []), ...guide.steps].join(" ")),
-        run: () => { location.hash = `#guide-${guide.id}`; } });
+      index.push({ type: "מדריך", title: guide.title, sub: guide.summary || "", suggest: true, doc: guideDoc(guide),
+        href: `#guide-${guide.id}`, run: () => { location.hash = `#guide-${guide.id}`; } });
     }
     for (const item of itemsById.values()) {
-      index.push({ type: "קישור", title: item.name, sub: item.desc, suggest: featured.has(item.id),
-        hay: normalize([item.name, item.desc, item.note, ...(item.keywords || [])].join(" ")),
-        run: () => window.open(item.url, "_blank", "noopener") });
+      index.push({ type: "קישור", title: item.name, sub: item.desc, suggest: featured.has(item.id), doc: itemDoc(item),
+        href: item.url, external: true, run: () => window.open(item.url, "_blank", "noopener") });
     }
     (data.faq || []).forEach((entry, i) => {
-      index.push({ type: "שאלה", title: entry.q, sub: entry.a, hay: faqEntries[i].hay, node: faqEntries[i].node });
+      index.push({ type: "שאלה", title: entry.q, sub: entry.a, doc: faqEntries[i].doc, node: faqEntries[i].node });
     });
     const sortedEvents = [...data.calendar.events].sort((a, b) => a.date.localeCompare(b.date));
     sortedEvents.forEach((ev, i) => {
-      index.push({ type: "תאריך", title: ev.title, sub: formatRange(ev), hay: eventEntries[i].hay, node: eventEntries[i].node });
+      index.push({ type: "תאריך", title: ev.title, sub: formatRange(ev), doc: eventEntries[i].doc, node: eventEntries[i].node });
     });
     return index;
   }
@@ -1501,9 +1594,7 @@ footer { padding-block-end: 0; }
       const raw = input.value.trim();
       const q = normalize(raw);
       if (!q) return index.filter((e) => e.suggest).slice(0, 8);
-      let found = index.filter((e) => matches(e.hay, q));
-      if (!found.length && /^[a-z;,.' ]+$/i.test(raw)) found = index.filter((e) => matches(e.hay, normalize(toHebrewLayout(raw))));
-      return found.slice(0, 10);
+      return rankEntries(index, raw).list.slice(0, 10);
     }
 
     function paint() {
@@ -1538,11 +1629,7 @@ footer { padding-block-end: 0; }
       if (nav.router && nav.router.isOpen()) nav.router.close();
       const q = $("#q");
       if (q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
-      const details = entry.node.querySelector(":scope > details");
-      if (details) details.open = true;
-      if (entry.node.closest(".timeline.collapsed") && !entry.node.offsetParent) $("#timeline-box .tl-toggle")?.click();
-      entry.node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
-      flashNode(entry.node);
+      revealNode(entry.node);
     }
 
     function open() {
@@ -1665,6 +1752,21 @@ footer { padding-block-end: 0; }
     paint();
   }
 
+  // site.whatsapp: the mentor's number in international format (972...), digits only.
+  function mentorItem(site) {
+    const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
+    if (!/^\d{9,15}$/.test(number)) return null;
+    const text = site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : "";
+    return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url: `https://wa.me/${number}${text}` };
+  }
+
+  function renderContact(data) {
+    const mentor = mentorItem(data.site);
+    if (!mentor) return;
+    $(".contact").replaceChildren("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או ",
+      el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: "בהודעה פרטית בוואטסאפ" }), ".");
+  }
+
   function renderCredit(data) {
     const site = data.site || {};
     if (!isSafeUrl(site.authorUrl)) return;
@@ -1700,36 +1802,80 @@ footer { padding-block-end: 0; }
   }
 
   // ---------- Filtering ----------
-  function setupSearch(groups, timelineState, nav, saved) {
+  // Puts a found item on screen: opens a collapsed answer or calendar, scrolls to it and highlights it.
+  function revealNode(node) {
+    const details = node.querySelector(":scope > details");
+    if (details) details.open = true;
+    if (node.closest(".timeline.collapsed") && !node.offsetParent) $("#timeline-box .tl-toggle")?.click();
+    node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
+    flashNode(node);
+  }
+
+  const setHidden = (node, hidden) => { if (node.hidden !== hidden) node.hidden = hidden; };
+
+  // While searching, the best matches come first in each section; without a search, the original order.
+  // Only visible entries are compared, and only misplaced ones move: moving DOM nodes is the slow part.
+  function reorder(entries, active) {
+    if (!entries.length) return;
+    const parent = entries[0].node.parentNode;
+    const shown = active ? entries.filter((e) => e.score > 0) : entries;
+    const wanted = shown.sort(active ? (a, b) => b.score - a.score || a.i - b.i : (a, b) => a.i - b.i).map((e) => e.node);
+    const wantedSet = new Set(wanted);
+    const current = [...parent.children].filter((n) => wantedSet.has(n));
+    for (let k = 0; k < wanted.length; k++) {
+      if (current[k] === wanted[k]) continue;
+      parent.insertBefore(wanted[k], current[k] || null);
+      current.splice(current.indexOf(wanted[k]), 1);
+      current.splice(k, 0, wanted[k]);
+    }
+  }
+
+  function setupSearch(groups, timelineState, nav, saved, index) {
     const input = $("#q");
     const clearBtn = $("#clear");
     const empty = $("#empty");
     const sections = { guides: $("#guides"), categories: $("#categories"), calendar: $("#calendar"), faq: $("#faq") };
+    const topHits = $("#top-hits");
+    const TOP_HITS = 3;
     let wasActive = false;
+    let lastKey = null;
+    for (const list of [groups.guides, groups.events, groups.faq, groups.categories]) list.forEach((e, i) => { e.i = i; });
+    groups.categories.forEach((cat) => cat.children.forEach((e, i) => { e.i = i; }));
 
-    function filterAll(query) {
-      const active = query.length > 0;
+    function filterAll(query, mode) {
+      const active = Boolean(query);
       const show = (entry) => {
-        const ok = !active || matches(entry.hay, query);
-        entry.node.hidden = !ok;
-        if (entry.expand) entry.expand(active && ok);
-        return ok ? 1 : 0;
+        entry.score = active ? scoreDoc(entry.doc, query, mode) : 1;
+        setHidden(entry.node, !entry.score);
+        if (entry.expand) entry.expand(active && entry.score > 0);
+        return entry.score ? 1 : 0;
       };
       let total = 0;
       for (const cat of groups.categories) {
         const shown = cat.children.reduce((n, entry) => n + show(entry), 0);
-        cat.node.hidden = shown === 0;
+        cat.score = Math.max(0, ...cat.children.map((e) => e.score));
+        setHidden(cat.node, shown === 0);
         total += shown;
       }
-      sections.categories.hidden = groups.categories.every((c) => c.node.hidden);
+      setHidden(sections.categories, groups.categories.every((c) => c.node.hidden));
       const count = (list) => list.reduce((n, entry) => n + show(entry), 0);
       const guides = count(groups.guides);
       const events = count(groups.events);
       const faqs = count(groups.faq);
-      sections.guides.hidden = groups.guides.length === 0 || (active && guides === 0);
-      sections.calendar.hidden = active && events === 0;
-      sections.faq.hidden = active && faqs === 0;
+      setHidden(sections.guides, groups.guides.length === 0 || (active && guides === 0));
+      setHidden(sections.calendar, active && events === 0);
+      setHidden(sections.faq, active && faqs === 0);
       return total + guides + events + faqs;
+    }
+
+    // Sorting moves DOM nodes, which is the expensive part of a search, so it waits until typing pauses.
+    const SORT_DELAY_MS = 200;
+    let sortTimer = 0;
+    function sortResults(active) {
+      for (const cat of groups.categories) reorder(cat.children, active);
+      reorder(groups.categories, active);
+      reorder(groups.guides, active);
+      reorder(groups.faq, active);
     }
 
     function resultsText(total) {
@@ -1737,35 +1883,75 @@ footer { padding-block-end: 0; }
       return total === 1 ? "נמצאה תוצאה אחת" : `נמצאו ${total} תוצאות`;
     }
 
+    // The few best matches across everything, one tap away, above the full results.
+    let shownHits = [];
+    function renderTopHits(list) {
+      const hits = list.slice(0, TOP_HITS);
+      if (hits.length === shownHits.length && hits.every((h, k) => h === shownHits[k])) return;
+      shownHits = hits;
+      topHits.querySelector("ol").replaceChildren(...hits.map((hit) => {
+        const body = [el("span", { class: "p-type", text: hit.type }),
+          el("span", { class: "p-main" }, el("span", { class: "p-title", text: hit.title }), el("span", { class: "p-sub", text: hit.sub }))];
+        let action;
+        if (hit.href) {
+          action = el("a", hit.external ? { class: "hit", href: hit.href, target: "_blank", rel: "noopener noreferrer" } : { class: "hit", href: hit.href }, ...body);
+          if (hit.external) action.append(iconNode("external"));
+        } else {
+          action = el("button", { type: "button", class: "hit" }, ...body);
+          action.addEventListener("click", () => revealNode(hit.node));
+        }
+        return el("li", {}, action);
+      }));
+    }
+
     function apply() {
       const raw = input.value.trim();
-      const query = normalize(raw);
-      const active = query.length > 0;
+      const key = normalize(raw);
+      const active = key.length > 0;
       clearBtn.hidden = !input.value;
-      $("#featured").hidden = active;
-      $("#jump-nav").hidden = active;
-      saved.render();
-
-      let total = filterAll(query);
-      let remapped = "";
-      if (active && total === 0 && /^[a-z;,.' ]+$/i.test(raw)) {
-        const alt = toHebrewLayout(raw);
-        const altTotal = filterAll(normalize(alt));
-        if (altTotal > 0) { total = altTotal; remapped = alt; } else filterAll(query);
+      if (key === lastKey) return;
+      lastKey = key;
+      if (active !== wasActive) {
+        $("#featured").hidden = active;
+        $("#jump-nav").hidden = active;
+        saved.render();
       }
 
-      empty.hidden = !active || total > 0;
+      let total;
+      let ranked = null;
+      clearTimeout(sortTimer);
+      if (!active) {
+        total = filterAll(null);
+        sortResults(false);
+      } else {
+        ranked = rankEntries(index, raw);
+        total = filterAll(ranked.query, ranked.mode);
+        sortTimer = setTimeout(() => sortResults(true), SORT_DELAY_MS);
+      }
+
+      setHidden(empty, !active || total > 0);
       $("#empty-q").textContent = raw;
       if (!active) statusEl.replaceChildren();
-      else if (remapped) statusEl.replaceChildren("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „", el("bdi", { text: remapped }), "”");
+      else if (total && ranked.remapped) statusEl.replaceChildren("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „", el("bdi", { text: ranked.remapped }), "”");
+      else if (total && ranked.mode === "any") statusEl.replaceChildren(`לא נמצא משהו שמתאים לכל המילים. ${resultsText(total)} שמתאימות לחלק מהן.`);
       else statusEl.replaceChildren(resultsText(total));
       announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
+
+      if (active && total > TOP_HITS) renderTopHits(ranked.list);
+      setHidden(topHits, !(active && total > TOP_HITS));
 
       $("#timeline").classList.toggle("searching", active);
       if (active && !wasActive && $("#searchbar").classList.contains("is-stuck")) window.scrollTo(0, stickySentinel.offsetTop);
       if (!active && wasActive) requestAnimationFrame(() => scrollTimelineTo(timelineState.nextNode));
       wasActive = active;
     }
+
+    // Fast typing: filter once per frame, not once per key.
+    let frame = 0;
+    const scheduleApply = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => { frame = 0; apply(); });
+    };
 
     function clear() {
       input.value = "";
@@ -1776,7 +1962,7 @@ footer { padding-block-end: 0; }
 
     input.addEventListener("input", () => {
       if (input.value && nav.router && nav.router.isOpen()) nav.router.close();
-      apply();
+      scheduleApply();
     });
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") input.blur(); });
     clearBtn.addEventListener("click", clear);
@@ -1839,6 +2025,8 @@ footer { padding-block-end: 0; }
 
   function start(data) {
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
+    const mentor = mentorItem(data.site);
+    if (mentor) itemsById.set(mentor.id, mentor);
     const saved = createSaved(itemsById);
     renderFeatured(data, itemsById);
     const guides = renderGuides(data);
@@ -1847,13 +2035,15 @@ footer { padding-block-end: 0; }
     const faq = renderFaq(data, itemsById);
     saved.render();
     renderCredit(data);
+    renderContact(data);
     renderInstall();
     watchSticky();
     const nav = { router: null };
-    setupSearch({ guides, categories, events: timeline.entries, faq }, timeline, nav, saved);
+    const searchIndex = buildPaletteIndex(data, itemsById, faq, timeline.entries);
+    setupSearch({ guides, categories, events: timeline.entries, faq }, timeline, nav, saved, searchIndex);
     nav.router = setupGuideRouting(data, itemsById, () => requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode)));
     renderNow(data);
-    setupPalette(buildPaletteIndex(data, itemsById, faq, timeline.entries), nav);
+    setupPalette(searchIndex, nav);
     setupPointerGlow();
     setupNav();
     setupTheme();

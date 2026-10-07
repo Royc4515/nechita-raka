@@ -1,9 +1,11 @@
-# Checks data.js on every change. A failed run shows a red X on the commit and
-# GitHub emails the person who pushed it, with the problem and its line number.
+# Checks data.js on every change outside main (main is checked by deploy.yml,
+# which only publishes when the check passes). A failed run shows a red X on the
+# commit and GitHub emails the person who pushed it, with the problem and its line.
 name: Check data.js
 
 on:
   push:
+    branches-ignore: [main]
     paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
   pull_request:
     paths: ["data.js", "biu-5787.ics", "scripts/check-data.mjs", ".github/workflows/check-data.yml"]
