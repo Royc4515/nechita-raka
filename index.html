@@ -1,0 +1,1800 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>נחיתה רכה - מדמ"ח בר אילן</title>
+<meta name="description" content="קישורים, מדריכים, תאריכים ותשובות לסטודנטים בשנה א' במדעי המחשב בבר אילן">
+<meta name="author" content="רועי כרמלי">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="נחיתה רכה">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<script>try { const t = localStorage.getItem("nr-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) { /* storage blocked: follow the device */ }</script>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f4f7fb; --surface: #ffffff; --surface-2: #eaf0f7;
+  --text: #0f1b2d; --muted: #46566e; --faint: #5c6b82;
+  --border: #dde5ef; --border-strong: #c4d0de;
+  --accent: #0b5fae; --accent-hover: #094d8f; --accent-ink: #ffffff; --accent-text: #0a57a0; --accent-soft: #e6f1fb; --focus: #0b5fae;
+  --shadow-1: 0 1px 2px rgb(15 27 45 / 6%);
+  --shadow-2: 0 1px 2px rgb(15 27 45 / 5%), 0 12px 30px -14px rgb(11 60 120 / 22%);
+  --r-sm: 10px; --r: 14px; --r-lg: 18px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s7: 32px; --s8: 48px; --s9: 64px;
+  --fs-h1: 1.5rem; --fs-h2: 1.25rem; --fs-title: 1.0625rem; --fs-body: 1.0625rem; --fs-meta: .9375rem; --fs-small: .875rem;
+  --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --sticky-h: 80px;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Hebrew", "Arial Hebrew", Arial, sans-serif;
+  --icon-external: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/%3E%3C/svg%3E");
+  --icon-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 6l-6 6 6 6'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220; --surface: #111a2c; --surface-2: #18233a;
+    --text: #e6edf7; --muted: #9fb0c8; --faint: #7f91ab;
+    --border: #22304a; --border-strong: #2e3f5e;
+    --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
+    --shadow-1: none; --shadow-2: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+    --bg: #0b1220; --surface: #111a2c; --surface-2: #18233a;
+    --text: #e6edf7; --muted: #9fb0c8; --faint: #7f91ab;
+    --border: #22304a; --border-strong: #2e3f5e;
+    --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
+    --shadow-1: none; --shadow-2: none;
+}
+:root[data-theme="light"] { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-block-start: calc(var(--sticky-h) + 16px); }
+body { margin: 0; min-block-size: 100dvh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--fs-body); line-height: 1.6; overflow-wrap: anywhere; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent-text); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: var(--r-sm); }
+.sr-only { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+.wrap { max-inline-size: 1120px; margin-inline: auto; padding-inline: var(--gutter); }
+.skip { position: absolute; inset-inline-start: 8px; inset-block-start: -100px; z-index: 50; background: var(--accent); color: var(--accent-ink); padding: 12px 16px; border-radius: var(--r-sm); font-weight: 600; }
+.skip:focus { inset-block-start: calc(8px + env(safe-area-inset-top)); }
+bdi.run { white-space: nowrap; }
+.icon { inline-size: 18px; block-size: 18px; flex: none; }
+
+/* Header */
+.site-header { padding-block: calc(var(--s7) + env(safe-area-inset-top)) var(--s3); }
+.brand { display: flex; align-items: center; gap: var(--s3); }
+.brand svg { flex: none; inline-size: 36px; block-size: 36px; border-radius: 10px; }
+h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; }
+.tagline { color: var(--muted); margin-block-start: var(--s2); max-inline-size: 52ch; }
+
+/* Sticky search */
+.searchbar { position: sticky; inset-block-start: 0; z-index: 20; background: transparent; padding-block: calc(var(--s2) + env(safe-area-inset-top)) var(--s3); border-block-end: 1px solid transparent; }
+.searchbar.is-stuck { background: var(--bg); }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .searchbar.is-stuck { background: color-mix(in srgb, var(--bg) 85%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(12px); backdrop-filter: saturate(1.4) blur(12px); }
+}
+.searchbar.is-stuck { border-block-end-color: var(--border); }
+.search { position: relative; max-inline-size: 720px; }
+.search > svg { position: absolute; inset-inline-start: 16px; inset-block-start: 50%; translate: 0 -50%; inline-size: 20px; block-size: 20px; color: var(--muted); pointer-events: none; }
+.search input { inline-size: 100%; min-block-size: 56px; padding-block: 12px; padding-inline: 48px 52px; font-size: 1.0625rem; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r); box-shadow: var(--shadow-1); appearance: none; -webkit-appearance: none; }
+.search input::-webkit-search-cancel-button { display: none; }
+.search input::placeholder { color: var(--faint); opacity: 1; }
+.search input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
+@media (forced-colors: active) { .search input:focus { outline: 2px solid CanvasText; } }
+.search .clear { position: absolute; inset-inline-end: 4px; inset-block-start: 50%; translate: 0 -50%; inline-size: 48px; block-size: 48px; border: 0; background: transparent; border-radius: var(--r-sm); cursor: pointer; display: grid; place-items: center; color: var(--muted); }
+.kbd-hint { display: none; position: absolute; inset-inline-end: 14px; inset-block-start: 50%; translate: 0 -50%; font-size: var(--fs-small); color: var(--faint); border: 1px solid var(--border-strong); border-radius: 6px; padding: 0 8px; line-height: 1.6; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .search input:placeholder-shown ~ .kbd-hint { display: block; } }
+.status { color: var(--muted); font-size: var(--fs-meta); margin-block-start: var(--s2); }
+.status:empty { display: none; }
+
+
+/* Sections */
+main { padding-block: var(--s2) var(--s8); }
+.section { margin-block-start: var(--s8); }
+.layout > .section:first-child { margin-block-start: var(--s7); }
+.section > h2, .cat > h2 { font-size: var(--fs-h2); line-height: 1.3; font-weight: 700; letter-spacing: -.01em; margin-block-end: var(--s3); }
+.section-lead { color: var(--muted); margin-block: calc(var(--s1) * -1) var(--s4); max-inline-size: 60ch; font-size: var(--fs-meta); }
+#featured > h2, #saved > h2 { font-size: var(--fs-meta); font-weight: 600; color: var(--muted); letter-spacing: 0; margin-block-end: var(--s2); }
+.cat + .cat { margin-block-start: var(--s8); }
+.grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
+
+
+/* Guides */
+.guide-grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
+.guide-card { position: relative; display: flex; flex-direction: column; gap: var(--s1); padding: var(--s4) var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); color: var(--text); text-decoration: none; }
+.guide-card h3 { font-size: var(--fs-title); line-height: 1.4; font-weight: 600; }
+.guide-card p { color: var(--muted); font-size: var(--fs-meta); line-height: 1.5; }
+.guide-meta { display: flex; align-items: center; gap: var(--s2); margin-block-start: auto; padding-block-start: var(--s3); color: var(--accent-text); font-size: var(--fs-small); font-weight: 600; }
+.guide-meta::after { content: ""; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: currentColor; -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; }
+.open-now { align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .75rem; font-weight: 700; }
+.progress { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--accent-soft); }
+
+/* Guide reading view */
+.guide-view { max-inline-size: 46rem; margin-block-start: var(--s4); view-transition-name: guide; }
+.back { display: inline-flex; align-items: center; gap: var(--s1); min-block-size: 48px; color: var(--accent-text); font-weight: 600; text-decoration: none; }
+.guide-view h2 { font-size: calc(var(--fs-h1) * .95); line-height: 1.25; letter-spacing: -.015em; margin-block-start: var(--s2); }
+.guide-summary { color: var(--muted); margin-block-start: var(--s2); }
+.steps { list-style: none; margin: var(--s6) 0 0; display: grid; padding: var(--s2) var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
+.step { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: var(--s3); align-items: start; padding-block: var(--s3); }
+.step:not(:last-child)::before { content: ""; position: absolute; inset-inline-start: 21px; inline-size: 2px; inset-block: calc(var(--s3) + 48px) calc(4px - var(--s3)); border-radius: 2px; background: var(--border-strong); }
+.step:has(input:checked):not(:last-child)::before { background: var(--accent); }
+.step input { appearance: none; -webkit-appearance: none; margin: 0; inline-size: 44px; block-size: 44px; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; font-weight: 700; font-size: var(--fs-meta); color: var(--accent-text); }
+.step input::before { content: attr(data-n); }
+.step input:checked { background: var(--accent); border-color: var(--accent); }
+.step input:checked::before { content: ""; inline-size: 18px; block-size: 18px; background: var(--accent-ink); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / contain no-repeat; }
+.step label { padding-block: 9px; cursor: pointer; }
+.step:has(input:checked) label { color: var(--faint); }
+.steps-progress { margin-block-start: var(--s3); color: var(--muted); font-size: var(--fs-small); }
+.tips { margin-block-start: var(--s6); padding: var(--s4) var(--s5); background: var(--surface-2); border-radius: var(--r-lg); }
+.tips h3 { font-size: var(--fs-meta); font-weight: 600; }
+.tips ul { margin: var(--s2) 0 0; padding-inline-start: 1.1em; }
+.tips li + li { margin-block-start: var(--s1); }
+.guide-view .actions { padding-block-start: var(--s5); }
+.guide-view .actions .btn { flex: 0 1 auto; }
+
+/* Link cards */
+.card { position: relative; display: flex; flex-direction: column; gap: 2px; padding: var(--s4) var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
+.card h3 { font-size: var(--fs-title); line-height: 1.4; font-weight: 600; padding-inline-end: 40px; }
+.card .name { font-size: var(--fs-small); font-weight: 500; line-height: 1.4; color: var(--muted); }
+.card .note { margin-block-start: var(--s2); font-size: var(--fs-meta); line-height: 1.5; color: var(--muted); background: var(--surface-2); border-radius: var(--r-sm); padding: var(--s2) var(--s3); }
+.card:has(.btn-primary:focus-visible) { outline: 2px solid var(--focus); outline-offset: 3px; }
+.card .btn-primary::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.card .btn-primary:focus-visible { outline: none; }
+.card .btn:not(.btn-primary), .card .star { position: relative; z-index: 1; }
+.star { position: absolute; inset-block-start: 6px; inset-inline-end: 6px; inline-size: 48px; block-size: 48px; display: grid; place-items: center; border: 0; background: transparent; border-radius: 12px; color: var(--faint); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.card .star { position: absolute; }
+.star svg { inline-size: 22px; block-size: 22px; }
+.star[aria-pressed="true"] { color: var(--accent-text); }
+.star[aria-pressed="true"] svg { fill: currentColor; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s2); margin-block-start: auto; padding-block-start: var(--s3); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); min-block-size: 48px; min-inline-size: 48px; padding-inline: var(--s5); border-radius: 12px; border: 1px solid var(--border-strong); background: transparent; color: var(--text); font-size: 1rem; font-weight: 600; line-height: 1.2; text-decoration: none; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.btn svg { inline-size: 18px; block-size: 18px; flex: none; }
+.btn-primary { background: var(--accent-soft); border-color: transparent; color: var(--accent-text); }
+.btn-solid { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.is-done { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
+.actions .btn-primary { flex: 1 1 0; }
+.actions .btn:not(.btn-primary) { flex: 0 0 auto; min-inline-size: 9.5rem; }
+
+/* Timeline */
+.cal-cta { display: flex; flex-direction: column; gap: var(--s3); margin-block-end: var(--s5); }
+.btn-large { min-block-size: 56px; font-size: var(--fs-body); padding-inline: var(--s6); border-radius: var(--r); align-self: stretch; }
+.cal-hint { color: var(--muted); font-size: var(--fs-meta); line-height: 1.55; max-inline-size: 60ch; }
+.cal-hint p + p { margin-block-start: var(--s1); }
+.timeline-box { position: relative; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1); }
+.tl-toggle { display: flex; align-items: center; justify-content: center; inline-size: 100%; min-block-size: 48px; border: 0; background: transparent; color: var(--accent-text); font-weight: 600; cursor: pointer; border-radius: 12px; }
+.tl-toggle:first-child { border-block-end: 1px solid var(--border); border-end-start-radius: 0; border-end-end-radius: 0; }
+.tl-toggle:last-child { border-block-start: 1px solid var(--border); border-start-start-radius: 0; border-start-end-radius: 0; }
+.timeline.collapsed:not(.searching) .event.is-past, .timeline.collapsed:not(.searching) .event.is-later { display: none; }
+.timeline-box:has(.timeline.searching) .tl-toggle { display: none; }
+.datechip { display: flex; flex-direction: column; align-items: center; inline-size: 48px; block-size: 52px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); text-align: center; }
+.datechip .mon { inline-size: 100%; background: var(--accent); color: var(--accent-ink); font-size: .7rem; font-weight: 700; line-height: 1.5; }
+.datechip .day { font-size: 1.25rem; font-weight: 750; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.event.is-past .datechip { opacity: .55; }
+.event.is-past .datechip .mon { background: var(--faint); }
+.event.is-next .datechip { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); border-color: var(--accent); }
+.ev-guide { display: flex; inline-size: fit-content; align-items: center; min-block-size: 44px; color: var(--accent-text); font-weight: 600; font-size: var(--fs-small); }
+.timeline { list-style: none; margin: 0; padding: var(--s2); }
+.event { position: relative; display: grid; grid-template-columns: 48px 1fr; gap: 0 var(--s3); align-items: start; padding: var(--s3) var(--s2); border-radius: 12px; }
+.dot { position: relative; z-index: 1; inline-size: 10px; block-size: 10px; margin-block-start: 7px; margin-inline-start: 7px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); }
+.event time { display: block; font-size: var(--fs-meta); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.event .title { line-height: 1.45; }
+.event .ev-note { color: var(--muted); font-size: var(--fs-small); margin-block-start: 2px; }
+.event.is-past .dot { background: var(--border-strong); border-color: var(--border-strong); }
+.event.is-past time, .event.is-past .title, .event.is-past .ev-note { color: var(--faint); }
+.event.is-next { background: var(--accent-soft); }
+.event.is-next .dot { background: var(--accent); inline-size: 12px; block-size: 12px; margin-block-start: 6px; margin-inline-start: 6px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
+.event.is-next time { color: var(--accent-text); }
+.event.is-next .title { font-weight: 600; }
+.badge { display: inline-block; margin-block-start: 6px; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: var(--fs-small); font-weight: 600; }
+.source { color: var(--muted); font-size: var(--fs-small); margin-block-start: var(--s3); max-inline-size: 70ch; }
+
+/* FAQ: hairline list */
+.faq { display: grid; gap: 0 var(--s7); grid-template-columns: 1fr; margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--border); }
+.faq li { padding-block: var(--s5); border-block-end: 1px solid var(--border); }
+.faq h3 { font-size: var(--fs-title); font-weight: 600; line-height: 1.4; }
+.faq p { margin-block-start: var(--s1); color: var(--text); }
+.faq .actions { padding-block-start: var(--s3); }
+.faq .actions .btn { flex: 0 1 auto; }
+
+/* Empty state */
+.empty { margin-block-start: var(--s7); padding: var(--s7) var(--s5); text-align: center; background: var(--surface); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
+.empty .try { color: var(--muted); margin-block: var(--s3) var(--s2); }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-block-end: var(--s4); }
+.chip { min-block-size: 48px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent-text); font-weight: 600; cursor: pointer; }
+.empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
+
+/* Footer */
+footer { border-block-start: 1px solid var(--border); margin-block-start: var(--s9); padding-block: var(--s7) max(var(--s7), calc(env(safe-area-inset-bottom) + var(--s4))); color: var(--muted); font-size: var(--fs-meta); }
+footer .contact { color: var(--text); font-size: var(--fs-body); font-weight: 600; }
+footer h2 { font-size: var(--fs-meta); font-weight: 600; color: var(--text); margin-block: var(--s6) var(--s2); }
+footer ul { margin: var(--s2) 0 0; padding-inline-start: 1.1em; }
+footer li + li { margin-block-start: var(--s1); }
+footer details summary { display: inline-flex; align-items: center; min-block-size: 48px; cursor: pointer; color: var(--accent-text); font-weight: 600; }
+footer .meta { margin-block-start: var(--s6); font-size: var(--fs-small); color: var(--faint); }
+footer .meta p + p { margin-block-start: var(--s1); }
+footer a { color: inherit; }
+@media (display-mode: standalone) { .install { display: none; } }
+.fatal { margin-block: var(--s6); padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); }
+[hidden] { display: none !important; }
+
+/* ---------- Aurora backdrop ---------- */
+.aurora { position: absolute; inset-inline: 0; inset-block-start: 0; block-size: 620px; z-index: -1; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
+.aurora::before { content: ""; position: absolute; inset: -30% -20%;
+  background:
+    radial-gradient(32% 42% at 78% 30%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
+    radial-gradient(28% 38% at 30% 18%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    radial-gradient(24% 34% at 55% 62%, color-mix(in srgb, var(--accent-text) 14%, transparent), transparent 72%); }
+@media (prefers-color-scheme: dark) { .aurora::before { opacity: .75; } }
+
+/* ---------- Header extras ---------- */
+.hero-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+.palette-trigger { display: none; align-items: center; gap: var(--s2); min-block-size: 44px; padding-inline: var(--s3) var(--s2); border-radius: 12px; border: 1px solid var(--border-strong); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); font-size: var(--fs-small); cursor: pointer; }
+.palette-trigger kbd { font: inherit; font-size: .8rem; padding: 1px 7px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); }
+@media (hover: hover) and (pointer: fine) and (min-width: 640px) { .palette-trigger { display: inline-flex; } }
+
+/* ---------- "Now" panel with year visualization ---------- */
+.now { margin-block-start: var(--s3); padding: var(--s4) var(--s5); border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); background: color-mix(in srgb, var(--surface) 82%, transparent); box-shadow: var(--shadow-2); }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .now { -webkit-backdrop-filter: blur(10px) saturate(1.3); backdrop-filter: blur(10px) saturate(1.3); }
+}
+.now-head { display: flex; align-items: center; gap: var(--s4); text-decoration: none; color: inherit; }
+.now-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; min-inline-size: 76px; padding: var(--s2) var(--s3); border-radius: 16px; background: linear-gradient(160deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); color: var(--accent-ink); box-shadow: 0 8px 22px -12px color-mix(in srgb, var(--accent) 80%, transparent); }
+.now-num { font-size: 2.25rem; line-height: 1; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+.now-unit { font-size: var(--fs-small); font-weight: 600; opacity: .9; margin-block-start: 2px; }
+.now-text { min-inline-size: 0; }
+.now-eyebrow { font-size: var(--fs-small); color: var(--accent-text); font-weight: 600; }
+.now-title { font-size: 1.125rem; font-weight: 700; line-height: 1.3; }
+.now-sub { color: var(--muted); font-size: var(--fs-meta); margin-block-start: 2px; }
+.yearbar-wrap { margin-block-start: var(--s4); }
+.yearbar { position: relative; block-size: 14px; border-radius: 999px; background: var(--surface-2); }
+.seg { position: absolute; inset-block: 0; border-radius: 999px; transform-origin: center; }
+.seg.semester { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 85%, transparent), var(--accent)); }
+.seg.exams { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 4px, color-mix(in srgb, var(--accent) 25%, transparent) 4px 8px); }
+.seg.passed { filter: saturate(.35); opacity: .55; }
+.tick { position: absolute; inset-block-start: -7px; inline-size: 4px; block-size: 4px; margin-inline-start: -2px; border-radius: 50%; background: var(--faint); }
+.today { position: absolute; inset-block: -6px; inline-size: 3px; margin-inline-start: -1.5px; border-radius: 3px; background: var(--text); box-shadow: 0 0 0 3px var(--surface); }
+.today::after { content: "היום"; position: absolute; inset-block-start: calc(100% + 4px); inset-inline-start: 50%; translate: 50% 0; font-size: .75rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.months { position: relative; block-size: 1.4em; margin-block-start: 22px; font-size: .75rem; color: var(--faint); }
+.months span { position: absolute; translate: 50% 0; white-space: nowrap; }
+@media (max-width: 479px) { .months span:nth-child(even) { display: none; } }
+.legend { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s4); margin-block-start: var(--s2); font-size: var(--fs-small); color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; inline-size: 10px; block-size: 10px; border-radius: 3px; margin-inline-end: 6px; vertical-align: -1px; }
+.legend .l-sem::before { background: var(--accent); }
+.legend .l-exam::before { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 3px, color-mix(in srgb, var(--accent) 25%, transparent) 3px 6px); }
+.legend .l-ev::before { inline-size: 6px; block-size: 6px; border-radius: 50%; background: var(--faint); vertical-align: 1px; }
+.now-next { display: flex; flex-wrap: wrap; gap: 0 var(--s2); align-items: center; margin-block-start: var(--s3); padding-block-start: var(--s3); border-block-start: 1px solid var(--border); font-size: var(--fs-meta); color: var(--muted); text-decoration: none; min-block-size: 48px; }
+.now-next strong { color: var(--text); font-weight: 600; }
+.now-next .when { color: var(--accent-text); font-weight: 600; }
+.now-next::after { content: ""; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: var(--accent-text); -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; }
+
+/* ---------- Bento quick access ---------- */
+.featured-grid { display: grid; gap: var(--s3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tile { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-block-size: 120px; padding: var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); color: var(--text); text-decoration: none; }
+.tile .tile-icon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-text); margin-block-end: auto; }
+.tile .tile-icon svg { inline-size: 22px; block-size: 22px; }
+.tile .tile-desc { font-size: var(--fs-title); line-height: 1.35; font-weight: 650; margin-block-start: var(--s3); }
+.tile .tile-name { font-size: var(--fs-small); color: var(--accent-text); font-weight: 600; }
+.tile::after { content: ""; position: absolute; inset-block-start: var(--s4); inset-inline-end: var(--s4); inline-size: 18px; block-size: 18px; background: var(--faint); -webkit-mask: var(--icon-external) center / contain no-repeat; mask: var(--icon-external) center / contain no-repeat; }
+.tile.hero-tile { grid-column: span 2; }
+.tile .tile-text { display: flex; flex-direction: column; }
+.tile.wide { grid-column: span 2; min-block-size: 0; flex-direction: row; align-items: center; gap: var(--s3); }
+.tile.wide .tile-icon { margin: 0; }
+.tile.wide .tile-text { display: flex; flex-direction: column; padding-inline-end: var(--s6); }
+.tile.wide .tile-desc { margin: 0; }
+.tile.hero-tile { background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 62%, #000)); border-color: transparent; color: var(--accent-ink); box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--accent) 90%, transparent); }
+.tile.hero-tile .tile-icon { background: color-mix(in srgb, var(--accent-ink) 18%, transparent); color: var(--accent-ink); }
+.tile.hero-tile .tile-name { color: var(--accent-ink); opacity: .85; }
+.tile.hero-tile::after { background: var(--accent-ink); opacity: .8; }
+.tile.hero-tile::before { content: ""; position: absolute; inset-block-start: -40%; inset-inline-end: -30%; inline-size: 70%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(color-mix(in srgb, var(--accent-ink) 22%, transparent), transparent 70%); pointer-events: none; }
+@media (min-width: 1000px) {
+  .featured-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(96px, auto); }
+  .tile.hero-tile { grid-column: span 2; grid-row: span 2; }
+  .tile.hero-tile .tile-desc { font-size: 1.375rem; }
+}
+
+/* ---------- Section counts ---------- */
+.count { display: inline-grid; place-items: center; min-inline-size: 1.7em; block-size: 1.7em; margin-inline-start: var(--s2); padding-inline: 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: .8rem; font-weight: 600; vertical-align: .15em; }
+
+/* ---------- Guide progress ring ---------- */
+.ring { inline-size: 26px; block-size: 26px; rotate: -90deg; flex: none; }
+.ring circle { fill: none; stroke-width: 4; }
+.ring .ring-bg { stroke: var(--border-strong); }
+.ring .ring-fg { stroke: var(--accent); stroke-linecap: round; }
+.guide-card .guide-icon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-text); margin-block-end: var(--s2); }
+.guide-card .guide-icon svg { inline-size: 22px; block-size: 22px; }
+
+/* ---------- Command palette ---------- */
+.palette { padding: 0; border: 0; background: transparent; max-inline-size: min(640px, calc(100vw - 32px)); inline-size: 100%; margin-block-start: min(12dvh, 120px); color: var(--text); }
+.palette::backdrop { background: color-mix(in srgb, #000 38%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.palette-box { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: 0 30px 80px -20px rgb(0 0 0 / 45%); overflow: hidden; }
+.palette input::-webkit-search-cancel-button { display: none; }
+.palette input { inline-size: 100%; min-block-size: 60px; padding-inline: var(--s5); border: 0; border-block-end: 1px solid var(--border); background: transparent; font-size: 1.125rem; outline: none; }
+.palette ul { list-style: none; margin: 0; padding: var(--s2); max-block-size: min(420px, 55dvh); overflow-y: auto; }
+.palette li { display: flex; align-items: center; gap: var(--s3); min-block-size: 52px; padding: var(--s2) var(--s3); border-radius: 12px; cursor: pointer; }
+.palette li[aria-selected="true"] { background: var(--accent-soft); }
+.palette .p-type { flex: none; font-size: .75rem; font-weight: 700; color: var(--accent-text); background: var(--accent-soft); border-radius: 6px; padding: 1px 8px; }
+.palette li[aria-selected="true"] .p-type { background: var(--surface); }
+.palette .p-main { display: flex; flex-direction: column; min-inline-size: 0; }
+.palette .p-title { font-weight: 600; line-height: 1.35; }
+.palette .p-sub { font-size: var(--fs-small); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.palette .p-empty { color: var(--muted); padding: var(--s4); text-align: center; }
+.palette-foot { display: flex; gap: var(--s4); padding: var(--s2) var(--s5); border-block-start: 1px solid var(--border); font-size: .8rem; color: var(--faint); }
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 3px transparent; } }
+
+/* ---------- Pointer glow (desktop only) ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .card, .guide-card, .tile:not(.hero-tile) { background-image: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%); }
+  .palette-trigger:hover { color: var(--text); border-color: var(--accent); }
+  .tile:hover { border-color: var(--border-strong); box-shadow: var(--shadow-2); }
+  .tile.hero-tile:hover { filter: brightness(1.06); }
+  .now-next:hover strong { color: var(--accent-text); }
+}
+
+/* ---------- Motion (all off with reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .site-header, .searchbar .search, .now, #featured { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
+  .searchbar .search { animation-delay: .06s; }
+  .now { animation-delay: .12s; }
+  #featured { animation-delay: .18s; }
+  @keyframes rise { from { opacity: 0; translate: 0 14px; } }
+  .seg { animation: grow .9s cubic-bezier(.2, .8, .2, 1) both .25s; }
+  @keyframes grow { from { scale: 1 0; opacity: 0; } }
+  .today { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both 1s; }
+  @keyframes pop { from { scale: 0; } }
+  .ring .ring-fg { transition: stroke-dasharray .6s cubic-bezier(.2, .8, .2, 1); }
+  .btn:active, .tile:active, .guide-card:active, .chip:active, .star:active { scale: .97; }
+  .btn, .tile, .guide-card, .chip, .star { transition: scale .12s ease, background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease; }
+  .star[aria-pressed="true"] svg { animation: starpop .35s cubic-bezier(.3, 1.8, .5, 1); }
+  @keyframes starpop { 50% { scale: 1.35; } }
+  @supports (animation-timeline: view()) {
+    .card, .guide-card, .faq li, .cat > h2 { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+    @keyframes reveal { from { opacity: .25; translate: 0 18px; } }
+  }
+  .palette[open] .palette-box { animation: drop .22s cubic-bezier(.2, .8, .2, 1); }
+  @keyframes drop { from { opacity: 0; translate: 0 -10px; scale: .98; } }
+}
+
+/* ---------- Developer theme ---------- */
+:root { --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Cascadia Mono", Consolas, "Roboto Mono", Menlo, monospace; }
+body { background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, transparent) 1px, transparent 1.4px); background-size: 24px 24px; }
+.mono { font-family: var(--mono); }
+.section > h2::before, .cat > h2::before { content: "// "; font-family: var(--mono); font-weight: 500; color: var(--accent-text); }
+#featured > h2::before, #saved > h2::before { content: "// "; font-family: var(--mono); color: var(--accent-text); }
+.count { font-family: var(--mono); direction: ltr; background: none; color: var(--faint); padding-inline: 0; min-inline-size: 0; }
+.count::before { content: "["; } .count::after { content: "]"; }
+.now-num, .datechip .day, .event time, .badge, .open-now, .palette-foot { font-family: var(--mono); }
+.step input::before { font-family: var(--mono); }
+h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var(--accent-text); margin-inline-start: 2px; }
+
+/* Hero */
+.hero-grid { display: grid; gap: var(--s5); align-items: center; }
+.hero-row { display: flex; align-items: center; gap: var(--s2); }
+.hero-row .brand { flex: 1; min-inline-size: 0; }
+.brand-avatar { flex: none; inline-size: 52px; block-size: 52px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--accent) 45%, transparent); }
+.brand > svg { display: none; }
+.hero-art { display: none; }
+.icon-btn { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border-radius: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); cursor: pointer; }
+.icon-btn svg { inline-size: 20px; block-size: 20px; }
+
+/* Terminal */
+.term { margin-block-start: var(--s4); border-radius: 14px; overflow: hidden; background: #0d1626; border: 1px solid #22304a; box-shadow: 0 18px 40px -24px rgb(11 30 60 / 55%); font-family: var(--mono); font-size: .8125rem; line-height: 1.7; text-align: start; }
+.term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #131f35; border-block-end: 1px solid #22304a; color: #8aa0c2; font-size: .75rem; }
+.term-bar i { inline-size: 10px; block-size: 10px; border-radius: 50%; background: #ff5f57; }
+.term-bar i:nth-child(2) { background: #febc2e; } .term-bar i:nth-child(3) { background: #28c840; }
+.term-bar span { margin-inline-start: 8px; }
+.term-body { margin: 0; padding: 10px 14px 12px; color: #d6e2f5; white-space: pre; overflow-x: auto; }
+.term-body .ln { display: block; }
+.t-prompt { color: #5cb8f0; } .t-kw { color: #c792ea; } .t-str { color: #a5e3a1; } .t-out { color: #ffd479; } .t-dim { color: #6b7c99; }
+.t-caret { display: inline-block; inline-size: .6em; block-size: 1.1em; vertical-align: -.2em; background: #5cb8f0; margin-inline-start: 2px; }
+
+/* Now panel as a terminal window */
+.now { padding: 0; overflow: hidden; }
+.now-chrome { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-block-end: 1px solid var(--border); background: color-mix(in srgb, var(--surface-2) 70%, transparent); font-family: var(--mono); font-size: .75rem; color: var(--faint); direction: ltr; }
+.now-chrome i { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--border-strong); }
+.now-chrome span { margin-inline-start: 6px; }
+.now-inner { padding: var(--s4) var(--s5); }
+
+/* Bento code watermark */
+.tile.hero-tile::before { content: "{ }"; position: absolute; inset-block-start: auto; inset-block-end: -18px; inset-inline-start: 14px; inset-inline-end: auto; inline-size: auto; aspect-ratio: auto; border-radius: 0; background: none; font-family: var(--mono); font-size: 5.5rem; font-weight: 700; line-height: 1; color: var(--accent-ink); opacity: .1; direction: ltr; }
+
+/* ---------- Navigation ---------- */
+.bar-row { display: flex; align-items: center; gap: var(--s3); }
+.bar-row .search { flex: 1; }
+.mini-brand { display: none; align-items: center; gap: var(--s2); color: var(--text); text-decoration: none; font-weight: 700; white-space: nowrap; min-block-size: 48px; }
+.mini-brand svg { inline-size: 28px; block-size: 28px; border-radius: 8px; }
+.tabs { display: none; }
+.tabs a, .tabbar a { text-decoration: none; }
+.tabbar { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px max(6px, env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)); background: var(--surface); border-block-start: 1px solid var(--border); box-shadow: 0 -8px 24px -16px rgb(11 30 60 / 25%); }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tabbar { background: color-mix(in srgb, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); }
+}
+.tabbar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-block-size: 54px; border-radius: 12px; color: var(--faint); font-size: .6875rem; font-weight: 600; }
+.tabbar svg { inline-size: 22px; block-size: 22px; }
+.tabbar a[aria-current="true"] { color: var(--accent-text); }
+.tabbar a[aria-current="true"] svg { background: var(--accent-soft); border-radius: 999px; padding: 2px 12px; inline-size: 46px; box-sizing: content-box; margin-block: -2px; }
+body { padding-block-end: calc(66px + env(safe-area-inset-bottom)); }
+body.kb .tabbar { display: none; }
+
+/* Status bar (footer) */
+.statusbar { margin-block-start: var(--s6); background: var(--accent); color: var(--accent-ink); font-family: var(--mono); font-size: .75rem; }
+.sb-row { display: flex; flex-wrap: wrap; gap: 0 var(--s4); align-items: center; min-block-size: 28px; }
+.sb-row .sb-spacer { flex: 1; }
+footer { padding-block-end: 0; }
+
+@media (min-width: 768px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr) 240px; }
+  .hero-art { display: block; justify-self: center; }
+  .hero-art img { display: block; inline-size: 100%; block-size: auto; border-radius: 50%; box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--accent) 70%, transparent), 0 0 0 6px color-mix(in srgb, var(--surface) 60%, transparent); }
+  .brand-avatar { display: none; }
+  .brand > svg { display: block; }
+  .term { max-inline-size: 520px; }
+}
+@media (min-width: 1100px) { .hero-grid { grid-template-columns: minmax(0, 1fr) 300px; } }
+@media (min-width: 900px) {
+  .mini-brand { display: inline-flex; opacity: 0; pointer-events: none; }
+  .searchbar.is-stuck .mini-brand { opacity: 1; pointer-events: auto; }
+  .tabs { display: flex; gap: 2px; }
+  .tabs a { display: inline-flex; align-items: center; gap: 6px; min-block-size: 44px; padding-inline: 12px; border-radius: 12px; color: var(--muted); font-weight: 600; font-size: var(--fs-meta); white-space: nowrap; }
+  .tabs svg { inline-size: 18px; block-size: 18px; }
+  .tabs a[aria-current="true"] { background: var(--accent-soft); color: var(--accent-text); }
+  .tabbar { display: none; }
+  body { padding-block-end: 0; }
+  .search { max-inline-size: none; }
+}
+@media (hover: hover) {
+  .tabs a:hover { color: var(--text); background: var(--surface-2); }
+  .icon-btn:hover { color: var(--text); border-color: var(--border-strong); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-art img { animation: bob 7s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -12px; rotate: -1.5deg; } }
+  .term-body .ln { clip-path: inset(0 100% 0 0); animation: type var(--d, .6s) steps(var(--n, 20)) forwards; animation-delay: var(--at, 0s); }
+  @keyframes type { to { clip-path: inset(0 0 0 0); } }
+  .t-caret { animation: blink 1s steps(1) infinite; }
+  h1::after { animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .mini-brand { transition: opacity .2s ease; }
+  .tabbar a svg { transition: background-color .2s ease; }
+}
+
+/* Hover only with a real pointer */
+@media (hover: hover) {
+  .btn:hover { background: var(--surface-2); }
+  .btn-primary:hover { background: var(--accent); color: var(--accent-ink); }
+  .btn-solid:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .card:hover, .guide-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-2); }
+  .card:hover .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .star:hover { color: var(--accent-text); background: var(--surface-2); }
+  .search .clear:hover, .chip:hover { background: var(--surface-2); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .tile, .card, .guide-card, .star, .next-up { transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .18s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* Tablet */
+@media (min-width: 640px) {
+  :root { --gutter: max(24px, env(safe-area-inset-left), env(safe-area-inset-right)); --fs-h1: 1.75rem; }
+  .grid, .guide-grid { gap: var(--s4); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cal-cta .btn-large { align-self: flex-start; }
+}
+/* Tablet landscape: timeline in a side column */
+@media (min-width: 960px) and (max-width: 1279px) and (orientation: landscape) {
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; grid-template-areas: "saved cal" "feat cal" "guides cal" "cats cal" "faq cal"; gap: 0 var(--s7); align-items: start; }
+  #saved { grid-area: saved; } #featured { grid-area: feat; } #guides { grid-area: guides; } #categories { grid-area: cats; } #faq { grid-area: faq; }
+  #calendar { grid-area: cal; margin-block-start: var(--s7); }
+  .cal-cta .btn-large { align-self: stretch; }
+}
+/* Desktop: three columns */
+@media (min-width: 1280px), (min-width: 1100px) and (orientation: portrait) {
+  :root { --fs-h1: 2rem; }
+  .site-header { padding-block-start: calc(var(--s8) + env(safe-area-inset-top)); }
+  .grid, .faq, .guide-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #calendar .cal-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 0 var(--s7); align-items: start; }
+  #calendar .cal-body .cal-cta .btn-large { align-self: flex-start; }
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<a class="skip" href="#content">דילוג לתוכן</a>
+
+<header class="site-header wrap" id="top">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="hero-row">
+        <div class="brand">
+          <img class="brand-avatar" src="./assets/soft-landing.webp" alt="" width="52" height="52">
+          <svg viewBox="0 0 512 512" aria-hidden="true" focusable="false"><use href="#plane-icon"/></svg>
+          <h1>נחיתה רכה - מדמ"ח בר אילן</h1>
+        </div>
+        <button class="palette-trigger" type="button" id="palette-btn" aria-label="חיפוש מהיר (Ctrl+K)">חיפוש מהיר <kbd>Ctrl K</kbd></button>
+        <button class="icon-btn" type="button" id="theme-btn" aria-label="ערכת צבעים"></button>
+      </div>
+      <p class="tagline">כל הקישורים, המדריכים והתאריכים לשנה א' במקום אחד.</p>
+      <div class="term" dir="ltr" aria-hidden="true">
+        <div class="term-bar"><i></i><i></i><i></i><span>~/biu/cs/year-1</span></div>
+        <pre class="term-body"><span class="ln" style="--n:25;--at:.3s"><span class="t-prompt">❯</span> python3 soft_landing.py</span><span class="ln" style="--n:18;--at:1s;--d:.3s"><span class="t-out">print("Hello, CS!")</span></span><span class="ln" style="--n:28;--at:1.4s"><span class="t-kw">if</span> self.status == <span class="t-str">"1stYear"</span>:</span><span class="ln" style="--n:26;--at:2.1s">    <span class="t-kw">return</span> <span class="t-str">"Soft Landing"</span><span class="t-caret"></span></span></pre>
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="./assets/soft-landing.webp" alt="איור: סטודנט נוחת במצנח עשוי קוד וספרים, מעל בניין מדעי המחשב" width="640" height="640" fetchpriority="high">
+    </div>
+  </div>
+</header>
+
+<div class="searchbar" id="searchbar">
+  <div class="wrap">
+    <div class="bar-row">
+    <a class="mini-brand" href="#top" aria-label="לראש הדף"><svg viewBox="0 0 512 512" aria-hidden="true"><use href="#plane-icon"/></svg>נחיתה רכה</a>
+    <div class="search" role="search">
+      <label class="sr-only" for="q">חיפוש בכל האתר</label>
+      <input id="q" type="search" placeholder="למשל: ציונים, מבחנים, למדה" autocomplete="off" enterkeyhint="search" spellcheck="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span class="kbd-hint" aria-hidden="true">/</span>
+      <button class="clear" type="button" id="clear" aria-label="ניקוי החיפוש" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" width="22" height="22"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="ניווט ראשי"></nav>
+    </div>
+    <p class="status" id="status"></p>
+    <p class="sr-only" id="announcer" aria-live="polite"></p>
+  </div>
+</div>
+
+<main id="content" class="wrap" tabindex="-1">
+  <div id="jump-nav">
+    <section class="now" id="now" aria-label="איפה אנחנו בשנה" hidden></section>
+  </div>
+
+  <div class="layout">
+    <section class="section" id="saved" aria-labelledby="saved-h" hidden>
+      <h2 id="saved-h">השמורים שלי</h2>
+      <div class="featured-grid" id="saved-grid"></div>
+    </section>
+
+    <section class="section" id="featured" aria-labelledby="featured-h">
+      <h2 id="featured-h">הכי שימושי</h2>
+      <div class="featured-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="section" id="guides" aria-labelledby="guides-h" hidden>
+      <h2 id="guides-h">מה צריך לעשות?</h2>
+      <p class="section-lead">מדריכים קצרים, צעד אחר צעד, מתוך האתרים הרשמיים של האוניברסיטה.</p>
+      <div class="guide-grid" id="guide-grid"></div>
+    </section>
+
+    <div id="categories" class="section"></div>
+
+    <section class="section" id="calendar" aria-labelledby="calendar-h">
+      <h2 id="calendar-h"></h2>
+      <div class="cal-body">
+        <div class="cal-cta">
+          <a class="btn btn-solid btn-large" id="ics-link" href="./biu-5787.ics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
+            הוסף את כל התאריכים ליומן
+          </a>
+          <div class="cal-hint" id="cal-hint"></div>
+        </div>
+        <div>
+          <div class="timeline-box" id="timeline-box" tabindex="0" role="region" aria-labelledby="calendar-h">
+            <ol class="timeline" id="timeline"></ol>
+          </div>
+          <p class="source" id="cal-source"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">מה עושים כש...</h2>
+      <ul class="faq" id="faq-list"></ul>
+    </section>
+  </div>
+
+  <article class="guide-view" id="guide-view" hidden></article>
+
+  <div class="empty" id="empty" hidden>
+    <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
+    <p class="try">אולי ננסה:</p>
+    <div class="chips" id="empty-chips"></div>
+    <p class="still">ואם עדיין חסר משהו, כתבו לרועי בקבוצה.</p>
+    <button class="btn" type="button" id="empty-clear">ניקוי החיפוש</button>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="contact">חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה.</p>
+    <section class="install" aria-labelledby="install-h">
+      <h2 id="install-h">להוסיף את האתר למסך הבית</h2>
+      <p id="install-mine" hidden></p>
+      <details id="install-more">
+        <summary id="install-summary">מכשיר אחר?</summary>
+        <ul>
+          <li data-platform="ios"><strong>אייפון ואייפד:</strong> ב-Safari לוחצים על כפתור השיתוף ובוחרים "הוספה למסך הבית".</li>
+          <li data-platform="android"><strong>אנדרואיד:</strong> ב-Chrome פותחים את התפריט (שלוש הנקודות) ובוחרים "הוספה למסך הבית".</li>
+          <li data-platform="desktop"><strong>מחשב:</strong> שומרים כסימנייה עם <span class="ltr">Ctrl+D</span> (או <span class="ltr">Cmd+D</span> במק).</li>
+        </ul>
+      </details>
+    </section>
+    <div class="meta">
+      <p id="credit">נבנה על ידי רועי כרמלי, חונך בנחיתה רכה, תשפ"ז</p>
+      <p>אתר עצמאי של חונך בתוכנית. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.</p>
+    </div>
+  </div>
+  <div class="statusbar" aria-hidden="true">
+    <div class="wrap sb-row" dir="ltr"><span>⎇ main</span><span>nechita-raka</span><span class="sb-spacer"></span><span>UTF-8</span><span>RTL</span><span>v1.0</span></div>
+  </div>
+</footer>
+<nav class="tabbar" id="tabbar" aria-label="ניווט מהיר"></nav>
+
+<dialog class="palette" id="palette" aria-label="חיפוש מהיר">
+  <div class="palette-box">
+    <input id="pq" type="search" placeholder="לאן רוצים להגיע?" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="pres" aria-label="חיפוש מהיר">
+    <ul id="pres" role="listbox" aria-label="תוצאות"></ul>
+    <div class="palette-foot" aria-hidden="true"><span>↑↓ ניווט</span><span>Enter פתיחה</span><span>Esc סגירה</span></div>
+  </div>
+</dialog>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="plane-icon" viewBox="0 0 512 512">
+    <rect width="512" height="512" fill="#0b5fae"/>
+    <g fill="#fff" transform="translate(262 222) rotate(112) scale(0.82)">
+      <path d="M0-172c12 14 17 40 17 62v236c0 12-7 20-17 22-10-2-17-10-17-22V-110c0-22 5-48 17-62z"/>
+      <path d="M-12-34-168 38v34L-12 30zM12-34 168 38v34L12 30z"/>
+      <path d="M-11 92-74 128v20l63-18zM11 92l63 36v20l-63-18z"/>
+    </g>
+    <rect x="120" y="380" width="272" height="22" rx="11" fill="#fff"/>
+  </symbol>
+</svg>
+
+<script src="./data.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  const DAY_MS = 86400000;
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const HEB_PREFIXES = "הבלוכמש";
+  const COPY_RESET_MS = 2000;
+  const ANNOUNCE_DELAY_MS = 500;
+  const SAVED_KEY = "nr-saved";
+  const GUIDE_KEY = (id) => `nr-guide-${id}`;
+  const GUIDE_HASH = /^#guide-([a-z0-9-]+)$/;
+  const BASE_TITLE = document.title;
+  const UPCOMING_SHOWN = 5;
+  const MONTH_FMT = new Intl.DateTimeFormat("he-IL", { month: "short" });
+  const EMPTY_SUGGESTIONS = ["ציונים", "מבחנים", "למדה", "וואטסאפ"];
+  // Hebrew keyboard layout, for queries typed with the keyboard left in English
+  const QWERTY_TO_HEBREW = { q: "/", w: "'", e: "ק", r: "ר", t: "א", y: "ט", u: "ו", i: "ן", o: "ם", p: "פ", a: "ש", s: "ד", d: "ג", f: "כ", g: "ע", h: "י", j: "ח", k: "ל", l: "ך", ";": "ף", z: "ז", x: "ס", c: "ב", v: "ה", b: "נ", n: "מ", m: "צ", ",": "ת", ".": "ץ" };
+
+  const $ = (sel) => document.querySelector(sel);
+
+  /** Build an element: el("p", {class: "x", text: "y"}, child, ...) */
+  function el(tag, attrs, ...children) {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attrs || {})) {
+      if (value === undefined || value === null || value === false) continue;
+      if (key === "text") node.textContent = value;
+      else node.setAttribute(key, value === true ? "" : value);
+    }
+    for (const child of children) {
+      if (child === null || child === undefined || child === false) continue;
+      node.append(child);
+    }
+    return node;
+  }
+
+  /** Plain text with Latin runs (Office 365, *9392, @live.biu.ac.il) isolated so RTL never scrambles them. */
+  function bidiText(text) {
+    const frag = document.createDocumentFragment();
+    const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
+    let last = 0;
+    for (const match of String(text).matchAll(pattern)) {
+      frag.append(text.slice(last, match.index), el("bdi", { dir: "ltr", class: "run", text: match[0] }));
+      last = match.index + match[0].length;
+    }
+    frag.append(text.slice(last));
+    return frag;
+  }
+
+  function svgIcon(paths) {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+  }
+  const CATEGORY_ICON = { university: "building", materials: "book", whatsapp: "chat", "courses-a": "chat", perks: "sparkle" };
+  const GUIDE_ICON = { registration: "calendar", "lemida-365": "key", payments: "card", campus: "idcard", help: "help", "first-week": "sparkle" };
+  const iconNode = (name) => {
+    const holder = document.createElement("span");
+    holder.innerHTML = ICONS[name] || ICONS.sparkle; // static, trusted markup only
+    return holder.firstChild;
+  };
+  const haptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
+
+  const ICONS = {
+    external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>',
+    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+    building: svgIcon('<path d="M4 21V8l8-5 8 5v13M9 21v-6h6v6M3 21h18"/>'),
+    book: svgIcon('<path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13M8 7h7"/>'),
+    chat: svgIcon('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'),
+    sparkle: svgIcon('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.7 1.8 1.8.7-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7z"/>'),
+    calendar: svgIcon('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h3"/>'),
+    key: svgIcon('<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>'),
+    card: svgIcon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>'),
+    idcard: svgIcon('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17a3.5 3.5 0 0 1 7 0M15 9h3M15 13h3"/>'),
+    help: svgIcon('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>'),
+    home: svgIcon('<path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/>'),
+    link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+    sun: svgIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    moon: svgIcon('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
+    auto: svgIcon('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/>'),
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
+  };
+
+  function iconLabel(name, label) {
+    const holder = document.createElement("span");
+    holder.innerHTML = ICONS[name]; // static, trusted markup only
+    const frag = document.createDocumentFragment();
+    frag.append(holder.firstChild, document.createTextNode(label));
+    return frag;
+  }
+
+  // ---------- Local storage (per-device conveniences only) ----------
+  const store = {
+    get(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (err) {
+        console.warn("Local storage unavailable, using defaults", err);
+        return fallback;
+      }
+    },
+    set(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (err) { console.warn("Could not save to local storage", err); }
+    },
+  };
+
+  // ---------- Data validation (data.js is edited by hand) ----------
+  const isSafeUrl = (url) => typeof url === "string" && /^https:\/\/[^\s]+$/.test(url);
+
+  function loadData() {
+    const data = window.SITE_DATA;
+    if (!data || !Array.isArray(data.categories)) return null;
+    const categories = data.categories.map((cat) => ({
+      ...cat,
+      items: (cat.items || []).filter((item) => {
+        const ok = item && item.id && item.desc && isSafeUrl(item.url);
+        if (!ok) console.warn("data.js: skipped item with missing id/desc or a non-https url", item);
+        return ok;
+      }),
+    }));
+    const events = ((data.calendar && data.calendar.events) || []).filter((ev) => {
+      const ok = ev && ev.title && ISO_DATE.test(ev.date || "") && (!ev.until || ISO_DATE.test(ev.until));
+      if (!ok) console.warn("data.js: skipped event with a bad date (use YYYY-MM-DD)", ev);
+      return ok;
+    });
+    const guides = (Array.isArray(data.guides) ? data.guides : []).filter((g) => {
+      const ok = g && /^[a-z0-9-]+$/.test(g.id || "") && g.title && Array.isArray(g.steps) && g.steps.length > 0;
+      if (!ok) console.warn("data.js: skipped guide (needs an English id, a title and at least one step)", g);
+      return ok;
+    });
+    return { ...data, categories, guides, calendar: { ...(data.calendar || {}), events } };
+  }
+
+  // ---------- Search helpers ----------
+  function normalize(text) {
+    return String(text || "")
+      .toLowerCase()
+      .replace(/[֑-ׇ]/g, "")
+      .replace(/["'`״׳‘’“”„\-–—_.,:;!?()/\\]/g, "")
+      .replace(/[ךםןףץ]/g, (ch) => FINAL_LETTERS[ch])
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function tokenMatches(haystack, token) {
+    const options = SYNONYMS.get(token) || [token];
+    return options.some((option) => tokenMatchesOne(haystack, option));
+  }
+
+  function tokenMatchesOne(haystack, token) {
+    if (haystack.includes(token)) return true;
+    return token.length > 3 && HEB_PREFIXES.includes(token[0]) && haystack.includes(token.slice(1));
+  }
+
+  const FINAL_LETTERS = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
+  const SYNONYM_GROUPS = [
+    ["למדה", "lemida", "moodle", "מודל"],
+    ["אינבר", "inbar", "פורטל"],
+    ["מבחנים", "מבחן", "בחינות", "בחינה"],
+    ["שכל", "שכר לימוד", "תשלום", "תשלומים", "כסף"],
+    ["כרטיס סטודנט", "תעודת סטודנט"],
+    ["וואטסאפ", "ווטסאפ", "ואטסאפ", "whatsapp", "וצאפ"],
+    ["wifi", "וויפי", "ויפי", "אינטרנט"],
+    ["אינפי", "חדוא", "חשבון אינפיניטסימלי"],
+  ];
+  const SYNONYMS = new Map();
+  for (const group of SYNONYM_GROUPS) {
+    const forms = group.map((word) => normalize(word));
+    forms.forEach((form) => SYNONYMS.set(form, forms));
+  }
+
+  const matches = (haystack, query) => query.split(" ").every((token) => tokenMatches(haystack, token));
+  const toHebrewLayout = (text) => [...text.toLowerCase()].map((ch) => QWERTY_TO_HEBREW[ch] || ch).join("");
+
+  // ---------- Dates ----------
+  function parseDate(iso) {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function getToday() {
+    const override = new URLSearchParams(location.search).get("today");
+    if (override && ISO_DATE.test(override)) return parseDate(override);
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+
+  const dmy = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
+
+  function formatRange(ev) {
+    const start = parseDate(ev.date);
+    if (!ev.until) return dmy(start) + (ev.time ? `, ${ev.time}` : "");
+    const end = parseDate(ev.until);
+    if (start.getFullYear() !== end.getFullYear()) return `${dmy(start)}–${dmy(end)}`;
+    if (start.getMonth() !== end.getMonth()) return `${start.getDate()}.${start.getMonth() + 1}–${dmy(end)}`;
+    return `${start.getDate()}–${dmy(end)}`;
+  }
+
+  const isCurrent = (ev, today) => parseDate(ev.date) <= today && today <= parseDate(ev.until || ev.date);
+
+  function relativeLabel(ev, today) {
+    if (isCurrent(ev, today)) return ev.until ? "עכשיו" : "היום";
+    const days = Math.round((parseDate(ev.date) - today) / DAY_MS);
+    if (days === 1) return "מחר";
+    if (days === 2) return "בעוד יומיים";
+    return `בעוד ${days} ימים`;
+  }
+
+  // ---------- Platform ----------
+  function detectPlatform() {
+    const ua = navigator.userAgent || "";
+    if (/iPhone|iPad|iPod/.test(ua)) return "ios";
+    if (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) return "ios"; // iPadOS reports as Mac
+    if (/Android/i.test(ua)) return "android";
+    if (navigator.userAgentData && navigator.userAgentData.mobile) return "unknown";
+    if (/Windows NT|Macintosh|CrOS|X11|Linux/.test(ua)) return "desktop";
+    return "unknown";
+  }
+  const PLATFORM = detectPlatform();
+
+  const CAL_HINTS = {
+    ios: ["לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'."],
+    android: ["לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן."],
+    desktop: ["הקובץ יורד למחשב. ב-Google Calendar: הגדרות, ייבוא וייצוא, ובוחרים את הקובץ. ב-Outlook וביומן של Mac: לחיצה כפולה על הקובץ."],
+  };
+  CAL_HINTS.unknown = [`באייפון ובאייפד: ${CAL_HINTS.ios[0]}`, `באנדרואיד: ${CAL_HINTS.android[0]}`, `במחשב: ${CAL_HINTS.desktop[0]}`];
+
+  // ---------- Announcements ----------
+  const statusEl = $("#status");
+  let announceTimer = 0;
+  function announce(text, delay = 0) {
+    clearTimeout(announceTimer);
+    announceTimer = setTimeout(() => { $("#announcer").textContent = text; }, delay);
+  }
+
+  // ---------- Copy / share / open ----------
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      const area = el("textarea", { readonly: true, style: "position:fixed;opacity:0;inset-block-start:0" });
+      area.value = text;
+      document.body.append(area);
+      area.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      area.remove();
+      if (!ok) console.warn("Copy failed", err);
+      return ok;
+    }
+  }
+
+  function flashButton(btn, ok, idleIcon, idleLabel, doneLabel) {
+    btn.replaceChildren(iconLabel(ok ? "check" : idleIcon, ok ? doneLabel : "לא הצליח"));
+    btn.classList.toggle("is-done", ok);
+    clearTimeout(btn._timer);
+    btn._timer = setTimeout(() => {
+      btn.replaceChildren(iconLabel(idleIcon, idleLabel));
+      btn.classList.remove("is-done");
+    }, COPY_RESET_MS);
+  }
+
+  function copyButton(url, label) {
+    const btn = el("button", { type: "button", class: "btn", "aria-label": `העתק קישור: ${label}` });
+    btn.append(iconLabel("copy", "העתק קישור"));
+    btn.addEventListener("click", async () => {
+      const ok = await copyText(url);
+      flashButton(btn, ok, "copy", "העתק קישור", "הקישור הועתק");
+      announce(ok ? `הקישור של ${label} הועתק` : "ההעתקה נכשלה");
+    });
+    return btn;
+  }
+
+  function shareButton(url, title) {
+    const canShare = typeof navigator.share === "function";
+    const idle = canShare ? "שיתוף" : "העתק קישור";
+    const btn = el("button", { type: "button", class: "btn", "aria-label": `${idle}: ${title}` });
+    btn.append(iconLabel(canShare ? "share" : "copy", idle));
+    btn.addEventListener("click", async () => {
+      if (canShare) {
+        try { await navigator.share({ title, url }); return; } catch (err) {
+          if (err && err.name === "AbortError") return; // user closed the share sheet
+          console.warn("Share failed, copying instead", err);
+        }
+      }
+      const ok = await copyText(url);
+      flashButton(btn, ok, canShare ? "share" : "copy", idle, "הקישור הועתק");
+      announce(ok ? "הקישור למדריך הועתק" : "ההעתקה נכשלה");
+    });
+    return btn;
+  }
+
+  function openLink(url, label, text) {
+    const aria = text ? `${text} (נפתח בלשונית חדשה)` : `פתיחה: ${label} (נפתח בלשונית חדשה)`;
+    const link = el("a", { class: "btn btn-primary", href: url, target: "_blank", rel: "noopener noreferrer", "aria-label": aria });
+    link.append(iconLabel("external", text || "פתיחה"));
+    return link;
+  }
+
+  // ---------- Saved items ----------
+  function createSaved(itemsById) {
+    let saved = store.get(SAVED_KEY, []).filter((id) => itemsById.has(id));
+    const stars = new Map();
+
+    function render() {
+      const grid = $("#saved-grid");
+      grid.replaceChildren(...saved.map((id) => tile(itemsById.get(id))));
+      $("#saved").hidden = saved.length === 0 || Boolean($("#q").value.trim());
+      for (const [id, btns] of stars) btns.forEach((b) => syncStar(b, id));
+    }
+
+    function syncStar(btn, id) {
+      const on = saved.includes(id);
+      btn.setAttribute("aria-pressed", String(on));
+      btn.title = on ? "הסרה מהשמורים" : "שמירה למעלה בדף";
+    }
+
+    function toggle(id) {
+      const on = saved.includes(id);
+      saved = on ? saved.filter((x) => x !== id) : [...saved, id];
+      store.set(SAVED_KEY, saved);
+      haptic();
+      render();
+      const name = itemsById.get(id).name;
+      announce(on ? `${name} הוסר מהשמורים` : `${name} נשמר למעלה בדף`);
+    }
+
+    function starButton(item) {
+      const btn = el("button", { type: "button", class: "star", "aria-label": `שמירה: ${item.name}` });
+      btn.innerHTML = ICONS.star; // static markup
+      btn.addEventListener("click", () => toggle(item.id));
+      stars.set(item.id, [...(stars.get(item.id) || []), btn]);
+      syncStar(btn, item.id);
+      return btn;
+    }
+
+    return { render, starButton, isSearching: () => Boolean($("#q").value.trim()) };
+  }
+
+  // ---------- Render ----------
+  function tile(item, variant) {
+    return el("a", { class: `tile${variant ? ` ${variant}` : ""}`, href: item.url, target: "_blank", rel: "noopener noreferrer" },
+      el("span", { class: "tile-icon" }, iconNode(CATEGORY_ICON[item.categoryId])),
+      el("span", { class: "tile-text" },
+        el("span", { class: "tile-desc", text: item.desc }),
+        el("span", { class: "tile-name", text: item.name })),
+      el("span", { class: "sr-only", text: "(נפתח בלשונית חדשה)" }));
+  }
+
+  function renderFeatured(data, itemsById) {
+    const grid = $("#featured-grid");
+    const items = (data.featured || []).map((id) => {
+      const item = itemsById.get(id);
+      if (!item) console.warn(`data.js: featured id "${id}" not found`);
+      return item;
+    }).filter(Boolean);
+    items.forEach((item, i) => {
+      const variant = i === 0 ? "hero-tile" : (i === items.length - 1 && items.length % 2 === 0 ? "wide" : "");
+      grid.append(tile(item, variant));
+    });
+  }
+
+  function renderCategories(data, saved) {
+    const root = $("#categories");
+    return data.categories.map((cat) => {
+      const grid = el("div", { class: "grid" });
+      const heading = el("h2", { id: `cat-${cat.id}` }, cat.title, el("span", { class: "count", "aria-hidden": "true", text: String(cat.items.length) }));
+      const section = el("section", { class: "cat", "aria-labelledby": `cat-${cat.id}` }, heading, grid);
+      const children = cat.items.map((item) => {
+        const card = el("article", { class: "card" },
+          el("h3", { text: item.desc }),
+          el("p", { class: "name", text: item.name }),
+          item.note ? el("p", { class: "note" }, bidiText(item.note)) : null,
+          saved.starButton(item),
+          el("div", { class: "actions" }, openLink(item.url, item.name), copyButton(item.url, item.name)));
+        grid.append(card);
+        return { node: card, hay: normalize([item.desc, item.name, item.note, cat.title, ...(item.keywords || [])].join(" ")) };
+      });
+      root.append(section);
+      return { node: section, children };
+    });
+  }
+
+  function renderTimeline(data) {
+    const cal = data.calendar;
+    $("#calendar-h").textContent = cal.title || "לוח השנה האקדמי";
+    const today = getToday();
+    const events = [...cal.events].sort((a, b) => a.date.localeCompare(b.date));
+    const list = $("#timeline");
+    let nextNode = null;
+    let nextEvent = null;
+    let upcomingCount = 0;
+    const entries = events.map((ev) => {
+      const isPast = parseDate(ev.until || ev.date) < today;
+      const isNext = !isPast && !nextNode;
+      const current = !isPast && isCurrent(ev, today);
+      const range = formatRange(ev);
+      const start = parseDate(ev.date);
+      const li = el("li", { class: `event${isPast ? " is-past" : ""}${isNext ? " is-next" : ""}`, "aria-current": current ? "date" : null },
+        el("span", { class: "datechip", "aria-hidden": "true" },
+          el("span", { class: "mon", text: MONTH_FMT.format(start) }), el("span", { class: "day", text: String(start.getDate()) })),
+        el("div", {},
+          isNext && !current ? el("span", { class: "sr-only", text: "האירוע הבא:" }) : null,
+          el("time", { datetime: ev.date }, el("span", { class: "ltr", text: range })),
+          el("div", { class: "title", text: ev.title }),
+          ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
+          (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
+          isPast ? el("span", { class: "sr-only", text: "(עבר)" }) : null,
+          ev.guide && !isPast ? el("a", { class: "ev-guide", href: `#guide-${ev.guide}`, text: "איך עושים את זה ←" }) : null));
+      if (isNext) { nextNode = li; nextEvent = ev; }
+      if (!isPast && !isNext) upcomingCount++;
+      if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");
+      list.append(li);
+      return { node: li, hay: normalize([ev.title, ev.note, range].join(" ")) };
+    });
+
+    const link = $("#ics-link");
+    link.href = cal.file || "./biu-5787.ics";
+    if (PLATFORM === "desktop" || PLATFORM === "android") link.setAttribute("download", "biu-5787.ics");
+    $("#cal-hint").replaceChildren(...CAL_HINTS[PLATFORM].map((t) => el("p", {}, bidiText(t))));
+
+    const source = $("#cal-source");
+    source.append("התאריכים נלקחו מלוח הזמנים האקדמי של האוניברסיטה ב-", el("span", { class: "ltr", text: cal.checkedOn || "" }), ". אם משהו השתנה, ");
+    if (isSafeUrl(cal.sourceUrl)) source.append(el("a", { href: cal.sourceUrl, target: "_blank", rel: "noopener noreferrer", text: "הלוח הרשמי" }), " קובע.");
+    else source.append("הלוח הרשמי קובע.");
+
+    setupTimelineToggles(list);
+    return { entries, nextNode, nextEvent };
+  }
+
+  function setupTimelineToggles(list) {
+    const past = list.querySelectorAll(".event.is-past").length;
+    const later = list.querySelectorAll(".event.is-later").length;
+    list.classList.add("collapsed");
+    const box = $("#timeline-box");
+    const expand = () => {
+      list.classList.remove("collapsed");
+      box.querySelectorAll(".tl-toggle").forEach((b) => b.remove());
+    };
+    if (past) {
+      const btn = el("button", { type: "button", class: "tl-toggle", text: `הצגת ${past} תאריכים שעברו` });
+      btn.addEventListener("click", expand);
+      box.prepend(btn);
+    }
+    if (later) {
+      const btn = el("button", { type: "button", class: "tl-toggle", text: `כל השנה (עוד ${later} תאריכים)` });
+      btn.addEventListener("click", expand);
+      box.append(btn);
+    }
+  }
+
+  function scrollTimelineTo(node) {
+    const box = $("#timeline-box");
+    if (!node || box.scrollHeight <= box.clientHeight) return;
+    const prev = node.previousElementSibling;
+    const peek = prev ? Math.min(prev.offsetHeight * 0.6, 48) : 0;
+    box.scrollTop = Math.max(0, node.offsetTop - peek - 8);
+  }
+
+  function renderFaq(data, itemsById) {
+    const list = $("#faq-list");
+    return (data.faq || []).map((entry) => {
+      const linked = (entry.links || []).map((id) => itemsById.get(id)).filter(Boolean);
+      const li = el("li", {},
+        el("h3", { text: entry.q }),
+        el("p", {}, bidiText(entry.a)),
+        (linked.length || entry.guide) ? el("div", { class: "actions" },
+          ...linked.map((item) => openLink(item.url, item.name, `פתיחת ${item.name}`)),
+          entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null);
+      list.append(li);
+      return { node: li, hay: normalize([entry.q, entry.a, ...(entry.keywords || [])].join(" ")) };
+    });
+  }
+
+  // ---------- Guides ----------
+  const guideProgress = (guide) => store.get(GUIDE_KEY(guide.id), []).filter((i) => i < guide.steps.length);
+
+  function guideRing(guide) {
+    const pct = Math.round((guideProgress(guide).length / guide.steps.length) * 100);
+    const ring = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    ring.setAttribute("viewBox", "0 0 36 36");
+    ring.setAttribute("class", "ring");
+    ring.setAttribute("aria-hidden", "true");
+    ring.innerHTML = `<circle class="ring-bg" cx="18" cy="18" r="15" pathLength="100"/><circle class="ring-fg" cx="18" cy="18" r="15" pathLength="100" stroke-dasharray="${pct} 100"/>`;
+    return ring;
+  }
+
+  function guideMeta(guide) {
+    return [guideRing(guide), el("span", { text: guideMetaText(guide) })];
+  }
+
+  function guideMetaText(guide) {
+    const total = guide.steps.length;
+    const done = guideProgress(guide).length;
+    if (done === total) return "הושלם";
+    if (done > 0) {
+      const progress = guideProgress(guide);
+      const nextStep = guide.steps.findIndex((_, i) => !progress.includes(i)) + 1;
+      return `${done} מתוך ${total} · המשך מצעד ${nextStep}`;
+    }
+    return total === 1 ? "צעד אחד" : `${total} צעדים`;
+  }
+
+  function renderGuides(data) {
+    const today = getToday();
+    const openNow = new Set(data.calendar.events.filter((ev) => ev.guide && isCurrent(ev, today)).map((ev) => ev.guide));
+    $("#guides").hidden = data.guides.length === 0;
+    $("#guides-h").append(el("span", { class: "count", "aria-hidden": "true", text: String(data.guides.length) }));
+    const grid = $("#guide-grid");
+    return data.guides.map((guide) => {
+      const card = el("a", { class: "guide-card", href: `#guide-${guide.id}`, "data-guide": guide.id },
+        el("span", { class: "guide-icon" }, iconNode(GUIDE_ICON[guide.id] || "sparkle")),
+        openNow.has(guide.id) ? el("span", { class: "open-now", text: "פתוח עכשיו" }) : null,
+        el("h3", { text: guide.title }),
+        guide.summary ? el("p", {}, bidiText(guide.summary)) : null,
+        el("span", { class: "guide-meta" }, ...guideMeta(guide)));
+      grid.append(card);
+      const hay = normalize([guide.title, guide.summary, ...guide.steps, ...(guide.tips || []), ...(guide.keywords || [])].join(" "));
+      return { node: card, hay };
+    });
+  }
+
+  function refreshGuideCard(guide) {
+    const meta = document.querySelector(`[data-guide="${guide.id}"] .guide-meta`);
+    if (meta) meta.replaceChildren(...guideMeta(guide));
+  }
+
+  function resolveGuideLinks(guide, itemsById) {
+    return (guide.links || []).map((link) => {
+      if (typeof link === "string") {
+        const item = itemsById.get(link);
+        return item ? { label: item.name, url: item.url } : null;
+      }
+      return link && isSafeUrl(link.url) && link.label ? link : null;
+    }).filter(Boolean);
+  }
+
+  function stepsList(guide) {
+    let checked = guideProgress(guide);
+    const progress = el("p", { class: "steps-progress", "aria-live": "polite" });
+    const updateProgress = () => {
+      progress.textContent = checked.length === guide.steps.length ? "סיימתם את כל הצעדים." : checked.length ? `סימנתם ${checked.length} מתוך ${guide.steps.length}.` : "אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.";
+    };
+    const list = el("ol", { class: "steps" }, ...guide.steps.map((step, i) => {
+      const id = `step-${guide.id}-${i}`;
+      const box = el("input", { type: "checkbox", id, "data-n": String(i + 1).padStart(2, "0"), "aria-label": `צעד ${i + 1}` });
+      box.checked = checked.includes(i);
+      box.addEventListener("change", () => {
+        checked = box.checked ? [...checked, i] : checked.filter((x) => x !== i);
+        store.set(GUIDE_KEY(guide.id), checked);
+        haptic();
+        updateProgress();
+        refreshGuideCard(guide);
+      });
+      return el("li", { class: "step" }, box, el("label", { for: id }, bidiText(step)));
+    }));
+    updateProgress();
+    return [list, progress];
+  }
+
+  function renderGuideView(guide, itemsById) {
+    const links = resolveGuideLinks(guide, itemsById);
+    const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
+    const shareUrl = `${location.origin}${location.pathname}#guide-${guide.id}`;
+    $("#guide-view").replaceChildren(
+      el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
+      el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
+      guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
+      ...stepsList(guide),
+      guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
+        el("h3", { id: "tips-h", text: "כדאי לדעת" }),
+        el("ul", {}, ...guide.tips.map((tip) => el("li", {}, bidiText(tip))))) : null,
+      links.length ? el("div", { class: "actions" }, ...links.map((l) => openLink(l.url, l.label, l.label))) : null,
+      el("div", { class: "actions" }, shareButton(shareUrl, guide.title)),
+      sources.length ? el("p", { class: "source" }, "מקור: ",
+        ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),
+        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null);
+  }
+
+  function withTransition(update) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (document.startViewTransition && !reduce) document.startViewTransition(update);
+    else update();
+  }
+
+  function setupGuideRouting(data, itemsById, onLeaveGuide) {
+    const byId = new Map(data.guides.map((g) => [g.id, g]));
+    const view = $("#guide-view");
+    const listParts = [$(".layout"), $("#jump-nav")];
+    let listScroll = 0;
+
+    function show(guide) {
+      if (view.hidden) listScroll = window.scrollY;
+      const input = $("#q");
+      if (input.value) { input.value = ""; input.dispatchEvent(new Event("input")); }
+      renderGuideView(guide, itemsById);
+      listParts.forEach((part) => { part.hidden = true; });
+      view.hidden = false;
+      document.title = `${guide.title} · נחיתה רכה`;
+      window.scrollTo(0, 0);
+      $("#guide-title").focus({ preventScroll: true });
+    }
+
+    function hide() {
+      view.hidden = true;
+      view.replaceChildren();
+      listParts.forEach((part) => { part.hidden = false; });
+      document.title = BASE_TITLE;
+      onLeaveGuide();
+      const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+      if (target) target.scrollIntoView();
+      else window.scrollTo(0, listScroll);
+    }
+
+    function route(animate) {
+      const match = location.hash.match(GUIDE_HASH);
+      const guide = match && byId.get(match[1]);
+      const update = () => { if (guide) show(guide); else if (!view.hidden) hide(); };
+      if (animate && (guide || !view.hidden)) withTransition(update); else update();
+    }
+    window.addEventListener("hashchange", () => route(true));
+    route(false);
+    return {
+      isOpen: () => !view.hidden,
+      close: () => { history.pushState(null, "", `${location.pathname}${location.search}`); route(false); },
+    };
+  }
+
+  // ---------- "Now" panel: where we are in the year ----------
+  const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function countUp(node, target) {
+    if (reducedMotion() || target <= 1) { node.textContent = String(target); return; }
+    const start = performance.now();
+    const duration = 700;
+    const step = (t) => {
+      const k = Math.min(1, (t - start) / duration);
+      node.textContent = String(Math.round(target * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    node.textContent = "0";
+    requestAnimationFrame(step);
+  }
+
+  function validTerms(cal) {
+    return (cal.terms || []).filter((t) => t && t.label && ISO_DATE.test(t.from || "") && ISO_DATE.test(t.to || ""))
+      .sort((a, b) => a.from.localeCompare(b.from));
+  }
+
+  function yearBar(terms, events, today) {
+    const start = parseDate(terms[0].from);
+    const end = parseDate(terms[terms.length - 1].to);
+    const span = end - start;
+    const pos = (d) => Math.min(100, Math.max(0, ((d - start) / span) * 100));
+    const bar = el("div", { class: "yearbar" });
+    for (const t of terms) {
+      const from = parseDate(t.from);
+      const to = parseDate(t.to);
+      bar.append(el("span", { class: `seg ${t.kind === "exams" ? "exams" : "semester"}${to < today ? " passed" : ""}`, style: `inset-inline-start:${pos(from)}%;inline-size:${Math.max(0.8, pos(to) - pos(from))}%` }));
+    }
+    for (const ev of events) {
+      const d = parseDate(ev.date);
+      if (d >= start && d <= end) bar.append(el("span", { class: "tick", style: `inset-inline-start:${pos(d)}%` }));
+    }
+    if (today <= end) bar.append(el("span", { class: "today", style: `inset-inline-start:${pos(today)}%` }));
+
+    const months = el("div", { class: "months" });
+    const fmt = new Intl.DateTimeFormat("he-IL", { month: "short" });
+    for (let d = new Date(start.getFullYear(), start.getMonth() + 1, 1); d <= end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+      months.append(el("span", { style: `inset-inline-start:${pos(d)}%`, text: fmt.format(d) }));
+    }
+    const legend = el("div", { class: "legend" },
+      el("span", { class: "l-sem", text: "סמסטר" }), el("span", { class: "l-exam", text: "בחינות" }), el("span", { class: "l-ev", text: "אירוע בלוח" }));
+    const pct = Math.round(pos(today));
+    return el("div", { class: "yearbar-wrap" },
+      el("p", { class: "sr-only", text: today < start ? "השנה עוד לא התחילה." : `עברו ${pct}% מהשנה האקדמית.` }),
+      el("div", { "aria-hidden": "true" }, bar, months), legend);
+  }
+
+  function renderNow(data) {
+    const cal = data.calendar;
+    const terms = validTerms(cal);
+    const today = getToday();
+    const events = [...cal.events].sort((a, b) => a.date.localeCompare(b.date));
+    const upcoming = events.filter((ev) => parseDate(ev.date) > today);
+    const term = terms.find((t) => parseDate(t.from) <= today && today <= parseDate(t.to));
+    const box = $("#now");
+
+    let stat, unit, eyebrow, title, sub, after;
+    if (term) {
+      const from = parseDate(term.from);
+      const to = parseDate(term.to);
+      const total = Math.round((to - from) / DAY_MS) + 1;
+      const passed = Math.round((today - from) / DAY_MS) + 1;
+      eyebrow = "עכשיו";
+      title = term.label;
+      if (term.kind === "semester") {
+        stat = Math.floor((today - from) / DAY_MS / 7) + 1;
+        unit = "שבוע";
+        sub = `עברו ${Math.round((passed / total) * 100)}% מהסמסטר · עוד ${total - passed} ימים עד היום האחרון`;
+      } else {
+        stat = total - passed;
+        unit = stat === 1 ? "יום נשאר" : "ימים נשארו";
+        sub = `עד ${dmy(to)}`;
+      }
+      after = upcoming[0];
+    } else if (upcoming.length) {
+      const next = upcoming[0];
+      stat = Math.round((parseDate(next.date) - today) / DAY_MS);
+      unit = stat === 1 ? "יום" : "ימים";
+      eyebrow = "הבא בלוח";
+      title = next.title;
+      sub = formatRange(next);
+      after = upcoming[1];
+    } else {
+      return;
+    }
+
+    const num = el("span", { class: "now-num", text: String(stat) });
+    const head = el("a", { class: "now-head", href: "#calendar" },
+      el("span", { class: "now-stat" }, num, el("span", { class: "now-unit", text: unit })),
+      el("span", { class: "now-text" },
+        el("span", { class: "now-eyebrow", text: eyebrow }),
+        el("p", { class: "now-title", text: title }),
+        el("p", { class: "now-sub" }, bidiText(sub))));
+    const headlineGuide = !term && upcoming.length ? upcoming[0].guide : "";
+    const chrome = el("div", { class: "now-chrome", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("span", { text: "~/year-1 › status" }));
+    const inner = el("div", { class: "now-inner" });
+    box.replaceChildren(chrome, inner);
+    inner.replaceChildren(...[head,
+      headlineGuide ? el("a", { class: "ev-guide", href: `#guide-${headlineGuide}`, text: "איך מתכוננים ←" }) : null,
+      terms.length ? yearBar(terms, events, today) : null,
+      after ? el("a", { class: "now-next", href: "#calendar" },
+        el("span", { text: "אחר כך:" }), el("strong", { text: after.title }), el("span", { class: "when", text: `· ${relativeLabel(after, today)}` })) : null].filter(Boolean));
+    box.hidden = false;
+    countUp(num, stat);
+  }
+
+  // ---------- Command palette (Ctrl/Cmd+K) ----------
+  function flashNode(node) {
+    node.classList.remove("flash");
+    void node.offsetWidth; // restart the animation
+    node.classList.add("flash");
+    setTimeout(() => node.classList.remove("flash"), 1700);
+  }
+
+  function buildPaletteIndex(data, itemsById, faqEntries, eventEntries) {
+    const featured = new Set(data.featured || []);
+    const index = [];
+    for (const guide of data.guides) {
+      index.push({ type: "מדריך", title: guide.title, sub: guide.summary || "", suggest: true,
+        hay: normalize([guide.title, guide.summary, ...(guide.keywords || []), ...guide.steps].join(" ")),
+        run: () => { location.hash = `#guide-${guide.id}`; } });
+    }
+    for (const item of itemsById.values()) {
+      index.push({ type: "קישור", title: item.name, sub: item.desc, suggest: featured.has(item.id),
+        hay: normalize([item.name, item.desc, item.note, ...(item.keywords || [])].join(" ")),
+        run: () => window.open(item.url, "_blank", "noopener") });
+    }
+    (data.faq || []).forEach((entry, i) => {
+      index.push({ type: "שאלה", title: entry.q, sub: entry.a, hay: faqEntries[i].hay, node: faqEntries[i].node });
+    });
+    const sortedEvents = [...data.calendar.events].sort((a, b) => a.date.localeCompare(b.date));
+    sortedEvents.forEach((ev, i) => {
+      index.push({ type: "תאריך", title: ev.title, sub: formatRange(ev), hay: eventEntries[i].hay, node: eventEntries[i].node });
+    });
+    return index;
+  }
+
+  function setupPalette(index, nav) {
+    const dialog = $("#palette");
+    const input = $("#pq");
+    const list = $("#pres");
+    let results = [];
+    let active = 0;
+
+    function search() {
+      const raw = input.value.trim();
+      const q = normalize(raw);
+      if (!q) return index.filter((e) => e.suggest).slice(0, 8);
+      let found = index.filter((e) => matches(e.hay, q));
+      if (!found.length && /^[a-z;,.' ]+$/i.test(raw)) found = index.filter((e) => matches(e.hay, normalize(toHebrewLayout(raw))));
+      return found.slice(0, 10);
+    }
+
+    function paint() {
+      results = search();
+      active = Math.min(active, Math.max(0, results.length - 1));
+      if (!results.length) {
+        list.replaceChildren(el("li", { class: "p-empty", role: "presentation", text: "לא נמצא. נסו מילה אחרת." }));
+        input.removeAttribute("aria-activedescendant");
+        return;
+      }
+      list.replaceChildren(...results.map((r, i) => {
+        const li = el("li", { id: `p-${i}`, role: "option", "aria-selected": String(i === active) },
+          el("span", { class: "p-type", text: r.type }),
+          el("span", { class: "p-main" }, el("span", { class: "p-title", text: r.title }), el("span", { class: "p-sub", text: r.sub })));
+        li.addEventListener("click", () => run(r));
+        li.addEventListener("pointermove", () => { if (active !== i) { active = i; mark(); } });
+        return li;
+      }));
+      mark();
+    }
+
+    function mark() {
+      [...list.children].forEach((li, i) => li.setAttribute("aria-selected", String(i === active)));
+      input.setAttribute("aria-activedescendant", `p-${active}`);
+      const cur = list.children[active];
+      if (cur) cur.scrollIntoView({ block: "nearest" });
+    }
+
+    function run(entry) {
+      dialog.close();
+      if (entry.run) { entry.run(); return; }
+      if (nav.router && nav.router.isOpen()) nav.router.close();
+      const q = $("#q");
+      if (q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
+      entry.node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
+      flashNode(entry.node);
+    }
+
+    function open() {
+      if (dialog.open) return;
+      input.value = "";
+      active = 0;
+      paint();
+      dialog.showModal();
+      input.focus();
+    }
+
+    input.addEventListener("input", () => { active = 0; paint(); });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % Math.max(1, results.length); mark(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + results.length) % Math.max(1, results.length); mark(); }
+      else if (e.key === "Enter" && results[active]) { e.preventDefault(); run(results[active]); }
+    });
+    dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+    $("#palette-btn").addEventListener("click", open);
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.code === "KeyK" || e.key.toLowerCase() === "k")) { e.preventDefault(); open(); }
+    });
+  }
+
+  // ---------- Pointer glow on cards (mouse only) ----------
+  function setupPointerGlow() {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    let last = null;
+    let frame = 0;
+    document.addEventListener("pointermove", (e) => {
+      last = e;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const ev = last;
+        const card = ev.target instanceof Element && ev.target.closest(".card, .guide-card, .tile");
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${ev.clientX - r.left}px`);
+        card.style.setProperty("--my", `${ev.clientY - r.top}px`);
+      });
+    }, { passive: true });
+  }
+
+
+
+  // ---------- Navigation: desktop tabs + mobile tab bar with scroll-spy ----------
+  const NAV_ITEMS = [
+    { id: "top", label: "בית", icon: "home", mobileOnly: true },
+    { id: "guides", label: "מדריכים", icon: "calendar" },
+    { id: "categories", label: "קישורים", icon: "link" },
+    { id: "calendar", label: "לוח שנה", icon: "calendar" },
+    { id: "faq", label: "שאלות", icon: "help" },
+  ];
+  NAV_ITEMS[1].icon = "book";
+
+  function setupNav() {
+    const links = [];
+    const build = (container, items) => {
+      container.replaceChildren(...items.map((item) => {
+        const a = el("a", { href: `#${item.id}`, "data-target": item.id }, iconNode(item.icon), el("span", { text: item.label }));
+        links.push(a);
+        return a;
+      }));
+    };
+    build($("#tabs"), NAV_ITEMS.filter((i) => !i.mobileOnly));
+    build($("#tabbar"), NAV_ITEMS);
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const threshold = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 80) + 40;
+      let current = "top";
+      let best = -Infinity;
+      for (const item of NAV_ITEMS) {
+        if (item.id === "top") continue;
+        const node = document.getElementById(item.id);
+        if (!node || node.hidden || node.offsetParent === null) continue;
+        const top = node.getBoundingClientRect().top;
+        if (top <= threshold && top > best) { best = top; current = item.id; }
+      }
+      if ($("#guide-view") && !$("#guide-view").hidden) current = "guides";
+      links.forEach((a) => {
+        if (a.dataset.target === current) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      });
+    };
+    window.addEventListener("scroll", () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
+    window.addEventListener("hashchange", () => requestAnimationFrame(update));
+    update();
+
+    // hide the bottom bar while the on-screen keyboard is likely open
+    document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea")) document.body.classList.add("kb"); });
+    document.addEventListener("focusout", () => document.body.classList.remove("kb"));
+  }
+
+  // ---------- Theme: auto → dark → light ----------
+  const THEME_KEY = "nr-theme";
+  const THEME_LABEL = { auto: "ערכת צבעים: לפי המכשיר", dark: "ערכת צבעים: כהה", light: "ערכת צבעים: בהירה" };
+  function setupTheme() {
+    const btn = $("#theme-btn");
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    const originals = [...metas].map((m) => m.content);
+    let mode = document.documentElement.dataset.theme || "auto";
+    const paint = () => {
+      btn.innerHTML = ICONS[mode === "dark" ? "moon" : mode === "light" ? "sun" : "auto"];
+      btn.setAttribute("aria-label", THEME_LABEL[mode]);
+      btn.title = THEME_LABEL[mode];
+      metas.forEach((m, i) => { m.content = mode === "auto" ? originals[i] : getComputedStyle(document.documentElement).getPropertyValue("--bg").trim(); });
+    };
+    btn.addEventListener("click", () => {
+      mode = mode === "auto" ? "dark" : mode === "dark" ? "light" : "auto";
+      if (mode === "auto") delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = mode;
+      if (mode === "auto") { try { localStorage.removeItem(THEME_KEY); } catch (err) { console.warn("Could not clear theme", err); } }
+      else { try { localStorage.setItem(THEME_KEY, mode); } catch (err) { console.warn("Could not save theme", err); } }
+      paint();
+      announce(THEME_LABEL[mode]);
+    });
+    paint();
+  }
+
+  function renderCredit(data) {
+    const site = data.site || {};
+    if (!isSafeUrl(site.authorUrl)) return;
+    $("#credit").replaceChildren("נבנה על ידי ",
+      el("a", { href: site.authorUrl, target: "_blank", rel: "noopener noreferrer", text: site.author || "רועי כרמלי" }),
+      ", חונך בנחיתה רכה, תשפ\"ז");
+  }
+
+  function renderInstall() {
+    const mine = document.querySelector(`.install li[data-platform="${PLATFORM}"]`);
+    const details = $("#install-more");
+    if (!mine) {
+      details.open = true;
+      $("#install-summary").textContent = "איך עושים את זה";
+      return;
+    }
+    const line = $("#install-mine");
+    line.replaceChildren(...[...mine.cloneNode(true).childNodes]);
+    line.hidden = false;
+  }
+
+  // ---------- Sticky search ----------
+  let stickySentinel = null;
+  function watchSticky() {
+    const bar = $("#searchbar");
+    stickySentinel = el("div", { "aria-hidden": "true" });
+    bar.before(stickySentinel);
+    new IntersectionObserver(([entry]) => bar.classList.toggle("is-stuck", !entry.isIntersecting)).observe(stickySentinel);
+    const setHeight = () => document.documentElement.style.setProperty("--sticky-h", `${bar.offsetHeight}px`);
+    setHeight();
+    if (window.ResizeObserver) new ResizeObserver(setHeight).observe(bar);
+    else window.addEventListener("resize", setHeight);
+  }
+
+  // ---------- Filtering ----------
+  function setupSearch(groups, timelineState, nav, saved) {
+    const input = $("#q");
+    const clearBtn = $("#clear");
+    const empty = $("#empty");
+    const sections = { guides: $("#guides"), categories: $("#categories"), calendar: $("#calendar"), faq: $("#faq") };
+    let wasActive = false;
+
+    function filterAll(query) {
+      const active = query.length > 0;
+      const show = (entry) => {
+        const ok = !active || matches(entry.hay, query);
+        entry.node.hidden = !ok;
+        return ok ? 1 : 0;
+      };
+      let total = 0;
+      for (const cat of groups.categories) {
+        const shown = cat.children.reduce((n, entry) => n + show(entry), 0);
+        cat.node.hidden = shown === 0;
+        total += shown;
+      }
+      sections.categories.hidden = groups.categories.every((c) => c.node.hidden);
+      const count = (list) => list.reduce((n, entry) => n + show(entry), 0);
+      const guides = count(groups.guides);
+      const events = count(groups.events);
+      const faqs = count(groups.faq);
+      sections.guides.hidden = groups.guides.length === 0 || (active && guides === 0);
+      sections.calendar.hidden = active && events === 0;
+      sections.faq.hidden = active && faqs === 0;
+      return total + guides + events + faqs;
+    }
+
+    function resultsText(total) {
+      if (total === 0) return "אין תוצאות";
+      return total === 1 ? "נמצאה תוצאה אחת" : `נמצאו ${total} תוצאות`;
+    }
+
+    function apply() {
+      const raw = input.value.trim();
+      const query = normalize(raw);
+      const active = query.length > 0;
+      clearBtn.hidden = !input.value;
+      $("#featured").hidden = active;
+      $("#jump-nav").hidden = active;
+      saved.render();
+
+      let total = filterAll(query);
+      let remapped = "";
+      if (active && total === 0 && /^[a-z;,.' ]+$/i.test(raw)) {
+        const alt = toHebrewLayout(raw);
+        const altTotal = filterAll(normalize(alt));
+        if (altTotal > 0) { total = altTotal; remapped = alt; } else filterAll(query);
+      }
+
+      empty.hidden = !active || total > 0;
+      $("#empty-q").textContent = raw;
+      if (!active) statusEl.replaceChildren();
+      else if (remapped) statusEl.replaceChildren("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „", el("bdi", { text: remapped }), "”");
+      else statusEl.replaceChildren(resultsText(total));
+      announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
+
+      $("#timeline").classList.toggle("searching", active);
+      if (active && !wasActive && $("#searchbar").classList.contains("is-stuck")) window.scrollTo(0, stickySentinel.offsetTop);
+      if (!active && wasActive) requestAnimationFrame(() => scrollTimelineTo(timelineState.nextNode));
+      wasActive = active;
+    }
+
+    function clear() {
+      input.value = "";
+      apply();
+      input.focus();
+    }
+
+    input.addEventListener("input", () => {
+      if (input.value && nav.router && nav.router.isOpen()) nav.router.close();
+      apply();
+    });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") input.blur(); });
+    clearBtn.addEventListener("click", clear);
+    $("#empty-clear").addEventListener("click", clear);
+    $("#empty-chips").replaceChildren(...EMPTY_SUGGESTIONS.map((word) => {
+      const chip = el("button", { type: "button", class: "chip", text: word });
+      chip.addEventListener("click", () => { input.value = word; apply(); });
+      return chip;
+    }));
+
+    const initial = new URLSearchParams(location.search).get("q");
+    if (initial) { input.value = initial; apply(); }
+    let urlTimer = 0;
+    input.addEventListener("input", () => {
+      clearTimeout(urlTimer);
+      urlTimer = setTimeout(() => {
+        const params = new URLSearchParams(location.search);
+        if (input.value.trim()) params.set("q", input.value.trim()); else params.delete("q");
+        const qs = params.toString();
+        history.replaceState(null, "", `${location.pathname}${qs ? `?${qs}` : ""}${location.hash}`);
+      }, 400);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const target = e.target;
+      if ($("#palette").open) return;
+      const typing = target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+      if ((e.key === "/" || e.code === "Slash") && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        input.focus();
+        input.select();
+      } else if (e.key === "Escape" && (target === input || input.value)) {
+        e.preventDefault();
+        if (input.value) clear(); else input.blur();
+      }
+    });
+  }
+
+  // ---------- Boot ----------
+  function showFatal(message) {
+    $("#content").replaceChildren(el("div", { class: "fatal", role: "alert" }, el("strong", { text: "משהו לא נטען כמו שצריך." }), el("p", { text: message })));
+  }
+
+  function init() {
+    const data = loadData();
+    if (!data) {
+      console.error("SITE_DATA is missing. data.js probably has a syntax error (a missing comma or backtick).");
+      showFatal("נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו (פסיק או גרש חסרים).");
+      return;
+    }
+    const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
+    const saved = createSaved(itemsById);
+    renderFeatured(data, itemsById);
+    const guides = renderGuides(data);
+    const categories = renderCategories(data, saved);
+    const timeline = renderTimeline(data);
+    const faq = renderFaq(data, itemsById);
+    saved.render();
+    renderCredit(data);
+    renderInstall();
+    watchSticky();
+    const nav = { router: null };
+    setupSearch({ guides, categories, events: timeline.entries, faq }, timeline, nav, saved);
+    nav.router = setupGuideRouting(data, itemsById, () => requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode)));
+    renderNow(data);
+    setupPalette(buildPaletteIndex(data, itemsById, faq, timeline.entries), nav);
+    setupPointerGlow();
+    setupNav();
+    setupTheme();
+    requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode));
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
