@@ -107,6 +107,8 @@ h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing
 .hit .p-main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; }
 .hit .p-title { font-weight: 600; }
 .hit .p-sub { color: var(--muted); font-size: var(--fs-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hit.bday { border-color: color-mix(in srgb, #d63a6e 45%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, #ff5f8f 12%, var(--surface)), color-mix(in srgb, #ffb347 14%, var(--surface))); }
+.hit.bday .p-type { background: var(--party); color: #fff; }
 .hit > svg { inline-size: 16px; block-size: 16px; flex: none; color: var(--faint); }
 
 
@@ -909,6 +911,7 @@ footer { padding-block-end: 0; }
     ["מילואים", "מילואימניק", "מילואימניקים"],
     ["מדמח", "מדעי המחשב", "computer science"],
     ["מזכירות", "מזכירה"],
+    ["יום הולדת", "יומולדת", "יומהולדת", "birthday"],
     ["wifi", "וויפי", "ויפי", "אינטרנט"],
     ["אינפי", "חדוא", "חשבון אינפיניטסימלי"],
   ];
@@ -978,6 +981,8 @@ footer { padding-block-end: 0; }
     if (query.when && doc.kind === "event") score += 5;
     return score + doc.boost;
   }
+
+  const BIRTHDAY_WORDS = "יום הולדת יומולדת מזל טוב רועי חונך עוגה חגיגה";
 
   const isLatin = (raw) => /^[a-z;,.' ]+$/i.test(raw);
 
@@ -1243,7 +1248,8 @@ footer { padding-block-end: 0; }
       if (!isPast && !isNext) upcomingCount++;
       if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");
       list.append(li);
-      return { node: li, doc: searchDoc(ev.title, ev.note, range, 0, "event") };
+      const extra = ev.kind === "birthday" ? BIRTHDAY_WORDS : "";
+      return { node: li, doc: searchDoc(ev.title, `${ev.note || ""} ${extra}`, range, 0, "event") };
     });
 
     const link = $("#ics-link");
@@ -1686,7 +1692,9 @@ footer { padding-block-end: 0; }
     });
     const sortedEvents = [...data.calendar.events].sort((a, b) => a.date.localeCompare(b.date));
     sortedEvents.forEach((ev, i) => {
-      index.push({ type: "תאריך", title: ev.title, sub: formatRange(ev), doc: eventEntries[i].doc, node: eventEntries[i].node });
+      const birthday = ev.kind === "birthday";
+      index.push({ type: birthday ? "🎂 יום הולדת" : "תאריך", title: ev.title, sub: [formatRange(ev), ev.note].filter(Boolean).join(" · "),
+        doc: eventEntries[i].doc, node: eventEntries[i].node, birthday });
     });
     return index;
   }
@@ -2016,7 +2024,7 @@ footer { padding-block-end: 0; }
           action = el("a", hit.external ? { class: "hit", href: hit.href, target: "_blank", rel: "noopener noreferrer" } : { class: "hit", href: hit.href }, ...body);
           if (hit.external) action.append(iconNode("external"));
         } else {
-          action = el("button", { type: "button", class: "hit" }, ...body);
+          action = el("button", { type: "button", class: `hit${hit.birthday ? " bday" : ""}` }, ...body);
           action.addEventListener("click", () => revealNode(hit.node));
         }
         return el("li", {}, action);
@@ -2056,8 +2064,10 @@ footer { padding-block-end: 0; }
       else statusEl.replaceChildren(resultsText(total));
       announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
 
-      if (active && total > TOP_HITS) renderTopHits(ranked.list);
-      setHidden(topHits, !(active && total > TOP_HITS));
+      // The strip appears when there is a lot to sift through, or when a birthday is among the results.
+      const showHits = active && (total > TOP_HITS || ranked.list.slice(0, TOP_HITS).some((e) => e.birthday));
+      if (showHits) renderTopHits(ranked.list);
+      setHidden(topHits, !showHits);
 
       $("#timeline").classList.toggle("searching", active);
       if (active && !wasActive && $("#searchbar").classList.contains("is-stuck")) window.scrollTo(0, stickySentinel.offsetTop);
