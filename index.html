@@ -779,7 +779,6 @@ footer { padding-block-end: 0; }
     link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
     sun: svgIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
     moon: svgIcon('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
-    auto: svgIcon('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/>'),
     star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
   };
 
@@ -1730,27 +1729,34 @@ footer { padding-block-end: 0; }
 
   // ---------- Theme: auto → dark → light ----------
   const THEME_KEY = "nr-theme";
-  const THEME_LABEL = { auto: "ערכת צבעים: לפי המכשיר", dark: "ערכת צבעים: כהה", light: "ערכת צבעים: בהירה" };
+  const THEME_LABEL = { dark: "מעבר לערכה בהירה", light: "מעבר לערכה כהה" };
+  // Follows the device by default. The button only flips between light and dark; flipping back
+  // to whatever the device uses drops the override, so the site follows the device again.
   function setupTheme() {
     const btn = $("#theme-btn");
+    const root = document.documentElement;
     const metas = document.querySelectorAll('meta[name="theme-color"]');
     const originals = [...metas].map((m) => m.content);
-    let mode = document.documentElement.dataset.theme || "auto";
+    const deviceDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const current = () => root.dataset.theme || (deviceDark.matches ? "dark" : "light");
     const paint = () => {
-      btn.innerHTML = ICONS[mode === "dark" ? "moon" : mode === "light" ? "sun" : "auto"];
+      const mode = current();
+      btn.innerHTML = ICONS[mode === "dark" ? "moon" : "sun"];
       btn.setAttribute("aria-label", THEME_LABEL[mode]);
       btn.title = THEME_LABEL[mode];
-      metas.forEach((m, i) => { m.content = mode === "auto" ? originals[i] : getComputedStyle(document.documentElement).getPropertyValue("--bg").trim(); });
+      metas.forEach((m, i) => { m.content = root.dataset.theme ? getComputedStyle(root).getPropertyValue("--bg").trim() : originals[i]; });
     };
     btn.addEventListener("click", () => {
-      mode = mode === "auto" ? "dark" : mode === "dark" ? "light" : "auto";
-      if (mode === "auto") delete document.documentElement.dataset.theme;
-      else document.documentElement.dataset.theme = mode;
-      if (mode === "auto") { try { localStorage.removeItem(THEME_KEY); } catch (err) { console.warn("Could not clear theme", err); } }
-      else { try { localStorage.setItem(THEME_KEY, mode); } catch (err) { console.warn("Could not save theme", err); } }
+      const next = current() === "dark" ? "light" : "dark";
+      const followDevice = next === (deviceDark.matches ? "dark" : "light");
+      try {
+        if (followDevice) localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, next);
+      } catch (err) { console.warn("Could not save theme", err); }
+      if (followDevice) delete root.dataset.theme; else root.dataset.theme = next;
       paint();
-      announce(THEME_LABEL[mode]);
+      announce(next === "dark" ? "עברנו לערכה כהה" : "עברנו לערכה בהירה");
     });
+    deviceDark.addEventListener("change", paint);
     paint();
   }
 
