@@ -722,7 +722,7 @@ button.special-icon { cursor: pointer; }
       <p class="section-lead">מדריכים קצרים, צעד אחר צעד, מתוך האתרים הרשמיים של האוניברסיטה.</p>
       <a class="start-here" href="#guide-first-week">
         <span><strong>חדשים כאן?</strong> מתחילים מ„לפני השיעור הראשון” ←</span>
-        <img class="mascot" src="./assets/mascot/mascot-point.webp" alt="" width="56" height="88" loading="lazy" decoding="async">
+        <img class="mascot" data-mascot="point" data-h="64" alt="" loading="lazy" decoding="async">
       </a>
       <div class="guide-grid" id="guide-grid"></div>
     </section>
@@ -757,7 +757,7 @@ button.special-icon { cursor: pointer; }
   <article class="guide-view" id="guide-view" hidden></article>
 
   <div class="empty" id="empty" hidden>
-    <img class="mascot empty-mascot" src="./assets/mascot/mascot-think.webp" alt="" width="37" height="88" loading="lazy" decoding="async">
+    <img class="mascot empty-mascot" data-mascot="think" data-h="88" alt="" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
     <p class="try">אולי ננסה:</p>
     <div class="chips" id="empty-chips"></div>
@@ -769,7 +769,7 @@ button.special-icon { cursor: pointer; }
 <footer>
   <div class="wrap">
     <div class="contact-row">
-      <img class="mascot" src="./assets/mascot/mascot-wave.webp" alt="" width="25" height="44" loading="lazy" decoding="async">
+      <img class="mascot" data-mascot="wave" data-h="44" alt="" loading="lazy" decoding="async">
       <p class="contact">חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה.</p>
     </div>
     <section class="install" aria-labelledby="install-h">
@@ -1895,8 +1895,28 @@ button.special-icon { cursor: pointer; }
       ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
   }
 
-  // Width of each banner mascot at 64px tall, so the banner keeps its size while the image loads.
-  const MASCOT_WIDTH_AT_64 = { wave: 36, celebrate: 50 };
+
+  // ---------- Mascots: two characters, he (mascot-*) and she (her-*). Each page load picks
+  // who goes first at random, then every mascot spot alternates between them. ----------
+  const MASCOT_FILES = { he: "mascot", she: "her" };
+  // Width of each pose at 480px tall (the WebP files), so every slot keeps its size while loading.
+  const MASCOT_WIDTH_AT_480 = {
+    he: { wave: 271, think: 203, celebrate: 372, point: 306 },
+    she: { wave: 271, think: 240, celebrate: 400, point: 310 },
+  };
+  let mascotTurn = Math.random() < 0.5 ? 0 : 1;
+
+  function setMascot(img, pose, height) {
+    const who = mascotTurn++ % 2 ? "she" : "he";
+    img.src = `./assets/mascot/${MASCOT_FILES[who]}-${pose}.webp`;
+    img.width = Math.round((MASCOT_WIDTH_AT_480[who][pose] * height) / 480);
+    img.height = height;
+    return img;
+  }
+
+  function renderMascots() {
+    document.querySelectorAll("img[data-mascot]").forEach((img) => setMascot(img, img.dataset.mascot, Number(img.dataset.h)));
+  }
 
   function specialBanner(sp) {
     const glyph = sp.doodle || sp.icon || "✨";
@@ -1910,7 +1930,7 @@ button.special-icon { cursor: pointer; }
       icon,
       el("div", { class: "special-text" }, el("p", { class: "special-title", text: sp.title }), el("p", { class: "special-sub", text: sp.sub })),
       sp.menorah ? menorah(sp.menorah) : null,
-      sp.mascot ? el("img", { class: "mascot special-mascot", src: `./assets/mascot/mascot-${sp.mascot}.webp`, alt: "", width: String(MASCOT_WIDTH_AT_64[sp.mascot]), height: "64", decoding: "async" }) : null);
+      sp.mascot ? setMascot(el("img", { class: "mascot special-mascot", alt: "", decoding: "async" }), sp.mascot, 64) : null);
   }
 
   function renderSpecialDays(specials, today) {
@@ -2488,6 +2508,7 @@ button.special-icon { cursor: pointer; }
     const faq = renderFaq(data, itemsById);
     saved.render();
     renderCredit(data);
+    renderMascots();
     renderContact(data);
     renderInstall();
     watchSticky();
