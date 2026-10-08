@@ -79,7 +79,7 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
-/** The persona picked for this visit (index.html sets it before this file loads). */
+/** The persona picked for this page load (index.html sets it before this file loads). */
 export function currentPersona() {
   const saved = store.get(STORE_PERSONA);
   return PERSONAS[saved] ? saved : "bit";

@@ -3,7 +3,7 @@
   Hovering (or focusing) the mascot shows a short line in a pill; a click opens the chat, which
   is loaded only then (chat.js + chat.css).
   Who: picked by an inline script in index.html before the first paint (so a reload never flashes
-  the other mascot): the same one for the whole visit, the other one next visit. The chat panel can switch it too.
+  the other mascot): every load gets the other one. The chat panel can switch it too.
 */
 const NAMES = { bit: "ביט", byte: "בייט" };
 const LINES = {

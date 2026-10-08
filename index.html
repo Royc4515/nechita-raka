@@ -791,18 +791,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 </button>
 <script>
   /* Picks the mascot before the first paint, so a reload never flashes the other one (peek.js reads data-persona).
-     Same for the whole visit (this tab); each new visit gets the one the last visit didn't. */
+     Every load gets the one the last load didn't, so they take turns. */
   (() => {
     const launcher = document.getElementById("chat-launcher");
-    const read = (area, key) => { try { return JSON.parse(area.getItem(key)); } catch (e) { return null; } };
-    const write = (area, key, value) => { try { area.setItem(key, JSON.stringify(value)); } catch (e) { /* storage blocked */ } };
-    let persona = read(sessionStorage, "nr-chat-persona");
-    if (persona !== "bit" && persona !== "byte") {
-      const last = read(localStorage, "nr-chat-last");
-      persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
-      write(sessionStorage, "nr-chat-persona", persona);
-      write(localStorage, "nr-chat-last", persona);
-    }
+    let last = null;
+    try { last = JSON.parse(localStorage.getItem("nr-chat-last")); } catch (e) { /* storage blocked */ }
+    const persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
+    try {
+      localStorage.setItem("nr-chat-last", JSON.stringify(persona));
+      sessionStorage.setItem("nr-chat-persona", JSON.stringify(persona)); // the chat panel opens with the same one
+    } catch (e) { /* storage blocked: random each load */ }
     launcher.dataset.persona = persona;
     launcher.querySelector("img").src = `./assets/mascot/peek-${persona}.webp`;
   })();
