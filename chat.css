@@ -25,12 +25,14 @@
 }
 .chat-chrome { flex: none; padding-block: 0; padding-inline-start: 4px; gap: 0; }
 /* Mac window lights: red closes (its touch target is the full 40px), the other two are decoration. */
-.chat-light { display: grid; place-items: center; inline-size: 22px; block-size: 36px; padding: 0; border: 0; background: none; }
-.chat-light.close { inline-size: 40px; block-size: 40px; margin-inline-end: -9px; cursor: pointer; }
-.chat-chrome .chat-light i { display: grid; place-items: center; inline-size: 12px; block-size: 12px; border-radius: 50%; background: #febc2e; box-shadow: inset 0 0 0 .5px rgb(0 0 0 / 18%); }
-.chat-chrome .chat-light.close i { background: #ff5f57; }
-.chat-chrome .chat-light:nth-child(3) i { background: #28c840; }
-.chat-light.close svg { inline-size: 8px; block-size: 8px; stroke-width: 3.5; color: rgb(77 0 0 / 70%); }
+.chat-chrome .chat-light { display: grid; place-items: center; inline-size: 20px; block-size: 36px; margin: 0; padding: 0; border: 0; background: none; }
+.chat-chrome .chat-light.close { inline-size: 40px; block-size: 40px; margin-inline: -4px -10px; cursor: pointer; }
+/* macOS colors with their darker rim; the x shows only on hover or keyboard focus, as on a Mac. */
+.chat-chrome .chat-light i { --light: #febc2e; --rim: #dea123; display: grid; place-items: center; inline-size: 12px; block-size: 12px; border-radius: 50%; background: var(--light); border: .5px solid var(--rim); box-sizing: border-box; }
+.chat-chrome .chat-light.close i { --light: #ff5f57; --rim: #e0443e; }
+.chat-chrome .chat-light:nth-child(3) i { --light: #28c840; --rim: #1aab29; }
+.chat-light.close svg { inline-size: 7px; block-size: 7px; stroke-width: 3.2; color: #4d0000; opacity: 0; }
+.chat-light.close:hover svg, .chat-light.close:focus-visible svg { opacity: .75; }
 .chat-light.close:focus-visible { outline: 2px solid var(--focus); outline-offset: -6px; border-radius: 50%; }
 .chat-light.close:active i { filter: brightness(.85); }
 .chat-chrome .chat-path { margin-inline-start: 10px; }
