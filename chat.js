@@ -54,6 +54,9 @@ const ERRORS = {
 };
 const MAX_QUESTION = 500;
 const MAX_TURNS = 12;
+// Match the panel's transitions in chat.css.
+const OPEN_MS = 280;
+const CLOSE_MS = 180;
 const STORE_PERSONA = "nr-chat-persona";
 const STORE_LOG = "nr-chat-log";
 const URL_RE = /https:\/\/[^\s<>"')\]]+/g;
@@ -127,7 +130,8 @@ class ChatPanel {
     this.avatar = el("img", { class: "chat-avatar", alt: "", width: "40", height: "40" });
     this.title = el("h2", { class: "chat-title", id: "chat-title" });
     this.switchBtn = el("button", { class: "chat-switch", type: "button", onclick: () => this.switchPersona() });
-    const close = el("button", { class: "chat-close", type: "button", "aria-label": "סגירת הצ'אט", onclick: () => this.close() }, closeIcon());
+    // The red light of the window chrome closes the chat, like a Mac window.
+    const close = el("button", { class: "chat-light close", type: "button", "aria-label": "סגירת הצ'אט", onclick: () => this.close() }, el("i", {}, closeIcon()));
     this.list = el("ol", { class: "chat-log", "aria-live": "polite", "aria-relevant": "additions" });
     this.input = el("textarea", { class: "chat-input", rows: "1", maxlength: String(MAX_QUESTION), placeholder: "כתבו שאלה...", "aria-label": "שאלה", enterkeyhint: "send" });
     this.sendBtn = el("button", { class: "chat-send", type: "submit", "aria-label": "שליחה" }, sendIcon());
@@ -137,9 +141,9 @@ class ChatPanel {
     });
     this.input.addEventListener("input", () => this.autosize());
 
-    this.root = el("section", { class: "chat-panel", role: "dialog", "aria-modal": "false", "aria-labelledby": "chat-title", hidden: true },
-      el("div", { class: "now-chrome chat-chrome", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("span", { class: "chat-path" })),
-      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: "קמע AI של נחיתה רכה" })), this.switchBtn, close),
+    this.root = el("section", { class: "chat-panel", role: "dialog", "aria-modal": "false", "aria-labelledby": "chat-title", tabindex: "-1", hidden: true },
+      el("div", { class: "now-chrome chat-chrome" }, close, el("span", { class: "chat-light", "aria-hidden": "true" }, el("i")), el("span", { class: "chat-light", "aria-hidden": "true" }, el("i")), el("span", { class: "chat-path", "aria-hidden": "true" })),
+      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: "קמע AI של נחיתה רכה" })), this.switchBtn),
       this.list,
       form,
       el("p", { class: "chat-note", text: "ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת." }));
@@ -297,23 +301,30 @@ class ChatPanel {
       this.greeting = pickGreeting(this.persona);
       this.render();
     }
+    clearTimeout(this.closing);
     this.root.hidden = false;
     this.launcher.setAttribute("aria-expanded", "true");
     document.body.classList.add("chat-open");
     this.scroll();
-    requestAnimationFrame(() => this.input.focus());
+    // Rises from the mascot's corner (chat.css); the keyboard waits until the panel has landed.
+    // On a phone it doesn't open by itself, so the greeting and the suggestions stay in view.
+    this.root.getBoundingClientRect();
+    this.root.classList.add("is-open");
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    setTimeout(() => (touch ? this.root : this.input).focus({ preventScroll: true }), touch ? 0 : OPEN_MS);
   }
 
   close() {
-    this.root.hidden = true;
+    this.root.classList.remove("is-open");
     this.launcher.setAttribute("aria-expanded", "false");
     document.body.classList.remove("chat-open");
-    this.launcher.focus();
+    this.launcher.focus({ preventScroll: true });
+    this.closing = setTimeout(() => { this.root.hidden = true; }, CLOSE_MS);
   }
 
   toggle() {
-    if (this.root.hidden) this.open();
-    else this.close();
+    if (this.root.classList.contains("is-open")) this.close();
+    else this.open();
   }
 }
 
