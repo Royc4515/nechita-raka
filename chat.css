@@ -8,8 +8,9 @@
 .chat-panel[hidden] { display: none; }
 @media (min-width: 900px) {
   .chat-panel {
-    inset: auto var(--s6) calc(var(--s6) + 64px) auto; inset-inline-start: auto; inset-inline-end: var(--s6);
-    inline-size: 400px; block-size: min(640px, calc(100dvh - 140px)); padding: 0;
+    /* Anchored to the corner the mascot peeks from (it hides while the chat is open). */
+    inset: auto; inset-inline-end: var(--s6); inset-block-end: var(--s6);
+    inline-size: 400px; block-size: min(680px, calc(100dvh - 2 * var(--s6))); padding: 0;
     border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
     box-shadow: 0 24px 60px -20px rgb(4 20 40 / 45%);
   }
