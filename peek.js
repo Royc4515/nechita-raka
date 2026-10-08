@@ -2,8 +2,8 @@
   The chat launcher: Bit or Byte peeks over the bottom bar (or a small ledge on a computer).
   Hovering (or focusing) the mascot shows a short line in a pill; a click opens the chat, which
   is loaded only then (chat.js + chat.css).
-  Who: the same mascot for the whole visit (this tab). The first visit picks at random, and each
-  new visit gets the other one, so everyone meets both. The chat panel can switch it too.
+  Who: picked by an inline script in index.html before the first paint (so a reload never flashes
+  the other mascot): every load gets the other one. The chat panel can switch it too.
 */
 const NAMES = { bit: "ביט", byte: "בייט" };
 const LINES = {
@@ -12,27 +12,20 @@ const LINES = {
 };
 const GUIDE_LINE = "שאלה על המדריך הזה?";
 
-const store = (area) => ({
-  get(key) { try { return JSON.parse(area().getItem(key)); } catch { return null; } },
-  set(key, value) { try { area().setItem(key, JSON.stringify(value)); } catch { /* storage blocked */ } },
-});
-const session = store(() => sessionStorage);
-const local = store(() => localStorage);
-
-let persona = session.get("nr-chat-persona");
-if (!NAMES[persona]) {
-  const last = local.get("nr-chat-last");
-  persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
-  session.set("nr-chat-persona", persona);
-  local.set("nr-chat-last", persona);
-}
+const local = {
+  set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage blocked */ } },
+};
 
 const launcher = document.getElementById("chat-launcher");
 const bubble = document.getElementById("peek-bubble");
+// Chosen by the inline script next to the launcher, before the first paint.
+let persona = NAMES[launcher.dataset.persona] ? launcher.dataset.persona : "bit";
 
 function showPersona(id) {
   persona = id;
-  launcher.querySelector("img").src = `./assets/mascot/peek-${id}.webp`;
+  const img = launcher.querySelector("img");
+  const src = `./assets/mascot/peek-${id}.webp`;
+  if (img.getAttribute("src") !== src) img.src = src;
   launcher.setAttribute("aria-label", `פתיחת הצ'אט עם ${NAMES[id]}`);
 }
 showPersona(persona);

@@ -787,8 +787,24 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 </footer>
 <nav class="tabbar" id="tabbar" aria-label="ניווט מהיר"></nav>
 <button class="peek" type="button" id="chat-launcher" aria-expanded="false" aria-haspopup="dialog" aria-label="פתיחת הצ'אט">
-  <img src="./assets/mascot/peek-bit.webp" alt="" width="84" height="84">
+  <img alt="" width="84" height="84">
 </button>
+<script>
+  /* Picks the mascot before the first paint, so a reload never flashes the other one (peek.js reads data-persona).
+     Every load gets the one the last load didn't, so they take turns. */
+  (() => {
+    const launcher = document.getElementById("chat-launcher");
+    let last = null;
+    try { last = JSON.parse(localStorage.getItem("nr-chat-last")); } catch (e) { /* storage blocked */ }
+    const persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
+    try {
+      localStorage.setItem("nr-chat-last", JSON.stringify(persona));
+      sessionStorage.setItem("nr-chat-persona", JSON.stringify(persona)); // the chat panel opens with the same one
+    } catch (e) { /* storage blocked: random each load */ }
+    launcher.dataset.persona = persona;
+    launcher.querySelector("img").src = `./assets/mascot/peek-${persona}.webp`;
+  })();
+</script>
 <div class="peek-bubble" id="peek-bubble" aria-hidden="true" hidden><span class="peek-who"></span><span class="peek-text"></span></div>
 <script type="module" src="./peek.js"></script>
 <dialog class="palette" id="palette" aria-label="חיפוש מהיר">

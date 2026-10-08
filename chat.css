@@ -4,8 +4,17 @@
   display: flex; flex-direction: column; overflow: hidden;
   block-size: 100dvh; padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
   background: var(--surface);
+  -webkit-tap-highlight-color: transparent; /* Android's blue tap box; the buttons have their own pressed state */
 }
 .chat-panel[hidden] { display: none; }
+.chat-panel:focus { outline: none; }
+/* Opening: the panel rises and fades in from the mascot's corner; closing is the same, quicker. */
+.chat-panel { opacity: 0; transform: translateY(24px) scale(.98); transform-origin: 12% 100%; }
+.chat-panel.is-open { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .chat-panel { transition: opacity .18s ease-in, transform .18s ease-in; }
+  .chat-panel.is-open { transition: opacity .2s ease-out, transform .28s cubic-bezier(.2, .9, .3, 1.05); }
+}
 @media (min-width: 900px) {
   .chat-panel {
     /* Anchored to the corner the mascot peeks from (it hides while the chat is open). */
@@ -15,7 +24,23 @@
     box-shadow: 0 24px 60px -20px rgb(4 20 40 / 45%);
   }
 }
-.chat-chrome { flex: none; }
+.chat-chrome { flex: none; padding-block: 0; padding-inline-start: 4px; gap: 0; }
+/* Mac window lights: red closes (its touch target is the full 40px), the other two are decoration. */
+.chat-chrome .chat-light { display: grid; place-items: center; inline-size: 20px; block-size: 36px; margin: 0; padding: 0; border: 0; background: none; }
+.chat-chrome .chat-light.close { inline-size: 40px; block-size: 40px; margin-inline: -4px -10px; cursor: pointer; }
+/* macOS colors with their darker rim; the x shows only on hover or keyboard focus, as on a Mac. */
+.chat-chrome .chat-light i { --light: #febc2e; --rim: #dea123; display: grid; place-items: center; inline-size: 12px; block-size: 12px; border-radius: 50%; background: var(--light); border: .5px solid var(--rim); box-sizing: border-box; }
+.chat-chrome .chat-light.close i { --light: #ff5f57; --rim: #e0443e; }
+.chat-chrome .chat-light:nth-child(3) i { --light: #28c840; --rim: #1aab29; }
+.chat-light.close svg { inline-size: 7px; block-size: 7px; stroke-width: 3.2; color: #4d0000; opacity: 0; }
+.chat-light.close:hover svg, .chat-light.close:focus-visible svg { opacity: .75; }
+.chat-light.close:focus-visible { outline: none; }
+.chat-light.close:focus-visible i { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+.chat-light.close:active i { filter: brightness(.82); }
+/* Pressed state for touch, where hover doesn't exist. */
+.chat-switch:active, .chat-cmd:active, .chat-send:active, .answer-copy:active { transform: scale(.97); }
+@media (prefers-reduced-motion: no-preference) { .chat-switch, .chat-cmd, .chat-send, .answer-copy { transition: transform .1s ease; } }
+.chat-chrome .chat-path { margin-inline-start: 10px; }
 .chat-head { flex: none; display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); border-block-end: 1px solid var(--border); }
 .chat-avatar { flex: none; border-radius: 50%; background: var(--accent-soft); object-fit: cover; }
 .chat-head .chat-avatar { inline-size: 40px; block-size: 40px; }
@@ -25,9 +50,6 @@
 .chat-sub { color: var(--faint); font-size: var(--fs-small); }
 .chat-switch { flex: none; min-block-size: 40px; padding-inline: var(--s3); border-radius: 999px; border: 1px solid var(--border-strong); background: transparent; color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
 .chat-switch:hover { background: var(--accent-soft); }
-.chat-close { flex: none; display: grid; place-items: center; inline-size: 44px; block-size: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); cursor: pointer; }
-.chat-close:hover { background: var(--surface-2); }
-.chat-close svg { inline-size: 22px; block-size: 22px; }
 
 .chat-log { flex: 1; overflow-y: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: var(--s4); display: flex; flex-direction: column; gap: var(--s4); }
 
@@ -86,7 +108,9 @@
 .chat-form { flex: none; display: flex; align-items: flex-end; gap: var(--s2); padding: var(--s3) var(--s4) var(--s2); border-block-start: 1px solid var(--border); }
 /* 16px stops iOS from zooming the page when the input gets focus. */
 .chat-input { flex: 1; min-block-size: 48px; max-block-size: 120px; resize: none; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font: inherit; font-size: 16px; line-height: 1.4; }
-.chat-input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+/* Focus: the border itself takes the accent with a soft halo, instead of a second ring outside it. */
+.chat-input { transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease; }
+.chat-input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong)); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
 .chat-send { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
 .chat-send:disabled { opacity: .5; cursor: progress; }
 .chat-send svg { inline-size: 22px; block-size: 22px; }
