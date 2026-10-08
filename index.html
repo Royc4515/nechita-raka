@@ -81,14 +81,12 @@ button, input { font: inherit; color: inherit; }
 .skip:focus { inset-block-start: calc(8px + env(safe-area-inset-top)); }
 bdi.run { white-space: nowrap; }
 .icon { inline-size: 18px; block-size: 18px; flex: none; }
-
 /* Header */
 .site-header { padding-block: calc(var(--s7) + env(safe-area-inset-top)) var(--s3); }
 .brand { display: flex; align-items: center; gap: var(--s3); }
 .brand svg { flex: none; inline-size: 36px; block-size: 36px; border-radius: 10px; }
 h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; }
 .tagline { color: var(--muted); margin-block-start: var(--s2); max-inline-size: 52ch; }
-
 /* Sticky search */
 .searchbar { position: sticky; inset-block-start: 0; z-index: 20; background: transparent; padding-block: calc(var(--s2) + env(safe-area-inset-top)) var(--s3); border-block-end: 1px solid transparent; }
 .searchbar.is-stuck { background: var(--bg); }
@@ -119,8 +117,6 @@ h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing
 .hit.bday { border-color: color-mix(in srgb, #d63a6e 45%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, #ff5f8f 12%, var(--surface)), color-mix(in srgb, #ffb347 14%, var(--surface))); }
 .hit.bday .p-type { background: var(--party); color: #fff; }
 .hit > svg { inline-size: 16px; block-size: 16px; flex: none; color: var(--faint); }
-
-
 /* Sections */
 main { padding-block: var(--s2) var(--s8); }
 .section { margin-block-start: var(--s8); }
@@ -130,8 +126,6 @@ main { padding-block: var(--s2) var(--s8); }
 #featured > h2, #saved > h2 { font-size: var(--fs-meta); font-weight: 600; color: var(--muted); letter-spacing: 0; margin-block-end: var(--s2); }
 .cat + .cat { margin-block-start: var(--s8); }
 .grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
-
-
 /* Guides */
 .guide-grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
 .guide-card { position: relative; display: flex; flex-direction: column; gap: var(--s1); padding: var(--s4) var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); color: var(--text); text-decoration: none; }
@@ -141,7 +135,6 @@ main { padding-block: var(--s2) var(--s8); }
 .guide-meta::after { content: ""; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: currentColor; -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; }
 .open-now { align-self: flex-start; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .75rem; font-weight: 700; }
 .progress { display: inline-block; padding: 0 8px; border-radius: 999px; background: var(--accent-soft); }
-
 /* Guide reading view */
 .guide-view { max-inline-size: 46rem; margin-block-start: var(--s4); view-transition-name: guide; }
 .back { display: inline-flex; align-items: center; gap: var(--s1); min-block-size: 48px; color: var(--accent-text); font-weight: 600; text-decoration: none; }
@@ -165,7 +158,6 @@ main { padding-block: var(--s2) var(--s8); }
 .tips li + li { margin-block-start: var(--s1); }
 .guide-view .actions { padding-block-start: var(--s5); }
 .guide-view .actions .btn { flex: 0 1 auto; }
-
 /* Link cards: one row, the whole card opens the link */
 .card { position: relative; display: flex; align-items: center; gap: var(--s2); padding: var(--s3) var(--s4); padding-inline-end: var(--s2); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
 .card-text { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -195,7 +187,6 @@ main { padding-block: var(--s2) var(--s8); }
 .btn.is-done { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
 .actions .btn-primary { flex: 1 1 0; }
 .actions .btn:not(.btn-primary) { flex: 0 0 auto; min-inline-size: 9.5rem; }
-
 /* Timeline */
 .cal-cta { display: flex; flex-direction: column; gap: var(--s3); margin-block-end: var(--s5); }
 .btn-large { min-block-size: 56px; font-size: var(--fs-body); padding-inline: var(--s6); border-radius: var(--r); align-self: stretch; }
@@ -228,7 +219,6 @@ main { padding-block: var(--s2) var(--s8); }
 .event.is-next .title { font-weight: 600; }
 .badge { display: inline-block; margin-block-start: 6px; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: var(--fs-small); font-weight: 600; }
 .source { color: var(--muted); font-size: var(--fs-small); margin-block-start: var(--s3); max-inline-size: 70ch; }
-
 /* FAQ: hairline list */
 .faq { display: grid; gap: 0 var(--s7); grid-template-columns: 1fr; margin: 0; padding: 0; list-style: none; border-block-start: 1px solid var(--border); }
 .faq li { padding-block: var(--s2); border-block-end: 1px solid var(--border); }
@@ -242,14 +232,12 @@ main { padding-block: var(--s2) var(--s8); }
 .faq p { color: var(--text); }
 .faq .actions { padding-block-start: var(--s3); }
 .faq .actions .btn { flex: 0 1 auto; }
-
 /* Empty state */
 .empty { margin-block-start: var(--s7); padding: var(--s7) var(--s5); text-align: center; background: var(--surface); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .empty .try { color: var(--muted); margin-block: var(--s3) var(--s2); }
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-block-end: var(--s4); }
 .chip { min-block-size: 48px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent-text); font-weight: 600; cursor: pointer; }
 .empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
-
 /* Mascot: decorative only (alt=""), sized in px so it stays small when the text is zoomed */
 .mascot { display: block; inline-size: auto; pointer-events: none; user-select: none; }
 .empty-mascot { block-size: 120px; margin: 0 auto var(--s3); }
@@ -266,7 +254,6 @@ main { padding-block: var(--s2) var(--s8); }
 .special-mascot { flex: none; block-size: 84px; margin-block: -14px; }
 footer .contact-row { display: flex; align-items: center; gap: var(--s3); }
 footer .contact-row .mascot { flex: none; block-size: 68px; }
-
 /* Footer */
 footer { border-block-start: 1px solid var(--border); margin-block-start: var(--s9); padding-block: var(--s7) max(var(--s7), calc(env(safe-area-inset-bottom) + var(--s4))); color: var(--muted); font-size: var(--fs-meta); }
 footer .contact { color: var(--text); font-size: var(--fs-body); font-weight: 600; }
@@ -280,7 +267,6 @@ footer a { color: inherit; }
 @media (display-mode: standalone) { .install { display: none; } }
 .fatal { margin-block: var(--s6); padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); }
 [hidden] { display: none !important; }
-
 /* ---------- Aurora backdrop ---------- */
 .aurora { position: absolute; inset-inline: 0; inset-block-start: 0; block-size: 620px; z-index: -1; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(#000 55%, transparent); mask-image: linear-gradient(#000 55%, transparent); }
 .aurora::before { content: ""; position: absolute; inset: -30% -20%;
@@ -289,13 +275,11 @@ footer a { color: inherit; }
     radial-gradient(28% 38% at 30% 18%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
     radial-gradient(24% 34% at 55% 62%, color-mix(in srgb, var(--accent-text) 14%, transparent), transparent 72%); }
 @media (prefers-color-scheme: dark) { .aurora::before { opacity: .75; } }
-
 /* ---------- Header extras ---------- */
 .hero-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
 .palette-trigger { display: none; align-items: center; gap: var(--s2); min-block-size: 44px; padding-inline: var(--s3) var(--s2); border-radius: 12px; border: 1px solid var(--border-strong); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); font-size: var(--fs-small); cursor: pointer; }
 .palette-trigger kbd { font: inherit; font-size: .8rem; padding: 1px 7px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); }
 @media (hover: hover) and (pointer: fine) and (min-width: 640px) { .palette-trigger { display: inline-flex; } }
-
 /* ---------- "Now" panel with year visualization ---------- */
 .now { margin-block-start: var(--s3); padding: var(--s4) var(--s5); border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); background: color-mix(in srgb, var(--surface) 82%, transparent); box-shadow: var(--shadow-2); }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -364,7 +348,6 @@ footer a { color: inherit; }
 .now-next strong { color: var(--text); font-weight: 600; }
 .now-next .when { color: var(--accent-text); font-weight: 600; }
 .now-next::after { content: ""; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: var(--accent-text); -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; }
-
 /* ---------- Bento quick access ---------- */
 .featured-grid { display: grid; gap: var(--s3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .tile { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-block-size: 120px; padding: var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); color: var(--text); text-decoration: none; }
@@ -389,10 +372,8 @@ footer a { color: inherit; }
   .tile.hero-tile { grid-column: span 2; grid-row: span 2; }
   .tile.hero-tile .tile-desc { font-size: 1.375rem; }
 }
-
 /* ---------- Section counts ---------- */
 .count { display: inline-grid; place-items: center; min-inline-size: 1.7em; block-size: 1.7em; margin-inline-start: var(--s2); padding-inline: 6px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: .8rem; font-weight: 600; vertical-align: .15em; }
-
 /* ---------- Guide progress ring ---------- */
 .ring { inline-size: 26px; block-size: 26px; rotate: -90deg; flex: none; }
 .ring circle { fill: none; stroke-width: 4; }
@@ -400,7 +381,6 @@ footer a { color: inherit; }
 .ring .ring-fg { stroke: var(--accent); stroke-linecap: round; }
 .guide-card .guide-icon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-text); margin-block-end: var(--s2); }
 .guide-card .guide-icon svg { inline-size: 22px; block-size: 22px; }
-
 /* ---------- Command palette ---------- */
 .palette { padding: 0; border: 0; background: transparent; max-inline-size: min(640px, calc(100vw - 32px)); inline-size: 100%; margin-block-start: min(12dvh, 120px); color: var(--text); }
 .palette::backdrop { background: color-mix(in srgb, #000 38%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
@@ -419,7 +399,6 @@ footer a { color: inherit; }
 .palette-foot { display: flex; gap: var(--s4); padding: var(--s2) var(--s5); border-block-start: 1px solid var(--border); font-size: .8rem; color: var(--faint); }
 .flash { animation: flash 1.6s ease-out; }
 @keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 3px transparent; } }
-
 /* ---------- Pointer glow (desktop only) ---------- */
 @media (hover: hover) and (pointer: fine) {
   .card, .guide-card, .tile:not(.hero-tile) { background-image: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%); }
@@ -428,7 +407,6 @@ footer a { color: inherit; }
   .tile.hero-tile:hover { filter: brightness(1.06); }
   .now-next:hover strong { color: var(--accent-text); }
 }
-
 /* ---------- Motion (all off with reduced motion) ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .site-header, .searchbar .search, .now, #featured { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; }
@@ -457,7 +435,6 @@ footer a { color: inherit; }
   .palette[open] .palette-box { animation: drop .22s cubic-bezier(.2, .8, .2, 1); }
   @keyframes drop { from { opacity: 0; translate: 0 -10px; scale: .98; } }
 }
-
 /* ---------- Developer theme ---------- */
 :root { --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Code", "Cascadia Mono", Consolas, "Roboto Mono", Menlo, monospace; }
 body { background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, transparent) 1px, transparent 1.4px); background-size: 24px 24px; }
@@ -469,7 +446,6 @@ body { background-image: radial-gradient(color-mix(in srgb, var(--text) 8%, tran
 .now-num, .datechip .day, .event time, .badge, .open-now, .palette-foot { font-family: var(--mono); }
 .step input::before { font-family: var(--mono); }
 h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var(--accent-text); margin-inline-start: 2px; }
-
 /* Hero */
 .hero-grid { display: grid; gap: var(--s5); align-items: center; }
 .hero-row { display: flex; align-items: center; gap: var(--s2); }
@@ -479,7 +455,6 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .hero-art { display: none; }
 .icon-btn { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border-radius: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); cursor: pointer; }
 .icon-btn svg { inline-size: 20px; block-size: 20px; }
-
 /* Terminal */
 .term { margin-block-start: var(--s4); border-radius: 14px; overflow: hidden; background: #0d1626; border: 1px solid #22304a; box-shadow: 0 18px 40px -24px rgb(11 30 60 / 55%); font-family: var(--mono); font-size: .8125rem; line-height: 1.7; text-align: start; }
 .term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #131f35; border-block-end: 1px solid #22304a; color: #8aa0c2; font-size: .75rem; }
@@ -490,17 +465,14 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .term-body .ln { display: block; }
 .t-prompt { color: #5cb8f0; } .t-kw { color: #c792ea; } .t-str { color: #a5e3a1; } .t-out { color: #ffd479; } .t-dim { color: #6b7c99; }
 .t-caret { display: inline-block; inline-size: .6em; block-size: 1.1em; vertical-align: -.2em; background: #5cb8f0; margin-inline-start: 2px; }
-
 /* Now panel as a terminal window */
 .now { padding: 0; overflow: hidden; }
 .now-chrome { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-block-end: 1px solid var(--border); background: color-mix(in srgb, var(--surface-2) 70%, transparent); font-family: var(--mono); font-size: .75rem; color: var(--faint); direction: ltr; }
 .now-chrome i { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--border-strong); }
 .now-chrome span { margin-inline-start: 6px; }
 .now-inner { padding: var(--s4) var(--s5); }
-
 /* Bento code watermark */
 .tile.hero-tile::before { content: "{ }"; position: absolute; inset-block-start: auto; inset-block-end: -18px; inset-inline-start: 14px; inset-inline-end: auto; inline-size: auto; aspect-ratio: auto; border-radius: 0; background: none; font-family: var(--mono); font-size: 5.5rem; font-weight: 700; line-height: 1; color: var(--accent-ink); opacity: .1; direction: ltr; }
-
 /* ---------- Navigation ---------- */
 .bar-row { display: flex; align-items: center; gap: var(--s3); }
 .bar-row .search { flex: 1; }
@@ -518,13 +490,11 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .tabbar a[aria-current="true"] svg { background: var(--accent-soft); border-radius: 999px; padding: 2px 12px; inline-size: 46px; box-sizing: content-box; margin-block: -2px; }
 body { padding-block-end: calc(66px + env(safe-area-inset-bottom)); }
 body.kb .tabbar { display: none; }
-
 /* Status bar (footer) */
 .statusbar { margin-block-start: var(--s6); background: var(--accent); color: var(--accent-ink); font-family: var(--mono); font-size: .75rem; }
 .sb-row { display: flex; flex-wrap: wrap; gap: 0 var(--s4); align-items: center; min-block-size: 28px; }
 .sb-row .sb-spacer { flex: 1; }
 footer { padding-block-end: 0; }
-
 @media (min-width: 768px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr) 240px; }
   .hero-art { display: block; justify-self: center; }
@@ -560,7 +530,6 @@ footer { padding-block-end: 0; }
   .mini-brand { transition: opacity .2s ease; }
   .tabbar a svg { transition: background-color .2s ease; }
 }
-
 /* Hover only with a real pointer */
 @media (hover: hover) {
   .btn:hover { background: var(--surface-2); }
@@ -578,7 +547,6 @@ footer { padding-block-end: 0; }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
-
 /* Tablet */
 @media (min-width: 640px) {
   :root { --gutter: max(24px, env(safe-area-inset-left), env(safe-area-inset-right)); --fs-h1: 1.75rem; }
@@ -601,7 +569,6 @@ footer { padding-block-end: 0; }
   #calendar .cal-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 0 var(--s7); align-items: start; }
   #calendar .cal-body .cal-cta .btn-large { align-self: flex-start; }
 }
-
 /* ---------- Special days: a Doodle on the logo, a banner and a short effect ---------- */
 .brand { position: relative; }
 .doodle { position: absolute; inset-block-start: -12px; inset-inline-start: 32px; z-index: 1; display: grid; place-items: center; inline-size: 32px; block-size: 32px; padding: 0; border: 0; border-radius: 50%; background: var(--surface); box-shadow: 0 2px 8px -2px rgb(15 27 45 / 30%); font-size: 18px; line-height: 1; cursor: pointer; }
@@ -653,7 +620,6 @@ button.special-icon { cursor: pointer; }
   #content { transition: rotate .4s ease; }
   .egg-toast { animation: rise .3s cubic-bezier(.2, .8, .2, 1) both; }
 }
-
 /* Chat launcher: the mascot peeks over an edge, fingers on it (peek.js). On a phone the edge is
    the bottom bar; on a computer, a small ledge. The images are cut so the edge is at 92% of their
    height. Hovering shows a short line in a pill above it. No entrance animation, on purpose. */
@@ -689,7 +655,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 <body>
 <div class="aurora" aria-hidden="true"></div>
 <a class="skip" href="#content">דילוג לתוכן</a>
-
 <header class="site-header wrap" id="top">
   <div class="hero-grid">
     <div class="hero-copy">
@@ -713,7 +678,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     </div>
   </div>
 </header>
-
 <div class="searchbar" id="searchbar">
   <div class="wrap">
     <div class="bar-row">
@@ -733,7 +697,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     <p class="sr-only" id="announcer" aria-live="polite"></p>
   </div>
 </div>
-
 <main id="content" class="wrap" tabindex="-1">
   <section class="top-hits" id="top-hits" aria-labelledby="top-hits-h" hidden>
     <h2 id="top-hits-h">הכי מתאים</h2>
@@ -742,18 +705,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   <div id="jump-nav">
     <section class="now" id="now" aria-label="איפה אנחנו בשנה" hidden></section>
   </div>
-
   <div class="layout">
     <section class="section" id="saved" aria-labelledby="saved-h" hidden>
       <h2 id="saved-h">השמורים שלי</h2>
       <div class="featured-grid" id="saved-grid"></div>
     </section>
-
     <section class="section" id="featured" aria-labelledby="featured-h">
       <h2 id="featured-h" class="has-mascot">הכי שימושי<img class="mascot head-mascot" data-mascot="laptop" data-h="104" alt="" loading="lazy" decoding="async"></h2>
       <div class="featured-grid" id="featured-grid"></div>
     </section>
-
     <section class="section" id="guides" aria-labelledby="guides-h" hidden>
       <h2 id="guides-h">מה צריך לעשות?</h2>
       <p class="section-lead">מדריכים קצרים, צעד אחר צעד, מתוך האתרים הרשמיים של האוניברסיטה.</p>
@@ -763,9 +723,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       </a>
       <div class="guide-grid" id="guide-grid"></div>
     </section>
-
     <div id="categories" class="section"></div>
-
     <section class="section" id="calendar" aria-labelledby="calendar-h">
       <h2 id="calendar-h"></h2>
       <div class="cal-body">
@@ -785,15 +743,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         </div>
       </div>
     </section>
-
     <section class="section" id="faq" aria-labelledby="faq-h">
       <h2 id="faq-h" class="has-mascot">מה עושים כש...<img class="mascot head-mascot" data-mascot="think" data-h="104" alt="" loading="lazy" decoding="async"></h2>
       <ul class="faq" id="faq-list"></ul>
     </section>
   </div>
-
   <article class="guide-view" id="guide-view" hidden></article>
-
   <div class="empty" id="empty" hidden>
     <img class="mascot empty-mascot" data-mascot="think" data-h="120" alt="" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
@@ -803,7 +758,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     <button class="btn" type="button" id="empty-clear">ניקוי החיפוש</button>
   </div>
 </main>
-
 <footer>
   <div class="wrap">
     <div class="contact-row">
@@ -837,7 +791,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 </button>
 <div class="peek-bubble" id="peek-bubble" aria-hidden="true" hidden><span class="peek-who"></span><span class="peek-text"></span></div>
 <script type="module" src="./peek.js"></script>
-
 <dialog class="palette" id="palette" aria-label="חיפוש מהיר">
   <div class="palette-box">
     <input id="pq" type="search" placeholder="לאן רוצים להגיע?" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="pres" aria-label="חיפוש מהיר">
@@ -845,23 +798,23 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     <div class="palette-foot" aria-hidden="true"><span>↑↓ ניווט</span><span>Enter פתיחה</span><span>Esc סגירה</span></div>
   </div>
 </dialog>
-
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="plane-icon" viewBox="0 0 512 512">
     <rect width="512" height="512" fill="#0b5fae"/>
-    <g fill="#fff" transform="translate(262 222) rotate(112) scale(0.82)">
-      <path d="M0-172c12 14 17 40 17 62v236c0 12-7 20-17 22-10-2-17-10-17-22V-110c0-22 5-48 17-62z"/>
-      <path d="M-12-34-168 38v34L-12 30zM12-34 168 38v34L12 30z"/>
-      <path d="M-11 92-74 128v20l63-18zM11 92l63 36v20l-63-18z"/>
+    <g stroke="#fff" stroke-width="14" stroke-linecap="round">
+      <path d="M100 236 240 348M203 236 248 348M309 236 264 348M412 236 272 348"/>
     </g>
-    <rect x="120" y="380" width="272" height="22" rx="11" fill="#fff"/>
+    <path fill="#fff" d="M92 238C92 142 164 80 256 80s164 62 164 158q-55-30-111 0-53-30-106 0-56-30-111 0z"/>
+    <g fill="none" stroke="#0b5fae" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M208 132 178 162l30 30M304 132l30 30-30 30M270 124l-28 76"/>
+    </g>
+    <rect x="220" y="340" width="72" height="68" rx="16" fill="#fff"/>
+    <path d="M236 366h40" stroke="#0b5fae" stroke-width="9" stroke-linecap="round"/>
   </symbol>
 </svg>
-
 <script>
 (() => {
   "use strict";
-
   const DAY_MS = 86400000;
   const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
   const HEB_PREFIXES = "הבלוכמש";
@@ -876,9 +829,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const EMPTY_SUGGESTIONS = ["ציונים", "מבחנים", "למדה", "וואטסאפ"];
   // Hebrew keyboard layout, for queries typed with the keyboard left in English
   const QWERTY_TO_HEBREW = { q: "/", w: "'", e: "ק", r: "ר", t: "א", y: "ט", u: "ו", i: "ן", o: "ם", p: "פ", a: "ש", s: "ד", d: "ג", f: "כ", g: "ע", h: "י", j: "ח", k: "ל", l: "ך", ";": "ף", z: "ז", x: "ס", c: "ב", v: "ה", b: "נ", n: "מ", m: "צ", ",": "ת", ".": "ץ" };
-
   const $ = (sel) => document.querySelector(sel);
-
   /** Build an element: el("p", {class: "x", text: "y"}, child, ...) */
   function el(tag, attrs, ...children) {
     const node = document.createElement(tag);
@@ -893,7 +844,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return node;
   }
-
   /** Plain text with Latin runs (Office 365, *9392, @live.biu.ac.il) isolated so RTL never scrambles them. */
   function bidiText(text) {
     const frag = document.createDocumentFragment();
@@ -910,7 +860,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     frag.append(text.slice(last));
     return frag;
   }
-
   function svgIcon(paths) {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
   }
@@ -922,7 +871,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return holder.firstChild;
   };
   const haptic = () => { if (navigator.vibrate) navigator.vibrate(8); };
-
   const ICONS = {
     external: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>',
@@ -945,7 +893,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     moon: svgIcon('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
     star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>',
   };
-
   function iconLabel(name, label) {
     const holder = document.createElement("span");
     holder.innerHTML = ICONS[name]; // static, trusted markup only
@@ -953,7 +900,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     frag.append(holder.firstChild, document.createTextNode(label));
     return frag;
   }
-
   // ---------- Local storage (per-device conveniences only) ----------
   const store = {
     get(key, fallback) {
@@ -970,10 +916,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       try { localStorage.setItem(key, JSON.stringify(value)); } catch (err) { console.warn("Could not save to local storage", err); }
     },
   };
-
   // ---------- Data validation (data.js is edited by hand) ----------
   const isSafeUrl = (url) => typeof url === "string" && /^https:\/\/[^\s]+$/.test(url);
-
   function loadData() {
     const data = window.SITE_DATA;
     if (!data || !Array.isArray(data.categories)) return null;
@@ -1010,7 +954,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     return { ...data, categories, guides, calendar: { ...(data.calendar || {}), events } };
   }
-
   // ---------- Search helpers ----------
   function normalize(text) {
     return String(text || "")
@@ -1021,7 +964,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       .replace(/\s+/g, " ")
       .trim();
   }
-
   const FINAL_LETTERS = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
   const SYNONYM_GROUPS = [
     ["למדה", "lemida", "moodle", "מודל"],
@@ -1044,7 +986,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const forms = group.map((word) => normalize(word));
     forms.forEach((form) => SYNONYMS.set(form, forms));
   }
-
   // ---------- Search ranking ----------
   // Everything searchable has three fields: title (t), keywords (k) and body (b).
   // A word found in the title counts most and a whole-word hit beats a partial one,
@@ -1054,7 +995,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   // Question words: they don't have to appear in a result, but "מתי" means the answer is probably a date.
   const QUESTION_WORDS = new Set(["מתי", "איפה", "איך", "מה", "למה", "כמה", "האם", "יש", "אני", "צריך", "רוצה", "אפשר", "של", "עם", "על", "את",
     "רואים", "מוצאים", "עושים", "לעשות"].map((w) => normalize(w)));
-
   // 3 = whole word, 2 = start of a word (a Hebrew prefix letter is allowed before it), 1 = inside a word
   function wordHit(field, word) {
     let best = 0;
@@ -1067,7 +1007,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return best;
   }
-
   function tokenScore(doc, token) {
     let best = 0;
     for (const option of SYNONYMS.get(token) || [token]) {
@@ -1080,14 +1019,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return best;
   }
-
   // One-letter words ("ב" in "מועד ב") are too common to require, but still count as part of the phrase.
   function parseQuery(normalized) {
     const words = normalized.split(" ").filter(Boolean);
     const required = words.filter((w) => w.length > 1 && !QUESTION_WORDS.has(w));
     return { phrase: normalized, words, required: required.length ? required : words, when: words.includes("מתי") };
   }
-
   // 0 = no match. mode "all": every word must be found; "any": at least one (the fallback).
   function scoreDoc(doc, query, mode = "all") {
     let score = 0;
@@ -1105,11 +1042,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (query.when && doc.kind === "event") score += 5;
     return score + doc.boost;
   }
-
   const BIRTHDAY_WORDS = "יום הולדת יומולדת מזל טוב רועי חונך עוגה חגיגה";
-
   const isLatin = (raw) => /^[a-z;,.' ]+$/i.test(raw);
-
   // Ranks entries ({ doc }) for what the user typed: every word, then the keyboard-layout fix, then any word.
   function rankEntries(entries, raw) {
     const run = (query, mode) => entries.map((e) => [e, scoreDoc(e.doc, query, mode)]).filter(([, s]) => s > 0)
@@ -1125,22 +1059,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return { list: run(query, "any"), query, mode: "any" };
   }
   const toHebrewLayout = (text) => [...text.toLowerCase()].map((ch) => QWERTY_TO_HEBREW[ch] || ch).join("");
-
   // ---------- Dates ----------
   function parseDate(iso) {
     const [y, m, d] = iso.split("-").map(Number);
     return new Date(y, m - 1, d);
   }
-
   function getToday() {
     const override = new URLSearchParams(location.search).get("today");
     if (override && ISO_DATE.test(override)) return parseDate(override);
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }
-
   const dmy = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
-
   function formatRange(ev) {
     const start = parseDate(ev.date);
     if (!ev.until) return dmy(start) + (ev.time ? `, ${ev.time}` : "");
@@ -1149,9 +1079,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (start.getMonth() !== end.getMonth()) return `${start.getDate()}.${start.getMonth() + 1}–${dmy(end)}`;
     return `${start.getDate()}–${dmy(end)}`;
   }
-
   const isCurrent = (ev, today) => parseDate(ev.date) <= today && today <= parseDate(ev.until || ev.date);
-
   function relativeLabel(ev, today) {
     if (isCurrent(ev, today)) return ev.until ? "עכשיו" : "היום";
     const days = Math.round((parseDate(ev.date) - today) / DAY_MS);
@@ -1159,7 +1087,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (days === 2) return "בעוד יומיים";
     return `בעוד ${days} ימים`;
   }
-
   // ---------- Platform ----------
   function detectPlatform() {
     const ua = navigator.userAgent || "";
@@ -1171,14 +1098,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return "unknown";
   }
   const PLATFORM = detectPlatform();
-
   const CAL_HINTS = {
     ios: ["לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'."],
     android: ["לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן."],
     desktop: ["הקובץ יורד למחשב. ב-Google Calendar: הגדרות, ייבוא וייצוא, ובוחרים את הקובץ. ב-Outlook וביומן של Mac: לחיצה כפולה על הקובץ."],
   };
   CAL_HINTS.unknown = [`באייפון ובאייפד: ${CAL_HINTS.ios[0]}`, `באנדרואיד: ${CAL_HINTS.android[0]}`, `במחשב: ${CAL_HINTS.desktop[0]}`];
-
   // ---------- Announcements ----------
   const statusEl = $("#status");
   let announceTimer = 0;
@@ -1186,7 +1111,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     clearTimeout(announceTimer);
     announceTimer = setTimeout(() => { $("#announcer").textContent = text; }, delay);
   }
-
   // ---------- Copy / share / open ----------
   async function copyText(text) {
     try {
@@ -1204,7 +1128,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return ok;
     }
   }
-
   function flashButton(btn, ok, idleIcon, idleLabel, doneLabel) {
     btn.replaceChildren(iconLabel(ok ? "check" : idleIcon, ok ? doneLabel : "לא הצליח"));
     btn.classList.toggle("is-done", ok);
@@ -1214,7 +1137,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       btn.classList.remove("is-done");
     }, COPY_RESET_MS);
   }
-
   function copyIconButton(url, label) {
     const btn = el("button", { type: "button", class: "tool", "aria-label": `העתקת הקישור: ${label}`, title: "העתקת הקישור" });
     btn.append(iconNode("copy"));
@@ -1228,8 +1150,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     return btn;
   }
-
-
   function shareButton(url, title) {
     const canShare = typeof navigator.share === "function";
     const idle = canShare ? "שיתוף" : "העתק קישור";
@@ -1248,32 +1168,27 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     return btn;
   }
-
   function openLink(url, label, text) {
     const aria = text ? `${text} (נפתח בלשונית חדשה)` : `פתיחה: ${label} (נפתח בלשונית חדשה)`;
     const link = el("a", { class: "btn btn-primary", href: url, target: "_blank", rel: "noopener noreferrer", "aria-label": aria });
     link.append(iconLabel("external", text || "פתיחה"));
     return link;
   }
-
   // ---------- Saved items ----------
   function createSaved(itemsById) {
     let saved = store.get(SAVED_KEY, []).filter((id) => itemsById.has(id));
     const stars = new Map();
-
     function render() {
       const grid = $("#saved-grid");
       grid.replaceChildren(...saved.map((id) => tile(itemsById.get(id))));
       $("#saved").hidden = saved.length === 0 || Boolean($("#q").value.trim());
       for (const [id, btns] of stars) btns.forEach((b) => syncStar(b, id));
     }
-
     function syncStar(btn, id) {
       const on = saved.includes(id);
       btn.setAttribute("aria-pressed", String(on));
       btn.title = on ? "הסרה מהשמורים" : "שמירה למעלה בדף";
     }
-
     function toggle(id) {
       const on = saved.includes(id);
       saved = on ? saved.filter((x) => x !== id) : [...saved, id];
@@ -1283,7 +1198,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const name = itemsById.get(id).name;
       announce(on ? `${name} הוסר מהשמורים` : `${name} נשמר למעלה בדף`);
     }
-
     function starButton(item) {
       const btn = el("button", { type: "button", class: "star", "aria-label": `שמירה: ${item.name}` });
       btn.innerHTML = ICONS.star; // static markup
@@ -1292,10 +1206,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       syncStar(btn, item.id);
       return btn;
     }
-
     return { render, starButton, isSearching: () => Boolean($("#q").value.trim()) };
   }
-
   // ---------- Render ----------
   function tile(item, variant) {
     return el("a", { class: `tile${variant ? ` ${variant}` : ""}`, href: item.url, target: "_blank", rel: "noopener noreferrer" },
@@ -1305,7 +1217,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         el("span", { class: "tile-name", text: item.name })),
       el("span", { class: "sr-only", text: "(נפתח בלשונית חדשה)" }));
   }
-
   function renderFeatured(data, itemsById) {
     const grid = $("#featured-grid");
     const items = (data.featured || []).map((id) => {
@@ -1318,7 +1229,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       grid.append(tile(item, variant));
     });
   }
-
   function renderCategories(data, saved) {
     const root = $("#categories");
     return data.categories.map((cat) => {
@@ -1340,7 +1250,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return { node: section, children };
     });
   }
-
   function renderTimeline(data) {
     const cal = data.calendar;
     $("#calendar-h").textContent = cal.title || "לוח השנה האקדמי";
@@ -1375,21 +1284,17 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const extra = ev.kind === "birthday" ? BIRTHDAY_WORDS : "";
       return { node: li, doc: searchDoc(ev.title, `${ev.note || ""} ${extra}`, range, 0, "event") };
     });
-
     const link = $("#ics-link");
     link.href = cal.file || "./biu-5787.ics";
     if (PLATFORM === "desktop" || PLATFORM === "android") link.setAttribute("download", "biu-5787.ics");
     $("#cal-hint").replaceChildren(...CAL_HINTS[PLATFORM].map((t) => el("p", {}, bidiText(t))));
-
     const source = $("#cal-source");
     source.append("התאריכים נלקחו מלוח הזמנים האקדמי של האוניברסיטה ב-", el("span", { class: "ltr", text: cal.checkedOn || "" }), ". אם משהו השתנה, ");
     if (isSafeUrl(cal.sourceUrl)) source.append(el("a", { href: cal.sourceUrl, target: "_blank", rel: "noopener noreferrer", text: "הלוח הרשמי" }), " קובע.");
     else source.append("הלוח הרשמי קובע.");
-
     setupTimelineToggles(list);
     return { entries, nextNode, nextEvent };
   }
-
   function setupTimelineToggles(list) {
     const past = list.querySelectorAll(".event.is-past").length;
     const later = list.querySelectorAll(".event.is-later").length;
@@ -1410,7 +1315,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       box.append(btn);
     }
   }
-
   function scrollTimelineTo(node) {
     const box = $("#timeline-box");
     if (!node || box.scrollHeight <= box.clientHeight) return;
@@ -1418,7 +1322,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const peek = prev ? Math.min(prev.offsetHeight * 0.6, 48) : 0;
     box.scrollTop = Math.max(0, node.offsetTop - peek - 8);
   }
-
   function renderFaq(data, itemsById) {
     const list = $("#faq-list");
     return (data.faq || []).map((entry) => {
@@ -1440,10 +1343,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return { node: li, expand, doc: searchDoc(entry.q, (entry.keywords || []).join(" "), entry.a) };
     });
   }
-
   // ---------- Guides ----------
   const guideProgress = (guide) => store.get(GUIDE_KEY(guide.id), []).filter((i) => i < guide.steps.length);
-
   function guideRing(guide) {
     const pct = Math.round((guideProgress(guide).length / guide.steps.length) * 100);
     const ring = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -1453,11 +1354,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     ring.innerHTML = `<circle class="ring-bg" cx="18" cy="18" r="15" pathLength="100"/><circle class="ring-fg" cx="18" cy="18" r="15" pathLength="100" stroke-dasharray="${pct} 100"/>`;
     return ring;
   }
-
   function guideMeta(guide) {
     return [guideRing(guide), el("span", { text: guideMetaText(guide) })];
   }
-
   function guideMetaText(guide) {
     const total = guide.steps.length;
     const done = guideProgress(guide).length;
@@ -1469,10 +1368,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return total === 1 ? "צעד אחד" : `${total} צעדים`;
   }
-
   const guideDoc = (guide) => searchDoc(guide.title, [guide.summary, ...(guide.keywords || [])].join(" "), [...guide.steps, ...(guide.tips || [])].join(" "), 1);
   const itemDoc = (item, extra = "") => searchDoc(`${item.desc} ${item.name}`, [...(item.keywords || []), extra].join(" "), item.note);
-
   function renderGuides(data) {
     const today = getToday();
     const openNow = new Set(data.calendar.events.filter((ev) => ev.guide && isCurrent(ev, today)).map((ev) => ev.guide));
@@ -1490,12 +1387,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return { node: card, doc: guideDoc(guide) };
     });
   }
-
   function refreshGuideCard(guide) {
     const meta = document.querySelector(`[data-guide="${guide.id}"] .guide-meta`);
     if (meta) meta.replaceChildren(...guideMeta(guide));
   }
-
   function resolveLinks(entry, itemsById) {
     return (entry.links || []).map((link) => {
       if (typeof link === "string") {
@@ -1506,12 +1401,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return link && isSafeUrl(link.url) && link.label ? link : null;
     }).filter(Boolean);
   }
-
   // A button for a resolved link: another guide opens in place, anything else in a new tab.
   const linkButton = (link, text) => link.guide
     ? el("a", { class: "btn", href: `#guide-${link.guide}`, text: link.label })
     : openLink(link.url, link.label, text);
-
   function stepsList(guide) {
     let checked = guideProgress(guide);
     const progressText = el("span");
@@ -1538,7 +1431,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     updateProgress();
     return [list, progress];
   }
-
   function renderGuideView(guide, itemsById) {
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
@@ -1559,19 +1451,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null,
     ].filter(Boolean));
   }
-
   function withTransition(update) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (document.startViewTransition && !reduce) document.startViewTransition(update);
     else update();
   }
-
   function setupGuideRouting(data, itemsById, onLeaveGuide) {
     const byId = new Map(data.guides.map((g) => [g.id, g]));
     const view = $("#guide-view");
     const listParts = [$(".layout"), $("#jump-nav")];
     let listScroll = 0;
-
     function show(guide) {
       if (view.hidden) listScroll = window.scrollY;
       const input = $("#q");
@@ -1585,7 +1474,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       window.scrollTo(0, Math.max(0, view.getBoundingClientRect().top + window.scrollY - sticky - 8));
       $("#guide-title").focus({ preventScroll: true });
     }
-
     function hide() {
       view.hidden = true;
       view.replaceChildren();
@@ -1599,7 +1487,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (target) target.scrollIntoView();
       else window.scrollTo(0, listScroll);
     }
-
     let current = null;
     function route(animate) {
       const match = location.hash.match(GUIDE_HASH);
@@ -1618,10 +1505,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       close: () => { history.pushState(null, "", `${location.pathname}${location.search}`); route(false); },
     };
   }
-
   // ---------- "Now" panel: where we are in the year ----------
   const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   function countUp(node, target) {
     if (reducedMotion() || target <= 1) { node.textContent = String(target); return; }
     const start = performance.now();
@@ -1634,12 +1519,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     node.textContent = "0";
     requestAnimationFrame(step);
   }
-
   function validTerms(cal) {
     return (cal.terms || []).filter((t) => t && t.label && ISO_DATE.test(t.from || "") && ISO_DATE.test(t.to || ""))
       .sort((a, b) => a.from.localeCompare(b.from));
   }
-
   function yearBar(terms, events, today) {
     const start = parseDate(terms[0].from);
     const end = parseDate(terms[terms.length - 1].to);
@@ -1688,7 +1571,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (tick) tick.classList.toggle("open");
     });
     document.addEventListener("click", (e) => { if (!bar.contains(e.target)) bar.querySelectorAll(".tick.open").forEach((t) => t.classList.remove("open")); });
-
     const months = el("div", { class: "months" });
     const fmt = new Intl.DateTimeFormat("he-IL", { month: "short" });
     for (let d = new Date(start.getFullYear(), start.getMonth() + 1, 1); d <= end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
@@ -1701,7 +1583,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("p", { class: "sr-only", text: today < start ? "השנה עוד לא התחילה." : `עברו ${pct}% מהשנה האקדמית.` }),
       el("div", { "aria-hidden": "true" }, bar, months), legend);
   }
-
   // Hebrew numerals: 26 -> כ״ו, 787 -> תשפ״ז (15 and 16 are written ט״ו and ט״ז).
   function gematria(n) {
     const ones = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"];
@@ -1714,7 +1595,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     out += rest === 15 ? "טו" : rest === 16 ? "טז" : tens[Math.floor(rest / 10)] + ones[rest % 10];
     return out.length === 1 ? `${out}׳` : `${out.slice(0, -1)}״${out.slice(-1)}`;
   }
-
   function hebrewDate(date) {
     try {
       const parts = new Intl.DateTimeFormat("he-IL-u-ca-hebrew", { day: "numeric", month: "long", year: "numeric" }).formatToParts(date);
@@ -1724,7 +1604,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return ""; // no Hebrew calendar in this browser: show the civil date alone
     }
   }
-
   function renderNow(data) {
     const cal = data.calendar;
     const terms = validTerms(cal);
@@ -1733,7 +1612,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const upcoming = events.filter((ev) => parseDate(ev.date) > today);
     const term = terms.find((t) => parseDate(t.from) <= today && today <= parseDate(t.to));
     const box = $("#now");
-
     let stat, unit, eyebrow, title, sub, after;
     if (term) {
       const from = parseDate(term.from);
@@ -1763,7 +1641,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     } else {
       return;
     }
-
     const num = el("span", { class: "now-num", text: String(stat) });
     const head = el("a", { class: "now-head", href: "#calendar" },
       el("span", { class: "now-stat" }, num, el("span", { class: "now-unit", text: unit })),
@@ -1797,7 +1674,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     box.hidden = false;
     countUp(num, stat);
   }
-
   // ---------- Special days: a Doodle on the logo, a banner and a short effect, like Google's ----------
   // Holidays come from the Hebrew calendar, so they arrive every year without editing data.js.
   // To preview one, add ?today= to the address, for example ?today=2026-12-08 for Chanukah.
@@ -1805,7 +1681,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     try { return new Intl.DateTimeFormat("en-u-ca-hebrew", { day: "numeric", month: "long" }); } catch (err) { return null; }
   })();
   const hebrewDayCache = new Map();
-
   // { day: 25, month: "Kislev" }. Without a Hebrew calendar in the browser the month is a civil one and nothing matches.
   function hebrewDay(date) {
     const key = date.getTime();
@@ -1821,11 +1696,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return hebrewDayCache.get(key);
   }
-
   const addDays = (date, n) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + n);
   const isHebrew = (date, month, day) => { const h = hebrewDay(date); return !!h && h.month === month && h.day === day; };
   const inHebrew = (date, month, from, to) => { const h = hebrewDay(date); return !!h && h.month === month && h.day >= from && h.day <= to; };
-
   // Some days move when they would fall next to Shabbat. moves: weekday of the Hebrew date -> how many days it moves.
   function observedOn(date, month, day, moves = {}) {
     if (isHebrew(date, month, day)) return !(date.getDay() in moves);
@@ -1834,13 +1707,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return original.getDay() === Number(weekday) && isHebrew(original, month, day);
     });
   }
-
   const FAST_MOVES = { 6: 1 }; // a fast that falls on Shabbat is kept on Sunday
   const ATZMAUT_MOVES = { 5: -1, 6: -2, 1: 1 }; // Friday or Shabbat -> Thursday, Monday -> Tuesday
   const SHOAH_MOVES = { 5: -1, 0: 1 }; // Friday -> Thursday, Sunday -> Monday
   const CANDLE_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שביעי", "שמיני"];
   const FESTIVE = ["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"];
-
   // tone: festive (colour and an effect), quiet (a fast, Shabbat) or memorial (the page turns grey).
   // effect: confetti, drift (falling emoji) or embers. doodle: the emoji on the logo.
   const HOLIDAYS = [
@@ -1865,13 +1736,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     { on: (d) => isHebrew(d, "Av", 15), doodle: "💗", title: "ט״ו באב", sub: "חג האהבה", colors: ["#d63a6e", "#ff8fb1"], effect: { type: "drift", glyphs: ["💗", "💕", "🌹"] } },
     { on: (d) => d.getMonth() === 9 && d.getDate() === 7, icon: "🕯️", title: "7 באוקטובר", sub: "זוכרים את הנרצחים והנופלים. יהי זכרם ברוך.", tone: "memorial" },
   ];
-
   // Days since the eve of Chanukah (24 Kislev): 0 is the eve, 8 is the eighth day. -1 outside Chanukah.
   function chanukahDay(date) {
     for (let k = 0; k <= 8; k++) if (isHebrew(addDays(date, -k), "Kislev", 24)) return k;
     return -1;
   }
-
   function specialDays(terms, today) {
     const list = [];
     const k = chanukahDay(today);
@@ -1894,9 +1763,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (list.some((sp) => sp.tone === "memorial")) for (const sp of list) { delete sp.effect; delete sp.doodle; delete sp.flip; }
     return list;
   }
-
   const rand = (min, max) => min + Math.random() * (max - min);
-
   // Plays an effect over the page for a few seconds, then removes it. Nothing at all with reduced motion.
   function playEffect(effect) {
     if (!effect || reducedMotion()) return;
@@ -1918,7 +1785,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     document.body.append(layer);
     setTimeout(() => layer.remove(), 11000);
   }
-
   // The effect plays once a day on its own. After that the Doodle or the banner's emoji plays it again.
   function playOncePerDay(sp, today) {
     const key = `${today.getTime()}:${sp.id}`;
@@ -1929,7 +1795,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     playEffect(sp.effect);
     if (sp.flip) flipTitle();
   }
-
   function flipTitle() {
     const h1 = $(".brand h1");
     if (!h1 || reducedMotion()) return;
@@ -1937,15 +1802,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     void h1.offsetWidth; // restart the animation
     h1.classList.add("fx-flip");
   }
-
   function menorah(lit) {
     // Left to right on screen: candles 8..5, the shamash, candles 4..1. Candle 1 is the rightmost.
     const order = [8, 7, 6, 5, 0, 4, 3, 2, 1];
     return el("span", { class: "menorah", dir: "ltr", role: "img", "aria-label": `חנוכייה עם ${lit} נרות דולקים` },
       ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
   }
-
-
   // ---------- Mascots: two characters, he (mascot-*) and she (her-*). Each page load picks
   // who goes first at random, then every mascot spot alternates between them. ----------
   const MASCOT_FILES = { he: "mascot", she: "her" };
@@ -1955,7 +1817,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     she: { wave: 271, think: 240, celebrate: 400, point: 310, calendar: 286, idea: 252, laptop: 497 },
   };
   let mascotTurn = Math.random() < 0.5 ? 0 : 1;
-
   function setMascot(img, pose, height) {
     const who = mascotTurn++ % 2 ? "she" : "he";
     img.src = `./assets/mascot/${MASCOT_FILES[who]}-${pose}.webp`;
@@ -1963,11 +1824,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     img.height = height;
     return img;
   }
-
   function renderMascots() {
     document.querySelectorAll("img[data-mascot]").forEach((img) => setMascot(img, img.dataset.mascot, Number(img.dataset.h)));
   }
-
   function specialBanner(sp) {
     const glyph = sp.doodle || sp.icon || "✨";
     const replay = () => { playEffect(sp.effect); if (sp.flip) flipTitle(); };
@@ -1982,7 +1841,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       sp.menorah ? menorah(sp.menorah) : null,
       sp.mascot ? setMascot(el("img", { class: "mascot special-mascot", alt: "", decoding: "async" }), sp.mascot, 64) : null);
   }
-
   function renderSpecialDays(specials, today) {
     if (specials.some((sp) => sp.tone === "memorial")) document.documentElement.dataset.day = "memorial";
     const lead = specials.find((sp) => sp.doodle);
@@ -1996,7 +1854,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (festive) playOncePerDay(festive, today);
     return specials.map(specialBanner);
   }
-
   // ---------- Easter eggs: a few words in the search box do something, like on Google ----------
   function eggToast(text) {
     document.querySelectorAll(".egg-toast").forEach((node) => node.remove());
@@ -2004,7 +1861,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     document.body.append(toast);
     setTimeout(() => toast.remove(), 4500);
   }
-
   function rollContent() {
     const content = $("#content");
     if (reducedMotion()) return;
@@ -2013,7 +1869,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     content.classList.add("egg-roll");
     content.addEventListener("animationend", () => content.classList.remove("egg-roll"), { once: true });
   }
-
   const EASTER_EGGS = [
     { words: ["do a barrel roll", "barrel roll", "סלטה", "תעשה סלטה"], run: rollContent },
     { words: ["askew", "tilt", "עקומ", "עקמומי"], hold: "egg-askew" },
@@ -2022,7 +1877,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     { words: ["42"], run: () => eggToast("42: התשובה לשאלה הגדולה של החיים, היקום וכל השאר. לשאר השאלות יש את האתר הזה 🙂") },
   ];
   const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
-
   function setupEasterEggs() {
     const input = $("#q");
     const content = $("#content");
@@ -2050,7 +1904,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }
     });
   }
-
   // ---------- Command palette (Ctrl/Cmd+K) ----------
   function flashNode(node) {
     node.classList.remove("flash");
@@ -2058,7 +1911,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     node.classList.add("flash");
     setTimeout(() => node.classList.remove("flash"), 1700);
   }
-
   function buildPaletteIndex(data, itemsById, faqEntries, eventEntries) {
     const featured = new Set(data.featured || []);
     const index = [];
@@ -2081,21 +1933,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     return index;
   }
-
   function setupPalette(index, nav) {
     const dialog = $("#palette");
     const input = $("#pq");
     const list = $("#pres");
     let results = [];
     let active = 0;
-
     function search() {
       const raw = input.value.trim();
       const q = normalize(raw);
       if (!q) return index.filter((e) => e.suggest).slice(0, 8);
       return rankEntries(index, raw).list.slice(0, 10);
     }
-
     function paint() {
       results = search();
       active = Math.min(active, Math.max(0, results.length - 1));
@@ -2114,14 +1963,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }));
       mark();
     }
-
     function mark() {
       [...list.children].forEach((li, i) => li.setAttribute("aria-selected", String(i === active)));
       input.setAttribute("aria-activedescendant", `p-${active}`);
       const cur = list.children[active];
       if (cur) cur.scrollIntoView({ block: "nearest" });
     }
-
     function run(entry) {
       dialog.close();
       if (entry.run) { entry.run(); return; }
@@ -2130,7 +1977,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (q.value) { q.value = ""; q.dispatchEvent(new Event("input")); }
       revealNode(entry.node);
     }
-
     function open() {
       if (dialog.open) return;
       input.value = "";
@@ -2139,7 +1985,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       dialog.showModal();
       input.focus();
     }
-
     input.addEventListener("input", () => { active = 0; paint(); });
     input.addEventListener("keydown", (e) => {
       if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % Math.max(1, results.length); mark(); }
@@ -2152,7 +1997,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if ((e.ctrlKey || e.metaKey) && (e.code === "KeyK" || e.key.toLowerCase() === "k")) { e.preventDefault(); open(); }
     });
   }
-
   // ---------- Pointer glow on cards (mouse only) ----------
   function setupPointerGlow() {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -2172,9 +2016,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       });
     }, { passive: true });
   }
-
-
-
   // ---------- Navigation: desktop tabs + mobile tab bar with scroll-spy ----------
   const NAV_ITEMS = [
     { id: "top", label: "בית", icon: "home", mobileOnly: true },
@@ -2184,7 +2025,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     { id: "faq", label: "שאלות", icon: "help" },
   ];
   NAV_ITEMS[1].icon = "book";
-
   function setupNav() {
     const links = [];
     const build = (container, items) => {
@@ -2196,7 +2036,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     };
     build($("#tabs"), NAV_ITEMS.filter((i) => !i.mobileOnly));
     build($("#tabbar"), NAV_ITEMS);
-
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -2219,12 +2058,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     window.addEventListener("scroll", () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
     window.addEventListener("hashchange", () => requestAnimationFrame(update));
     update();
-
     // hide the bottom bar while the on-screen keyboard is likely open
     document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea")) document.body.classList.add("kb"); });
     document.addEventListener("focusout", () => document.body.classList.remove("kb"));
   }
-
   // ---------- Theme: auto → dark → light ----------
   const THEME_KEY = "nr-theme";
   const THEME_LABEL = { dark: "מעבר לערכה בהירה", light: "מעבר לערכה כהה" };
@@ -2257,26 +2094,22 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     deviceDark.addEventListener("change", paint);
     paint();
   }
-
   // site.whatsapp: the mentor's number in international format (972...), digits only.
   function mentorUrl(site, text) {
     const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
     if (!/^\d{9,15}$/.test(number)) return "";
     return `https://wa.me/${number}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
   }
-
   function mentorItem(site) {
     const url = mentorUrl(site, site && site.whatsappText);
     return url ? { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url } : null;
   }
-
   function renderContact(data) {
     const mentor = mentorItem(data.site);
     if (!mentor) return;
     $(".contact").replaceChildren("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או ",
       el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: "בהודעה פרטית בוואטסאפ" }), ".");
   }
-
   function renderCredit(data) {
     const site = data.site || {};
     if (!isSafeUrl(site.authorUrl)) return;
@@ -2284,7 +2117,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("a", { href: site.authorUrl, target: "_blank", rel: "noopener noreferrer", text: site.author || "רועי כרמלי" }),
       ", חונך בנחיתה רכה, תשפ\"ז");
   }
-
   function renderInstall() {
     const mine = document.querySelector(`.install li[data-platform="${PLATFORM}"]`);
     const details = $("#install-more");
@@ -2297,7 +2129,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     line.replaceChildren(...[...mine.cloneNode(true).childNodes]);
     line.hidden = false;
   }
-
   // ---------- Sticky search ----------
   let stickySentinel = null;
   function watchSticky() {
@@ -2310,7 +2141,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (window.ResizeObserver) new ResizeObserver(setHeight).observe(bar);
     else window.addEventListener("resize", setHeight);
   }
-
   // ---------- Filtering ----------
   // Puts a found item on screen: opens a collapsed answer or calendar, scrolls to it and highlights it.
   function revealNode(node) {
@@ -2320,9 +2150,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     node.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
     flashNode(node);
   }
-
   const setHidden = (node, hidden) => { if (node.hidden !== hidden) node.hidden = hidden; };
-
   // While searching, the best matches come first in each section; without a search, the original order.
   // Only visible entries are compared, and only misplaced ones move: moving DOM nodes is the slow part.
   function reorder(entries, active) {
@@ -2339,7 +2167,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       current.splice(k, 0, wanted[k]);
     }
   }
-
   function setupSearch(groups, timelineState, nav, saved, index) {
     const input = $("#q");
     const clearBtn = $("#clear");
@@ -2351,7 +2178,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     let lastKey = null;
     for (const list of [groups.guides, groups.events, groups.faq, groups.categories]) list.forEach((e, i) => { e.i = i; });
     groups.categories.forEach((cat) => cat.children.forEach((e, i) => { e.i = i; }));
-
     function filterAll(query, mode) {
       const active = Boolean(query);
       const show = (entry) => {
@@ -2377,7 +2203,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       setHidden(sections.faq, active && faqs === 0);
       return total + guides + events + faqs;
     }
-
     // Sorting moves DOM nodes, which is the expensive part of a search, so it waits until typing pauses.
     const SORT_DELAY_MS = 200;
     let sortTimer = 0;
@@ -2387,12 +2212,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       reorder(groups.guides, active);
       reorder(groups.faq, active);
     }
-
     function resultsText(total) {
       if (total === 0) return "אין תוצאות";
       return total === 1 ? "נמצאה תוצאה אחת" : `נמצאו ${total} תוצאות`;
     }
-
     // The few best matches across everything, one tap away, above the full results.
     let shownHits = [];
     function renderTopHits(list) {
@@ -2413,7 +2236,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         return el("li", {}, action);
       }));
     }
-
     function apply() {
       const raw = input.value.trim();
       const key = normalize(raw);
@@ -2426,7 +2248,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         $("#jump-nav").hidden = active;
         saved.render();
       }
-
       let total;
       let ranked = null;
       clearTimeout(sortTimer);
@@ -2438,7 +2259,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         total = filterAll(ranked.query, ranked.mode);
         sortTimer = setTimeout(() => sortResults(true), SORT_DELAY_MS);
       }
-
       setHidden(empty, !active || total > 0);
       $("#empty-q").textContent = raw;
       if (!active) statusEl.replaceChildren();
@@ -2446,32 +2266,27 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       else if (total && ranked.mode === "any") statusEl.replaceChildren(`לא נמצא משהו שמתאים לכל המילים. ${resultsText(total)} שמתאימות לחלק מהן.`);
       else statusEl.replaceChildren(resultsText(total));
       announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
-
       // The strip appears when there is a lot to sift through, or when a birthday is among the results.
       const showHits = active && (total > TOP_HITS || ranked.list.slice(0, TOP_HITS).some((e) => e.birthday));
       if (showHits) renderTopHits(ranked.list);
       setHidden(topHits, !showHits);
-
       $("#timeline").classList.toggle("searching", active);
       if (active && !wasActive && $("#searchbar").classList.contains("is-stuck")) window.scrollTo(0, stickySentinel.offsetTop);
       if (!active && wasActive) requestAnimationFrame(() => scrollTimelineTo(timelineState.nextNode));
       wasActive = active;
     }
-
     // Fast typing: filter once per frame, not once per key.
     let frame = 0;
     const scheduleApply = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => { frame = 0; apply(); });
     };
-
     function clear() {
       input.value = "";
       apply();
       syncUrl();
       input.focus();
     }
-
     input.addEventListener("input", () => {
       if (input.value && nav.router && nav.router.isOpen()) nav.router.close();
       scheduleApply();
@@ -2484,7 +2299,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       chip.addEventListener("click", () => { input.value = word; apply(); syncUrl(); });
       return chip;
     }));
-
     const initial = new URLSearchParams(location.search).get("q");
     if (initial) { input.value = initial; apply(); }
     let urlTimer = 0;
@@ -2499,7 +2313,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       clearTimeout(urlTimer);
       urlTimer = setTimeout(syncUrl, 400);
     });
-
     document.addEventListener("keydown", (e) => {
       const target = e.target;
       if ($("#palette").open) return;
@@ -2514,12 +2327,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }
     });
   }
-
   // ---------- Boot ----------
   function showFatal(message) {
     $("#content").replaceChildren(el("div", { class: "fatal", role: "alert" }, el("strong", { text: "משהו לא נטען כמו שצריך." }), el("p", { text: message })));
   }
-
   function init() {
     const data = loadData();
     if (!data) {
@@ -2534,7 +2345,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       showFatal("משהו בקובץ data.js לא בפורמט הנכון, כנראה שדה חסר או ריק. כדאי לבדוק את השינוי האחרון שנעשה בו.");
     }
   }
-
   // Dates on the page are worked out once, at load. A tab or home-screen app left open overnight
   // would keep showing yesterday, so when the page comes back on screen on a new day, reload it.
   function watchForNewDay() {
@@ -2544,7 +2354,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (document.visibilityState === "visible" && getToday().getTime() !== loadedOn) location.reload();
     });
   }
-
   function start(data) {
     watchForNewDay();
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
@@ -2574,7 +2383,6 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     setupTheme();
     requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode));
   }
-
   init();
 })();
 </script>
