@@ -231,8 +231,9 @@ class ChatPanel {
     this.input.style.blockSize = `${Math.min(this.input.scrollHeight, 120)}px`;
   }
 
+  /** The newest message in view; before the first question, the top (the hello) instead. */
   scroll() {
-    this.list.scrollTop = this.list.scrollHeight;
+    this.list.scrollTop = this.log.some((m) => m.role === "user") ? this.list.scrollHeight : 0;
   }
 
   save() {
