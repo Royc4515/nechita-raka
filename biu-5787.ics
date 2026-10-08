@@ -266,4 +266,182 @@ DESCRIPTION:עד 100% משכר הלימוד השנתי. הסכום מתעד
  מצעי תשלום\, biu.ac.il
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:exam-intro-cs-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270121T140000Z
+DTEND:20270121T170000Z
+SUMMARY:בחינה: מבוא למדעי המחשב, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-discrete-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270127T140000Z
+DTEND:20270127T170000Z
+SUMMARY:בחינה: מתמטיקה בדידה, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-linalg1-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270202T140000Z
+DTEND:20270202T170000Z
+SUMMARY:בחינה: אלגברה לינארית 1, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-calc1-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270207T140000Z
+DTEND:20270207T170000Z
+SUMMARY:בחינה: חשבון אינפיניטסימלי 1, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-intro-cs-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270211T140000Z
+DTEND:20270211T170000Z
+SUMMARY:בחינה: מבוא למדעי המחשב, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-discrete-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270217T140000Z
+DTEND:20270217T170000Z
+SUMMARY:בחינה: מתמטיקה בדידה, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-linalg1-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270222T140000Z
+DTEND:20270222T170000Z
+SUMMARY:בחינה: אלגברה לינארית 1, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-calc1-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270226T070000Z
+DTEND:20270226T100000Z
+SUMMARY:בחינה: חשבון אינפיניטסימלי 1, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-comp-org-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270630T130000Z
+DTEND:20270630T160000Z
+SUMMARY:בחינה: מבנה מחשב, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-linalg2-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270712T130000Z
+DTEND:20270712T160000Z
+SUMMARY:בחינה: אלגברה לינארית 2, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-calc2-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270716T060000Z
+DTEND:20270716T090000Z
+SUMMARY:בחינה: חשבון אינפיניטסימלי 2, מועד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-prob-moed1@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270720T130000Z
+DTEND:20270720T160000Z
+SUMMARY:בחינה: הסתברות כללית למדעי המחשב, מוע
+ ד א'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-comp-org-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270725T130000Z
+DTEND:20270725T160000Z
+SUMMARY:בחינה: מבנה מחשב, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-linalg2-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270805T130000Z
+DTEND:20270805T160000Z
+SUMMARY:בחינה: אלגברה לינארית 2, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-calc2-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270811T060000Z
+DTEND:20270811T090000Z
+SUMMARY:בחינה: חשבון אינפיניטסימלי 2, מועד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:exam-prob-moed2@biu-cs-5787
+DTSTAMP:20261008T120000Z
+DTSTART:20270822T130000Z
+DTEND:20270822T160000Z
+SUMMARY:בחינה: הסתברות כללית למדעי המחשב, מוע
+ ד ב'
+DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
+  של שנה א' במדמ"ח באינ-בר. כדאי לוודא שם לפ
+ ני הבחינה.
+TRANSP:OPAQUE
+END:VEVENT
 END:VCALENDAR
