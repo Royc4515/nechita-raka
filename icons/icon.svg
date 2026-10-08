@@ -1,9 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0b5fae"/>
-  <g fill="#fff" transform="translate(262 222) rotate(112) scale(0.82)">
-    <path d="M0-172c12 14 17 40 17 62v236c0 12-7 20-17 22-10-2-17-10-17-22V-110c0-22 5-48 17-62z"/>
-    <path d="M-12-34-168 38v34L-12 30zM12-34 168 38v34L12 30z"/>
-    <path d="M-11 92-74 128v20l63-18zM11 92l63 36v20l-63-18z"/>
+  <rect width="512" height="512" rx="112" fill="#0b5fae"/>
+  <g stroke="#fff" stroke-width="14" stroke-linecap="round">
+    <path d="M100 236 240 348M203 236 248 348M309 236 264 348M412 236 272 348"/>
   </g>
-  <rect x="120" y="380" width="272" height="22" rx="11" fill="#fff"/>
+  <path fill="#fff" d="M92 238C92 142 164 80 256 80s164 62 164 158q-55-30-111 0-53-30-106 0-56-30-111 0z"/>
+  <g fill="none" stroke="#0b5fae" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M208 132 178 162l30 30M304 132l30 30-30 30M270 124l-28 76"/>
+  </g>
+  <rect x="220" y="340" width="72" height="68" rx="16" fill="#fff"/>
+  <path d="M236 366h40" stroke="#0b5fae" stroke-width="9" stroke-linecap="round"/>
 </svg>
