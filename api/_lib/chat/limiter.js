@@ -56,10 +56,14 @@ export class PgChatLimiter {
 
   async take(visitor, day) {
     await this.ensureSchema();
-    if ((await this.bump(visitorBucket(visitor, day, this.salt), day)) > PER_VISITOR_DAILY) return "rate_limited";
+    const mine = await this.bump(visitorBucket(visitor, day, this.salt), day);
+    // Usage stats: a visitor's first message of the day counts them once in visitors:<day>.
+    if (mine === 1) await this.bump(`visitors:${day}`, day);
+    if (mine > PER_VISITOR_DAILY) return "rate_limited";
     const total = await this.bump(`global:${day}`, day);
-    // The first message of a day clears out older rows: the hashes are useless after their day.
-    if (total === 1) await this.query(`delete from chat_usage where day < $1::date - 1`, [day]);
+    // The first message of a day clears out older visitor rows: the hashes are useless after their
+    // day. The global:<day> and visitors:<day> totals stay, as the chat's daily usage history.
+    if (total === 1) await this.query(`delete from chat_usage where day < $1::date - 1 and bucket like 'ip:%'`, [day]);
     return total > GLOBAL_DAILY ? "daily_cap" : "ok";
   }
 }

@@ -152,6 +152,26 @@ test("limiter counts per visitor and per site", async () => {
   assert.equal(await limiter.take("2.2.2.2", "2026-10-20"), "daily_cap");
 });
 
+test("limiter keeps daily totals and only clears visitor hashes", async () => {
+  const counts = new Map();
+  const deletes = [];
+  const query = async (text, params) => {
+    if (text.startsWith("delete")) deletes.push(text);
+    if (!text.startsWith("insert")) return [];
+    const n = (counts.get(params[0]) ?? 0) + 1;
+    counts.set(params[0], n);
+    return [{ count: n }];
+  };
+  const limiter = new PgChatLimiter(query, SALT);
+  await limiter.take("1.1.1.1", "2026-10-20");
+  await limiter.take("1.1.1.1", "2026-10-20");
+  await limiter.take("2.2.2.2", "2026-10-20");
+  assert.equal(counts.get("global:2026-10-20"), 3);
+  assert.equal(counts.get("visitors:2026-10-20"), 2);
+  assert.equal(deletes.length, 1);
+  assert.match(deletes[0], /bucket like 'ip:%'/);
+});
+
 test("the chain falls back to the next model and reports busy when all are rate limited", async () => {
   const reply = (status, body) => async () => new Response(JSON.stringify(body ?? {}), { status });
   const ok = { choices: [{ message: { content: '{"answer":"היי","in_scope":true,"sources":[]}' } }] };
