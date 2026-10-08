@@ -4,6 +4,7 @@
   display: flex; flex-direction: column; overflow: hidden;
   block-size: 100dvh; padding-block: env(safe-area-inset-top) env(safe-area-inset-bottom);
   background: var(--surface);
+  -webkit-tap-highlight-color: transparent; /* Android's blue tap box; the buttons have their own pressed state */
 }
 .chat-panel[hidden] { display: none; }
 .chat-panel:focus { outline: none; }
@@ -33,8 +34,12 @@
 .chat-chrome .chat-light:nth-child(3) i { --light: #28c840; --rim: #1aab29; }
 .chat-light.close svg { inline-size: 7px; block-size: 7px; stroke-width: 3.2; color: #4d0000; opacity: 0; }
 .chat-light.close:hover svg, .chat-light.close:focus-visible svg { opacity: .75; }
-.chat-light.close:focus-visible { outline: 2px solid var(--focus); outline-offset: -6px; border-radius: 50%; }
-.chat-light.close:active i { filter: brightness(.85); }
+.chat-light.close:focus-visible { outline: none; }
+.chat-light.close:focus-visible i { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+.chat-light.close:active i { filter: brightness(.82); }
+/* Pressed state for touch, where hover doesn't exist. */
+.chat-switch:active, .chat-cmd:active, .chat-send:active, .answer-copy:active { transform: scale(.97); }
+@media (prefers-reduced-motion: no-preference) { .chat-switch, .chat-cmd, .chat-send, .answer-copy { transition: transform .1s ease; } }
 .chat-chrome .chat-path { margin-inline-start: 10px; }
 .chat-head { flex: none; display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); border-block-end: 1px solid var(--border); }
 .chat-avatar { flex: none; border-radius: 50%; background: var(--accent-soft); object-fit: cover; }
