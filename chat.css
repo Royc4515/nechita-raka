@@ -103,7 +103,9 @@
 .chat-form { flex: none; display: flex; align-items: flex-end; gap: var(--s2); padding: var(--s3) var(--s4) var(--s2); border-block-start: 1px solid var(--border); }
 /* 16px stops iOS from zooming the page when the input gets focus. */
 .chat-input { flex: 1; min-block-size: 48px; max-block-size: 120px; resize: none; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-strong); background: var(--bg); color: var(--text); font: inherit; font-size: 16px; line-height: 1.4; }
-.chat-input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+/* Focus: the border itself takes the accent with a soft halo, instead of a second ring outside it. */
+.chat-input { transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease; }
+.chat-input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong)); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
 .chat-send { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
 .chat-send:disabled { opacity: .5; cursor: progress; }
 .chat-send svg { inline-size: 22px; block-size: 22px; }
