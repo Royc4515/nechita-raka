@@ -2128,12 +2128,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     $(".contact").replaceChildren("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או ",
       el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: "בהודעה פרטית בוואטסאפ" }), ".");
   }
+  // The credit line ends with the author's LinkedIn and portfolio, each shown only when its URL is set.
   function renderCredit(data) {
     const site = data.site || {};
-    if (!isSafeUrl(site.authorUrl)) return;
-    $("#credit").replaceChildren("נבנה על ידי ",
-      el("a", { href: site.authorUrl, target: "_blank", rel: "noopener noreferrer", text: site.author || "רועי כרמלי" }),
-      ", חונך בנחיתה רכה, תשפ\"ז");
+    const links = [[site.authorUrl, "לינקדאין"], [site.portfolioUrl, "פורטפוליו"]]
+      .filter(([url]) => isSafeUrl(url))
+      .map(([href, text]) => el("a", { href, target: "_blank", rel: "noopener noreferrer", text }));
+    if (!links.length) return;
+    const tail = links.flatMap((link, i) => (i ? [" · ", link] : [link]));
+    $("#credit").append(" · ", ...tail);
   }
   function renderInstall() {
     const mine = document.querySelector(`.install li[data-platform="${PLATFORM}"]`);
