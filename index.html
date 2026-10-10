@@ -3,19 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>נחיתה רכה - מדמ"ח בר אילן</title>
-<meta name="description" content="קישורים, מדריכים, תאריכים ותשובות לסטודנטים בשנה א' במדעי המחשב בבר אילן">
-<meta name="author" content="רועי כרמלי">
+<!-- seo:head: scripts/build-public.mjs replaces this block per page (title, description, canonical, link preview, JSON-LD). What is here is only for opening index.html locally. -->
+<title>מדעי המחשב בבר אילן, שנה א' - קישורים, מדריכים ולוח שנה | נחיתה רכה</title>
+<meta name="description" content="רישום לקורסים, למדה ו-365, שכר לימוד, בחינות ומועד ב', מילואים ולוח השנה האקדמי, לסטודנטים בשנה א' במדעי המחשב בבר אילן. יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.">
+<link rel="canonical" href="https://nechita-raka.vercel.app/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="נחיתה רכה - מדמ&quot;ח בר אילן">
-<meta property="og:description" content="קישורים, מדריכים, תאריכים ותשובות לסטודנטים בשנה א' במדעי המחשב בבר אילן">
 <meta property="og:url" content="https://nechita-raka.vercel.app/">
 <meta property="og:image" content="https://nechita-raka.vercel.app/assets/og-image-v2.jpg">
-<meta property="og:image:width" content="600">
-<meta property="og:image:height" content="600">
-<meta property="og:image:alt" content="נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים">
 <meta property="og:locale" content="he_IL">
-<meta name="robots" content="noindex, nofollow">
+<!-- /seo:head -->
+<meta name="author" content="רועי כרמלי">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
@@ -231,6 +229,8 @@ main { padding-block: var(--s2) var(--s8); }
 .faq summary:hover h3 { color: var(--accent-text); }
 .faq h3 { font-size: var(--fs-title); font-weight: 600; line-height: 1.4; }
 .faq .faq-a { padding-block-end: var(--s3); }
+.faq .faq-more { margin-block-start: var(--s2); }
+.faq .source { color: var(--muted); }
 .faq p { color: var(--text); }
 .faq .actions { padding-block-start: var(--s3); }
 .faq .actions .btn { flex: 0 1 auto; }
@@ -714,20 +714,20 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     </section>
     <section class="section" id="featured" aria-labelledby="featured-h">
       <h2 id="featured-h" class="has-mascot">הכי שימושי<img class="mascot head-mascot" data-mascot="laptop" data-h="104" alt="" loading="lazy" decoding="async"></h2>
-      <div class="featured-grid" id="featured-grid"></div>
+      <div class="featured-grid" id="featured-grid"><!-- pre:featured --></div>
     </section>
     <section class="section" id="guides" aria-labelledby="guides-h" hidden>
-      <h2 id="guides-h">מה צריך לעשות?</h2>
+      <h2 id="guides-h">מה צריך לעשות?<!-- pre:guides-count --></h2>
       <p class="section-lead">מדריכים קצרים, צעד אחר צעד, מתוך האתרים הרשמיים של האוניברסיטה.</p>
-      <a class="start-here" href="#guide-first-week">
+      <a class="start-here" href="./first-week">
         <span><strong>חדשים כאן?</strong> מתחילים מ„לפני השיעור הראשון” ←</span>
         <img class="mascot" data-mascot="point" data-h="88" alt="" loading="lazy" decoding="async">
       </a>
-      <div class="guide-grid" id="guide-grid"></div>
+      <div class="guide-grid" id="guide-grid"><!-- pre:guides --></div>
     </section>
-    <div id="categories" class="section"></div>
+    <div id="categories" class="section"><!-- pre:categories --></div>
     <section class="section" id="calendar" aria-labelledby="calendar-h">
-      <h2 id="calendar-h"></h2>
+      <h2 id="calendar-h"><!-- pre:calendar-title --></h2>
       <div class="cal-body">
         <div class="cal-cta">
           <img class="mascot cal-mascot" data-mascot="calendar" data-h="128" alt="" loading="lazy" decoding="async">
@@ -739,18 +739,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         </div>
         <div>
           <div class="timeline-box" id="timeline-box" tabindex="0" role="region" aria-labelledby="calendar-h">
-            <ol class="timeline" id="timeline"></ol>
+            <ol class="timeline" id="timeline"><!-- pre:timeline --></ol>
           </div>
-          <p class="source" id="cal-source"></p>
+          <p class="source" id="cal-source"><!-- pre:cal-source --></p>
         </div>
       </div>
     </section>
     <section class="section" id="faq" aria-labelledby="faq-h">
-      <h2 id="faq-h" class="has-mascot">מה עושים כש...<img class="mascot head-mascot" data-mascot="think" data-h="104" alt="" loading="lazy" decoding="async"></h2>
-      <ul class="faq" id="faq-list"></ul>
+      <h2 id="faq-h" class="has-mascot">שאלות נפוצות<img class="mascot head-mascot" data-mascot="think" data-h="104" alt="" loading="lazy" decoding="async"></h2>
+      <ul class="faq" id="faq-list"><!-- pre:faq --></ul>
     </section>
   </div>
-  <article class="guide-view" id="guide-view" hidden></article>
+  <article class="guide-view" id="guide-view" hidden><!-- pre:guide --></article>
   <div class="empty" id="empty" hidden>
     <img class="mascot empty-mascot" data-mascot="think" data-h="120" alt="" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
@@ -779,8 +779,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       </details>
     </section>
     <div class="meta">
-      <p id="credit">נבנה על ידי רועי כרמלי, חונך בנחיתה רכה, תשפ"ז</p>
-      <p>אתר עצמאי של חונך בתוכנית. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.</p>
+      <p id="credit">נבנה על ידי רועי כרמלי, חונך בנחיתה רכה, תשפ"ז<!-- pre:credit --></p>
+      <p>אתר עצמאי, יוזמה של סטודנט שהוא חונך בתוכנית. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.</p>
+      <!-- pre:updated -->
     </div>
   </div>
   <div class="statusbar" aria-hidden="true">
@@ -840,8 +841,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const ANNOUNCE_DELAY_MS = 500;
   const SAVED_KEY = "nr-saved";
   const GUIDE_KEY = (id) => `nr-guide-${id}`;
+  // Every guide has its own address (/exams), so search engines index it as a page of its own.
+  // #guide-exams is the old form, still found in shared links and in the chat's answers.
   const GUIDE_HASH = /^#guide-([a-z0-9-]+)$/;
-  const BASE_TITLE = document.title;
+  const GUIDE_PATH = /^\/([a-z0-9-]+)$/;
+  const guideHref = (id) => `./${id}`;
+  // Same format as the <title> the build writes into each guide's page (scripts/prerender.mjs).
+  const guideTitle = (guide) => `${guide.title} - בר אילן | נחיתה רכה`;
+  // A guide's built page starts with its own title, so the home title comes from the page itself.
+  const BASE_TITLE = document.documentElement.dataset.homeTitle || document.title;
   const UPCOMING_SHOWN = 5;
   const MONTH_FMT = new Intl.DateTimeFormat("he-IL", { month: "short" });
   const EMPTY_SUGGESTIONS = ["ציונים", "מבחנים", "למדה", "וואטסאפ"];
@@ -1294,7 +1302,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
           ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
           (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
           isPast ? el("span", { class: "sr-only", text: "(עבר)" }) : null,
-          ev.guide && !isPast ? el("a", { class: "ev-guide", href: `#guide-${ev.guide}`, text: "איך עושים את זה ←" }) : null));
+          ev.guide && !isPast ? el("a", { class: "ev-guide", href: guideHref(ev.guide), text: "איך עושים את זה ←" }) : null));
       if (isNext) { nextNode = li; nextEvent = ev; }
       if (!isPast && !isNext) upcomingCount++;
       if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");
@@ -1340,17 +1348,32 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const peek = prev ? Math.min(prev.offsetHeight * 0.6, 48) : 0;
     box.scrollTop = Math.max(0, node.offsetTop - peek - 8);
   }
+  // An answer's official sources: its own, or else those of its guide. Shown under the answer
+  // so every fact on the page sits next to the university page it came from.
+  function faqSources(entry, guidesById) {
+    const own = Array.isArray(entry.sources) ? entry.sources : (guidesById.get(entry.guide) || {}).sources;
+    return (own || []).filter((src) => src && isSafeUrl(src.url));
+  }
+  function sourceLine(sources, ...tail) {
+    return el("p", { class: "source" }, "מקור: ",
+      ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),
+      ...tail);
+  }
   function renderFaq(data, itemsById) {
     const list = $("#faq-list");
+    const guidesById = new Map(data.guides.map((g) => [g.id, g]));
     return (data.faq || []).map((entry) => {
       const linked = resolveLinks(entry, itemsById);
+      const sources = faqSources(entry, guidesById);
       const details = el("details", {},
         el("summary", {}, el("h3", { text: entry.q })),
         el("div", { class: "faq-a" },
           el("p", {}, bidiText(entry.a)),
+          entry.more ? el("p", { class: "faq-more" }, bidiText(entry.more)) : null,
           (linked.length || entry.guide) ? el("div", { class: "actions" },
             ...linked.map((link) => linkButton(link, `פתיחת ${link.label}`)),
-            entry.guide ? el("a", { class: "btn", href: `#guide-${entry.guide}`, text: "למדריך המלא" }) : null) : null));
+            entry.guide ? el("a", { class: "btn", href: guideHref(entry.guide), text: "למדריך המלא" }) : null) : null,
+          sources.length ? sourceLine(sources) : null));
       const li = el("li", {}, details);
       list.append(li);
       // Search opens matching answers, and closes only the ones it opened.
@@ -1358,7 +1381,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         if (on && !details.open) { details.open = true; details.dataset.auto = ""; }
         else if (!on && "auto" in details.dataset) { details.open = false; delete details.dataset.auto; }
       };
-      return { node: li, expand, doc: searchDoc(entry.q, (entry.keywords || []).join(" "), entry.a) };
+      return { node: li, expand, doc: searchDoc(entry.q, (entry.keywords || []).join(" "), `${entry.a} ${entry.more || ""}`) };
     });
   }
   // ---------- Guides ----------
@@ -1395,7 +1418,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     $("#guides-h").append(el("span", { class: "count", "aria-hidden": "true", text: String(data.guides.length) }));
     const grid = $("#guide-grid");
     return data.guides.map((guide) => {
-      const card = el("a", { class: "guide-card", href: `#guide-${guide.id}`, "data-guide": guide.id },
+      const card = el("a", { class: "guide-card", href: guideHref(guide.id), "data-guide": guide.id },
         el("span", { class: "guide-icon" }, iconNode(GUIDE_ICON[guide.id] || "sparkle")),
         openNow.has(guide.id) ? el("span", { class: "open-now", text: "פתוח עכשיו" }) : null,
         el("h3", { text: guide.title }),
@@ -1421,7 +1444,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   // A button for a resolved link: another guide opens in place, anything else in a new tab.
   const linkButton = (link, text) => link.guide
-    ? el("a", { class: "btn", href: `#guide-${link.guide}`, text: link.label })
+    ? el("a", { class: "btn", href: guideHref(link.guide), text: link.label })
     : openLink(link.url, link.label, text);
   function stepsList(guide) {
     let checked = guideProgress(guide);
@@ -1449,10 +1472,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     updateProgress();
     return [list, progress];
   }
-  function renderGuideView(guide, itemsById) {
+  const academicYearText = (year) => (year ? `, לשנת הלימודים ${year}` : "");
+  function renderGuideView(guide, itemsById, year) {
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
-    const shareUrl = `${location.origin}${location.pathname}#guide-${guide.id}`;
+    const shareUrl = new URL(guideHref(guide.id), location.href).href;
     $("#guide-view").replaceChildren(...[
       el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
@@ -1464,10 +1488,14 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         el("ul", {}, ...guide.tips.map((tip) => el("li", {}, bidiText(tip))))) : null,
       links.length ? el("div", { class: "actions" }, ...links.map((l) => linkButton(l, l.label))) : null,
       el("div", { class: "actions" }, shareButton(shareUrl, guide.title)),
-      sources.length ? el("p", { class: "source" }, "מקור: ",
-        ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),
-        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null,
+      sources.length ? sourceLine(sources,
+        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), academicYearText(year), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null,
     ].filter(Boolean));
+  }
+  // Opens an address inside the site without reloading; setupGuideRouting listens for popstate.
+  function navigateTo(url) {
+    history.pushState(null, "", url);
+    window.dispatchEvent(new PopStateEvent("popstate"));
   }
   function withTransition(update) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1483,10 +1511,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (view.hidden) listScroll = window.scrollY;
       const input = $("#q");
       if (input.value) { input.value = ""; input.dispatchEvent(new Event("input")); }
-      renderGuideView(guide, itemsById);
+      renderGuideView(guide, itemsById, (data.site || {}).academicYear);
       listParts.forEach((part) => { part.hidden = true; });
       view.hidden = false;
-      document.title = `${guide.title} · נחיתה רכה`;
+      document.title = guideTitle(guide);
       // Start at the guide itself (just below the sticky search bar), not at the top of the page.
       const sticky = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 0;
       window.scrollTo(0, Math.max(0, view.getBoundingClientRect().top + window.scrollY - sticky - 8));
@@ -1505,22 +1533,50 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (target) target.scrollIntoView();
       else window.scrollTo(0, listScroll);
     }
+    function guideFromUrl() {
+      const legacy = location.hash.match(GUIDE_HASH);
+      if (legacy && byId.has(legacy[1])) {
+        history.replaceState(null, "", `${guideHref(legacy[1])}${location.search}`);
+        return byId.get(legacy[1]);
+      }
+      const match = location.pathname.match(GUIDE_PATH);
+      const guide = match && byId.get(match[1]);
+      if (!guide) return null;
+      // A section link (#calendar from the tabs) on a guide's address means that section of the home page,
+      // as it did when guides lived in the hash. The skip link (#content) stays on the guide.
+      if (location.hash.length > 1 && location.hash !== "#content") {
+        history.replaceState(null, "", `/${location.search}${location.hash}`);
+        return null;
+      }
+      return guide;
+    }
     let current = null;
     function route(animate) {
-      const match = location.hash.match(GUIDE_HASH);
-      const guide = match && byId.get(match[1]);
+      const guide = guideFromUrl();
       if ((guide || null) === current && (guide || view.hidden)) return;
       current = guide || null;
       const update = () => { if (guide) show(guide); else if (!view.hidden) hide(); };
       if (animate && (guide || !view.hidden)) withTransition(update); else update();
     }
+    // Links between the home page and a guide open in place, without a reload, like the hash links did.
+    // Same-page links (#calendar) are left to the browser and reach route() through hashchange.
+    document.addEventListener("click", (e) => {
+      const link = e.target instanceof Element ? e.target.closest("a[href]") : null;
+      if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || link.target) return;
+      const url = new URL(link.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      const match = url.pathname.match(GUIDE_PATH);
+      if (!(match && byId.has(match[1])) && url.pathname !== "/") return;
+      e.preventDefault();
+      navigateTo(url.href);
+    });
     // A guide opened from search rewrites the URL, so Back may not fire hashchange.
     window.addEventListener("hashchange", () => route(true));
     window.addEventListener("popstate", () => route(true));
     route(false);
     return {
       isOpen: () => !view.hidden,
-      close: () => { history.pushState(null, "", `${location.pathname}${location.search}`); route(false); },
+      close: () => { history.pushState(null, "", `/${location.search}`); route(false); },
     };
   }
   // ---------- "Now" panel: where we are in the year ----------
@@ -1685,7 +1741,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       hebrew ? el("span", { class: "now-hebrew", text: hebrew }) : null);
     const specialBanners = renderSpecialDays(specialDays(terms, today), today);
     inner.replaceChildren(...[dateLine, partyBanner, ...specialBanners, head,
-      headlineGuide ? el("a", { class: "ev-guide", href: `#guide-${headlineGuide}`, text: "איך מתכוננים ←" }) : null,
+      headlineGuide ? el("a", { class: "ev-guide", href: guideHref(headlineGuide), text: "איך מתכוננים ←" }) : null,
       terms.length ? yearBar(terms, events, today) : null,
       after ? el("a", { class: "now-next", href: "#calendar" },
         el("span", { text: "אחר כך:" }), el("strong", { text: after.title }), el("span", { class: "when", text: `· ${relativeLabel(after, today)}` })) : null].filter(Boolean));
@@ -1934,7 +1990,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const index = [];
     for (const guide of data.guides) {
       index.push({ type: "מדריך", title: guide.title, sub: guide.summary || "", suggest: true, doc: guideDoc(guide),
-        href: `#guide-${guide.id}`, run: () => { location.hash = `#guide-${guide.id}`; } });
+        href: guideHref(guide.id), run: () => navigateTo(guideHref(guide.id)) });
     }
     for (const item of itemsById.values()) {
       index.push({ type: "קישור", title: item.name, sub: item.desc, suggest: featured.has(item.id), doc: itemDoc(item),
@@ -2376,6 +2432,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
   }
   function start(data) {
+    // The build writes the content into the HTML too (data-pre), so search engines and link previews
+    // see it without running JavaScript. The page renders it again below, with today's dates and the
+    // buttons, so the static copy goes first.
+    document.querySelectorAll("[data-pre]").forEach((node) => node.remove());
     watchForNewDay();
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
     const mentor = mentorItem(data.site);
