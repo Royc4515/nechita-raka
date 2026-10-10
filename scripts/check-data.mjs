@@ -147,6 +147,11 @@ for (const f of data.faq || []) {
   if (!isText(f.q) || !isText(f.a)) error(`לשאלה "${f.q || f.a || "?"}" חסר q או a, ולכן היא לא תוצג.`, f.q || f.a);
   checkLinks(f.links, `שאלה "${f.q}"`, f.q);
   if (f.guide && !guideIds.has(f.guide)) error(`השאלה "${f.q}" מקושרת למדריך "${f.guide}" שלא קיים.`, f.q);
+  if (f.more != null && !isText(f.more)) error(`בשאלה "${f.q}" השדה more צריך להיות טקסט.`, f.q);
+  if (f.sources != null && !isList(f.sources)) error(`בשאלה "${f.q}" השדה sources צריך להיות רשימה.`, f.q);
+  for (const src of isList(f.sources) ? f.sources : []) if (!isHttps(src.url) || !isText(src.label)) error(`בשאלה "${f.q}" יש מקור בלי label או עם כתובת שלא מתחילה ב-https://.`, f.q);
+  // Search engines and AI answers quote the question as-is, so it should read like one.
+  if (isText(f.q) && !/\?$/.test(f.q.trim())) warn(`השאלה "${f.q}" לא מסתיימת בסימן שאלה.`, f.q);
 }
 
 // ---------- 3. Calendar file drift (a warning: the .ics is edited separately) ----------

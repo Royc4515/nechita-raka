@@ -1,2 +1,29 @@
+# The whole site is public and meant to be found: search engines and AI assistants are welcome.
+# Only the chat's server (/api/) is off limits: it answers POST requests, there is nothing to read there.
+# A crawler that matches a named group below ignores the * group, so each group repeats the /api/ rule.
+
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /api/
+
+# Search engines
+User-agent: Googlebot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# AI assistants: search, answers and training (Google-Extended covers Gemini, it is not a separate crawler)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+
+Sitemap: https://nechita-raka.vercel.app/sitemap.xml

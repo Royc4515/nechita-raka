@@ -3,6 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "public",
+  "cleanUrls": true,
   "regions": ["fra1"],
   "functions": {
     "api/chat.js": { "includeFiles": "data.js", "maxDuration": 30 }
