@@ -101,6 +101,19 @@ test("hooks keep data.js links, cut others, and fix style", () => {
   assert.deepEqual(out.draft.sources, ["guide:registration"]);
 });
 
+test("personas mirror the student's gender when it shows, and fall back to the plural", () => {
+  for (const persona of ["bit", "byte"]) {
+    const prompt = systemPrompt(persona, "core", canaryFor(SALT));
+    assert.match(prompt, /never guess: use second person plural/);
+    assert.match(prompt, /קחי נשימה, תיכנסי/);
+    assert.match(prompt, /מישהו יוכל לעזור/);
+  }
+  // Canned replies never know who they're talking to, so they stay plural.
+  for (const reason of ["injection", "empty"]) {
+    for (const persona of ["bit", "byte"]) assert.doesNotMatch(cannedReply(reason, true, persona), /(?:^|\s)(?:אותך|לך|אתה|תגיש|תשאל)(?=[\s?.!,]|$)/);
+  }
+});
+
 test("canned replies follow the language", () => {
   assert.match(cannedReply("injection", true, "bit"), /נשאר אני/);
   assert.match(cannedReply("injection", true, "byte"), /נשארת אני/);
