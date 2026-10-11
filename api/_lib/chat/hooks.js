@@ -5,6 +5,7 @@
  * rewritten) or { ok: false, reason } to replace the answer with a canned reply.
  * ctx: { canary, allowedUrls, allowedEmails, chunkIds }
  */
+import { LONG_NUMBER, PHONE_NOTE, STAR_NUMBER } from "./knowledge.js";
 
 const pass = (draft) => ({ ok: true, draft });
 const rewrite = (draft, answer) => ({ ok: true, draft: { ...draft, answer } });
@@ -19,9 +20,11 @@ export const canaryHook = {
  * 9+ digits written as one number: a phone number, never a date or a count. Models also write
  * Unicode hyphens and dashes ("03\u20115317000"), which styleHook later turns into "-", so those
  * count as separators. Dots don't: Israeli numbers aren't written with them, and with dots a date
- * range ("14.10-28.10.2026") read as one long number.
+ * range ("14.10-28.10.2026") read as one long number. A number glued to a letter or URL
+ * character is part of a link (".../id1234567890"), not a phone. Shared with the facts
+ * (knowledge.js), like STAR_NUMBER, the short service numbers with too few digits for this.
  */
-const PHONE = /\+?\(?\d[\d\s()\-\u2010-\u2015\u2212]{7,}\d/g;
+const PHONE = LONG_NUMBER;
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
 const ASK_ROY = "קבוצת הוואטסאפ של נחיתה רכה";
 
@@ -29,6 +32,7 @@ export const piiHook = {
   name: "pii",
   apply: (draft, { allowedEmails }) => {
     const answer = draft.answer
+      .replace(STAR_NUMBER, PHONE_NOTE)
       .replace(PHONE, (m) => (m.replace(/\D/g, "").length >= 9 ? ASK_ROY : m))
       .replace(EMAIL, (m) => (allowedEmails.includes(m.toLowerCase()) ? m : ASK_ROY));
     return answer === draft.answer ? pass(draft) : rewrite(draft, answer);
@@ -77,6 +81,12 @@ function cap(text) {
   return end > MAX_ANSWER_CHARS / 2 ? cut.slice(0, end + 1) : `${cut.slice(0, cut.lastIndexOf(" "))}...`;
 }
 
+/**
+ * Models misspell the course site "למדה" as "מלדה" (and "ללמדה" as "למלדה"). Fixed with its
+ * prefix letters, only as a whole word, so a real word like "מלמדת" stays.
+ */
+const LEMIDA_TYPO = /(^|[^\u0590-\u05FF])([ובלהמש]*?)מלדה(?![\u0590-\u05FF])/g;
+
 /** The site's copy rules, enforced rather than requested. */
 export const styleHook = {
   name: "style",
@@ -91,6 +101,7 @@ export const styleHook = {
         .replace(/^\s*[*•]\s+/gm, "- ")
         .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, "$1 ($2)")
         .replace(/\n{3,}/g, "\n\n")
+        .replace(LEMIDA_TYPO, "$1$2למדה")
         .trim(),
     );
     if (!answer) return { ok: false, reason: "empty" };

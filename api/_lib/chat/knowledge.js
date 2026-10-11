@@ -38,6 +38,29 @@ function eventLine(ev) {
   return `${when}: ${ev.title}${extra ? ` (${extra})` : ""}`;
 }
 
+/**
+ * Phone numbers never reach the model, so it can't repeat one: a short star number (*9392) got
+ * past the output hook, written without its star. The facts say where the number is instead.
+ */
+export const PHONE_NOTE = "(מספר הטלפון מופיע באתר)";
+/**
+ * A short service number ("*9392", "*9392 שלוחה 3", "ל* 9392"). Not a star glued to a word, digit
+ * or another star (bold "**2026**", "3*100"), and a space after the star only mid-sentence, so a
+ * bullet ("* 2026 ...") stays.
+ */
+export const STAR_NUMBER = /(?<![\w*])(?:(?<=\S)\*\s?|\*)\d{3,5}(?!\d)(?:\s+שלוחה\s+\d+)?/g;
+// Not glued to a letter or URL character: an app store id (".../id1234567890") is no phone.
+export const LONG_NUMBER = /(?<![\w/%=&?#])\+?\(?\d[\d\s()\-\u2010-\u2015\u2212]{7,}\d/g;
+const note = PHONE_NOTE.replace(/[()]/g, "\\$&");
+const NOTE_RUN = new RegExp(`${note}(?:\\s*(?:,|או)\\s*${note})+`, "g");
+
+export function hidePhones(text) {
+  return text
+    .replace(STAR_NUMBER, PHONE_NOTE)
+    .replace(LONG_NUMBER, (m) => (m.replace(/\D/g, "").length >= 9 ? PHONE_NOTE : m))
+    .replace(NOTE_RUN, PHONE_NOTE);
+}
+
 /** One chunk per guide (steps), one for its tips, one per FAQ, link and the full calendar. */
 export function buildChunks(data) {
   const items = data.categories.flatMap((c) => c.items.map((item) => ({ ...item, category: c.title })));
@@ -79,7 +102,7 @@ export function buildChunks(data) {
     text: [...data.calendar.terms.map((t) => `${t.label}: ${dmy(t.from)} עד ${dmy(t.to)}`), ...events.map(eventLine)].join("\n"),
     keywords: ["לוח שנה", "תאריכים", "מתי", "סמסטר", "חופשה", "חג", "בחינות", "מועד"],
   });
-  return chunks;
+  return chunks.map((c) => ({ ...c, text: hidePhones(c.text) }));
 }
 
 /** Today in Israel as YYYY-MM-DD. */
