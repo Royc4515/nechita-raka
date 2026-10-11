@@ -114,6 +114,6 @@ export function cannedReply(reason, hebrew, personaId = "bit") {
       : "Something went wrong with that answer. Try again, or ask Roy in the WhatsApp group.";
   }
   return hebrew
-    ? `חחח ניסיון יפה 😄 אבל אני ${personaId === "byte" ? "נשארת" : "נשאר"} אני. אז, מה באמת מעניין אותך? רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון?`
+    ? `חחח ניסיון יפה 😄 אבל אני ${personaId === "byte" ? "נשארת" : "נשאר"} אני. אז, מה באמת מעניין אתכם? רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון?`
     : "Haha, nice try 😄 but I'm staying me. So what do you actually want to know? Registration, exams, Lemida, or how to survive week one?";
 }
