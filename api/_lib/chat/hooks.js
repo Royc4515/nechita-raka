@@ -15,8 +15,13 @@ export const canaryHook = {
     draft.answer.includes(canary) || /\bNRC-[0-9a-f]{6,}/i.test(draft.answer) ? { ok: false, reason: "leak" } : pass(draft),
 };
 
-/** 9+ digits written as one number: a phone number, never a date or a count. */
-const PHONE = /\+?\(?\d[\d\s().-]{7,}\d/g;
+/**
+ * 9+ digits written as one number: a phone number, never a date or a count. Models also write
+ * Unicode hyphens and dashes ("03\u20115317000"), which styleHook later turns into "-", so those
+ * count as separators. Dots don't: Israeli numbers aren't written with them, and with dots a date
+ * range ("14.10-28.10.2026") read as one long number.
+ */
+const PHONE = /\+?\(?\d[\d\s()\-\u2010-\u2015\u2212]{7,}\d/g;
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
 const ASK_ROY = "קבוצת הוואטסאפ של נחיתה רכה";
 
