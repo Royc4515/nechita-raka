@@ -92,6 +92,18 @@ test("hooks remove phone numbers and unknown emails but keep emails from data.js
   assert.doesNotMatch(out.draft.answer, /evil@x\.com/);
 });
 
+test("hooks remove phone numbers written with Unicode hyphens or dashes", () => {
+  for (const sep of ["\u2011", "\u2010", "\u2013", "\u2212"]) {
+    const out = runOutputHooks({ answer: `להתקשר ל-03${sep}5317000 עכשיו`, inScope: true, sources: [] }, hooksCtx);
+    assert.ok(!/5317000/.test(out.draft.answer), `separator U+${sep.codePointAt(0).toString(16)}`);
+  }
+  // Dates and date ranges are not phone numbers.
+  for (const text of ["בין 14.10–28.10.2026", "בין 14.10-28.10.2026", "ב-12.10.2026 בשעה 14:00"]) {
+    const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
+    assert.ok(/28\.10\.2026|12\.10\.2026/.test(out.draft.answer), text);
+  }
+});
+
 test("hooks keep data.js links, cut others, and fix style", () => {
   const out = runOutputHooks(draft("**ראו** https://inbar.biu.ac.il/live/Login.aspx ולא https://evil.example.com/x — בהצלחה", ["guide:registration", "nope"]), hooksCtx);
   assert.ok(out.ok);
