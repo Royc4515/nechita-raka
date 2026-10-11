@@ -875,7 +875,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   /** Plain text with Latin runs (Office 365, *9392, @live.biu.ac.il) isolated so RTL never scrambles them. */
   function bidiText(text) {
     const frag = document.createDocumentFragment();
-    const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
+    const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?|\d+[A-Za-z]+\b/g;
     let last = 0;
     text = String(text ?? "");
     for (const match of text.matchAll(pattern)) {
@@ -891,8 +891,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   function svgIcon(paths) {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
   }
-  const CATEGORY_ICON = { university: "building", materials: "book", whatsapp: "chat", "courses-a": "chat", perks: "sparkle" };
-  const GUIDE_ICON = { registration: "calendar", "lemida-365": "key", payments: "card", campus: "idcard", "campus-map": "map", shuttle: "bus", help: "help", "first-week": "sparkle" };
+  const CATEGORY_ICON = { university: "building", materials: "book", whatsapp: "chat", "courses-a": "chat", food: "food", perks: "sparkle" };
+  const GUIDE_ICON = { registration: "calendar", "lemida-365": "key", payments: "card", campus: "idcard", "campus-map": "map", shuttle: "bus", food: "food", help: "help", "first-week": "sparkle" };
   const iconNode = (name) => {
     const holder = document.createElement("span");
     holder.innerHTML = ICONS[name] || ICONS.sparkle; // static, trusted markup only
@@ -914,6 +914,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     idcard: svgIcon('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17a3.5 3.5 0 0 1 7 0M15 9h3M15 13h3"/>'),
     help: svgIcon('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>'),
     map: svgIcon('<path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7zM9 4v13M15 7v13"/>'),
+    food: svgIcon('<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v4h3"/>'),
     bus: svgIcon('<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4"/><circle cx="8" cy="14" r=".8"/><circle cx="16" cy="14" r=".8"/>'),
     home: svgIcon('<path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/>'),
     link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),

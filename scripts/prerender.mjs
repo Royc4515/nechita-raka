@@ -110,7 +110,7 @@ export const esc = (text) => String(text ?? "").replace(/[&<>"']/g, (ch) => ({ "
 
 /** Same as bidiText() in index.html: Latin runs and emails isolated so RTL never scrambles them. */
 function bidi(text) {
-  const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
+  const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?|\d+[A-Za-z]+\b/g;
   text = String(text ?? "");
   let out = "";
   let last = 0;
