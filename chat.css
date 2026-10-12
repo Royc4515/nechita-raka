@@ -112,6 +112,7 @@
 .chat-input { transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease; }
 .chat-input:focus { outline: none; border-color: color-mix(in srgb, var(--accent) 55%, var(--border-strong)); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
 .chat-send { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border: 0; border-radius: 14px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+:root[dir="ltr"] .chat-send svg { scale: -1 1; } /* the arrow points forward in English too */
 .chat-send:disabled { opacity: .5; cursor: progress; }
 .chat-send svg { inline-size: 22px; block-size: 22px; }
 .chat-note { flex: none; padding: 0 var(--s4) var(--s3); color: var(--faint); font-size: .75rem; }

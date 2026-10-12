@@ -364,6 +364,7 @@ footer a { color: inherit; }
 .now-next strong { color: var(--text); font-weight: 600; }
 .now-next .when { color: var(--accent-text); font-weight: 600; }
 .now-next::after { content: ""; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: var(--accent-text); -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; }
+:root[dir="ltr"] .guide-meta::after, :root[dir="ltr"] .now-next::after { scale: -1 1; } /* the chevron points forward in English too */
 /* ---------- Bento quick access ---------- */
 .featured-grid { display: grid; gap: var(--s3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .tile { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 2px; min-block-size: 120px; padding: var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); color: var(--text); text-decoration: none; }
@@ -471,6 +472,7 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .hero-art { display: none; }
 .icon-btn { flex: none; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border-radius: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--muted); cursor: pointer; }
 .icon-btn svg { inline-size: 20px; block-size: 20px; }
+.lang-btn { font-family: var(--mono); font-size: .8125rem; font-weight: 700; }
 /* Terminal */
 .term { margin-block-start: var(--s4); border-radius: 14px; overflow: hidden; background: #0d1626; border: 1px solid #22304a; box-shadow: 0 18px 40px -24px rgb(11 30 60 / 55%); font-family: var(--mono); font-size: .8125rem; line-height: 1.7; text-align: start; }
 .term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #131f35; border-block-end: 1px solid #22304a; color: #8aa0c2; font-size: .75rem; }
@@ -667,6 +669,22 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 @media print { .peek, .peek-bubble, .chat-panel { display: none !important; } }
 </style>
 <script src="./data.js"></script>
+<script>
+  /* Language: Hebrew by default. ?lang=en (or the EN button) switches and is remembered on this device.
+     The English strings (data.en.js) load only in English, before the page script reads them. */
+  (() => {
+    let lang = null;
+    try {
+      const asked = new URLSearchParams(location.search).get("lang");
+      if (asked === "en" || asked === "he") localStorage.setItem("nr-lang", asked);
+      lang = localStorage.getItem("nr-lang");
+    } catch (e) { lang = new URLSearchParams(location.search).get("lang"); /* storage blocked: the address decides */ }
+    if (lang !== "en") return;
+    document.documentElement.lang = "en";
+    document.documentElement.dir = "ltr";
+    document.write('<script src="./data.en.js"><\/script>');
+  })();
+</script>
 </head>
 <body>
 <div class="aurora" aria-hidden="true"></div>
@@ -682,6 +700,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         </div>
         <button class="palette-trigger" type="button" id="palette-btn" aria-label="חיפוש מהיר (Ctrl+K)">חיפוש מהיר <kbd>Ctrl K</kbd></button>
         <button class="icon-btn" type="button" id="theme-btn" aria-label="ערכת צבעים"></button>
+        <button class="icon-btn lang-btn" type="button" id="lang-btn" lang="en" aria-label="English">EN</button>
       </div>
       <p class="tagline">כל הקישורים, המדריכים והתאריכים לשנה א' במקום אחד.</p>
       <div class="term" dir="ltr" aria-hidden="true">
@@ -848,6 +867,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 <script>
 (() => {
   "use strict";
+  // ---------- Language ----------
+  // The page is written in Hebrew. In English (see the <head>), tr() swaps each string for its pair in data.en.js;
+  // a string without a pair stays in Hebrew. {name} marks a value filled in at run time.
+  if (document.documentElement.lang === "en" && !window.SITE_EN) { document.documentElement.lang = "he"; document.documentElement.dir = "rtl"; }
+  const EN = document.documentElement.lang === "en";
+  const UI_EN = Object.fromEntries(EN ? window.SITE_EN.ui || [] : []);
+  const CONTENT_EN = new Map(EN ? window.SITE_EN.content || [] : []);
+  function tr(he, vars) {
+    const text = (EN && UI_EN[he]) || he;
+    return vars ? text.replace(/\{(\w+)\}/g, (m, key) => (key in vars ? String(vars[key]) : m)) : text;
+  }
+  const LOCALE = EN ? "en-GB" : "he-IL";
   const DAY_MS = 86400000;
   const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
   const HEB_PREFIXES = "הבלוכמש";
@@ -861,12 +892,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const GUIDE_PATH = /^\/([a-z0-9-]+)$/;
   const guideHref = (id) => `./${id}`;
   // Same format as the <title> the build writes into each guide's page (scripts/prerender.mjs).
-  const guideTitle = (guide) => `${guide.title} - בר אילן | נחיתה רכה`;
+  const guideTitle = (guide) => tr("{title} - בר אילן | נחיתה רכה", { title: guide.title });
   // A guide's built page starts with its own title, so the home title comes from the page itself.
-  const BASE_TITLE = document.documentElement.dataset.homeTitle || document.title;
+  const BASE_TITLE = tr(document.documentElement.dataset.homeTitle || document.title);
   const UPCOMING_SHOWN = 5;
-  const MONTH_FMT = new Intl.DateTimeFormat("he-IL", { month: "short" });
-  const EMPTY_SUGGESTIONS = ["ציונים", "מבחנים", "למדה", "וואטסאפ"];
+  const MONTH_FMT = new Intl.DateTimeFormat(LOCALE, { month: "short" });
+  const EMPTY_SUGGESTIONS = [tr("ציונים"), tr("מבחנים"), tr("למדה"), tr("וואטסאפ")];
   // Hebrew keyboard layout, for queries typed with the keyboard left in English
   const QWERTY_TO_HEBREW = { q: "/", w: "'", e: "ק", r: "ר", t: "א", y: "ט", u: "ו", i: "ן", o: "ם", p: "פ", a: "ש", s: "ד", d: "ג", f: "כ", g: "ע", h: "י", j: "ח", k: "ל", l: "ך", ";": "ף", z: "ז", x: "ס", c: "ב", v: "ה", b: "נ", n: "מ", m: "צ", ",": "ת", ".": "ץ" };
   const $ = (sel) => document.querySelector(sel);
@@ -891,7 +922,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     let last = 0;
     text = String(text ?? "");
     for (const match of text.matchAll(pattern)) {
-      const run = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(match[0])
+      const mail = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(match[0]);
+      if (EN && !mail) continue; // English runs need no isolation in English text
+      const run = mail
         ? el("a", { href: `mailto:${match[0]}`, dir: "ltr", class: "run", text: match[0] })
         : el("bdi", { dir: "ltr", class: "run", text: match[0] });
       frag.append(text.slice(last, match.index), run);
@@ -959,8 +992,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   };
   // ---------- Data validation (data.js is edited by hand) ----------
   const isSafeUrl = (url) => typeof url === "string" && /^https:\/\/[^\s]+$/.test(url);
+  // English content: the same data, each Hebrew string swapped for its pair in data.en.js.
+  // Keywords stay in Hebrew, so a Hebrew search still finds things in English.
+  function translateData(value, key) {
+    if (typeof value === "string") return CONTENT_EN.get(value) || value;
+    if (Array.isArray(value)) return key === "keywords" ? value : value.map((v) => translateData(v));
+    if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, translateData(v, k)]));
+    return value;
+  }
   function loadData() {
-    const data = window.SITE_DATA;
+    const data = EN && window.SITE_DATA ? translateData(window.SITE_DATA) : window.SITE_DATA;
     if (!data || !Array.isArray(data.categories)) return null;
     const categories = data.categories.map((cat) => ({
       ...cat,
@@ -1035,7 +1076,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const searchDoc = (title, keys, body, boost = 0, kind = "") => ({ t: normalize(title), k: normalize(keys), b: normalize(body), boost, kind });
   // Question words: they don't have to appear in a result, but "מתי" means the answer is probably a date.
   const QUESTION_WORDS = new Set(["מתי", "איפה", "איך", "מה", "למה", "כמה", "האם", "יש", "אני", "צריך", "רוצה", "אפשר", "של", "עם", "על", "את",
-    "רואים", "מוצאים", "עושים", "לעשות"].map((w) => normalize(w)));
+    "רואים", "מוצאים", "עושים", "לעשות",
+    "what", "when", "where", "how", "why", "is", "are", "do", "does", "can", "my", "the", "an", "to", "of", "for", "in", "on", "with", "need"].map((w) => normalize(w)));
   // 3 = whole word, 2 = start of a word (a Hebrew prefix letter is allowed before it), 1 = inside a word
   function wordHit(field, word) {
     let best = 0;
@@ -1064,7 +1106,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   function parseQuery(normalized) {
     const words = normalized.split(" ").filter(Boolean);
     const required = words.filter((w) => w.length > 1 && !QUESTION_WORDS.has(w));
-    return { phrase: normalized, words, required: required.length ? required : words, when: words.includes("מתי") };
+    return { phrase: normalized, words, required: required.length ? required : words, when: words.includes("מתי") || words.includes("when") };
   }
   // 0 = no match. mode "all": every word must be found; "any": at least one (the fallback).
   function scoreDoc(doc, query, mode = "all") {
@@ -1122,11 +1164,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   const isCurrent = (ev, today) => parseDate(ev.date) <= today && today <= parseDate(ev.until || ev.date);
   function relativeLabel(ev, today) {
-    if (isCurrent(ev, today)) return ev.until ? "עכשיו" : "היום";
+    if (isCurrent(ev, today)) return ev.until ? tr("עכשיו") : tr("היום");
     const days = Math.round((parseDate(ev.date) - today) / DAY_MS);
-    if (days === 1) return "מחר";
-    if (days === 2) return "בעוד יומיים";
-    return `בעוד ${days} ימים`;
+    if (days === 1) return tr("מחר");
+    if (days === 2) return tr("בעוד יומיים");
+    return tr("בעוד {n} ימים", { n: days });
   }
   // ---------- Platform ----------
   function detectPlatform() {
@@ -1140,11 +1182,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   const PLATFORM = detectPlatform();
   const CAL_HINTS = {
-    ios: ["לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'."],
-    android: ["לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן."],
-    desktop: ["הקובץ יורד למחשב. ב-Google Calendar: הגדרות, ייבוא וייצוא, ובוחרים את הקובץ. ב-Outlook וביומן של Mac: לחיצה כפולה על הקובץ."],
+    ios: [tr("לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'.")],
+    android: [tr("לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן.")],
+    desktop: [tr("הקובץ יורד למחשב. ב-Google Calendar: הגדרות, ייבוא וייצוא, ובוחרים את הקובץ. ב-Outlook וביומן של Mac: לחיצה כפולה על הקובץ.")],
   };
-  CAL_HINTS.unknown = [`באייפון ובאייפד: ${CAL_HINTS.ios[0]}`, `באנדרואיד: ${CAL_HINTS.android[0]}`, `במחשב: ${CAL_HINTS.desktop[0]}`];
+  CAL_HINTS.unknown = [tr("באייפון ובאייפד: {hint}", { hint: CAL_HINTS.ios[0] }), tr("באנדרואיד: {hint}", { hint: CAL_HINTS.android[0] }), tr("במחשב: {hint}", { hint: CAL_HINTS.desktop[0] })];
   // ---------- Announcements ----------
   const statusEl = $("#status");
   let announceTimer = 0;
@@ -1170,7 +1212,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
   }
   function flashButton(btn, ok, idleIcon, idleLabel, doneLabel) {
-    btn.replaceChildren(iconLabel(ok ? "check" : idleIcon, ok ? doneLabel : "לא הצליח"));
+    btn.replaceChildren(iconLabel(ok ? "check" : idleIcon, ok ? doneLabel : tr("לא הצליח")));
     btn.classList.toggle("is-done", ok);
     clearTimeout(btn._timer);
     btn._timer = setTimeout(() => {
@@ -1179,7 +1221,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }, COPY_RESET_MS);
   }
   function copyIconButton(url, label) {
-    const btn = el("button", { type: "button", class: "tool", "aria-label": `העתקת הקישור: ${label}`, title: "העתקת הקישור" });
+    const btn = el("button", { type: "button", class: "tool", "aria-label": tr("העתקת הקישור: {label}", { label }), title: tr("העתקת הקישור") });
     btn.append(iconNode("copy"));
     btn.addEventListener("click", async () => {
       const ok = await copyText(url);
@@ -1187,13 +1229,13 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       btn.classList.toggle("is-done", ok);
       clearTimeout(btn._timer);
       btn._timer = setTimeout(() => { btn.replaceChildren(iconNode("copy")); btn.classList.remove("is-done"); }, COPY_RESET_MS);
-      announce(ok ? `הקישור של ${label} הועתק` : "ההעתקה נכשלה");
+      announce(ok ? tr("הקישור של {label} הועתק", { label }) : tr("ההעתקה נכשלה"));
     });
     return btn;
   }
   function shareButton(url, title) {
     const canShare = typeof navigator.share === "function";
-    const idle = canShare ? "שיתוף" : "העתק קישור";
+    const idle = canShare ? tr("שיתוף") : tr("העתק קישור");
     const btn = el("button", { type: "button", class: "btn", "aria-label": `${idle}: ${title}` });
     btn.append(iconLabel(canShare ? "share" : "copy", idle));
     btn.addEventListener("click", async () => {
@@ -1204,15 +1246,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         }
       }
       const ok = await copyText(url);
-      flashButton(btn, ok, canShare ? "share" : "copy", idle, "הקישור הועתק");
-      announce(ok ? "הקישור למדריך הועתק" : "ההעתקה נכשלה");
+      flashButton(btn, ok, canShare ? "share" : "copy", idle, tr("הקישור הועתק"));
+      announce(ok ? tr("הקישור למדריך הועתק") : tr("ההעתקה נכשלה"));
     });
     return btn;
   }
   function openLink(url, label, text) {
-    const aria = text ? `${text} (נפתח בלשונית חדשה)` : `פתיחה: ${label} (נפתח בלשונית חדשה)`;
+    const aria = text ? tr("{text} (נפתח בלשונית חדשה)", { text }) : tr("פתיחה: {label} (נפתח בלשונית חדשה)", { label });
     const link = el("a", { class: "btn btn-primary", href: url, target: "_blank", rel: "noopener noreferrer", "aria-label": aria });
-    link.append(iconLabel("external", text || "פתיחה"));
+    link.append(iconLabel("external", text || tr("פתיחה")));
     return link;
   }
   // ---------- Saved items ----------
@@ -1228,7 +1270,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     function syncStar(btn, id) {
       const on = saved.includes(id);
       btn.setAttribute("aria-pressed", String(on));
-      btn.title = on ? "הסרה מהשמורים" : "שמירה למעלה בדף";
+      btn.title = on ? tr("הסרה מהשמורים") : tr("שמירה למעלה בדף");
     }
     function toggle(id) {
       const on = saved.includes(id);
@@ -1237,10 +1279,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       haptic();
       render();
       const name = itemsById.get(id).name;
-      announce(on ? `${name} הוסר מהשמורים` : `${name} נשמר למעלה בדף`);
+      announce(on ? tr("{name} הוסר מהשמורים", { name }) : tr("{name} נשמר למעלה בדף", { name }));
     }
     function starButton(item) {
-      const btn = el("button", { type: "button", class: "star", "aria-label": `שמירה: ${item.name}` });
+      const btn = el("button", { type: "button", class: "star", "aria-label": tr("שמירה: {name}", { name: item.name }) });
       btn.innerHTML = ICONS.star; // static markup
       btn.addEventListener("click", () => toggle(item.id));
       stars.set(item.id, [...(stars.get(item.id) || []), btn]);
@@ -1256,7 +1298,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("span", { class: "tile-text" },
         el("span", { class: "tile-desc", text: item.desc }),
         el("span", { class: "tile-name", text: item.name })),
-      el("span", { class: "sr-only", text: "(נפתח בלשונית חדשה)" }));
+      el("span", { class: "sr-only", text: tr("(נפתח בלשונית חדשה)") }));
   }
   function renderFeatured(data, itemsById) {
     const grid = $("#featured-grid");
@@ -1283,7 +1325,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         const card = el("article", { class: "card" },
           el("div", { class: "card-text" },
             el("h3", {}, el("a", { class: "card-link", href: item.url, target: "_blank", rel: "noopener noreferrer",
-              "aria-label": `${item.desc}: ${item.name} (נפתח בלשונית חדשה)`, text: item.desc })),
+              "aria-label": tr("{desc}: {name} (נפתח בלשונית חדשה)", { desc: item.desc, name: item.name }), text: item.desc })),
             el("p", { class: "name" }, item.name, iconNode("external")),
             item.note ? el("p", { class: "note" }, bidiText(item.note)) : null),
           el("div", { class: "card-tools" }, copyIconButton(item.url, item.name), saved.starButton(item)));
@@ -1301,7 +1343,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   function renderTimeline(data) {
     const cal = data.calendar;
-    $("#calendar-h").textContent = cal.title || "לוח השנה האקדמי";
+    $("#calendar-h").textContent = cal.title || tr("לוח השנה האקדמי");
     const today = getToday();
     const events = [...cal.events].sort((a, b) => a.date.localeCompare(b.date));
     const list = $("#timeline");
@@ -1318,14 +1360,14 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         el("span", { class: "datechip", "aria-hidden": "true" },
           el("span", { class: "mon", text: MONTH_FMT.format(start) }), el("span", { class: "day", text: String(start.getDate()) })),
         el("div", {},
-          isNext && !current ? el("span", { class: "sr-only", text: "האירוע הבא:" }) : null,
+          isNext && !current ? el("span", { class: "sr-only", text: tr("האירוע הבא:") }) : null,
           el("time", { datetime: ev.date }, el("span", { class: "ltr", text: range })),
           el("div", { class: "title", text: ev.title }),
-          ev.kind === "birthday" ? el("span", { class: "bday-badge", text: "🎂 יום הולדת" }) : null,
+          ev.kind === "birthday" ? el("span", { class: "bday-badge", text: tr("🎂 יום הולדת") }) : null,
           ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
           (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
-          isPast ? el("span", { class: "sr-only", text: "(עבר)" }) : null,
-          ev.guide && !isPast ? el("a", { class: "ev-guide", href: guideHref(ev.guide), text: "איך עושים את זה ←" }) : null));
+          isPast ? el("span", { class: "sr-only", text: tr("(עבר)") }) : null,
+          ev.guide && !isPast ? el("a", { class: "ev-guide", href: guideHref(ev.guide), text: tr("איך עושים את זה ←") }) : null));
       if (isNext) { nextNode = li; nextEvent = ev; }
       if (!isPast && !isNext) upcomingCount++;
       if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");
@@ -1338,9 +1380,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (PLATFORM === "desktop" || PLATFORM === "android") link.setAttribute("download", "biu-5787.ics");
     $("#cal-hint").replaceChildren(...CAL_HINTS[PLATFORM].map((t) => el("p", {}, bidiText(t))));
     const source = $("#cal-source");
-    source.append("התאריכים נלקחו מלוח הזמנים האקדמי של האוניברסיטה ב-", el("span", { class: "ltr", text: cal.checkedOn || "" }), ". אם משהו השתנה, ");
-    if (isSafeUrl(cal.sourceUrl)) source.append(el("a", { href: cal.sourceUrl, target: "_blank", rel: "noopener noreferrer", text: "הלוח הרשמי" }), " קובע.");
-    else source.append("הלוח הרשמי קובע.");
+    source.append(tr("התאריכים נלקחו מלוח הזמנים האקדמי של האוניברסיטה ב-"), el("span", { class: "ltr", text: cal.checkedOn || "" }), tr(". אם משהו השתנה, "));
+    if (isSafeUrl(cal.sourceUrl)) source.append(el("a", { href: cal.sourceUrl, target: "_blank", rel: "noopener noreferrer", text: tr("הלוח הרשמי") }), tr(" קובע."));
+    else source.append(tr("הלוח הרשמי קובע."));
     setupTimelineToggles(list);
     return { entries, nextNode, nextEvent };
   }
@@ -1354,12 +1396,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       box.querySelectorAll(".tl-toggle").forEach((b) => b.remove());
     };
     if (past) {
-      const btn = el("button", { type: "button", class: "tl-toggle", text: `הצגת ${past} תאריכים שעברו` });
+      const btn = el("button", { type: "button", class: "tl-toggle", text: tr("הצגת {n} תאריכים שעברו", { n: past }) });
       btn.addEventListener("click", expand);
       box.prepend(btn);
     }
     if (later) {
-      const btn = el("button", { type: "button", class: "tl-toggle", text: `כל השנה (עוד ${later} תאריכים)` });
+      const btn = el("button", { type: "button", class: "tl-toggle", text: tr("כל השנה (עוד {n} תאריכים)", { n: later }) });
       btn.addEventListener("click", expand);
       box.append(btn);
     }
@@ -1378,8 +1420,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return (own || []).filter((src) => src && isSafeUrl(src.url));
   }
   function sourceLine(sources, ...tail) {
-    return el("p", { class: "source" }, "מקור: ",
-      ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || "האתר הרשמי" })]),
+    return el("p", { class: "source" }, tr("מקור: "),
+      ...sources.flatMap((src, i) => [i ? " · " : "", el("a", { href: src.url, target: "_blank", rel: "noopener noreferrer", text: src.label || tr("האתר הרשמי") })]),
       ...tail);
   }
   function renderFaq(data, itemsById) {
@@ -1394,8 +1436,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
           el("p", {}, bidiText(entry.a)),
           entry.more ? el("p", { class: "faq-more" }, bidiText(entry.more)) : null,
           (linked.length || entry.guide) ? el("div", { class: "actions" },
-            ...linked.map((link) => linkButton(link, `פתיחת ${link.label}`)),
-            entry.guide ? el("a", { class: "btn", href: guideHref(entry.guide), text: "למדריך המלא" }) : null) : null,
+            ...linked.map((link) => linkButton(link, tr("פתיחת {label}", { label: link.label }))),
+            entry.guide ? el("a", { class: "btn", href: guideHref(entry.guide), text: tr("למדריך המלא") }) : null) : null,
           sources.length ? sourceLine(sources) : null));
       const li = el("li", {}, details);
       list.append(li);
@@ -1424,13 +1466,13 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   function guideMetaText(guide) {
     const total = guide.steps.length;
     const done = guideProgress(guide).length;
-    if (done === total) return "הושלם";
+    if (done === total) return tr("הושלם");
     if (done > 0) {
       const progress = guideProgress(guide);
       const nextStep = guide.steps.findIndex((_, i) => !progress.includes(i)) + 1;
-      return `${done} מתוך ${total} · המשך מצעד ${nextStep}`;
+      return tr("{done} מתוך {total} · המשך מצעד {next}", { done, total, next: nextStep });
     }
-    return total === 1 ? "צעד אחד" : `${total} צעדים`;
+    return total === 1 ? tr("צעד אחד") : tr("{n} צעדים", { n: total });
   }
   const guideDoc = (guide) => searchDoc(guide.title, [guide.summary, ...(guide.keywords || [])].join(" "), [...guide.steps, ...(guide.tips || [])].join(" "), 1);
   const itemDoc = (item, extra = "") => searchDoc(`${item.desc} ${item.name}`, [...(item.keywords || []), extra].join(" "), item.note);
@@ -1443,7 +1485,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return data.guides.map((guide) => {
       const card = el("a", { class: "guide-card", href: guideHref(guide.id), "data-guide": guide.id },
         el("span", { class: "guide-icon" }, iconNode(GUIDE_ICON[guide.id] || "sparkle")),
-        openNow.has(guide.id) ? el("span", { class: "open-now", text: "פתוח עכשיו" }) : null,
+        openNow.has(guide.id) ? el("span", { class: "open-now", text: tr("פתוח עכשיו") }) : null,
         el("h3", { text: guide.title }),
         guide.summary ? el("p", {}, bidiText(guide.summary)) : null,
         el("span", { class: "guide-meta" }, ...guideMeta(guide)));
@@ -1476,12 +1518,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const progress = el("p", { class: "steps-progress", "aria-live": "polite" }, progressText, doneMascot);
     const updateProgress = () => {
       const done = checked.length === guide.steps.length;
-      progressText.textContent = done ? "סיימתם את כל הצעדים." : checked.length ? `סימנתם ${checked.length} מתוך ${guide.steps.length}.` : "אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.";
+      progressText.textContent = done ? tr("סיימתם את כל הצעדים.") : checked.length ? tr("סימנתם {done} מתוך {total}.", { done: checked.length, total: guide.steps.length }) : tr("אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.");
       doneMascot.hidden = !done;
     };
     const list = el("ol", { class: "steps" }, ...guide.steps.map((step, i) => {
       const id = `step-${guide.id}-${i}`;
-      const box = el("input", { type: "checkbox", id, "data-n": String(i + 1).padStart(2, "0"), "aria-label": `צעד ${i + 1}` });
+      const box = el("input", { type: "checkbox", id, "data-n": String(i + 1).padStart(2, "0"), "aria-label": tr("צעד {n}", { n: i + 1 }) });
       box.checked = checked.includes(i);
       box.addEventListener("change", () => {
         checked = box.checked ? [...checked, i] : checked.filter((x) => x !== i);
@@ -1495,16 +1537,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     updateProgress();
     return [list, progress];
   }
-  const academicYearText = (year) => (year ? `, לשנת הלימודים ${year}` : "");
+  const academicYearText = (year) => (year ? tr(", לשנת הלימודים {year}", { year }) : "");
   /** An embedded map for the guide (My Maps, the campus navigation app). The iframe is heavy and third-party, so it loads only when asked for. */
   function guideMap(guide) {
     const map = guide.map;
     if (!map || !isSafeUrl(map.url) || !isSafeUrl(map.embed)) return null;
-    const box = el("section", { class: "guide-map", "aria-label": "מפה" });
-    const openLabel = map.label || "פתיחה בגוגל מפות";
-    const show = el("button", { type: "button", class: "btn btn-primary" }, "הצגת המפה כאן");
+    const box = el("section", { class: "guide-map", "aria-label": tr("מפה") });
+    const openLabel = map.label || tr("פתיחה בגוגל מפות");
+    const show = el("button", { type: "button", class: "btn btn-primary" }, tr("הצגת המפה כאן"));
     show.addEventListener("click", () => {
-      const frame = el("iframe", { src: map.embed, title: `מפה: ${guide.title}`, loading: "lazy", referrerpolicy: "no-referrer-when-downgrade", allow: "geolocation", allowfullscreen: "" });
+      const frame = el("iframe", { src: map.embed, title: tr("מפה: {title}", { title: guide.title }), loading: "lazy", referrerpolicy: "no-referrer-when-downgrade", allow: "geolocation", allowfullscreen: "" });
       box.replaceChildren(frame, el("div", { class: "actions" }, linkButton({ url: map.url }, openLabel)));
     });
     box.append(el("div", { class: "actions" }, show, linkButton({ url: map.url }, openLabel)));
@@ -1515,19 +1557,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
     const shareUrl = new URL(guideHref(guide.id), location.href).href;
     $("#guide-view").replaceChildren(...[
-      el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
+      el("a", { class: "back", href: "#guides" }, tr("→ כל המדריכים")),
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
       guideMap(guide),
       ...stepsList(guide),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
-        el("h3", { id: "tips-h", text: "כדאי לדעת" }),
+        el("h3", { id: "tips-h", text: tr("כדאי לדעת") }),
         el("ul", {}, ...guide.tips.map((tip) => el("li", {}, bidiText(tip))))) : null,
       links.length ? el("div", { class: "actions" }, ...links.map((l) => linkButton(l, l.label))) : null,
       el("div", { class: "actions" }, shareButton(shareUrl, guide.title)),
       sources.length ? sourceLine(sources,
-        guide.checkedOn ? el("span", {}, ". נבדק ב-", el("span", { class: "ltr", text: guide.checkedOn }), academicYearText(year), ". אם משהו השתנה, המקור הרשמי קובע.") : null) : null,
+        guide.checkedOn ? el("span", {}, tr(". נבדק ב-"), el("span", { class: "ltr", text: guide.checkedOn }), academicYearText(year), tr(". אם משהו השתנה, המקור הרשמי קובע.")) : null) : null,
     ].filter(Boolean));
   }
   // Opens an address inside the site without reloading; setupGuideRouting listens for popstate.
@@ -1674,7 +1716,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (today <= end) {
       const at = pos(today);
       bar.append(el("span", { class: `today${at < 8 ? " tip-start" : at > 92 ? " tip-end" : ""}`, style: `inset-inline-start:${at}%`,
-        "data-label": `היום · \u2066${today.getDate()}.${today.getMonth() + 1}\u2069` }));
+        "data-label": tr("היום · {date}", { date: `\u2066${today.getDate()}.${today.getMonth() + 1}\u2069` }) }));
     }
     // Touch screens have no hover: a tap opens a dot's label, a tap anywhere else closes it.
     bar.addEventListener("click", (e) => {
@@ -1684,15 +1726,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     document.addEventListener("click", (e) => { if (!bar.contains(e.target)) bar.querySelectorAll(".tick.open").forEach((t) => t.classList.remove("open")); });
     const months = el("div", { class: "months" });
-    const fmt = new Intl.DateTimeFormat("he-IL", { month: "short" });
+    const fmt = new Intl.DateTimeFormat(LOCALE, { month: "short" });
     for (let d = new Date(start.getFullYear(), start.getMonth() + 1, 1); d <= end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
       months.append(el("span", { style: `inset-inline-start:${pos(d)}%`, text: fmt.format(d) }));
     }
     const legend = el("div", { class: "legend" },
-      el("span", { class: "l-sem", text: "סמסטר" }), el("span", { class: "l-exam", text: "בחינות" }), el("span", { class: "l-ev", text: "אירוע בלוח" }));
+      el("span", { class: "l-sem", text: tr("סמסטר") }), el("span", { class: "l-exam", text: tr("בחינות") }), el("span", { class: "l-ev", text: tr("אירוע בלוח") }));
     const pct = Math.round(pos(today));
     return el("div", { class: `yearbar-wrap${birthdays.length ? " has-bday" : ""}` },
-      el("p", { class: "sr-only", text: today < start ? "השנה עוד לא התחילה." : `עברו ${pct}% מהשנה האקדמית.` }),
+      el("p", { class: "sr-only", text: today < start ? tr("השנה עוד לא התחילה.") : tr("עברו {pct}% מהשנה האקדמית.", { pct }) }),
       el("div", { "aria-hidden": "true" }, bar, months), legend);
   }
   // Hebrew numerals: 26 -> כ״ו, 787 -> תשפ״ז (15 and 16 are written ט״ו and ט״ז).
@@ -1709,6 +1751,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   function hebrewDate(date) {
     try {
+      if (EN) return new Intl.DateTimeFormat("en-u-ca-hebrew", { day: "numeric", month: "long", year: "numeric" }).format(date);
       const parts = new Intl.DateTimeFormat("he-IL-u-ca-hebrew", { day: "numeric", month: "long", year: "numeric" }).formatToParts(date);
       const part = (type) => parts.find((p) => p.type === type).value;
       return `${gematria(Number(part("day")))} ב${part("month")} ${gematria(Number(part("year")) % 1000)}`;
@@ -1730,23 +1773,23 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const to = parseDate(term.to);
       const total = Math.round((to - from) / DAY_MS) + 1;
       const passed = Math.round((today - from) / DAY_MS) + 1;
-      eyebrow = "עכשיו";
+      eyebrow = tr("עכשיו");
       title = term.label;
       if (term.kind === "semester") {
         stat = Math.floor(Math.round((today - from) / DAY_MS) / 7) + 1;
-        unit = "שבוע";
-        sub = `עברו ${Math.round((passed / total) * 100)}% מהסמסטר · עוד ${total - passed} ימים עד היום האחרון`;
+        unit = tr("שבוע");
+        sub = tr("עברו {pct}% מהסמסטר · עוד {n} ימים עד היום האחרון", { pct: Math.round((passed / total) * 100), n: total - passed });
       } else {
         stat = total - passed;
-        unit = stat === 1 ? "יום נשאר" : "ימים נשארו";
-        sub = `עד ${dmy(to)}`;
+        unit = stat === 1 ? tr("יום נשאר") : tr("ימים נשארו");
+        sub = tr("עד {date}", { date: dmy(to) });
       }
       after = upcoming[0];
     } else if (upcoming.length) {
       const next = upcoming[0];
       stat = Math.round((parseDate(next.date) - today) / DAY_MS);
-      unit = stat === 1 ? "יום" : "ימים";
-      eyebrow = "הבא בלוח";
+      unit = stat === 1 ? tr("יום") : tr("ימים");
+      eyebrow = tr("הבא בלוח");
       title = next.title;
       sub = formatRange(next);
       after = upcoming[1];
@@ -1764,25 +1807,25 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const chrome = el("div", { class: "now-chrome", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("span", { text: "~/year-1 › status" }));
     const inner = el("div", { class: "now-inner" });
     box.replaceChildren(chrome, inner);
-    const civil = new Intl.DateTimeFormat("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(today);
+    const civil = new Intl.DateTimeFormat(LOCALE, { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(today);
     const hebrew = hebrewDate(today);
     const party = cal.events.find((ev) => ev.kind === "birthday" && parseDate(ev.celebrate || ev.date).getTime() === today.getTime());
-    const partyUrl = party ? mentorUrl(data.site, "מזל טוב רועי! 🎂🎉") : "";
+    const partyUrl = party ? mentorUrl(data.site, tr("מזל טוב רועי! 🎂🎉")) : "";
     const confetti = el("span", { class: "confetti", "aria-hidden": "true" },
       ...Array.from({ length: 18 }, (_, i) => el("i", { style: `--x:${(i * 37) % 100}%;--d:${(i % 6) * 0.35}s;--r:${(i * 53) % 360}deg;--c:${["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"][i % 4]}` })));
     const partyBanner = party ? el("div", { class: "party", role: "status" }, confetti,
-      el("p", { class: "party-title", text: "🎉 היום חוגגים לרועי!" }),
+      el("p", { class: "party-title", text: tr("🎉 היום חוגגים לרועי!") }),
       el("p", { class: "party-sub", text: party.title }),
-      partyUrl ? el("a", { class: "btn party-btn", href: partyUrl, target: "_blank", rel: "noopener noreferrer", text: "שלחו מזל טוב בוואטסאפ 🎂" }) : null) : null;
+      partyUrl ? el("a", { class: "btn party-btn", href: partyUrl, target: "_blank", rel: "noopener noreferrer", text: tr("שלחו מזל טוב בוואטסאפ 🎂") }) : null) : null;
     const dateLine = el("p", { class: "now-date" }, iconNode("calendar"),
       el("time", { datetime: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`, text: civil }),
       hebrew ? el("span", { class: "now-hebrew", text: hebrew }) : null);
     const specialBanners = renderSpecialDays(specialDays(terms, today), today);
     inner.replaceChildren(...[dateLine, partyBanner, ...specialBanners, head,
-      headlineGuide ? el("a", { class: "ev-guide", href: guideHref(headlineGuide), text: "איך מתכוננים ←" }) : null,
+      headlineGuide ? el("a", { class: "ev-guide", href: guideHref(headlineGuide), text: tr("איך מתכוננים ←") }) : null,
       terms.length ? yearBar(terms, events, today) : null,
       after ? el("a", { class: "now-next", href: "#calendar" },
-        el("span", { text: "אחר כך:" }), el("strong", { text: after.title }), el("span", { class: "when", text: `· ${relativeLabel(after, today)}` })) : null].filter(Boolean));
+        el("span", { text: tr("אחר כך:") }), el("strong", { text: after.title }), el("span", { class: "when", text: `· ${relativeLabel(after, today)}` })) : null].filter(Boolean));
     box.hidden = false;
     countUp(num, stat);
   }
@@ -1822,31 +1865,32 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const FAST_MOVES = { 6: 1 }; // a fast that falls on Shabbat is kept on Sunday
   const ATZMAUT_MOVES = { 5: -1, 6: -2, 1: 1 }; // Friday or Shabbat -> Thursday, Monday -> Tuesday
   const SHOAH_MOVES = { 5: -1, 0: 1 }; // Friday -> Thursday, Sunday -> Monday
-  const CANDLE_NAMES = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שביעי", "שמיני"];
+  const CANDLE_NAMES = EN ? ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth"]
+    : ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שביעי", "שמיני"];
   const FESTIVE = ["#ff5f8f", "#ffb347", "#5cb8f0", "#7bd88f"];
   // tone: festive (colour and an effect), quiet (a fast, Shabbat) or memorial (the page turns grey).
   // effect: confetti, drift (falling emoji) or embers. doodle: the emoji on the logo.
   const HOLIDAYS = [
-    { on: (d) => inHebrew(d, "Tishri", 1, 2), doodle: "🍎", title: "שנה טובה ומתוקה!", sub: "ראש השנה", colors: ["#d63a3a", "#e0a526"], effect: { type: "drift", glyphs: ["🍎", "🍯", "🍎"] } },
-    { on: (d) => observedOn(d, "Tishri", 3, FAST_MOVES), icon: "🕊️", title: "צום גדליה", sub: "צום קל", tone: "quiet" },
-    { on: (d) => isHebrew(d, "Tishri", 10), icon: "🤍", title: "גמר חתימה טובה", sub: "יום כיפור", tone: "quiet" },
-    { on: (d) => inHebrew(d, "Tishri", 15, 21), doodle: "🍋", title: "חג סוכות שמח!", sub: "מועדים לשמחה", colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🍋", "🌿", "🌴"] } },
-    { on: (d) => isHebrew(d, "Tishri", 22), doodle: "📜", title: "חג שמח!", sub: "שמחת תורה", colors: ["#0b5fae", "#e0a526"], effect: { type: "confetti" } },
-    { on: (d) => isHebrew(d, "Tevet", 10) && d.getDay() !== 6, icon: "🕯️", title: "צום עשרה בטבת", sub: "צום קל", tone: "quiet" },
-    { on: (d) => isHebrew(d, "Shevat", 15), doodle: "🌱", title: "ט״ו בשבט שמח!", sub: "ראש השנה לאילנות", colors: ["#3f9b4a", "#ff8fb1"], effect: { type: "drift", glyphs: ["🌸", "🌱", "🍃", "🌸"] } },
-    { on: (d) => observedOn(d, "Adar", 13, { 6: -2 }), icon: "📜", title: "תענית אסתר", sub: "צום קל, ומחר פורים", tone: "quiet" },
-    { on: (d) => isHebrew(d, "Adar", 14), doodle: "🎭", title: "פורים שמח!", sub: "ונהפוכו", colors: ["#8e44ad", "#ff5f8f"], effect: { type: "drift", glyphs: ["🎭", "🎉", "🍬", "👑"] }, flip: true },
-    { on: (d) => inHebrew(d, "Nisan", 15, 21), doodle: "🍷", title: "חג פסח שמח!", sub: "חג החירות", colors: ["#3f9b4a", "#b8336a"], effect: { type: "drift", glyphs: ["🌸", "🌼", "🌷"] } },
-    { on: (d) => observedOn(d, "Nisan", 27, SHOAH_MOVES), icon: "🕯️", title: "יום הזיכרון לשואה ולגבורה", sub: "זוכרים", tone: "memorial" },
-    { on: (d) => observedOn(addDays(d, 1), "Iyar", 5, ATZMAUT_MOVES), icon: "🕯️", title: "יום הזיכרון לחללי מערכות ישראל ונפגעי פעולות האיבה", sub: "יהי זכרם ברוך", tone: "memorial" },
-    { on: (d) => observedOn(d, "Iyar", 5, ATZMAUT_MOVES), doodle: "🇮🇱", title: "חג עצמאות שמח!", sub: "יום העצמאות", colors: ["#0038b8", "#5cb8f0"], effect: { type: "confetti", colors: ["#0038b8", "#ffffff", "#5cb8f0", "#0038b8"] } },
-    { on: (d) => isHebrew(d, "Iyar", 18), doodle: "🔥", title: "ל״ג בעומר שמח!", sub: "שימו לב לגחלים", colors: ["#e8590c", "#ffb347"], effect: { type: "embers" } },
-    { on: (d) => isHebrew(d, "Iyar", 28), doodle: "✨", title: "יום ירושלים", sub: "ירושלים של זהב", colors: ["#c99a2e", "#e8c872"], effect: { type: "drift", glyphs: ["✨", "✨", "💛"] } },
-    { on: (d) => isHebrew(d, "Sivan", 6), doodle: "🌾", title: "חג שבועות שמח!", sub: "חג מתן תורה", colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🌾", "🌸", "🧀"] } },
-    { on: (d) => observedOn(d, "Tamuz", 17, FAST_MOVES), icon: "🕯️", title: "צום י״ז בתמוז", sub: "צום קל", tone: "quiet" },
-    { on: (d) => observedOn(d, "Av", 9, FAST_MOVES), icon: "🕯️", title: "תשעה באב", sub: "צום קל", tone: "memorial" },
-    { on: (d) => isHebrew(d, "Av", 15), doodle: "💗", title: "ט״ו באב", sub: "חג האהבה", colors: ["#d63a6e", "#ff8fb1"], effect: { type: "drift", glyphs: ["💗", "💕", "🌹"] } },
-    { on: (d) => d.getMonth() === 9 && d.getDate() === 7, icon: "🕯️", title: "7 באוקטובר", sub: "זוכרים את הנרצחים והנופלים. יהי זכרם ברוך.", tone: "memorial" },
+    { on: (d) => inHebrew(d, "Tishri", 1, 2), doodle: "🍎", title: tr("שנה טובה ומתוקה!"), sub: tr("ראש השנה"), colors: ["#d63a3a", "#e0a526"], effect: { type: "drift", glyphs: ["🍎", "🍯", "🍎"] } },
+    { on: (d) => observedOn(d, "Tishri", 3, FAST_MOVES), icon: "🕊️", title: tr("צום גדליה"), sub: tr("צום קל"), tone: "quiet" },
+    { on: (d) => isHebrew(d, "Tishri", 10), icon: "🤍", title: tr("גמר חתימה טובה"), sub: tr("יום כיפור"), tone: "quiet" },
+    { on: (d) => inHebrew(d, "Tishri", 15, 21), doodle: "🍋", title: tr("חג סוכות שמח!"), sub: tr("מועדים לשמחה"), colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🍋", "🌿", "🌴"] } },
+    { on: (d) => isHebrew(d, "Tishri", 22), doodle: "📜", title: tr("חג שמח!"), sub: tr("שמחת תורה"), colors: ["#0b5fae", "#e0a526"], effect: { type: "confetti" } },
+    { on: (d) => isHebrew(d, "Tevet", 10) && d.getDay() !== 6, icon: "🕯️", title: tr("צום עשרה בטבת"), sub: tr("צום קל"), tone: "quiet" },
+    { on: (d) => isHebrew(d, "Shevat", 15), doodle: "🌱", title: tr("ט״ו בשבט שמח!"), sub: tr("ראש השנה לאילנות"), colors: ["#3f9b4a", "#ff8fb1"], effect: { type: "drift", glyphs: ["🌸", "🌱", "🍃", "🌸"] } },
+    { on: (d) => observedOn(d, "Adar", 13, { 6: -2 }), icon: "📜", title: tr("תענית אסתר"), sub: tr("צום קל, ומחר פורים"), tone: "quiet" },
+    { on: (d) => isHebrew(d, "Adar", 14), doodle: "🎭", title: tr("פורים שמח!"), sub: tr("ונהפוכו"), colors: ["#8e44ad", "#ff5f8f"], effect: { type: "drift", glyphs: ["🎭", "🎉", "🍬", "👑"] }, flip: true },
+    { on: (d) => inHebrew(d, "Nisan", 15, 21), doodle: "🍷", title: tr("חג פסח שמח!"), sub: tr("חג החירות"), colors: ["#3f9b4a", "#b8336a"], effect: { type: "drift", glyphs: ["🌸", "🌼", "🌷"] } },
+    { on: (d) => observedOn(d, "Nisan", 27, SHOAH_MOVES), icon: "🕯️", title: tr("יום הזיכרון לשואה ולגבורה"), sub: tr("זוכרים"), tone: "memorial" },
+    { on: (d) => observedOn(addDays(d, 1), "Iyar", 5, ATZMAUT_MOVES), icon: "🕯️", title: tr("יום הזיכרון לחללי מערכות ישראל ונפגעי פעולות האיבה"), sub: tr("יהי זכרם ברוך"), tone: "memorial" },
+    { on: (d) => observedOn(d, "Iyar", 5, ATZMAUT_MOVES), doodle: "🇮🇱", title: tr("חג עצמאות שמח!"), sub: tr("יום העצמאות"), colors: ["#0038b8", "#5cb8f0"], effect: { type: "confetti", colors: ["#0038b8", "#ffffff", "#5cb8f0", "#0038b8"] } },
+    { on: (d) => isHebrew(d, "Iyar", 18), doodle: "🔥", title: tr("ל״ג בעומר שמח!"), sub: tr("שימו לב לגחלים"), colors: ["#e8590c", "#ffb347"], effect: { type: "embers" } },
+    { on: (d) => isHebrew(d, "Iyar", 28), doodle: "✨", title: tr("יום ירושלים"), sub: tr("ירושלים של זהב"), colors: ["#c99a2e", "#e8c872"], effect: { type: "drift", glyphs: ["✨", "✨", "💛"] } },
+    { on: (d) => isHebrew(d, "Sivan", 6), doodle: "🌾", title: tr("חג שבועות שמח!"), sub: tr("חג מתן תורה"), colors: ["#3f9b4a", "#e5c12b"], effect: { type: "drift", glyphs: ["🌾", "🌸", "🧀"] } },
+    { on: (d) => observedOn(d, "Tamuz", 17, FAST_MOVES), icon: "🕯️", title: tr("צום י״ז בתמוז"), sub: tr("צום קל"), tone: "quiet" },
+    { on: (d) => observedOn(d, "Av", 9, FAST_MOVES), icon: "🕯️", title: tr("תשעה באב"), sub: tr("צום קל"), tone: "memorial" },
+    { on: (d) => isHebrew(d, "Av", 15), doodle: "💗", title: tr("ט״ו באב"), sub: tr("חג האהבה"), colors: ["#d63a6e", "#ff8fb1"], effect: { type: "drift", glyphs: ["💗", "💕", "🌹"] } },
+    { on: (d) => d.getMonth() === 9 && d.getDate() === 7, icon: "🕯️", title: tr("7 באוקטובר"), sub: tr("זוכרים את הנרצחים והנופלים. יהי זכרם ברוך."), tone: "memorial" },
   ];
   // Days since the eve of Chanukah (24 Kislev): 0 is the eve, 8 is the eighth day. -1 outside Chanukah.
   function chanukahDay(date) {
@@ -1858,18 +1902,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const k = chanukahDay(today);
     if (k >= 0) {
       const lit = Math.min(k + 1, 8);
-      list.push({ id: "chanukah", doodle: "🕎", title: "חנוכה שמח!", colors: ["#0b5fae", "#ffb347"], menorah: lit,
-        sub: k === 0 ? "ערב חנוכה · הערב מדליקים נר ראשון" : k === 8 ? "זאת חנוכה, היום השמיני" : `הערב מדליקים נר ${CANDLE_NAMES[k]}`,
+      list.push({ id: "chanukah", doodle: "🕎", title: tr("חנוכה שמח!"), colors: ["#0b5fae", "#ffb347"], menorah: lit,
+        sub: k === 0 ? tr("ערב חנוכה · הערב מדליקים נר ראשון") : k === 8 ? tr("זאת חנוכה, היום השמיני") : tr("הערב מדליקים נר {n}", { n: CANDLE_NAMES[k] }),
         effect: { type: "embers", colors: ["#ffc04d", "#ff7a1a", "#fff6c2"] } });
     }
     HOLIDAYS.forEach((h, i) => { if (h.on(today)) list.push({ id: `h${i}`, tone: "festive", ...h }); });
     const sameDay = (iso) => parseDate(iso).getTime() === today.getTime();
     for (const t of terms) {
-      if (t.kind === "semester" && sameDay(t.from)) list.push({ id: "term-start", doodle: "🎒", mascot: "wave", title: "בהצלחה בסמסטר!", sub: `היום הראשון של ${t.label}`, effect: { type: "confetti" } });
-      else if (t.kind === "semester" && sameDay(t.to)) list.push({ id: "term-end", doodle: "🎉", mascot: "celebrate", title: "יום אחרון של הסמסטר!", sub: `היום האחרון של ${t.label}. בהצלחה בבחינות`, effect: { type: "confetti" } });
-      else if (t.kind === "exams" && sameDay(t.to)) list.push({ id: "exams-end", doodle: "🎓", mascot: "celebrate", title: "סיימתם את תקופת הבחינות!", sub: `היום האחרון של ${t.label}. כל הכבוד`, effect: { type: "confetti" } });
+      if (t.kind === "semester" && sameDay(t.from)) list.push({ id: "term-start", doodle: "🎒", mascot: "wave", title: tr("בהצלחה בסמסטר!"), sub: tr("היום הראשון של {term}", { term: t.label }), effect: { type: "confetti" } });
+      else if (t.kind === "semester" && sameDay(t.to)) list.push({ id: "term-end", doodle: "🎉", mascot: "celebrate", title: tr("יום אחרון של הסמסטר!"), sub: tr("היום האחרון של {term}. בהצלחה בבחינות", { term: t.label }), effect: { type: "confetti" } });
+      else if (t.kind === "exams" && sameDay(t.to)) list.push({ id: "exams-end", doodle: "🎓", mascot: "celebrate", title: tr("סיימתם את תקופת הבחינות!"), sub: tr("היום האחרון של {term}. כל הכבוד", { term: t.label }), effect: { type: "confetti" } });
     }
-    if (!list.length && today.getDay() === 5) list.push({ id: "shabbat", icon: "🕯️", title: "שבת שלום", sub: "נתראה ביום ראשון", tone: "quiet" });
+    if (!list.length && today.getDay() === 5) list.push({ id: "shabbat", icon: "🕯️", title: tr("שבת שלום"), sub: tr("נתראה ביום ראשון"), tone: "quiet" });
     for (const sp of list) sp.tone = sp.tone || "festive";
     // A memorial day is not a day for confetti: other days keep their banner, without an effect or a Doodle.
     if (list.some((sp) => sp.tone === "memorial")) for (const sp of list) { delete sp.effect; delete sp.doodle; delete sp.flip; }
@@ -1917,7 +1961,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   function menorah(lit) {
     // Left to right on screen: candles 8..5, the shamash, candles 4..1. Candle 1 is the rightmost.
     const order = [8, 7, 6, 5, 0, 4, 3, 2, 1];
-    return el("span", { class: "menorah", dir: "ltr", role: "img", "aria-label": `חנוכייה עם ${lit} נרות דולקים` },
+    return el("span", { class: "menorah", dir: "ltr", role: "img", "aria-label": tr("חנוכייה עם {n} נרות דולקים", { n: lit }) },
       ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
   }
   // ---------- Mascots: two characters, he (mascot-*) and she (her-*). Each page load picks
@@ -1943,7 +1987,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const glyph = sp.doodle || sp.icon || "✨";
     const replay = () => { playEffect(sp.effect); if (sp.flip) flipTitle(); };
     const icon = sp.effect
-      ? el("button", { class: "special-icon", type: "button", "aria-label": "להפעיל שוב את החגיגה", text: glyph })
+      ? el("button", { class: "special-icon", type: "button", "aria-label": tr("להפעיל שוב את החגיגה"), text: glyph })
       : el("span", { class: "special-icon", "aria-hidden": "true", text: glyph });
     if (sp.effect) icon.addEventListener("click", replay);
     const [a, b] = sp.colors || ["#d63a6e", "#d9701a"];
@@ -1958,7 +2002,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const lead = specials.find((sp) => sp.doodle);
     if (lead) {
       const brand = $(".brand");
-      const doodle = el("button", { class: "doodle", type: "button", title: lead.title, "aria-label": `${lead.title} להפעיל שוב את החגיגה`, text: lead.doodle });
+      const doodle = el("button", { class: "doodle", type: "button", title: lead.title, "aria-label": tr("{title} להפעיל שוב את החגיגה", { title: lead.title }), text: lead.doodle });
       doodle.addEventListener("click", () => { playEffect(lead.effect); if (lead.flip) flipTitle(); });
       brand.append(doodle);
     }
@@ -1985,8 +2029,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     { words: ["do a barrel roll", "barrel roll", "סלטה", "תעשה סלטה"], run: rollContent },
     { words: ["askew", "tilt", "עקומ", "עקמומי"], hold: "egg-askew" },
     { words: ["hello world", "print hello world", "שלומ עולמ"], run: () => { playEffect({ type: "drift", code: true, glyphs: ["{ }", ";", "</>", "0", "1", "λ", "()", "=>"] }); eggToast("Hello, CS! 👋"); } },
-    { words: ["sudo", "sudo su", "sudo rm rf"], run: () => eggToast("sudo: אינך בקובץ ה-sudoers. האירוע ידווח לרועי 😉") },
-    { words: ["42"], run: () => eggToast("42: התשובה לשאלה הגדולה של החיים, היקום וכל השאר. לשאר השאלות יש את האתר הזה 🙂") },
+    { words: ["sudo", "sudo su", "sudo rm rf"], run: () => eggToast(tr("sudo: אינך בקובץ ה-sudoers. האירוע ידווח לרועי 😉")) },
+    { words: ["42"], run: () => eggToast(tr("42: התשובה לשאלה הגדולה של החיים, היקום וכל השאר. לשאר השאלות יש את האתר הזה 🙂")) },
   ];
   const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
   function setupEasterEggs() {
@@ -2012,7 +2056,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (step === KONAMI.length) {
         step = 0;
         playEffect({ type: "confetti" });
-        eggToast("↑↑↓↓←→←→BA · קיבלתם 30 חיים נוספים לסמסטר 🎮");
+        eggToast(tr("↑↑↓↓←→←→BA · קיבלתם 30 חיים נוספים לסמסטר 🎮"));
       }
     });
   }
@@ -2027,20 +2071,20 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const featured = new Set(data.featured || []);
     const index = [];
     for (const guide of data.guides) {
-      index.push({ type: "מדריך", title: guide.title, sub: guide.summary || "", suggest: true, doc: guideDoc(guide),
+      index.push({ type: tr("מדריך"), title: guide.title, sub: guide.summary || "", suggest: true, doc: guideDoc(guide),
         href: guideHref(guide.id), run: () => navigateTo(guideHref(guide.id)) });
     }
     for (const item of itemsById.values()) {
-      index.push({ type: "קישור", title: item.name, sub: item.desc, suggest: featured.has(item.id), doc: itemDoc(item),
+      index.push({ type: tr("קישור"), title: item.name, sub: item.desc, suggest: featured.has(item.id), doc: itemDoc(item),
         href: item.url, external: true, run: () => window.open(item.url, "_blank", "noopener") });
     }
     (data.faq || []).forEach((entry, i) => {
-      index.push({ type: "שאלה", title: entry.q, sub: entry.a, doc: faqEntries[i].doc, node: faqEntries[i].node });
+      index.push({ type: tr("שאלה"), title: entry.q, sub: entry.a, doc: faqEntries[i].doc, node: faqEntries[i].node });
     });
     const sortedEvents = [...data.calendar.events].sort((a, b) => a.date.localeCompare(b.date));
     sortedEvents.forEach((ev, i) => {
       const birthday = ev.kind === "birthday";
-      index.push({ type: birthday ? "🎂 יום הולדת" : "תאריך", title: ev.title, sub: [formatRange(ev), ev.note].filter(Boolean).join(" · "),
+      index.push({ type: birthday ? tr("🎂 יום הולדת") : tr("תאריך"), title: ev.title, sub: [formatRange(ev), ev.note].filter(Boolean).join(" · "),
         doc: eventEntries[i].doc, node: eventEntries[i].node, birthday });
     });
     return index;
@@ -2061,7 +2105,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       results = search();
       active = Math.min(active, Math.max(0, results.length - 1));
       if (!results.length) {
-        list.replaceChildren(el("li", { class: "p-empty", role: "presentation", text: "לא נמצא. נסו מילה אחרת." }));
+        list.replaceChildren(el("li", { class: "p-empty", role: "presentation", text: tr("לא נמצא. נסו מילה אחרת.") }));
         input.removeAttribute("aria-activedescendant");
         return;
       }
@@ -2130,11 +2174,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   // ---------- Navigation: desktop tabs + mobile tab bar with scroll-spy ----------
   const NAV_ITEMS = [
-    { id: "top", label: "בית", icon: "home", mobileOnly: true },
-    { id: "guides", label: "מדריכים", icon: "calendar" },
-    { id: "categories", label: "קישורים", icon: "link" },
-    { id: "calendar", label: "לוח שנה", icon: "calendar" },
-    { id: "faq", label: "שאלות", icon: "help" },
+    { id: "top", label: tr("בית"), icon: "home", mobileOnly: true },
+    { id: "guides", label: tr("מדריכים"), icon: "calendar" },
+    { id: "categories", label: tr("קישורים"), icon: "link" },
+    { id: "calendar", label: tr("לוח שנה"), icon: "calendar" },
+    { id: "faq", label: tr("שאלות"), icon: "help" },
   ];
   NAV_ITEMS[1].icon = "book";
   function setupNav() {
@@ -2176,7 +2220,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   // ---------- Theme: auto → dark → light ----------
   const THEME_KEY = "nr-theme";
-  const THEME_LABEL = { dark: "מעבר לערכה בהירה", light: "מעבר לערכה כהה" };
+  const THEME_LABEL = { dark: tr("מעבר לערכה בהירה"), light: tr("מעבר לערכה כהה") };
   // Follows the device by default. The button only flips between light and dark; flipping back
   // to whatever the device uses drops the override, so the site follows the device again.
   function setupTheme() {
@@ -2201,7 +2245,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       } catch (err) { console.warn("Could not save theme", err); }
       if (followDevice) delete root.dataset.theme; else root.dataset.theme = next;
       paint();
-      announce(next === "dark" ? "עברנו לערכה כהה" : "עברנו לערכה בהירה");
+      announce(next === "dark" ? tr("עברנו לערכה כהה") : tr("עברנו לערכה בהירה"));
     });
     deviceDark.addEventListener("change", paint);
     paint();
@@ -2214,18 +2258,18 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   function mentorItem(site) {
     const url = mentorUrl(site, site && site.whatsappText);
-    return url ? { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url } : null;
+    return url ? { id: "mentor", name: tr("וואטסאפ פרטי לרועי"), desc: tr("הודעה פרטית לחונך"), url } : null;
   }
   function renderContact(data) {
     const mentor = mentorItem(data.site);
     if (!mentor) return;
-    $(".contact").replaceChildren("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או ",
-      el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: "בהודעה פרטית בוואטסאפ" }), ".");
+    $(".contact").replaceChildren(tr("חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה, או "),
+      el("a", { href: mentor.url, target: "_blank", rel: "noopener noreferrer", text: tr("בהודעה פרטית בוואטסאפ") }), ".");
   }
   // The credit line ends with the author's LinkedIn and portfolio, each shown only when its URL is set.
   function renderCredit(data) {
     const site = data.site || {};
-    const links = [[site.authorUrl, "לינקדאין"], [site.portfolioUrl, "פורטפוליו"]]
+    const links = [[site.authorUrl, tr("לינקדאין")], [site.portfolioUrl, tr("פורטפוליו")]]
       .filter(([url]) => isSafeUrl(url))
       .map(([href, text]) => el("a", { href, target: "_blank", rel: "noopener noreferrer", text }));
     if (!links.length) return;
@@ -2237,12 +2281,51 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const details = $("#install-more");
     if (!mine) {
       details.open = true;
-      $("#install-summary").textContent = "איך עושים את זה";
+      $("#install-summary").textContent = tr("איך עושים את זה");
       return;
     }
     const line = $("#install-mine");
     line.replaceChildren(...[...mine.cloneNode(true).childNodes]);
     line.hidden = false;
+  }
+  // ---------- Language button and the page's fixed text ----------
+  // The fixed text in the HTML (headings, labels, the footer) is Hebrew; in English each text and label with a pair in data.en.js is swapped.
+  function translateStatic(data) {
+    if (!EN) return;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT,
+      { acceptNode: (n) => (n.parentElement.closest("script, style") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const key = node.nodeValue.trim();
+      if (key && UI_EN[key]) node.nodeValue = node.nodeValue.replace(key, UI_EN[key]);
+    }
+    for (const attr of ["aria-label", "placeholder", "alt", "title"]) {
+      document.querySelectorAll(`[${attr}]`).forEach((node) => {
+        const value = node.getAttribute(attr);
+        if (UI_EN[value]) node.setAttribute(attr, UI_EN[value]);
+      });
+    }
+    // "Last updated" ends with the academic year, which changes every year, so it is written here.
+    const updated = $("#updated");
+    const year = (data.site || {}).academicYear;
+    if (updated && updated.lastChild && updated.lastChild.nodeType === Node.TEXT_NODE && updated.lastChild !== updated.firstChild) {
+      updated.lastChild.nodeValue = year ? ` · ${tr("שנת הלימודים {year}", { year })}` : "";
+    }
+    document.title = BASE_TITLE;
+  }
+  function setupLang() {
+    const btn = $("#lang-btn");
+    if (EN) {
+      btn.textContent = "עב";
+      btn.lang = "he";
+      btn.setAttribute("aria-label", "עברית");
+    }
+    btn.title = btn.getAttribute("aria-label");
+    btn.addEventListener("click", () => {
+      const url = new URL(location.href);
+      url.searchParams.delete("lang");
+      try { localStorage.setItem("nr-lang", EN ? "he" : "en"); } catch (err) { url.searchParams.set("lang", EN ? "he" : "en"); /* storage blocked: the address carries it */ }
+      location.replace(url.href);
+    });
   }
   // ---------- Sticky search ----------
   let stickySentinel = null;
@@ -2329,8 +2412,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       reorder(groups.faq, active);
     }
     function resultsText(total) {
-      if (total === 0) return "אין תוצאות";
-      return total === 1 ? "נמצאה תוצאה אחת" : `נמצאו ${total} תוצאות`;
+      if (total === 0) return tr("אין תוצאות");
+      return total === 1 ? tr("נמצאה תוצאה אחת") : tr("נמצאו {n} תוצאות", { n: total });
     }
     // The few best matches across everything, one tap away, above the full results.
     let shownHits = [];
@@ -2378,8 +2461,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       setHidden(empty, !active || total > 0);
       $("#empty-q").textContent = raw;
       if (!active) statusEl.replaceChildren();
-      else if (total && ranked.remapped) statusEl.replaceChildren("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „", el("bdi", { text: ranked.remapped }), "”");
-      else if (total && ranked.mode === "any") statusEl.replaceChildren(`לא נמצא משהו שמתאים לכל המילים. ${resultsText(total)} שמתאימות לחלק מהן.`);
+      else if (total && ranked.remapped) statusEl.replaceChildren(tr("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „"), el("bdi", { text: ranked.remapped }), "”");
+      else if (total && ranked.mode === "any") statusEl.replaceChildren(tr("לא נמצא משהו שמתאים לכל המילים. {results} שמתאימות לחלק מהן.", { results: resultsText(total) }));
       else statusEl.replaceChildren(resultsText(total));
       announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
       // The strip appears when there is a lot to sift through, or when a birthday is among the results.
@@ -2445,20 +2528,20 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   // ---------- Boot ----------
   function showFatal(message) {
-    $("#content").replaceChildren(el("div", { class: "fatal", role: "alert" }, el("strong", { text: "משהו לא נטען כמו שצריך." }), el("p", { text: message })));
+    $("#content").replaceChildren(el("div", { class: "fatal", role: "alert" }, el("strong", { text: tr("משהו לא נטען כמו שצריך.") }), el("p", { text: message })));
   }
   function init() {
     const data = loadData();
     if (!data) {
       console.error("SITE_DATA is missing. data.js probably has a syntax error (a missing comma or backtick).");
-      showFatal("נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו: פסיק חסר, או גרשיים שהמקלדת בטלפון החליפה (‘ ’ או “ ” במקום `).");
+      showFatal(tr("נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו: פסיק חסר, או גרשיים שהמקלדת בטלפון החליפה (‘ ’ או “ ” במקום `)."));
       return;
     }
     try {
       start(data);
     } catch (err) {
       console.error(err);
-      showFatal("משהו בקובץ data.js לא בפורמט הנכון, כנראה שדה חסר או ריק. כדאי לבדוק את השינוי האחרון שנעשה בו.");
+      showFatal(tr("משהו בקובץ data.js לא בפורמט הנכון, כנראה שדה חסר או ריק. כדאי לבדוק את השינוי האחרון שנעשה בו."));
     }
   }
   // Dates on the page are worked out once, at load. A tab or home-screen app left open overnight
@@ -2475,6 +2558,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     // see it without running JavaScript. The page renders it again below, with today's dates and the
     // buttons, so the static copy goes first.
     document.querySelectorAll("[data-pre]").forEach((node) => node.remove());
+    translateStatic(data);
+    setupLang();
     watchForNewDay();
     const itemsById = new Map(data.categories.flatMap((cat) => cat.items.map((item) => [item.id, { ...item, categoryId: cat.id }])));
     const mentor = mentorItem(data.site);
