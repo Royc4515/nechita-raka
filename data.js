@@ -656,10 +656,10 @@ window.SITE_DATA = {
         },
         {
           id: `p100-bistro`,
-          desc: `בית קפה`,
+          desc: `בית קפה, מעדנייה ומסעדה`,
           name: `Bistro Deli & Coffee bar`,
           note: `א'–ה' 8:00–22:00, שישי 8:00–14:00, שבת סגור.`,
-          url: `https://maps.google.com/?cid=11346894890511520844`,
+          url: `https://bistrodelicoffeebar.co.il/`,
           keywords: [`קפה`, `בית קפה`, `ביסטרו`, `ארוחת בוקר`, `כריכים`],
         },
         {
@@ -682,8 +682,8 @@ window.SITE_DATA = {
           id: `p100-falafel`,
           desc: `פלאפל וחומוס`,
           name: `פלאפל סביח | חומוס בר`,
-          note: `א'–ה' 11:30–21:00, שישי ושבת סגור.`,
-          url: `https://maps.google.com/?cid=1910114878825719199`,
+          note: `כשר למהדרין. א'–ה' 11:30–21:00, שישי ושבת סגור.`,
+          url: `https://order.plweb.online/wl/628225`,
           keywords: [`פלאפל`, `חומוס`, `סביח`, `צמחוני`],
         },
         {
@@ -758,10 +758,10 @@ window.SITE_DATA = {
         },
         {
           id: `ri-elishko`,
-          desc: `גריל בר ישראלי`,
+          desc: `שווארמה, פלאפל וגריל`,
           name: `אלישקו`,
           note: `א'–ה' 10:30–21:00, שישי ושבת סגור.`,
-          url: `https://maps.google.com/?cid=12496198179338974186`,
+          url: `https://elishco.co.il/`,
           keywords: [`גריל`, `בשרי`, `שיפודים`, `שווארמה`],
         },
         {
@@ -792,8 +792,8 @@ window.SITE_DATA = {
           id: `ri-skewers`,
           desc: `שיפודים`,
           name: `שיפודי הגבעה`,
-          note: `א'–ה' 10:00–22:00, שישי 10:00–15:00, שבת סגור.`,
-          url: `https://maps.google.com/?cid=460988263984174146`,
+          note: `כשר למהדרין. א'–ה' 10:00–22:00, שישי 10:00–15:00, שבת סגור.`,
+          url: `https://wolt.com/he/isr/petah-tikva/restaurant/shipudey-hagiva`,
           keywords: [`שיפודים`, `גריל`, `בשרי`],
         },
         {
@@ -806,10 +806,10 @@ window.SITE_DATA = {
         },
         {
           id: `ri-talbis`,
-          desc: `אוכל מהיר`,
+          desc: `קריספי צ'יקן וכריכים`,
           name: `טלביס`,
-          note: `א'–ה' 11:00–22:00, שישי ושבת סגור.`,
-          url: `https://maps.google.com/?cid=13318168639152613121`,
+          note: `כשר למהדרין. א'–ה' 11:00–22:00, שישי ושבת סגור.`,
+          url: `https://www.mishloha.co.il/r/631454`,
           keywords: [`אוכל מהיר`],
         },
         {
