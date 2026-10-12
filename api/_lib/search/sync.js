@@ -50,6 +50,8 @@ export async function handleSync(request, deps) {
     const ask = (dimensions) => deps.query({ siteUrl: deps.gsc.siteUrl, token, startDate: from, endDate: to, dimensions });
     const [byDate, byQuery, byPage] = await Promise.all([ask(["date"]), ask(["date", "query"]), ask(["date", "page"])]);
     const counters = toCounters({ byDate, byQuery, byPage }, deps.gsc.siteUrl);
+    // An empty answer is more likely a hiccup than 30 days with no search at all: keep the last copy.
+    if (!counters.length) return json({ synced: false, from, to, rows: 0, reason: "empty" });
     await deps.store.replaceRange(from, to, GSC_KINDS, counters);
     return json({ synced: true, from, to, rows: counters.length });
   } catch (err) {

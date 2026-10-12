@@ -22,6 +22,8 @@ test("pages become the site's own paths and queries are cleaned", () => {
   assert.equal(pagePath("https://nechita-raka.vercel.app/exams", SITE_URL), "/exams");
   assert.equal(pagePath("https://nechita-raka.vercel.app/exams/", SITE_URL), "/exams");
   assert.equal(pagePath("https://other.example/exams", SITE_URL), null);
+  assert.equal(pagePath("https://nechita-raka.vercel.app//evil.example/x", SITE_URL), "/evil.example/x");
+  assert.equal(pagePath(`https://nechita-raka.vercel.app/${"a".repeat(400)}`, SITE_URL), null);
   assert.equal(queryKey("  נחיתה ​ רכה  "), "נחיתה רכה");
   assert.equal(queryKey("x".repeat(200)).length, 120);
 });
@@ -44,14 +46,16 @@ test("Search Console rows become daily counters, without zeros", () => {
   assert.ok(!counters.some((c) => c.key.includes("evil")));
 });
 
-test("the copy replaces the synced days in SQL, kind by kind", async () => {
-  const calls = [];
-  const store = new PgStatsStore(async (text, params) => { calls.push({ text, params }); return []; });
+test("the copy replaces the synced days in one transaction", async () => {
+  const transactions = [];
+  const store = new PgStatsStore(async () => [], async (statements) => { transactions.push(statements); });
   await store.replaceRange("2026-10-01", "2026-10-11", GSC_KINDS, [{ day: "2026-10-10", kind: "gsc_impr", key: "all", count: 40 }]);
-  const del = calls.find((c) => c.text.startsWith("delete"));
-  assert.deepEqual(del.params, ["2026-10-01", "2026-10-11", GSC_KINDS]);
-  const ins = calls.find((c) => c.text.includes("unnest($1::text[]"));
-  assert.deepEqual(ins.params, [["2026-10-10"], ["gsc_impr"], ["all"], [40]]);
+  assert.equal(transactions.length, 1);
+  const [[delText, delParams], [insText, insParams]] = transactions[0];
+  assert.match(delText, /^delete/);
+  assert.deepEqual(delParams, ["2026-10-01", "2026-10-11", GSC_KINDS]);
+  assert.match(insText, /unnest\(\$1::text\[\]/);
+  assert.deepEqual(insParams, [["2026-10-10"], ["gsc_impr"], ["all"], [40]]);
 });
 
 test("the sync asks for 30 days from the history start, and fails quietly", async () => {
@@ -74,6 +78,11 @@ test("the sync asks for 30 days from the history start, and fails quietly", asyn
   const later = await (await handleSync(new Request("https://x"), { ...deps, now: () => new Date("2026-12-01T04:00:00Z") })).json();
   assert.equal(later.from, "2026-11-01");
   assert.equal((await handleSync(new Request("https://x"), { ...deps, token: async () => { throw new Error("denied"); } })).status, 503);
+  // An empty answer keeps the last copy instead of wiping it.
+  replaced = null;
+  const empty = await (await handleSync(new Request("https://x"), { ...deps, query: async () => [] })).json();
+  assert.equal(empty.synced, false);
+  assert.equal(replaced, null);
   assert.equal((await handleSync(new Request("https://x"), { ...deps, gsc: null })).status, 503);
   assert.equal((await handleSync(new Request("https://x"), { ...deps, cronSecret: "s" })).status, 403);
 });

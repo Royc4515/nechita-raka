@@ -9,8 +9,10 @@ import { ExternalAccountClient } from "google-auth-library";
 
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 const API = "https://searchconsole.googleapis.com/webmasters/v3/sites";
-/** Search Console keeps 16 months; a site this size has far fewer rows a day. */
-const ROW_LIMIT = 5_000;
+/** The most one request may ask for; 30 days of this site's queries are far fewer. */
+const ROW_LIMIT = 25_000;
+/** A key longer than this can't be stored (site_stats checks it), so such a page is skipped. */
+const MAX_PATH = 300;
 
 /** `null` (sync off) unless the federation settings are all set. None of them is a secret. */
 export function readGscConfig(env = process.env) {
@@ -58,8 +60,8 @@ export function pagePath(url, siteUrl) {
   try {
     const page = new URL(url);
     if (page.origin !== new URL(siteUrl).origin) return null;
-    const path = page.pathname.replace(/\.html$/, "").replace(/\/index$/, "/").replace(/(.)\/+$/, "$1");
-    return path || "/";
+    const path = page.pathname.replace(/^\/+/, "/").replace(/\.html$/, "").replace(/\/index$/, "/").replace(/(.)\/+$/, "$1");
+    return path.length <= MAX_PATH ? path || "/" : null;
   } catch {
     return null;
   }

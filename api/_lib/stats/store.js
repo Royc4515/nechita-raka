@@ -26,10 +26,16 @@ const VISITORS_SCHEMA = `create table if not exists site_visitors (
   primary key (day, hash)
 )`;
 
-/** query: (text, params) => Promise<rows>. */
+/**
+ * query: (text, params) => Promise<rows>. transaction: ([[text, params], ...]) => Promise, all or
+ * nothing; without one (tests), the statements run one after another.
+ */
 export class PgStatsStore {
-  constructor(query) {
+  constructor(query, transaction = null) {
     this.query = query;
+    this.transaction = transaction ?? (async (statements) => {
+      for (const [text, params] of statements) await query(text, params);
+    });
     this.schemaReady = null;
   }
 
@@ -60,16 +66,18 @@ export class PgStatsStore {
    */
   async replaceRange(from, to, kinds, counters) {
     await this.ensureSchema();
-    await this.query(`delete from site_stats where day between $1::date and $2::date and kind = any($3::text[])`, [from, to, kinds]);
+    // One transaction: a failed insert leaves the previous copy in place, not a hole.
+    const statements = [[`delete from site_stats where day between $1::date and $2::date and kind = any($3::text[])`, [from, to, kinds]]];
     for (let i = 0; i < counters.length; i += 1_000) {
       const part = counters.slice(i, i + 1_000);
-      await this.query(
+      statements.push([
         `insert into site_stats as s (day, kind, key, count)
          select d::date, k, key, c from unnest($1::text[], $2::text[], $3::text[], $4::int[]) as t(d, k, key, c)
          on conflict (day, kind, key) do update set count = excluded.count`,
         [part.map((c) => c.day), part.map((c) => c.kind), part.map((c) => c.key), part.map((c) => c.count)],
-      );
+      ]);
     }
+    await this.transaction(statements);
   }
 
   /** Like bump for one free-text key, unless the day already has MAX_FREE_KEYS_PER_DAY other keys of this kind. */
@@ -154,7 +162,13 @@ let shared = null;
 export function statsStoreFor(databaseUrl) {
   if (shared?.url !== databaseUrl) {
     const sql = neon(databaseUrl);
-    shared = { url: databaseUrl, store: new PgStatsStore((text, params) => sql.query(text, params)) };
+    shared = {
+      url: databaseUrl,
+      store: new PgStatsStore(
+        (text, params) => sql.query(text, params),
+        (statements) => sql.transaction(statements.map(([text, params]) => sql.query(text, params))),
+      ),
+    };
   }
   return shared.store;
 }
