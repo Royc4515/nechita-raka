@@ -104,6 +104,53 @@ test("hooks remove phone numbers written with Unicode hyphens or dashes", () => 
   }
 });
 
+test("the model never sees phone numbers: the facts say where to find them instead", () => {
+  const facts = chunks.map((c) => c.text).join("\n");
+  assert.match(JSON.stringify(data), /\*9392/, "data.js still has the number the site shows");
+  assert.doesNotMatch(facts, /\*\s?\d{3,5}(?!\d)|9392|5317000|6171988/);
+  assert.match(facts, /מספר הטלפון מופיע באתר/);
+  // Dates, times and course numbers stay, and so do long numbers inside links.
+  assert.match(facts, /\d{1,2}\.\d{1,2}\.20\d\d/);
+  const appLinks = JSON.stringify(data).match(/https:\/\/apps\.apple\.com\/[^"\s]+\/id\d{6,}/g) ?? [];
+  assert.ok(appLinks.length > 0, "data.js has an App Store link to test with");
+  for (const url of appLinks) assert.ok(facts.includes(url), url);
+});
+
+test("hooks keep long numbers that are part of a link", () => {
+  const url = JSON.stringify(data).match(/https:\/\/apps\.apple\.com\/[^"\s]+\/id\d{6,}/)[0];
+  const out = runOutputHooks({ answer: `האפליקציה לאייפון: ${url}`, inScope: true, sources: [] }, hooksCtx);
+  assert.ok(out.draft.answer.includes(url));
+});
+
+test("hooks remove short star service numbers", () => {
+  for (const text of ["חייגו למרכז השירות *9392 או לקבוצה", "חייגו ל- *9392", "התקשרו ל* 2828"]) {
+    const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
+    assert.doesNotMatch(out.draft.answer, /9392|2828/, text);
+  }
+  // Bold, bullets and multiplication are not service numbers.
+  for (const [text, keep] of [["**2026** היא השנה", "2026"], ["* 2026 היא השנה", "2026"], ["3*100 זה 300", "3*100"]]) {
+    const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
+    assert.ok(out.draft.answer.includes(keep) && !out.draft.answer.includes("מספר הטלפון"), `${text} -> ${out.draft.answer}`);
+  }
+});
+
+test("hooks fix the Lemida misspelling, keeping its prefix", () => {
+  const cases = [["תיכנסי למלדה עם הסיסמה", "תיכנסי ללמדה עם הסיסמה"], ["סיסמה ל-365 (ולכן גם למלדה)", "סיסמה ל-365 (ולכן גם ללמדה)"], ["במלדה יש הכול", "בלמדה יש הכול"], ["מלדה זה המודל", "למדה זה המודל"]];
+  for (const [text, want] of cases) {
+    const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
+    assert.equal(out.draft.answer, want);
+  }
+  // The real word stays.
+  const keep = runOutputHooks({ answer: "המרצה מלמדת את הקורס בלמדה", inScope: true, sources: [] }, hooksCtx);
+  assert.equal(keep.draft.answer, "המרצה מלמדת את הקורס בלמדה");
+});
+
+test("the prompt spells Lemida and says where phone numbers are", () => {
+  const p = systemPrompt("bit", buildCore(data, "2026-10-11"), canaryFor(SALT));
+  assert.match(p, /למדה/);
+  assert.match(p, /מספר הטלפון מופיע באתר/);
+});
+
 test("hooks keep data.js links, cut others, and fix style", () => {
   const out = runOutputHooks(draft("**ראו** https://inbar.biu.ac.il/live/Login.aspx ולא https://evil.example.com/x — בהצלחה", ["guide:registration", "nope"]), hooksCtx);
   assert.ok(out.ok);
