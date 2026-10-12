@@ -145,7 +145,7 @@ window.SITE_DATA = {
         `bargate`,
         { label: `אתר Bar-Gate`, url: `https://bar-gate.biu.ac.il/` },
         { label: `האפליקציה לאנדרואיד`, url: `https://play.google.com/store/apps/details?id=com.mobitti.barilan` },
-        { label: `תפוסת החניונים עכשיו`, url: `https://webcounter.ipi.co.il/counters/barilan` },
+        `parking-live`,
         { label: `האפליקציה לאייפון`, url: `https://apps.apple.com/ag/app/%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%AA-%D7%91%D7%A8-%D7%90%D7%99%D7%9C%D7%9F/id1207648282` },
       ],
       sources: [
@@ -516,6 +516,13 @@ window.SITE_DATA = {
           name: `מפת המרחבים המוגנים`,
           url: `https://tiful.biu.ac.il/node/1378`,
           keywords: [`מרחב מוגן`, `מקלט`, `מרחבים מוגנים`, `אזעקה`, `ממ"ד`, `קמפוס`],
+        },
+        {
+          id: `parking-live`,
+          desc: `באיזה חניון יש מקום עכשיו`,
+          name: `תפוסת החניונים בזמן אמת`,
+          url: `https://webcounter.ipi.co.il/counters/barilan`,
+          keywords: [`חנייה`, `חניה`, `חניון`, `חניונים`, `מקום`, `תפוסה`, `רכב`, `וואהל`, `יהודית`, `ספורט`, `מוסיקה`, `זמן אמת`, `ipi`],
         },
         {
           id: `bargate`,
@@ -1095,7 +1102,7 @@ window.SITE_DATA = {
       more: `החניונים הם יהודית, מוסיקה, ספורט ומרכז וואהל, וההנחה לחברי אגודה ניתנת אחרי שרושמים את מספר הרכב ב-IPI. ברחובות רמת אילן עם אבן שפה אפורה או לבנה החנייה לתושבים בלבד, ויש קנסות.`,
       links: [
         { label: `תחבורה וחנייה`, url: `https://www.biu.ac.il/useful-information/orientation/transport-and-parking` },
-        { label: `תפוסת החניונים עכשיו`, url: `https://webcounter.ipi.co.il/counters/barilan` },
+        `parking-live`,
       ],
       guide: `campus`,
       sources: [{ label: `תחבורה וחנייה`, url: `https://www.biu.ac.il/useful-information/orientation/transport-and-parking` }],
