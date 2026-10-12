@@ -658,7 +658,8 @@ window.SITE_DATA = {
     },
     {
       id: `food-park100`,
-      title: `אוכל בפארק ה-100 (מתחם המעונות)`,
+      title: `אוכל בפארק ה-100 (מעונות)`,
+      collapsed: true, // מופיע כשורה אחת שנפתחת בלחיצה
       items: [
         {
           id: `p100-market`,
@@ -737,6 +738,7 @@ window.SITE_DATA = {
     {
       id: `food-ramat-ilan`,
       title: `אוכל במרכז המסחרי רמת אילן`,
+      collapsed: true,
       items: [
         {
           id: `ri-carrefour`,

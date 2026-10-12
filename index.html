@@ -127,6 +127,15 @@ main { padding-block: var(--s2) var(--s8); }
 .section-lead { color: var(--muted); margin-block: calc(var(--s1) * -1) var(--s4); max-inline-size: 60ch; font-size: var(--fs-meta); }
 #featured > h2, #saved > h2 { font-size: var(--fs-meta); font-weight: 600; color: var(--muted); letter-spacing: 0; margin-block-end: var(--s2); }
 .cat + .cat { margin-block-start: var(--s8); }
+/* collapsed: true in data.js: the category is one row that opens on tap. Consecutive ones stack like an accordion. */
+.cat + .cat-collapsed { margin-block-start: var(--s3); }
+.cat-collapsed summary { display: flex; align-items: center; gap: var(--s3); min-block-size: 56px; padding: var(--s3) var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); cursor: pointer; list-style: none; }
+.cat-collapsed summary::-webkit-details-marker { display: none; }
+.cat-collapsed summary::after { content: ""; flex: none; margin-inline-start: auto; inline-size: 18px; block-size: 18px; background: var(--muted); -webkit-mask: var(--icon-chevron) center / contain no-repeat; mask: var(--icon-chevron) center / contain no-repeat; rotate: -90deg; }
+.cat-collapsed details[open] > summary::after { rotate: 90deg; }
+.cat-collapsed summary:hover h2 { color: var(--accent-text); }
+.cat.cat-collapsed h2 { margin: 0; font-size: var(--fs-title); }
+.cat-collapsed details[open] > .grid { margin-block-start: var(--s3); }
 .grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
 /* Guides */
 .guide-grid { display: grid; gap: var(--s3); grid-template-columns: 1fr; }
@@ -1266,7 +1275,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return data.categories.map((cat) => {
       const grid = el("div", { class: "grid" });
       const heading = el("h2", { id: `cat-${cat.id}` }, cat.title, el("span", { class: "count", "aria-hidden": "true", text: String(cat.items.length) }));
-      const section = el("section", { class: "cat", "aria-labelledby": `cat-${cat.id}` }, heading, grid);
+      const details = cat.collapsed ? el("details", {}, el("summary", {}, heading), grid) : null;
+      const section = details
+        ? el("section", { class: "cat cat-collapsed", "aria-labelledby": `cat-${cat.id}` }, details)
+        : el("section", { class: "cat", "aria-labelledby": `cat-${cat.id}` }, heading, grid);
       const children = cat.items.map((item) => {
         const card = el("article", { class: "card" },
           el("div", { class: "card-text" },
@@ -1279,7 +1291,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         return { node: card, doc: itemDoc(item, cat.title) };
       });
       root.append(section);
-      return { node: section, children };
+      // Like the FAQ: search opens a collapsed category that has matches, and closes only the ones it opened.
+      const expand = details ? (on) => {
+        if (on && !details.open) { details.open = true; details.dataset.auto = ""; }
+        else if (!on && "auto" in details.dataset) { details.open = false; delete details.dataset.auto; }
+      } : null;
+      return { node: section, children, expand };
     });
   }
   function renderTimeline(data) {
@@ -2289,6 +2306,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         const shown = cat.children.reduce((n, entry) => n + show(entry), 0);
         cat.score = Math.max(0, ...cat.children.map((e) => e.score));
         setHidden(cat.node, shown === 0);
+        if (cat.expand) cat.expand(active && shown > 0);
         total += shown;
       }
       setHidden(sections.categories, groups.categories.every((c) => c.node.hidden));

@@ -156,7 +156,10 @@ function categoriesHtml(data) {
   return data.categories.map((cat) => {
     const items = (cat.items || []).filter((i) => i && i.id && i.desc && isSafeUrl(i.url));
     const cards = items.map((item) => `<article class="card"><div class="card-text"><h3>${external(item.url, esc(item.desc), ` class="card-link" aria-label="${esc(`${item.desc}: ${item.name} (נפתח בלשונית חדשה)`)}"`)}</h3><p class="name">${esc(item.name)}</p>${item.note ? `<p class="note">${bidi(item.note)}</p>` : ""}</div><div class="card-tools"></div></article>`).join("");
-    return `<section class="cat" aria-labelledby="cat-${esc(cat.id)}" data-pre><h2 id="cat-${esc(cat.id)}">${esc(cat.title)}<span class="count" aria-hidden="true">${items.length}</span></h2><div class="grid">${cards}</div></section>`;
+    const heading = `<h2 id="cat-${esc(cat.id)}">${esc(cat.title)}<span class="count" aria-hidden="true">${items.length}</span></h2>`;
+    return cat.collapsed
+      ? `<section class="cat cat-collapsed" aria-labelledby="cat-${esc(cat.id)}" data-pre><details><summary>${heading}</summary><div class="grid">${cards}</div></details></section>`
+      : `<section class="cat" aria-labelledby="cat-${esc(cat.id)}" data-pre>${heading}<div class="grid">${cards}</div></section>`;
   }).join("");
 }
 
