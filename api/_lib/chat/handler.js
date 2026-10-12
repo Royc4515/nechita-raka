@@ -95,7 +95,7 @@ export async function handleChat(request, deps) {
     await record(outcome.reason === "empty" ? "unavailable" : "blocked");
     return blocked(outcome.reason);
   }
-  await record("ok", outcome.draft.sources);
+  await record(outcome.draft.inScope === false ? "out_of_scope" : "ok", outcome.draft.sources);
   const sources = outcome.draft.sources.map((id) => ({ title: byId.get(id).title, url: byId.get(id).url }));
   return json({ reply: outcome.draft.answer, sources });
 }

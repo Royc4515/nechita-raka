@@ -12,7 +12,9 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const METRICS = [
   { id: "views", label: "צפיות" },
+  { id: "visitors", label: "מבקרים" },
   { id: "clicks", label: "לחיצות" },
+  { id: "searches", label: "חיפושים" },
   { id: "chatMessages", label: "הודעות בצ'אט" },
   { id: "chatVisitors", label: "מבקרים בצ'אט" },
 ];
@@ -242,6 +244,12 @@ for (const id of ["#from", "#to"]) {
   });
 }
 $("#refresh").addEventListener("click", () => load());
+$("#share-copy").addEventListener("click", async (e) => {
+  let ok = false;
+  try { await navigator.clipboard.writeText($("#share-link").textContent.trim()); ok = true; } catch (err) { ok = false; }
+  e.target.textContent = ok ? "הועתק" : "לא הצליח";
+  setTimeout(() => { e.target.textContent = "העתקה"; }, 2000);
+});
 $("#no-track").addEventListener("change", (e) => {
   if (e.target.checked) store.set(NO_TRACK_KEY, "1");
   else store.set(NO_TRACK_KEY, "0");
@@ -264,6 +272,10 @@ function render() {
   renderRanked($("#links"), state.report.links, "click");
   renderRanked($("#topics"), state.report.topics, "topic");
   renderRanked($("#chat"), state.report.chat, "chat");
+  renderRanked($("#searches"), state.report.searches, "search");
+  renderRanked($("#misses"), state.report.searchMisses, "search_miss");
+  renderRanked($("#sources"), state.report.sources, "source");
+  renderRanked($("#devices"), state.report.devices, "device");
 }
 
 function renderTiles() {
@@ -275,8 +287,10 @@ function renderTiles() {
     el("p", { class: "value", text: fmt.format(value) }),
     sub ? el("p", { class: "sub", text: sub }) : null);
   $("#tiles").replaceChildren(
+    tile("מבקרים", totals.visitors, days.length > 1 ? "כל מבקר נספר פעם ביום" : ""),
     tile("צפיות בעמודים", totals.views, perDay(totals.views)),
     tile("לחיצות על קישורים", totals.clicks, perDay(totals.clicks)),
+    tile("חיפושים באתר", totals.searches, perDay(totals.searches)),
     tile("הודעות בצ'אט", totals.chatMessages, answeredShare),
     tile("מבקרים ששאלו בצ'אט", totals.chatVisitors, days.length > 1 ? "סכום של כל יום בנפרד" : ""),
   );
@@ -381,6 +395,7 @@ function renderRanked(box, rows, kind) {
   const shown = open ? rows : rows.slice(0, TOP_ROWS);
   const linkFor = (row) => {
     if (kind === "view") return el("a", { href: row.key, target: "_blank", rel: "noopener", text: row.label });
+    if (kind === "search" || kind === "search_miss") return el("a", { href: `/?q=${encodeURIComponent(row.key)}`, target: "_blank", rel: "noopener", title: "לראות מה האתר מציג לחיפוש הזה", text: row.label });
     if (kind === "click" && /^https?:\/\//.test(row.key)) return el("a", { href: row.key, target: "_blank", rel: "noopener noreferrer", title: row.key, text: row.label });
     return document.createTextNode(row.label);
   };

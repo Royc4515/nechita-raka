@@ -87,7 +87,9 @@ button, input { font: inherit; color: inherit; }
 .notice.err { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); }
 
 /* KPI tiles */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-block-end: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block-end: 16px; }
+@media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1060px) { .tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; box-shadow: var(--shadow-1); }
 .tile .label { color: var(--muted); font-size: .875rem; }
 .tile .value { font-size: 2rem; font-weight: 650; line-height: 1.2; margin-block-start: 4px; }
@@ -133,6 +135,8 @@ td.count, th.count { text-align: end; padding-inline-start: 12px; inline-size: 1
 .more { margin-block-start: 8px; border: 0; background: none; color: var(--accent-text); cursor: pointer; padding: 4px 0; font-size: .875rem; }
 
 .foot { color: var(--faint); font-size: .8125rem; padding-block: 8px 40px; display: grid; gap: 8px; }
+.share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); }
+.share code { background: var(--surface-2); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: .8125rem; }
 .foot label { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); cursor: pointer; }
 @media (max-width: 560px) {
   .tile .value { font-size: 1.625rem; }
@@ -195,13 +199,20 @@ td.count, th.count { text-align: end; padding-inline-start: 12px; inline-size: 1
     <div class="grid2">
       <section class="card" aria-labelledby="pages-title"><div class="card-head"><h2 id="pages-title">עמודים</h2><span class="hint">צפיות</span></div><div id="pages"></div></section>
       <section class="card" aria-labelledby="links-title"><div class="card-head"><h2 id="links-title">קישורים</h2><span class="hint">לחיצות</span></div><div id="links"></div></section>
+      <section class="card" aria-labelledby="searches-title"><div class="card-head"><h2 id="searches-title">חיפושים באתר</h2><span class="hint">מה חיפשו</span></div><div id="searches"></div></section>
+      <section class="card" aria-labelledby="misses-title"><div class="card-head"><h2 id="misses-title">חיפושים בלי תוצאות</h2><span class="hint">מה חסר באתר</span></div><div id="misses"></div></section>
       <section class="card" aria-labelledby="topics-title"><div class="card-head"><h2 id="topics-title">נושאים בצ'אט</h2><span class="hint">המקור שהתשובה נשענה עליו</span></div><div id="topics"></div></section>
       <section class="card" aria-labelledby="chat-title"><div class="card-head"><h2 id="chat-title">שאלות בצ'אט</h2><span class="hint">איך הסתיימו</span></div><div id="chat"></div></section>
+      <section class="card" aria-labelledby="sources-title"><div class="card-head"><h2 id="sources-title">מאיפה הגיעו</h2><span class="hint">כניסות לאתר</span></div><div id="sources"></div></section>
+      <section class="card" aria-labelledby="devices-title"><div class="card-head"><h2 id="devices-title">מכשירים</h2><span class="hint">מבקרים</span></div><div id="devices"></div></section>
     </div>
 
     <footer class="foot">
+      <p class="share">קישור לשיתוף בקבוצות וואטסאפ, כדי שיופיעו תחת "וואטסאפ" (וואטסאפ לא מגלה מאיפה הגיעו):
+        <code class="ltr" id="share-link">https://nechita-raka.vercel.app/?src=wa</code>
+        <button class="btn" type="button" id="share-copy">העתקה</button></p>
       <label><input type="checkbox" id="no-track"> לא לספור את הביקורים שלי מהמכשיר הזה</label>
-      <p>נשמרים רק מונים יומיים: כמה צפיות לכל עמוד, כמה לחיצות לכל קישור, ובצ'אט כמה שאלות ועל אילו נושאים. בלי כתובות IP, בלי עוגיות מעקב ובלי טקסט של שאלות. הימים לפי שעון ישראל.</p>
+      <p>נשמרים רק מונים יומיים: צפיות לכל עמוד, לחיצות לכל קישור, מקור ההגעה (רק הסוג), מה חיפשו באתר, וסוג המכשיר. מבקר נספר פעם ביום לפי קוד מוצפן שנמחק למחרת. בצ'אט: כמה שאלות ועל אילו נושאים. בלי כתובות IP, בלי עוגיות מעקב ובלי טקסט של שאלות בצ'אט. הימים לפי שעון ישראל.</p>
     </footer>
   </main>
 </div>

@@ -11,12 +11,58 @@ const WHATSAPP_LABEL = "וואטסאפ פרטי לרועי";
 /** Chat outcomes the handler records under kind "chat", with their dashboard names. */
 export const CHAT_OUTCOMES = Object.freeze({
   ok: "נענו",
+  out_of_scope: "נענו: אין על זה מידע באתר",
   blocked: "נחסמו (ניסיון לעקוף)",
   rate_limited: "מבקר הגיע למגבלה היומית",
   daily_cap: "האתר הגיע למגבלה היומית",
   busy: "המודלים היו עמוסים",
   unavailable: "תקלה",
 });
+
+/** Where a visit came from, as a coarse category (from the referrer or a ?src= tag on shared links). */
+export const SOURCES = Object.freeze({
+  whatsapp: "וואטסאפ",
+  linkedin: "לינקדאין",
+  google: "גוגל",
+  bing: "בינג",
+  facebook: "פייסבוק",
+  instagram: "אינסטגרם",
+  telegram: "טלגרם",
+  ai: "עוזרי AI (ChatGPT וכו')",
+  direct: "ישיר (קישור שמור או הקלדה)",
+  other: "אתר אחר",
+});
+
+/** The kind of device, counted once per visitor per day. */
+export const DEVICES = Object.freeze({ mobile: "טלפון", tablet: "טאבלט", desktop: "מחשב" });
+
+export function deviceOf(userAgent = "") {
+  if (/iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobile))/i.test(userAgent)) return "tablet";
+  if (/Mobi|iPhone|iPod|Android/i.test(userAgent)) return "mobile";
+  return "desktop";
+}
+
+const SEARCH_MIN = 2;
+const SEARCH_MAX = 40;
+/** 7+ digits anywhere (however they are separated) is a phone or an id number; a course code has 5. */
+const MAX_DIGITS = 7;
+
+/**
+ * A site search as it is counted: lower case, single spaces, no edge punctuation. null when it is
+ * too short or long, or looks like personal data (an email, or 7+ digits: a phone or an id number).
+ */
+export function searchKey(raw) {
+  if (typeof raw !== "string") return null;
+  const text = raw
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[\p{Cc}\p{Cf}]/gu, "")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s\p{P}]+|[\s\p{P}]+$/gu, "");
+  if (text.length < SEARCH_MIN || text.length > SEARCH_MAX) return null;
+  if (text.includes("@") || text.replace(/\P{Nd}/gu, "").length >= MAX_DIGITS) return null;
+  return text;
+}
 
 /** An absolute URL without its #fragment or trailing slash, or null. */
 export function normalizeUrl(raw) {
@@ -76,9 +122,18 @@ export function buildCatalog(data, chunks, allowedUrls = []) {
       return links.has(bare) ? bare : null;
     },
     topic: (id) => (topics.has(id) ? id : null),
-    /** The dashboard name for a counted key; the key itself when data.js no longer has it. */
+    source: (key) => (typeof key === "string" && Object.hasOwn(SOURCES, key) ? key : null),
+    /** The dashboard name for a counted key; the key itself when data.js no longer has it (and for searches). */
     label(kind, key) {
-      const map = { view: pages, click: links, topic: topics, chat: new Map(Object.entries(CHAT_OUTCOMES)) }[kind];
+      const map = {
+        view: pages,
+        click: links,
+        topic: topics,
+        chat: new Map(Object.entries(CHAT_OUTCOMES)),
+        source: new Map(Object.entries(SOURCES)),
+        device: new Map(Object.entries(DEVICES)),
+        visitors: new Map([["all", "מבקרים ייחודיים"]]),
+      }[kind];
       return map?.get(key) ?? key;
     },
   };

@@ -30,17 +30,20 @@ function ranked(rows, kind, catalog) {
 
 /**
  * rows: [{ day, kind, key, count }] from PgStatsStore.read.
- * -> { from, to, totals, days: one entry per day (zeros included), pages, links, topics, chat }
+ * -> { from, to, totals, days: one entry per day (zeros included), and ranked lists: pages, links,
+ *      topics, chat, searches, searchMisses, sources, devices }
  */
 export function buildReport(rows, { from, to }, catalog) {
-  const empty = () => ({ views: 0, clicks: 0, chatMessages: 0, chatVisitors: 0, answered: 0 });
+  const empty = () => ({ views: 0, visitors: 0, clicks: 0, searches: 0, chatMessages: 0, chatVisitors: 0, answered: 0 });
   const byDay = new Map();
   for (let n = dayNumber(from); n <= dayNumber(to); n += 1) byDay.set(isoOf(n), empty());
   const field = (r) =>
     r.kind === "view" ? "views"
+    : r.kind === "visitors" ? "visitors"
     : r.kind === "click" ? "clicks"
+    : r.kind === "search" ? "searches"
     : r.kind === "chat_day" ? (r.key === "messages" ? "chatMessages" : "chatVisitors")
-    : r.kind === "chat" && r.key === "ok" ? "answered"
+    : r.kind === "chat" && (r.key === "ok" || r.key === "out_of_scope") ? "answered"
     : null;
   const totals = empty();
   for (const r of rows) {
@@ -59,6 +62,10 @@ export function buildReport(rows, { from, to }, catalog) {
     links: ranked(rows, "click", catalog),
     topics: ranked(rows, "topic", catalog),
     chat: ranked(rows, "chat", catalog),
+    searches: ranked(rows, "search", catalog),
+    searchMisses: ranked(rows, "search_miss", catalog),
+    sources: ranked(rows, "source", catalog),
+    devices: ranked(rows, "device", catalog),
   };
 }
 
@@ -68,6 +75,11 @@ const METRIC_NAMES = {
   topic: "נושא בצ'אט",
   chat: "תוצאת שאלה בצ'אט",
   chat_day: "צ'אט: סיכום יומי",
+  search: "חיפוש באתר",
+  search_miss: "חיפוש בלי תוצאות",
+  source: "מקור הגעה",
+  visitors: "מבקרים ייחודיים",
+  device: "סוג מכשיר",
 };
 
 /** Excel runs a cell that starts with = + - @ as a formula; a leading ' keeps it text. */
