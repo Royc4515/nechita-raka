@@ -242,7 +242,7 @@ window.SITE_DATA = {
       title: `איפה אוכלים בקמפוס ובסביבה`,
       summary: `כל המסעדות, הקפיטריות והסופרים: מפארק ה-100, דרך הקמפוס ובניין האגודה, ועד המרכז המסחרי רמת אילן.`,
       // מפה ב-Google My Maps. embed נטען בעמוד רק כשלוחצים על "הצגת המפה כאן".
-      map: { url: `https://www.google.com/maps/d/viewer?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA`, embed: `https://www.google.com/maps/d/embed?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA&hl=iw` },
+      map: { url: `https://www.google.com/maps/d/viewer?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8`, embed: `https://www.google.com/maps/d/embed?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8&hl=iw` },
       steps: [
         `פארק ה-100 (מתחם המעונות, ז'בוטינסקי 512–514): בקומת הקרקע של בנייני המעונות יש סופר (מרקט בעיר, לפי גוגל מפות פתוח 24 שעות), Bistro Deli & Coffee bar, טומי רול (המבורגרים), פיצה אחד העם, פלאפל סביח | חומוס בר, חלהס (כריכים בחלה, עד 2:00 בלילה), MEAT TRUCK, קצפת (גלידה וקפה) וגרעיני עפולה. השעות והקישורים של כל מקום בקטגוריה "אוכל בפארק ה-100" בדף הבית.`,
         `צפון הקמפוס (הנדסה, חינוך ופסיכולוגיה): ביס ביס, מסעדה בשרית בכשרות מהדרין ברחבת בניין קורט (1004). אוכל ביתי שמתחלף כל יום, וצ'ולנט בימי חמישי. א'–ה' 10:30–16:00.`,
@@ -615,7 +615,7 @@ window.SITE_DATA = {
           id: `food-gmap`,
           desc: `כל מקומות האוכל לפי סוג, ומיקרוגלים, על מפה אחת`,
           name: `המפה: איפה אוכלים בבר-אילן`,
-          url: `https://www.google.com/maps/d/viewer?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA`,
+          url: `https://www.google.com/maps/d/viewer?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8`,
           keywords: [`מפה`, `מפת אוכל`, `גוגל מפות`, `my maps`, `אוכל`, `מסעדות`, `מיקרוגל`, `איפה אוכלים`],
         },
         {
