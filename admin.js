@@ -4,7 +4,7 @@
   range as raw daily counters. Everything is drawn with textContent: labels come from the server.
 */
 const REFRESH_MS = 30_000;
-const STATS_START = "2026-10-08"; // the first day the site kept any counters
+const STATS_START = "2026-10-07"; // the first day the site kept any counters (the chat's message total)
 const TOP_ROWS = 10;
 const RANGE_KEY = "nr-admin-range";
 const NO_TRACK_KEY = "nr-no-track";
