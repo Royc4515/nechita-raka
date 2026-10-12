@@ -11,7 +11,10 @@
     "api/admin/*.js": { "includeFiles": "data.js", "maxDuration": 15 },
     "api/cron/*.js": { "includeFiles": "data.js", "maxDuration": 30 }
   },
-  "crons": [{ "path": "/api/cron/weekly", "schedule": "0 5 * * *" }],
+  "crons": [
+    { "path": "/api/cron/search-console", "schedule": "0 4 * * *" },
+    { "path": "/api/cron/weekly", "schedule": "0 5 * * *" }
+  ],
   "headers": [
     {
       "source": "/admin",

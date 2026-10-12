@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@vercel/oidc": "^4.0.0",
+    "google-auth-library": "^11.2.0",
     "jose": "^6.2.12"
   }
 }

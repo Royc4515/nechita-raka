@@ -5,7 +5,8 @@ import { neon } from "@neondatabase/serverless";
  * about a visitor. Keys are checked (against data.js, or a fixed list) before they get here; the
  * only free text is a site search, which searchKey() cleans and which is capped per day.
  */
-export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device", "system"]);
+export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device", "system",
+  "gsc_clicks", "gsc_impr", "gsc_pos", "gsc_q_clicks", "gsc_q_impr", "gsc_p_clicks", "gsc_p_impr"]);
 /** At most this many different free-text keys per kind per day, so a script can't flood the table. */
 export const MAX_FREE_KEYS_PER_DAY = 300;
 
@@ -51,6 +52,24 @@ export class PgStatsStore {
        on conflict (day, kind, key) do update set count = s.count + 1`,
       [day, kind, unique],
     );
+  }
+
+  /**
+   * Replaces every counter of these kinds between from and to with `counters` ([{ day, kind, key,
+   * count }]): for data copied from elsewhere (Search Console), where a later copy is more complete.
+   */
+  async replaceRange(from, to, kinds, counters) {
+    await this.ensureSchema();
+    await this.query(`delete from site_stats where day between $1::date and $2::date and kind = any($3::text[])`, [from, to, kinds]);
+    for (let i = 0; i < counters.length; i += 1_000) {
+      const part = counters.slice(i, i + 1_000);
+      await this.query(
+        `insert into site_stats as s (day, kind, key, count)
+         select d::date, k, key, c from unnest($1::text[], $2::text[], $3::text[], $4::int[]) as t(d, k, key, c)
+         on conflict (day, kind, key) do update set count = excluded.count`,
+        [part.map((c) => c.day), part.map((c) => c.kind), part.map((c) => c.key), part.map((c) => c.count)],
+      );
+    }
   }
 
   /** Like bump for one free-text key, unless the day already has MAX_FREE_KEYS_PER_DAY other keys of this kind. */

@@ -72,6 +72,7 @@ export function buildWeeklyEmail({ week, report, previous, upcoming }) {
     ["לחיצות על קישורים", t.clicks, p?.clicks],
     ["חיפושים באתר", t.searches, p?.searches],
     ["הודעות בצ'אט", t.chatMessages, p?.chatMessages],
+    ...(t.googleImpressions ? [["חשיפות בגוגל", t.googleImpressions, p?.googleImpressions], ["קליקים מגוגל", t.googleClicks, p?.googleClicks]] : []),
   ];
   const lists = [
     ["העמודים הכי נצפים", report.pages],
@@ -79,6 +80,7 @@ export function buildWeeklyEmail({ week, report, previous, upcoming }) {
     ["מה חיפשו", report.searches],
     ["חיפשו ולא מצאו", report.searchMisses],
     ["מאיפה הגיעו", report.sources],
+    ["מה חיפשו בגוגל (קליקים)", (report.googleQueries ?? []).map((q) => ({ label: `${q.label} · ${fmt.format(q.impressions)} חשיפות`, count: q.clicks }))],
   ].filter(([, rows]) => rows.length);
   const notes = insights(report, previous);
 

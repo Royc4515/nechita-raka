@@ -86,10 +86,15 @@ export function insights(report, previous) {
   if (report.sources[0] && sources >= 5) {
     out.push(`הכי הרבה הגיעו מ${report.sources[0].label}: ${share(report.sources[0].count, sources)}% מהכניסות.`);
   }
+  const google = report.googleQueries ?? [];
+  if (google[0] && (google[0].clicks || google[0].impressions >= 5)) {
+    const top = google[0];
+    out.push(`בגוגל הכי הרבה חיפשו "${top.label}": ${fmt.format(top.impressions)} חשיפות, ${fmt.format(top.clicks)} קליקים.`);
+  }
   const devices = report.devices.reduce((s, r) => s + r.count, 0);
   const phones = report.devices.find((d) => d.key === "mobile")?.count ?? 0;
   if (devices >= 5) out.push(`${share(phones, devices)}% מהמבקרים גלשו מטלפון.`);
-  return out.slice(0, 6);
+  return out.slice(0, 7);
 }
 
 export { dmy };

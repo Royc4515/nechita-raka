@@ -15,6 +15,8 @@ const METRICS = [
   { id: "visitors", label: "מבקרים" },
   { id: "clicks", label: "לחיצות" },
   { id: "searches", label: "חיפושים" },
+  { id: "googleImpressions", label: "חשיפות בגוגל" },
+  { id: "googleClicks", label: "קליקים מגוגל" },
   { id: "chatMessages", label: "הודעות בצ'אט" },
   { id: "chatVisitors", label: "מבקרים בצ'אט" },
 ];
@@ -267,6 +269,7 @@ $("#metrics").addEventListener("click", (e) => {
 function render() {
   renderTiles();
   renderInsights();
+  renderGoogle();
   renderEvents();
   renderChart();
   renderDailyTable();
@@ -308,6 +311,38 @@ function deltaNode(now, before) {
   const period = span === 1 ? "אתמול" : `${span} הימים שלפני`;
   const text = pct === 0 ? `ללא שינוי לעומת ${period}` : `${pct > 0 ? "▲" : "▼"} ${Math.abs(pct)}% לעומת ${period}`;
   return el("p", { class: `delta ${pct > 0 ? "up" : pct < 0 ? "down" : ""}`, text, title: `לפני: ${fmt.format(before)}` });
+}
+
+/** The Google card: shown once Search Console has anything for the range. */
+function renderGoogle() {
+  const { totals, googleQueries = [], googlePages = [] } = state.report;
+  const any = totals.googleImpressions > 0 || googleQueries.length > 0;
+  $("#google-card").hidden = !any;
+  if (!any) return;
+  const ctr = totals.googleImpressions ? `${Math.round((totals.googleClicks / totals.googleImpressions) * 1000) / 10}%` : "–";
+  const stat = (label, value) => el("div", {}, el("span", { class: "label", text: label }), el("span", { class: "value num", text: value }));
+  $("#google-stats").replaceChildren(
+    stat("חשיפות בתוצאות", fmt.format(totals.googleImpressions)),
+    stat("קליקים לאתר", fmt.format(totals.googleClicks)),
+    stat("אחוז הקלקה", ctr),
+    stat("מיקום ממוצע", totals.googlePosition == null ? "–" : String(totals.googlePosition)),
+  );
+  renderPairs($("#google-queries"), googleQueries, (row) => document.createTextNode(row.label));
+  renderPairs($("#google-pages"), googlePages, (row) => el("a", { href: row.key, target: "_blank", rel: "noopener", text: row.label }));
+}
+
+/** A table of Search Console rows: name, clicks, impressions. */
+function renderPairs(box, rows, nameOf) {
+  if (!rows.length) {
+    box.replaceChildren(el("p", { class: "empty", text: "אין עדיין נתונים בטווח הזה." }));
+    return;
+  }
+  const head = el("tr", {}, el("th", { text: "" }), el("th", { class: "count", text: "קליקים" }), el("th", { class: "count", text: "חשיפות" }));
+  const body = rows.slice(0, TOP_ROWS).map((row) => el("tr", {},
+    el("td", { class: "rank-cell" }, el("span", { class: "rank-label" }, nameOf(row))),
+    el("td", { class: "count", text: fmt.format(row.clicks) }),
+    el("td", { class: "count second", text: fmt.format(row.impressions) })));
+  box.replaceChildren(el("table", {}, el("thead", {}, head), el("tbody", {}, ...body)));
 }
 
 function renderInsights() {
