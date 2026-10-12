@@ -1396,12 +1396,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       box.querySelectorAll(".tl-toggle").forEach((b) => b.remove());
     };
     if (past) {
-      const btn = el("button", { type: "button", class: "tl-toggle", text: tr("הצגת {n} תאריכים שעברו", { n: past }) });
+      const btn = el("button", { type: "button", class: "tl-toggle", text: past === 1 ? tr("הצגת תאריך אחד שעבר") : tr("הצגת {n} תאריכים שעברו", { n: past }) });
       btn.addEventListener("click", expand);
       box.prepend(btn);
     }
     if (later) {
-      const btn = el("button", { type: "button", class: "tl-toggle", text: tr("כל השנה (עוד {n} תאריכים)", { n: later }) });
+      const btn = el("button", { type: "button", class: "tl-toggle", text: later === 1 ? tr("כל השנה (עוד תאריך אחד)") : tr("כל השנה (עוד {n} תאריכים)", { n: later }) });
       btn.addEventListener("click", expand);
       box.append(btn);
     }

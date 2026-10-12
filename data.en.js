@@ -58,6 +58,8 @@ window.SITE_EN = {
     [`הלוח הרשמי קובע.`, `the official calendar wins.`],
     [`הצגת {n} תאריכים שעברו`, `Show {n} past dates`],
     [`כל השנה (עוד {n} תאריכים)`, `Whole year ({n} more dates)`],
+    [`הצגת תאריך אחד שעבר`, `Show 1 past date`],
+    [`כל השנה (עוד תאריך אחד)`, `Whole year (1 more date)`],
     [`מקור: `, `Source: `],
     [`האתר הרשמי`, `Official website`],
     [`פתיחת {label}`, `Open {label}`],

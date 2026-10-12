@@ -280,7 +280,7 @@ class ChatPanel {
     while (messages.length && messages[0].role !== "user") messages.shift();
     let reply;
     try {
-      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, messages }) });
+      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, lang: EN_STRINGS ? "en" : undefined, messages }) });
       const body = await res.json().catch(() => ({}));
       if (res.ok && typeof body.reply === "string") reply = { role: "assistant", content: body.reply, persona: this.persona, sources: Array.isArray(body.sources) ? body.sources : [] };
       else reply = { role: "error", error: ERRORS[body.error] ? body.error : "offline", question: text };

@@ -68,6 +68,9 @@ test("each persona gets its own name and grammar, and the canary is in the promp
   const req = buildRequest({ personaId: "byte", core: "core", facts: [chunks[0]], history: [{ role: "user", content: "שאלה" }], canary });
   assert.equal(req.messages[0].role, "system");
   assert.ok(req.messages[0].content.includes(`[${chunks[0].id}]`));
+  assert.doesNotMatch(req.messages[0].content, /REPLY LANGUAGE/);
+  const en = buildRequest({ personaId: "bit", core: "core", facts: [], history: [{ role: "user", content: "question" }], canary, english: true });
+  assert.match(en.messages[0].content, /REPLY LANGUAGE[\s\S]*natural English/);
 });
 
 test("parseDraft accepts the schema and rejects junk", () => {
