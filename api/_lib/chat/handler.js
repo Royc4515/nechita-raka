@@ -28,7 +28,7 @@ export function defaultChatDeps() {
 }
 
 /**
- * POST /api/chat   { persona: "bit" | "byte", messages: [{ role, content }] }
+ * POST /api/chat   { persona: "bit" | "byte", lang?: "en", messages: [{ role, content }] }
  *   -> { reply, sources: [{ title, url }] }
  *
  * validate -> rate-limit -> injection guard -> retrieve -> model chain -> output hooks.
@@ -46,7 +46,8 @@ export async function handleChat(request, deps) {
   const personaId = Object.hasOwn(PERSONAS, body.persona) ? body.persona : DEFAULT_PERSONA;
 
   const latest = turns[turns.length - 1].content;
-  const hebrew = isHebrew(latest) || !/[a-z]/i.test(latest);
+  // English when the student writes in English, or writes no words at all on the English site (lang: "en").
+  const hebrew = isHebrew(latest) || (!/[a-z]/i.test(latest) && body.lang !== "en");
   const blocked = (reason) => json({ reply: cannedReply(reason, hebrew, personaId), sources: [], blocked: true });
 
   const today = israelToday(deps.now());
@@ -65,7 +66,7 @@ export async function handleChat(request, deps) {
 
   const facts = retrieve(knowledge.chunks, retrievalQuery(turns));
   const canary = canaryFor(config.salt);
-  const request_ = buildRequest({ personaId, core: knowledge.core(today), facts, history: turns, canary });
+  const request_ = buildRequest({ personaId, core: knowledge.core(today), facts, history: turns, canary, english: !hebrew });
   const result = await deps.chain(config).run(request_, parseDraft);
   if (!result.ok) return json({ error: result.busy ? "busy" : "chat_unavailable" }, 503);
   console.info(JSON.stringify({ chat: "ok", model: result.completion.model, prompt: result.completion.promptTokens, cached: result.completion.cachedTokens }));

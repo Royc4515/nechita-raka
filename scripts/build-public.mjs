@@ -11,6 +11,7 @@ import { guidePage, homePage, lastUpdated, llmsTxt, loadData, sitemapXml } from 
 const OUT = "public";
 const FILES = [
   "data.js",
+  "data.en.js",
   "chat.js",
   "chat.css",
   "peek.js",

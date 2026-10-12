@@ -3,35 +3,44 @@
   page itself stays as fast as before. Talks to POST /api/chat (api/chat.js).
   The conversation lives in this tab only (sessionStorage); the server stores nothing.
 */
+// English (see index.html): each Hebrew string with a pair in data.en.js is swapped; {name} is filled in at run time.
+const EN_STRINGS = document.documentElement.lang === "en" && window.SITE_EN ? window.SITE_EN : null;
+const UI_EN = new Map(EN_STRINGS ? EN_STRINGS.ui : []);
+const tr = (he, vars) => {
+  const text = UI_EN.get(he) || he;
+  return vars ? text.replace(/\{(\w+)\}/g, (m, key) => (key in vars ? String(vars[key]) : m)) : text;
+};
+const CONTENT_EN = new Map(EN_STRINGS ? EN_STRINGS.content : []);
+const trContent = (he) => CONTENT_EN.get(he) || he;
 const PERSONAS = {
   bit: {
-    name: "ביט", avatar: "./assets/mascot/avatar-bit.webp", joined: "ביט הצטרף לשיחה",
+    name: tr("ביט"), avatar: "./assets/mascot/avatar-bit.webp", joined: tr("ביט הצטרף לשיחה"),
     hellos: [
-      "היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון? יאללה, שאלו.",
-      "מה קורה? 😄 ביט כאן. הייתי אבוד בדיוק כמוכם בשבוע הראשון, אז כנראה כבר נפלתי בכל בור. על מה נדבר?",
-      "שלום שלום! אני ביט, מומחה עולמי לדחיינות ולמציאת כפתורים מוחבאים באינ-בר. מה צריך?",
-      "היי 👋 בדיוק סיימתי את הקפה השלישי של היום, אז אני ער לגמרי. מה רציתם לשאול?",
-      "ביט מדבר ☕ שאלה על מבחנים, למדה, רישום, או רק צריכים מישהו שיגיד שיהיה בסדר? (יהיה בסדר.)",
+      tr("היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון? יאללה, שאלו."),
+      tr("מה קורה? 😄 ביט כאן. הייתי אבוד בדיוק כמוכם בשבוע הראשון, אז כנראה כבר נפלתי בכל בור. על מה נדבר?"),
+      tr("שלום שלום! אני ביט, מומחה עולמי לדחיינות ולמציאת כפתורים מוחבאים באינ-בר. מה צריך?"),
+      tr("היי 👋 בדיוק סיימתי את הקפה השלישי של היום, אז אני ער לגמרי. מה רציתם לשאול?"),
+      tr("ביט מדבר ☕ שאלה על מבחנים, למדה, רישום, או רק צריכים מישהו שיגיד שיהיה בסדר? (יהיה בסדר.)"),
     ],
     timely: {
-      morning: "בוקר טוב! ☀️ ביט כאן, עדיין מחמם מנועים עם קפה. מה על הפרק היום?",
-      evening: "ערב טוב 🌙 ביט כאן. יום ארוך? ספרו מה צריך ונסדר.",
-      night: "עוד ערים? 🦉 גם אני, מסתבר. מה מטריד אתכם בשעה כזאת?",
+      morning: tr("בוקר טוב! ☀️ ביט כאן, עדיין מחמם מנועים עם קפה. מה על הפרק היום?"),
+      evening: tr("ערב טוב 🌙 ביט כאן. יום ארוך? ספרו מה צריך ונסדר."),
+      night: tr("עוד ערים? 🦉 גם אני, מסתבר. מה מטריד אתכם בשעה כזאת?"),
     },
   },
   byte: {
-    name: "בייט", avatar: "./assets/mascot/avatar-byte.webp", joined: "בייט הצטרפה לשיחה",
+    name: tr("בייט"), avatar: "./assets/mascot/avatar-byte.webp", joined: tr("בייט הצטרפה לשיחה"),
     hellos: [
-      "היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות? במה אני עוזרת?",
-      "שלום 🙂 בייט כאן. יש לי רשימה לכל דבר, כנראה גם לשאלה שלכם. מה נבדוק?",
-      "היי! אני בייט. נשמו רגע, שנה א' נראית מפחידה רק מבחוץ. מה רציתם לדעת?",
-      "בייט מדברת 👋 תשאלו ישר, אני אענה ישר. ואם ביט כבר בלבל אתכם, הגעתם למקום הנכון.",
-      "היי 🙂 מבחנים, למדה, אינ-בר או סתם עצה לשבוע הראשון? תבחרו, אני על זה.",
+      tr("היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות? במה אני עוזרת?"),
+      tr("שלום 🙂 בייט כאן. יש לי רשימה לכל דבר, כנראה גם לשאלה שלכם. מה נבדוק?"),
+      tr("היי! אני בייט. נשמו רגע, שנה א' נראית מפחידה רק מבחוץ. מה רציתם לדעת?"),
+      tr("בייט מדברת 👋 תשאלו ישר, אני אענה ישר. ואם ביט כבר בלבל אתכם, הגעתם למקום הנכון."),
+      tr("היי 🙂 מבחנים, למדה, אינ-בר או סתם עצה לשבוע הראשון? תבחרו, אני על זה."),
     ],
     timely: {
-      morning: "בוקר טוב ☀️ בייט כאן, עם תה ורשימת משימות. מה מוסיפים לה היום?",
-      evening: "ערב טוב 🌙 בייט כאן. בואו נסגור את מה שנשאר פתוח מהיום.",
-      night: "לילה טוב... או שעדיין לא? 🦉 בייט כאן. מה צריך לפני שהולכים לישון?",
+      morning: tr("בוקר טוב ☀️ בייט כאן, עם תה ורשימת משימות. מה מוסיפים לה היום?"),
+      evening: tr("ערב טוב 🌙 בייט כאן. בואו נסגור את מה שנשאר פתוח מהיום."),
+      night: tr("לילה טוב... או שעדיין לא? 🦉 בייט כאן. מה צריך לפני שהולכים לישון?"),
     },
   },
 };
@@ -45,12 +54,12 @@ function pickGreeting(persona) {
   return p.hellos[Math.floor(Math.random() * p.hellos.length)];
 }
 const OTHER = { bit: "byte", byte: "bit" };
-const SUGGESTIONS = ["מתי מתחילות הבחינות?", "איך משנים קורס באינ-בר?", "שכחתי סיסמה ללמדה", "מה עושים עם מבחן במילואים?"];
+const SUGGESTIONS = [tr("מתי מתחילות הבחינות?"), tr("איך משנים קורס באינ-בר?"), tr("שכחתי סיסמה ללמדה"), tr("מה עושים עם מבחן במילואים?")];
 const ERRORS = {
-  rate_limited: { code: "429 daily limit", text: "הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה.", retry: false },
-  daily_cap: { code: "429 site limit", text: "הרבה סטודנטים שאלו היום והגענו למכסה היומית. נחזור מחר! בינתיים החיפוש באתר עובד מצוין.", retry: false },
-  busy: { code: "503 busy", text: "יש עומס כרגע. נסו שוב בעוד דקה.", retry: true },
-  offline: { code: "offline", text: "הצ'אט לא זמין כרגע. אפשר לחפש באתר או לשאול את רועי בקבוצת הוואטסאפ.", retry: true },
+  rate_limited: { code: "429 daily limit", text: tr("הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה."), retry: false },
+  daily_cap: { code: "429 site limit", text: tr("הרבה סטודנטים שאלו היום והגענו למכסה היומית. נחזור מחר! בינתיים החיפוש באתר עובד מצוין."), retry: false },
+  busy: { code: "503 busy", text: tr("יש עומס כרגע. נסו שוב בעוד דקה."), retry: true },
+  offline: { code: "offline", text: tr("הצ'אט לא זמין כרגע. אפשר לחפש באתר או לשאול את רועי בקבוצת הוואטסאפ."), retry: true },
 };
 const MAX_QUESTION = 500;
 const MAX_TURNS = 12;
@@ -110,7 +119,7 @@ function linkTo(url, label, onInternal) {
   try { parsed = new URL(url); } catch { return document.createTextNode(label); }
   if (SITE_ORIGINS.has(parsed.origin) && parsed.hash) {
     const guide = parsed.hash.startsWith("#guide-") && window.SITE_DATA?.guides?.find((g) => `#guide-${g.id}` === parsed.hash);
-    return el("a", { href: parsed.hash, text: guide && label === url.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, "") ? `המדריך "${guide.title}"` : label, onclick: () => onInternal() });
+    return el("a", { href: parsed.hash, text: guide && label === url.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, "") ? tr("המדריך \"{title}\"", { title: trContent(guide.title) }) : label, onclick: () => onInternal() });
   }
   return el("a", { href: parsed.href, target: "_blank", rel: "noopener noreferrer", text: label });
 }
@@ -131,10 +140,10 @@ class ChatPanel {
     this.title = el("h2", { class: "chat-title", id: "chat-title" });
     this.switchBtn = el("button", { class: "chat-switch", type: "button", onclick: () => this.switchPersona() });
     // The red light of the window chrome closes the chat, like a Mac window.
-    const close = el("button", { class: "chat-light close", type: "button", "aria-label": "סגירת הצ'אט", onclick: () => this.close() }, el("i", {}, closeIcon()));
+    const close = el("button", { class: "chat-light close", type: "button", "aria-label": tr("סגירת הצ'אט"), onclick: () => this.close() }, el("i", {}, closeIcon()));
     this.list = el("ol", { class: "chat-log", "aria-live": "polite", "aria-relevant": "additions" });
-    this.input = el("textarea", { class: "chat-input", rows: "1", maxlength: String(MAX_QUESTION), placeholder: "כתבו שאלה...", "aria-label": "שאלה", enterkeyhint: "send" });
-    this.sendBtn = el("button", { class: "chat-send", type: "submit", "aria-label": "שליחה" }, sendIcon());
+    this.input = el("textarea", { class: "chat-input", rows: "1", maxlength: String(MAX_QUESTION), placeholder: tr("כתבו שאלה..."), "aria-label": tr("שאלה"), enterkeyhint: "send" });
+    this.sendBtn = el("button", { class: "chat-send", type: "submit", "aria-label": tr("שליחה") }, sendIcon());
     const form = el("form", { class: "chat-form", onsubmit: (e) => { e.preventDefault(); this.send(this.input.value); } }, this.input, this.sendBtn);
     this.input.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
@@ -143,10 +152,10 @@ class ChatPanel {
 
     this.root = el("section", { class: "chat-panel", role: "dialog", "aria-modal": "false", "aria-labelledby": "chat-title", tabindex: "-1", hidden: true },
       el("div", { class: "now-chrome chat-chrome" }, close, el("span", { class: "chat-light", "aria-hidden": "true" }, el("i")), el("span", { class: "chat-light", "aria-hidden": "true" }, el("i")), el("span", { class: "chat-path", "aria-hidden": "true" })),
-      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: "קמע AI של נחיתה רכה" })), this.switchBtn),
+      el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: tr("קמע AI של נחיתה רכה") })), this.switchBtn),
       this.list,
       form,
-      el("p", { class: "chat-note", text: "ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת." }));
+      el("p", { class: "chat-note", text: tr("ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.") }));
     this.root.addEventListener("keydown", (e) => { if (e.key === "Escape") this.close(); });
     document.body.append(this.root);
   }
@@ -156,7 +165,7 @@ class ChatPanel {
     this.avatar.src = p.avatar;
     this.title.textContent = p.name;
     this.root.querySelector(".chat-path").textContent = `~/year-1 › ask ${this.persona}`;
-    this.switchBtn.textContent = `להחליף ל${PERSONAS[OTHER[this.persona]].name}`;
+    this.switchBtn.textContent = tr("להחליף ל{name}", { name: PERSONAS[OTHER[this.persona]].name });
     window.dispatchEvent(new CustomEvent("nr-chat-persona", { detail: this.persona }));
   }
 
@@ -184,11 +193,11 @@ class ChatPanel {
     const head = el("div", { class: "answer-head" },
       el("img", { class: "chat-avatar small", src: p.avatar, alt: "", width: "24", height: "24" }),
       el("span", { class: "answer-who", text: p.name }),
-      greeting ? null : el("button", { type: "button", class: "answer-copy", "aria-label": "העתקת התשובה", onclick: (e) => copyText(text, e.currentTarget) }, copyIcon()));
+      greeting ? null : el("button", { type: "button", class: "answer-copy", "aria-label": tr("העתקת התשובה"), onclick: (e) => copyText(text, e.currentTarget) }, copyIcon()));
     const card = el("div", { class: `answer${greeting ? " greeting" : ""}` }, head, el("p", { class: "answer-text" }, richText(text, () => this.onInternalLink())));
     if (sources.length) {
       card.append(el("div", { class: "chat-sources" },
-        el("span", { class: "sources-label", text: "מקורות:" }),
+        el("span", { class: "sources-label", text: tr("מקורות:") }),
         ...sources.map((s) => {
           const chip = s.url ? linkTo(s.url, s.title, () => this.onInternalLink()) : el("span", { text: s.title });
           chip.prepend(docIcon());
@@ -202,9 +211,9 @@ class ChatPanel {
   suggestions() {
     const guideId = location.hash.startsWith("#guide-") ? location.hash.slice(7) : "";
     const guide = window.SITE_DATA?.guides?.find((g) => g.id === guideId);
-    const questions = guide ? [`מה הכי חשוב לדעת על "${guide.title}"?`, ...SUGGESTIONS.slice(0, 3)] : SUGGESTIONS;
+    const questions = guide ? [tr("מה הכי חשוב לדעת על \"{title}\"?", { title: trContent(guide.title) }), ...SUGGESTIONS.slice(0, 3)] : SUGGESTIONS;
     return el("li", { class: "chat-suggest" },
-      el("p", { class: "chat-suggest-label", text: "אפשר להתחיל מכאן:" }),
+      el("p", { class: "chat-suggest-label", text: tr("אפשר להתחיל מכאן:") }),
       ...questions.map((q) => el("button", { type: "button", class: "chat-cmd", onclick: () => this.send(q) }, el("span", { class: "prompt", "aria-hidden": "true", text: "$" }), q)));
   }
 
@@ -213,7 +222,7 @@ class ChatPanel {
     return el("li", { class: "chat-error", role: "status" },
       el("code", { dir: "ltr", text: `error: ${e.code}` }),
       el("p", { text: e.text }),
-      e.retry && m.question ? el("button", { type: "button", class: "chat-cmd small", onclick: () => this.retry(m) }, "נסו שוב") : null);
+      e.retry && m.question ? el("button", { type: "button", class: "chat-cmd small", onclick: () => this.retry(m) }, tr("נסו שוב")) : null);
   }
 
   retry(m) {
@@ -227,7 +236,7 @@ class ChatPanel {
     const p = PERSONAS[this.persona];
     return el("li", { class: "chat-typing", role: "status" },
       el("img", { class: "chat-avatar small bob", src: p.avatar, alt: "", width: "24", height: "24" }),
-      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${this.persona === "byte" ? "מקלידה" : "חושב"}…`, el("span", { class: "cursor", "aria-hidden": "true" })));
+      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${this.persona === "byte" ? tr("מקלידה") : tr("חושב")}…`, el("span", { class: "cursor", "aria-hidden": "true" })));
   }
 
   autosize() {
@@ -271,7 +280,7 @@ class ChatPanel {
     while (messages.length && messages[0].role !== "user") messages.shift();
     let reply;
     try {
-      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, messages }) });
+      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, lang: EN_STRINGS ? "en" : undefined, messages }) });
       const body = await res.json().catch(() => ({}));
       if (res.ok && typeof body.reply === "string") reply = { role: "assistant", content: body.reply, persona: this.persona, sources: Array.isArray(body.sources) ? body.sources : [] };
       else reply = { role: "error", error: ERRORS[body.error] ? body.error : "offline", question: text };
@@ -352,8 +361,8 @@ async function copyText(text, button) {
   try {
     await navigator.clipboard.writeText(text);
     button.classList.add("done");
-    button.setAttribute("aria-label", "הועתק");
-    setTimeout(() => { button.classList.remove("done"); button.setAttribute("aria-label", "העתקת התשובה"); }, 1500);
+    button.setAttribute("aria-label", tr("הועתק"));
+    setTimeout(() => { button.classList.remove("done"); button.setAttribute("aria-label", tr("העתקת התשובה")); }, 1500);
   } catch { /* clipboard blocked: nothing to do */ }
 }
 // Points left: in a right-to-left page, "send" moves toward the conversation's end.
