@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- The theme script below is allowed by its hash: change it and the hash must change too (sha256, base64). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wmVcXHZGY7ICuIvKA7R8YaTBjugdTmMggWtpeqGrClA=' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; frame-src https://accounts.google.com/gsi/; connect-src 'self' https://accounts.google.com/gsi/; img-src 'self' data: https://*.googleusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>לוח בקרה · נחיתה רכה</title>
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<script>try { const t = localStorage.getItem("nr-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) { /* storage blocked: follow the device */ }</script>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f4f7fb; --surface: #ffffff; --surface-2: #eaf0f7;
+  --text: #0f1b2d; --muted: #46566e; --faint: #5c6b82;
+  --border: #dde5ef; --border-strong: #c4d0de;
+  --accent: #0b5fae; --accent-hover: #094d8f; --accent-ink: #ffffff; --accent-text: #0a57a0; --accent-soft: #e6f1fb; --focus: #0b5fae;
+  --grid: #e7edf4; --live: #1a7f37; --danger: #b42318;
+  --shadow-1: 0 1px 2px rgb(15 27 45 / 6%);
+  --r-sm: 10px; --r: 14px; --r-lg: 18px;
+  --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Hebrew", "Arial Hebrew", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220; --surface: #111a2c; --surface-2: #18233a;
+    --text: #e6edf7; --muted: #9fb0c8; --faint: #7f91ab;
+    --border: #22304a; --border-strong: #2e3f5e;
+    --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
+    --grid: #1c2840; --live: #4ac26b; --danger: #f97066;
+    --shadow-1: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220; --surface: #111a2c; --surface-2: #18233a;
+  --text: #e6edf7; --muted: #9fb0c8; --faint: #7f91ab;
+  --border: #22304a; --border-strong: #2e3f5e;
+  --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
+  --grid: #1c2840; --live: #4ac26b; --danger: #f97066;
+  --shadow-1: none;
+}
+:root[data-theme="light"] { color-scheme: light; }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; min-block-size: 100dvh; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 1rem; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, p { margin: 0; }
+a { color: var(--accent-text); }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+[hidden] { display: none !important; }
+.wrap { max-inline-size: 1120px; margin-inline: auto; padding-inline: var(--gutter); }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header */
+.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: calc(24px + env(safe-area-inset-top)) 16px; }
+.top h1 { font-size: 1.375rem; line-height: 1.2; flex: 1; min-inline-size: 12ch; }
+.top h1 small { display: block; font-size: .875rem; font-weight: 400; color: var(--muted); margin-block-start: 2px; }
+.who { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; }
+.btn { display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; padding: 0 14px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--text); text-decoration: none; cursor: pointer; font-size: .9375rem; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn svg { inline-size: 16px; block-size: 16px; flex: none; }
+
+/* Sign-in */
+.signin { max-inline-size: 440px; margin: 10vh auto 0; padding: 32px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); text-align: center; display: grid; gap: 16px; justify-items: center; }
+.signin p { color: var(--muted); }
+.signin .err { color: var(--danger); font-size: .9375rem; }
+#gsi { min-block-size: 44px; }
+
+/* Toolbar */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-block: 4px 16px; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: var(--r-sm); padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; border-radius: 8px; min-block-size: 34px; padding: 0 12px; cursor: pointer; color: var(--muted); font-size: .9375rem; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: var(--shadow-1); }
+.dates { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .875rem; }
+.dates input { min-block-size: 36px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); }
+.spacer { flex: 1; }
+.live { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .875rem; }
+.live .dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--live); }
+.live.stale .dot { background: var(--faint); }
+@media (prefers-reduced-motion: no-preference) { .live:not(.stale) .dot { animation: pulse 2s ease-in-out infinite; } @keyframes pulse { 50% { opacity: .35; } } }
+.notice { padding: 10px 14px; border-radius: var(--r-sm); background: var(--accent-soft); color: var(--text); font-size: .9375rem; margin-block-end: 16px; }
+.notice.err { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); }
+
+/* KPI tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-block-end: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; box-shadow: var(--shadow-1); }
+.tile .label { color: var(--muted); font-size: .875rem; }
+.tile .value { font-size: 2rem; font-weight: 650; line-height: 1.2; margin-block-start: 4px; }
+.tile .sub { color: var(--faint); font-size: .8125rem; margin-block-start: 2px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-1); min-inline-size: 0; }
+.card h2 { font-size: 1.0625rem; }
+.card-head { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin-block-end: 12px; }
+.card-head .hint { color: var(--muted); font-size: .875rem; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; margin-block: 16px; }
+
+/* Daily chart */
+.chart { position: relative; }
+.chart svg { display: block; inline-size: 100%; block-size: 240px; overflow: visible; }
+.chart .axis text { fill: var(--muted); font-size: 11px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .baseline { stroke: var(--border-strong); stroke-width: 1; }
+.chart .bar { fill: var(--accent); }
+.chart .hit { fill: transparent; cursor: default; }
+.chart .hit:hover + .bar, .chart .hit:focus + .bar, .chart .bar.on { fill: var(--accent-hover); }
+.chart .hit:focus { outline: none; }
+.chart .hit:focus-visible { stroke: var(--focus); stroke-width: 2; }
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px; padding: 6px 10px; font-size: .8125rem; box-shadow: 0 4px 16px rgb(0 0 0 / 15%); white-space: nowrap; translate: -50% calc(-100% - 8px); }
+.tip strong { display: block; font-size: 1rem; }
+.tip span { color: var(--muted); }
+.empty { color: var(--muted); font-size: .9375rem; padding: 24px 0; text-align: center; }
+details.table-view { margin-block-start: 8px; }
+details.table-view summary { cursor: pointer; color: var(--accent-text); font-size: .875rem; }
+details.table-view .scroll { max-block-size: 260px; overflow: auto; margin-block-start: 8px; }
+
+/* Tables (daily + ranked) */
+table { inline-size: 100%; border-collapse: collapse; font-size: .9375rem; }
+th { text-align: start; color: var(--muted); font-weight: 500; font-size: .8125rem; padding: 4px 0; border-block-end: 1px solid var(--border); }
+td { padding: 7px 0; border-block-end: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-block-end: 0; }
+td.count, th.count { text-align: end; padding-inline-start: 12px; inline-size: 1%; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rank-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-inline-size: 100%; }
+.rank-label a { color: var(--text); text-decoration: none; }
+.rank-label a:hover { color: var(--accent-text); text-decoration: underline; }
+.rank-bar { display: block; block-size: 6px; border-radius: 3px; background: var(--accent); margin-block-start: 5px; min-inline-size: 3px; }
+.rank-cell { max-inline-size: 0; inline-size: 100%; }
+.more { margin-block-start: 8px; border: 0; background: none; color: var(--accent-text); cursor: pointer; padding: 4px 0; font-size: .875rem; }
+
+.foot { color: var(--faint); font-size: .8125rem; padding-block: 8px 40px; display: grid; gap: 8px; }
+.foot label { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); cursor: pointer; }
+@media (max-width: 560px) {
+  .tile .value { font-size: 1.625rem; }
+  .spacer { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>לוח בקרה<small>נחיתה רכה · מדמ"ח בר אילן</small></h1>
+    <div class="who" id="who" hidden>
+      <span id="who-email" class="ltr"></span>
+      <button class="btn" type="button" id="signout">יציאה</button>
+    </div>
+  </header>
+
+  <section class="signin" id="signin" hidden aria-labelledby="signin-title">
+    <h2 id="signin-title">כניסה ללוח הבקרה</h2>
+    <p>רק החשבון של מנהל האתר יכול לראות את הנתונים.</p>
+    <div id="gsi"></div>
+    <p class="err" id="signin-err" role="alert" hidden></p>
+  </section>
+
+  <main id="dash" hidden>
+    <div class="toolbar" role="group" aria-label="טווח תאריכים">
+      <div class="seg" id="ranges">
+        <button type="button" data-range="today">היום</button>
+        <button type="button" data-range="7">7 ימים</button>
+        <button type="button" data-range="30">30 ימים</button>
+        <button type="button" data-range="90">90 ימים</button>
+        <button type="button" data-range="all">הכול</button>
+      </div>
+      <div class="dates">
+        <label for="from">מ-</label><input type="date" id="from">
+        <label for="to">עד</label><input type="date" id="to">
+      </div>
+      <span class="spacer"></span>
+      <span class="live" id="live" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="live-text">טוען…</span></span>
+      <button class="btn" type="button" id="refresh" aria-label="רענון עכשיו">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>רענון
+      </button>
+      <a class="btn btn-primary" id="csv" href="#" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>הורדת CSV
+      </a>
+    </div>
+    <p class="notice err" id="error" role="alert" hidden></p>
+
+    <div class="tiles" id="tiles"></div>
+
+    <section class="card" aria-labelledby="daily-title">
+      <div class="card-head">
+        <h2 id="daily-title">לפי יום</h2>
+        <div class="seg" id="metrics" role="group" aria-label="מה להציג בגרף"></div>
+      </div>
+      <div class="chart" id="chart"></div>
+      <details class="table-view" id="daily-table"><summary>הצגה כטבלה</summary><div class="scroll"></div></details>
+    </section>
+
+    <div class="grid2">
+      <section class="card" aria-labelledby="pages-title"><div class="card-head"><h2 id="pages-title">עמודים</h2><span class="hint">צפיות</span></div><div id="pages"></div></section>
+      <section class="card" aria-labelledby="links-title"><div class="card-head"><h2 id="links-title">קישורים</h2><span class="hint">לחיצות</span></div><div id="links"></div></section>
+      <section class="card" aria-labelledby="topics-title"><div class="card-head"><h2 id="topics-title">נושאים בצ'אט</h2><span class="hint">המקור שהתשובה נשענה עליו</span></div><div id="topics"></div></section>
+      <section class="card" aria-labelledby="chat-title"><div class="card-head"><h2 id="chat-title">שאלות בצ'אט</h2><span class="hint">איך הסתיימו</span></div><div id="chat"></div></section>
+    </div>
+
+    <footer class="foot">
+      <label><input type="checkbox" id="no-track"> לא לספור את הביקורים שלי מהמכשיר הזה</label>
+      <p>נשמרים רק מונים יומיים: כמה צפיות לכל עמוד, כמה לחיצות לכל קישור, ובצ'אט כמה שאלות ועל אילו נושאים. בלי כתובות IP, בלי עוגיות מעקב ובלי טקסט של שאלות. הימים לפי שעון ישראל.</p>
+    </footer>
+  </main>
+</div>
+<script type="module" src="./admin.js"></script>
+</body>
+</html>

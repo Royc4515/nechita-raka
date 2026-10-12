@@ -8,6 +8,7 @@ import { FallbackChain, OpenAICompatibleProvider } from "./llm.js";
 import { DEFAULT_PERSONA, PERSONAS, buildRequest, canaryFor, parseDraft } from "./prompt.js";
 import { retrieve } from "./retrieve.js";
 import { errors, isSameOriginWrite, json, readJsonObject } from "../http.js";
+import { statsStoreFor } from "../stats/store.js";
 
 /** 12 turns of at most 800 characters (Hebrew is 2 bytes a letter in UTF-8), plus JSON. */
 const MAX_CHAT_BODY_BYTES = 32_768;
@@ -20,6 +21,7 @@ export function defaultChatDeps() {
     config: readChatConfig(),
     knowledge: getKnowledge(),
     limiter: (config) => limiterFor(config.databaseUrl, config.salt),
+    stats: (config) => statsStoreFor(config.databaseUrl),
     guard: (config) =>
       config.guardModel ? new PromptGuard(new OpenAICompatibleProvider(config.guardModel, config.groqApiKey, { timeoutMs: 4_000 })) : null,
     chain: (config) => new FallbackChain(config.models.map((model) => new OpenAICompatibleProvider(model, config.groqApiKey))),
@@ -32,7 +34,8 @@ export function defaultChatDeps() {
  *   -> { reply, sources: [{ title, url }] }
  *
  * validate -> rate-limit -> injection guard -> retrieve -> model chain -> output hooks.
- * Nothing about the conversation is stored; only a hashed per-visitor counter for one day.
+ * Nothing about the conversation is stored; only a hashed per-visitor counter for one day, and
+ * for the admin dashboard a daily count of how answers ended and which data.js sources they used.
  * Errors: 400, 403, 429 rate_limited/daily_cap, 503 not_configured/busy/chat_unavailable.
  */
 export async function handleChat(request, deps) {
@@ -51,10 +54,14 @@ export async function handleChat(request, deps) {
   const blocked = (reason) => json({ reply: cannedReply(reason, hebrew, personaId), sources: [], blocked: true });
 
   const today = israelToday(deps.now());
+  const record = (outcome, sources = []) => recordStats(deps, config, today, outcome, sources);
   // Fails closed: without the counter there is nothing between a script and the free quota.
   try {
-    const verdict = await deps.limiter(config).take(clientIp(request) ?? "unknown", deps.now().toISOString().slice(0, 10));
-    if (verdict !== "ok") return json({ error: verdict }, 429);
+    const verdict = await deps.limiter(config).take(clientIp(request) ?? "unknown", today);
+    if (verdict !== "ok") {
+      await record(verdict);
+      return json({ error: verdict }, 429);
+    }
   } catch (err) {
     console.error(JSON.stringify({ chat: "limiter_failed", error: err instanceof Error ? err.name : "unknown" }));
     return json({ error: "chat_unavailable" }, 503);
@@ -62,13 +69,19 @@ export async function handleChat(request, deps) {
 
   // Fails open: the guard is one layer of several, and the output hooks still run.
   const score = await deps.guard(config)?.score(latest);
-  if (score != null && score >= GUARD_THRESHOLD) return blocked("injection");
+  if (score != null && score >= GUARD_THRESHOLD) {
+    await record("blocked");
+    return blocked("injection");
+  }
 
   const facts = retrieve(knowledge.chunks, retrievalQuery(turns));
   const canary = canaryFor(config.salt);
   const request_ = buildRequest({ personaId, core: knowledge.core(today), facts, history: turns, canary, english: !hebrew });
   const result = await deps.chain(config).run(request_, parseDraft);
-  if (!result.ok) return json({ error: result.busy ? "busy" : "chat_unavailable" }, 503);
+  if (!result.ok) {
+    await record(result.busy ? "busy" : "unavailable");
+    return json({ error: result.busy ? "busy" : "chat_unavailable" }, 503);
+  }
   console.info(JSON.stringify({ chat: "ok", model: result.completion.model, prompt: result.completion.promptTokens, cached: result.completion.cachedTokens }));
 
   const byId = new Map(knowledge.chunks.map((c) => [c.id, c]));
@@ -78,7 +91,22 @@ export async function handleChat(request, deps) {
     allowedEmails: knowledge.allowedEmails,
     chunkIds: new Set(byId.keys()),
   });
-  if (!outcome.ok) return blocked(outcome.reason);
+  if (!outcome.ok) {
+    await record(outcome.reason === "empty" ? "unavailable" : "blocked");
+    return blocked(outcome.reason);
+  }
+  await record("ok", outcome.draft.sources);
   const sources = outcome.draft.sources.map((id) => ({ title: byId.get(id).title, url: byId.get(id).url }));
   return json({ reply: outcome.draft.answer, sources });
+}
+
+/** Dashboard counters: never in the way of an answer, so a failed write is only logged. */
+async function recordStats(deps, config, day, outcome, sourceIds) {
+  try {
+    const store = deps.stats?.(config);
+    if (!store) return;
+    await Promise.all([store.bump(day, "chat", [outcome]), store.bump(day, "topic", sourceIds)]);
+  } catch (err) {
+    console.error(JSON.stringify({ chat: "stats_failed", error: err instanceof Error ? err.name : "unknown" }));
+  }
 }

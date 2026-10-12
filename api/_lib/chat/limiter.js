@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 
-/** Messages one visitor may send per UTC day. A real conversation is rarely longer. */
+/** Messages one visitor may send per day (Israel's date). A real conversation is rarely longer. */
 export const PER_VISITOR_DAILY = 15;
-/** Messages the whole site may send per UTC day, under the two models' free daily token limits. */
+/** Messages the whole site may send per day (Israel's date), under the two models' free daily token limits. */
 export const GLOBAL_DAILY = 150;
 
 /** The visitor's bucket key: a salted hash, so the table never holds an IP address. */

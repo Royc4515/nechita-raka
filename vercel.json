@@ -6,9 +6,18 @@
   "cleanUrls": true,
   "regions": ["fra1"],
   "functions": {
-    "api/chat.js": { "includeFiles": "data.js", "maxDuration": 30 }
+    "api/chat.js": { "includeFiles": "data.js", "maxDuration": 30 },
+    "api/track.js": { "includeFiles": "data.js", "maxDuration": 10 },
+    "api/admin/*.js": { "includeFiles": "data.js", "maxDuration": 15 }
   },
   "headers": [
+    {
+      "source": "/admin",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
