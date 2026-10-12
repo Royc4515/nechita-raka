@@ -162,8 +162,8 @@ window.SITE_DATA = {
       id: `campus-map`,
       title: `מפת הקמפוס והתמצאות`,
       summary: `איך מוצאים בניין וכיתה, איפה המחלקה והמזכירות, ואיך מנווטים בקמפוס הגדול.`,
-      // אותה מפה כמו במדריך האוכל, עם שכבה בצבע לכל סוג. הכפתור פותח את מערכת הניווט של האוניברסיטה, שמנווטת עם GPS עד הבניין.
-      map: { url: `https://www.mobitti.com/app/nav/index.html?navId=m5YPmWleKD`, embed: `https://www.google.com/maps/d/embed?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA&hl=iw`, label: `ניווט עם GPS` },
+      // מערכת הניווט הרשמית של האוניברסיטה: חיפוש לפי מספר בניין, ניווט עם GPS, ספריות, בתי כנסת, חניונים ועוד.
+      map: { url: `https://www.mobitti.com/app/nav/index.html?navId=m5YPmWleKD`, embed: `https://www.mobitti.com/app/nav/index.html?navId=m5YPmWleKD`, label: `פתיחה במסך מלא` },
       steps: [
         `באינ-בר, במערכת השעות, ליד כל קורס פרונטלי כתוב מספר בניין וחדר. קורס שנלמד רק בזום מסומן "נלמד בזום".`,
         `פותחים את מפת הקמפוס הרשמית. בה רשומים כל הבניינים לפי מספר, וגם המחלקות, תחנות השאטל, בתי תפילה, מסעדות ובתי קפה.`,
@@ -613,8 +613,8 @@ window.SITE_DATA = {
       items: [
         {
           id: `food-gmap`,
-          desc: `אוכל, מיקרוגלים, בניינים, ספריות ובתי כנסת על מפה אחת`,
-          name: `מפת הקמפוס של נחיתה רכה`,
+          desc: `כל מקומות האוכל לפי סוג, ומיקרוגלים, על מפה אחת`,
+          name: `המפה: איפה אוכלים בבר-אילן`,
           url: `https://www.google.com/maps/d/viewer?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA`,
           keywords: [`מפה`, `מפת אוכל`, `גוגל מפות`, `my maps`, `אוכל`, `מסעדות`, `מיקרוגל`, `איפה אוכלים`],
         },
