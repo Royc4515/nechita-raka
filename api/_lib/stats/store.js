@@ -5,7 +5,7 @@ import { neon } from "@neondatabase/serverless";
  * about a visitor. Keys are checked (against data.js, or a fixed list) before they get here; the
  * only free text is a site search, which searchKey() cleans and which is capped per day.
  */
-export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device"]);
+export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device", "system"]);
 /** At most this many different free-text keys per kind per day, so a script can't flood the table. */
 export const MAX_FREE_KEYS_PER_DAY = 300;
 
@@ -76,6 +76,28 @@ export class PgStatsStore {
     return rows.length > 0;
   }
 
+  /**
+   * A once-only job (kind 'system'), e.g. this week's email. The row's count is the minute the job
+   * was claimed (Unix minutes), or 0 once it is done. true when this caller may run it: nobody has
+   * claimed it, or a claim older than `staleMinutes` never finished (it failed or was cut off).
+   */
+  async claimOnce(day, key, nowMinutes, staleMinutes) {
+    await this.ensureSchema();
+    const rows = await this.query(
+      `insert into site_stats as s (day, kind, key, count) values ($1::date, 'system', $2, $3::int)
+       on conflict (day, kind, key) do update set count = excluded.count
+       where s.count > 0 and s.count < $3::int - $4::int
+       returning key`,
+      [day, key, nowMinutes, staleMinutes],
+    );
+    return rows.length > 0;
+  }
+
+  /** Marks a claimed job done, so it never runs again. */
+  async markDone(day, key) {
+    await this.query(`update site_stats set count = 0 where day = $1::date and kind = 'system' and key = $2`, [day, key]);
+  }
+
   async forgetOldVisitors(day) {
     await this.query(`delete from site_visitors where day < $1::date - 1`, [day]);
   }
@@ -90,7 +112,7 @@ export class PgStatsStore {
     const [stats, chat] = await Promise.all([
       this.query(
         `select to_char(day, 'YYYY-MM-DD') as day, kind, key, count from site_stats
-         where day between $1::date and $2::date order by day, kind, key`,
+         where day between $1::date and $2::date and kind <> 'system' order by day, kind, key`,
         [from, to],
       ),
       this.query(

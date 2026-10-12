@@ -110,6 +110,8 @@ export function buildCatalog(data, chunks, allowedUrls = []) {
   const topics = new Map(chunks.map((c) => [c.id, c.title]));
 
   return {
+    /** data.js itself, for the calendar events the dashboard and the weekly email show. */
+    data,
     /** The counted key for a page path, or null. */
     page: (path) => (typeof path === "string" && pages.has(path) ? path : null),
     /** The counted key for a clicked link (same-site links come as a path), or null. */
