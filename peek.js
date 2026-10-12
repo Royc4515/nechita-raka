@@ -5,12 +5,19 @@
   Who: picked by an inline script in index.html before the first paint (so a reload never flashes
   the other mascot): every load gets the other one. The chat panel can switch it too.
 */
-const NAMES = { bit: "ביט", byte: "בייט" };
-const LINES = {
-  bit: ["יש שאלה? 👀", "מבחנים, רישום, למדה? תשאלו", "אני פה, עם קפה ☕", "בואו נעשה debug לשבוע הראשון", "לחצו, אני לא נושך 😄"],
-  byte: ["יש שאלה? 👋", "מבחנים, רישום, למדה? תשאלו", "בואו נסדר את זה 🙂", "יש לי רשימה לכל דבר", "לחצו ונתחיל"],
+// English (see index.html): each Hebrew string with a pair in data.en.js is swapped; {name} is filled in at run time.
+const EN_STRINGS = document.documentElement.lang === "en" && window.SITE_EN ? window.SITE_EN : null;
+const UI_EN = new Map(EN_STRINGS ? EN_STRINGS.ui : []);
+const tr = (he, vars) => {
+  const text = UI_EN.get(he) || he;
+  return vars ? text.replace(/\{(\w+)\}/g, (m, key) => (key in vars ? String(vars[key]) : m)) : text;
 };
-const GUIDE_LINE = "שאלה על המדריך הזה?";
+const NAMES = { bit: tr("ביט"), byte: tr("בייט") };
+const LINES = {
+  bit: [tr("יש שאלה? 👀"), tr("מבחנים, רישום, למדה? תשאלו"), tr("אני פה, עם קפה ☕"), tr("בואו נעשה debug לשבוע הראשון"), tr("לחצו, אני לא נושך 😄")],
+  byte: [tr("יש שאלה? 👋"), tr("מבחנים, רישום, למדה? תשאלו"), tr("בואו נסדר את זה 🙂"), tr("יש לי רשימה לכל דבר"), tr("לחצו ונתחיל")],
+};
+const GUIDE_LINE = tr("שאלה על המדריך הזה?");
 
 const local = {
   set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage blocked */ } },
@@ -26,7 +33,7 @@ function showPersona(id) {
   const img = launcher.querySelector("img");
   const src = `./assets/mascot/peek-${id}.webp`;
   if (img.getAttribute("src") !== src) img.src = src;
-  launcher.setAttribute("aria-label", `פתיחת הצ'אט עם ${NAMES[id]}`);
+  launcher.setAttribute("aria-label", tr("פתיחת הצ'אט עם {name}", { name: NAMES[id] }));
 }
 showPersona(persona);
 // The panel announces a switch so the peeking mascot follows it.

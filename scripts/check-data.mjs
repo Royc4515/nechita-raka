@@ -120,6 +120,7 @@ for (const g of data.guides || []) {
   else g.steps.forEach((s, i) => { if (!isText(s)) error(`בצעד ${i + 1} של "${where}" אין טקסט.`, where); });
   if (g.tips != null && !isList(g.tips)) error(`ב"${where}" השדה tips צריך להיות רשימה.`, where);
   checkLinks(g.links, `מדריך "${where}"`, where);
+  if (g.map != null && (!isHttps(g.map.url) || !isHttps(g.map.embed))) error(`במדריך "${where}" ל-map צריך url ו-embed שמתחילים ב-https://.`, where);
   for (const src of g.sources || []) if (!isHttps(src.url)) error(`מקור עם כתובת לא תקינה במדריך "${where}".`, src.label || where);
   if (!isList(g.sources) || !g.sources.length) warn(`למדריך "${where}" אין sources. כדאי לציין מאיפה המידע.`, where);
 }
@@ -173,6 +174,34 @@ try {
   }
 } catch (err) {
   warn(`לא הצלחתי לקרוא את ${ICS_FILE}: ${err.message}`);
+}
+
+// ---------- 4. English (data.en.js; a warning: a string without a pair shows in Hebrew) ----------
+try {
+  const en = { window: {} };
+  vm.runInNewContext(readFileSync("data.en.js", "utf8"), en, { filename: "data.en.js" });
+  const { ui = [], content = [] } = en.window.SITE_EN || {};
+  const sample = (list) => list.slice(0, 5).map((s) => `"${s.length > 60 ? `${s.slice(0, 60)}…` : s}"`).join(", ");
+  // Every Hebrew text in data.js, except keywords (they stay Hebrew so Hebrew searches still work).
+  const hebrew = new Set();
+  const walk = (value, key) => {
+    if (typeof value === "string") { if (/[\u0590-\u05FF]/.test(value)) hebrew.add(value); }
+    else if (Array.isArray(value)) { if (key !== "keywords") value.forEach((v) => walk(v)); }
+    else if (value && typeof value === "object") for (const [k, v] of Object.entries(value)) walk(v, k);
+  };
+  walk(data);
+  const paired = new Set(content.map(([he]) => he));
+  const missing = [...hebrew].filter((s) => !paired.has(s));
+  const unused = [...paired].filter((s) => !hebrew.has(s));
+  if (missing.length) warn(`${missing.length} טקסטים בלי תרגום לאנגלית ב-data.en.js (יופיעו בעברית במצב אנגלית): ${sample(missing)}`);
+  if (unused.length) warn(`${unused.length} תרגומים ב-data.en.js שהטקסט העברי שלהם כבר לא קיים (כנראה שונה): ${sample(unused)}`);
+  // The page's own text: every tr("...") in the page, the chat and the launcher.
+  const keys = new Set(ui.map(([he]) => he));
+  const used = ["index.html", "chat.js", "peek.js"].flatMap((f) => [...readFileSync(f, "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)));
+  const missingUi = [...new Set(used)].filter((s) => !keys.has(s));
+  if (missingUi.length) warn(`${missingUi.length} טקסטים של הדף בלי תרגום ב-data.en.js (ui): ${sample(missingUi)}`);
+} catch (err) {
+  warn(`לא הצלחתי לקרוא את data.en.js: ${err.message}`);
 }
 
 report();

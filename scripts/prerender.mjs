@@ -110,7 +110,7 @@ export const esc = (text) => String(text ?? "").replace(/[&<>"']/g, (ch) => ({ "
 
 /** Same as bidiText() in index.html: Latin runs and emails isolated so RTL never scrambles them. */
 function bidi(text) {
-  const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
+  const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?|\d+[A-Za-z]+\b/g;
   text = String(text ?? "");
   let out = "";
   let last = 0;
@@ -156,7 +156,10 @@ function categoriesHtml(data) {
   return data.categories.map((cat) => {
     const items = (cat.items || []).filter((i) => i && i.id && i.desc && isSafeUrl(i.url));
     const cards = items.map((item) => `<article class="card"><div class="card-text"><h3>${external(item.url, esc(item.desc), ` class="card-link" aria-label="${esc(`${item.desc}: ${item.name} (נפתח בלשונית חדשה)`)}"`)}</h3><p class="name">${esc(item.name)}</p>${item.note ? `<p class="note">${bidi(item.note)}</p>` : ""}</div><div class="card-tools"></div></article>`).join("");
-    return `<section class="cat" aria-labelledby="cat-${esc(cat.id)}" data-pre><h2 id="cat-${esc(cat.id)}">${esc(cat.title)}<span class="count" aria-hidden="true">${items.length}</span></h2><div class="grid">${cards}</div></section>`;
+    const heading = `<h2 id="cat-${esc(cat.id)}">${esc(cat.title)}<span class="count" aria-hidden="true">${items.length}</span></h2>`;
+    return cat.collapsed
+      ? `<section class="cat cat-collapsed" aria-labelledby="cat-${esc(cat.id)}" data-pre><details><summary>${heading}</summary><div class="grid">${cards}</div></details></section>`
+      : `<section class="cat" aria-labelledby="cat-${esc(cat.id)}" data-pre>${heading}<div class="grid">${cards}</div></section>`;
   }).join("");
 }
 
@@ -211,6 +214,8 @@ function guideViewHtml(guide, items, year) {
     `<a class="back" href="./#guides">→ כל המדריכים</a>`,
     `<h2 id="guide-title" tabindex="-1">${esc(guide.title)}</h2>`,
     guide.summary ? `<p class="guide-summary">${bidi(guide.summary)}</p>` : "",
+    guide.map && isSafeUrl(guide.map.url) && isSafeUrl(guide.map.embed)
+      ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, guide.map.label || "פתיחה בגוגל מפות")}</div></section>` : "",
     `<ol class="steps">${steps}</ol>`,
     `<p class="steps-progress"><span>אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.</span></p>`,
     tips,

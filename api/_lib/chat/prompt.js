@@ -89,10 +89,14 @@ export function factsBlock(facts) {
   return `FACTS\n<facts>\n${entries.join("\n\n")}\n</facts>`;
 }
 
-export function buildRequest({ personaId, core, facts, history, canary }) {
+// SITE and FACTS are Hebrew, which pulls the answer into Hebrew; an English question gets this reminder last.
+const ENGLISH_REPLY = `REPLY LANGUAGE
+The student wrote in English. Write the whole answer in natural English, even though SITE and FACTS are in Hebrew. Translate names of places and services; when the student must find a button or menu on a Hebrew-only screen (Inbar, Lemida, the BIU app), give its English meaning and then the Hebrew label in quotes, once.`;
+
+export function buildRequest({ personaId, core, facts, history, canary, english = false }) {
   return {
     messages: [
-      { role: "system", content: `${systemPrompt(personaId, core, canary)}\n\n${factsBlock(facts)}` },
+      { role: "system", content: `${systemPrompt(personaId, core, canary)}\n\n${factsBlock(facts)}${english ? `\n\n${ENGLISH_REPLY}` : ""}` },
       ...history.map((t) => ({ role: t.role, content: t.content })),
     ],
     maxTokens: MAX_COMPLETION_TOKENS,
