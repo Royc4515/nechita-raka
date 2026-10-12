@@ -212,7 +212,7 @@ function guideViewHtml(guide, items, year) {
     `<h2 id="guide-title" tabindex="-1">${esc(guide.title)}</h2>`,
     guide.summary ? `<p class="guide-summary">${bidi(guide.summary)}</p>` : "",
     guide.map && isSafeUrl(guide.map.url) && isSafeUrl(guide.map.embed)
-      ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, "פתיחה בגוגל מפות")}</div></section>` : "",
+      ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, guide.map.label || "פתיחה בגוגל מפות")}</div></section>` : "",
     `<ol class="steps">${steps}</ol>`,
     `<p class="steps-progress"><span>אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.</span></p>`,
     tips,

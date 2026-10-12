@@ -109,7 +109,7 @@
   links: [`inbar`, { label: `שם הכפתור`, url: `https://...` }, { label: `מדריך: רישום`, guide: `registration` }],  // לא חובה. guide פותח מדריך אחר באתר
   sources: [{ label: `שם הדף הרשמי`, url: `https://www.biu.ac.il/...` }],
   checkedOn: `1.11.2026`,                        // מתי בדקתם שהמידע עדיין נכון
-  map: { url: `https://www.google.com/maps/d/viewer?mid=...`, embed: `https://www.google.com/maps/d/embed?mid=...` },  // לא חובה. מפה מ-Google My Maps: בעמוד המדריך יופיעו "הצגת המפה כאן" (נטענת רק בלחיצה) ו"פתיחה בגוגל מפות"
+  map: { url: `https://www.google.com/maps/d/viewer?mid=...`, embed: `https://www.google.com/maps/d/embed?mid=...` },  // לא חובה. מפה (Google My Maps או מערכת הניווט של האוניברסיטה): בעמוד המדריך יופיעו "הצגת המפה כאן" (נטענת רק בלחיצה) וכפתור לפתיחה. אפשר להוסיף label לכפתור, ברירת המחדל: "פתיחה בגוגל מפות"
   keywords: [`מועד ב`],                          // לא חובה
 },
 ```
