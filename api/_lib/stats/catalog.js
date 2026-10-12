@@ -127,6 +127,7 @@ export function buildCatalog(data, chunks, allowedUrls = []) {
     source: (key) => (typeof key === "string" && Object.hasOwn(SOURCES, key) ? key : null),
     /** The dashboard name for a counted key; the key itself when data.js no longer has it (and for searches). */
     label(kind, key) {
+      if (kind === "gsc_p_clicks" || kind === "gsc_p_impr") return pages.get(key) ?? key;
       const map = {
         view: pages,
         click: links,

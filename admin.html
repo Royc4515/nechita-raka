@@ -101,6 +101,14 @@ button, input { font: inherit; color: inherit; }
 .tile .delta.up { color: var(--live); }
 .tile .delta.down { color: var(--danger); }
 .insights { margin-block-end: 16px; }
+.google { margin-block-start: 16px; }
+.google h3 { font-size: .9375rem; margin: 0 0 6px; color: var(--muted); font-weight: 600; }
+.google-stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-block-end: 8px; }
+.google-stats div { display: grid; }
+.google-stats .label { color: var(--muted); font-size: .8125rem; }
+.google-stats .value { font-size: 1.5rem; font-weight: 650; }
+.grid2.tight { margin-block: 8px 0; gap: 20px; }
+td.count.second { color: var(--muted); }
 .insights ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
 .events { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: .8125rem; }
 .events li { display: inline-flex; align-items: center; gap: 6px; }
@@ -214,6 +222,15 @@ td.count, th.count { text-align: end; padding-inline-start: 12px; inline-size: 1
       <div class="chart" id="chart"></div>
       <ul class="events" id="events" aria-label="אירועים מלוח השנה בטווח"></ul>
       <details class="table-view" id="daily-table"><summary>הצגה כטבלה</summary><div class="scroll"></div></details>
+    </section>
+
+    <section class="card google" id="google-card" aria-labelledby="google-title" hidden>
+      <div class="card-head"><h2 id="google-title">גוגל</h2><span class="hint">מ-Search Console, באיחור של יומיים־שלושה</span></div>
+      <div class="google-stats" id="google-stats"></div>
+      <div class="grid2 tight">
+        <div><h3>מה חיפשו בגוגל</h3><div id="google-queries"></div></div>
+        <div><h3>עמודים שגוגל הציג</h3><div id="google-pages"></div></div>
+      </div>
     </section>
 
     <div class="grid2">

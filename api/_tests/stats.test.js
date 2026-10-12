@@ -372,7 +372,7 @@ test("the report fills empty days and ranks pages, links, topics and chat outcom
   ];
   const r = buildReport(rows, { from: "2026-10-01", to: "2026-10-03" }, catalog);
   assert.deepEqual(r.days.map((d) => d.views), [2, 0, 6]);
-  assert.deepEqual(r.totals, { views: 8, visitors: 0, clicks: 0, searches: 0, chatMessages: 7, chatVisitors: 0, answered: 6 });
+  assert.deepEqual(r.totals, { views: 8, visitors: 0, clicks: 0, searches: 0, chatMessages: 7, chatVisitors: 0, answered: 6, googleClicks: 0, googleImpressions: 0, googlePosition: null });
   assert.deepEqual(r.pages.map((x) => x.count), [5, 3]);
   assert.equal(r.topics[0].label, chunks[0].title);
 });

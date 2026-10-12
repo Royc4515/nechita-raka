@@ -34,7 +34,7 @@ function ranked(rows, kind, catalog) {
  *      topics, chat, searches, searchMisses, sources, devices }
  */
 export function buildReport(rows, { from, to }, catalog) {
-  const empty = () => ({ views: 0, visitors: 0, clicks: 0, searches: 0, chatMessages: 0, chatVisitors: 0, answered: 0 });
+  const empty = () => ({ views: 0, visitors: 0, clicks: 0, searches: 0, chatMessages: 0, chatVisitors: 0, answered: 0, googleClicks: 0, googleImpressions: 0 });
   const byDay = new Map();
   for (let n = dayNumber(from); n <= dayNumber(to); n += 1) byDay.set(isoOf(n), empty());
   const field = (r) =>
@@ -44,6 +44,8 @@ export function buildReport(rows, { from, to }, catalog) {
     : r.kind === "search" ? "searches"
     : r.kind === "chat_day" ? (r.key === "messages" ? "chatMessages" : "chatVisitors")
     : r.kind === "chat" && (r.key === "ok" || r.key === "out_of_scope") ? "answered"
+    : r.kind === "gsc_clicks" ? "googleClicks"
+    : r.kind === "gsc_impr" ? "googleImpressions"
     : null;
   const totals = empty();
   for (const r of rows) {
@@ -56,7 +58,7 @@ export function buildReport(rows, { from, to }, catalog) {
   return {
     from,
     to,
-    totals,
+    totals: { ...totals, googlePosition: averagePosition(rows) },
     days: [...byDay].map(([day, counts]) => ({ day, ...counts })),
     pages: ranked(rows, "view", catalog),
     links: ranked(rows, "click", catalog),
@@ -66,7 +68,34 @@ export function buildReport(rows, { from, to }, catalog) {
     searchMisses: ranked(rows, "search_miss", catalog),
     sources: ranked(rows, "source", catalog),
     devices: ranked(rows, "device", catalog),
+    googleQueries: pairs(rows, "gsc_q_clicks", "gsc_q_impr", () => null),
+    googlePages: pairs(rows, "gsc_p_clicks", "gsc_p_impr", (key) => catalog.label("view", key)),
   };
+}
+
+/** Google's average position over the range, weighted by each day's impressions (one decimal), or null. */
+function averagePosition(rows) {
+  const impressions = new Map(rows.filter((r) => r.kind === "gsc_impr").map((r) => [r.day, r.count]));
+  let weighted = 0;
+  let total = 0;
+  for (const r of rows) {
+    if (r.kind !== "gsc_pos") continue;
+    const n = impressions.get(r.day) ?? 0;
+    weighted += (r.count / 10) * n;
+    total += n;
+  }
+  return total ? Math.round((weighted / total) * 10) / 10 : null;
+}
+
+/** Search Console keys with both clicks and impressions, most clicked first, then most shown. */
+function pairs(rows, clickKind, imprKind, labelOf) {
+  const byKey = new Map();
+  const at = (key) => byKey.get(key) ?? byKey.set(key, { key, label: labelOf(key) ?? key, clicks: 0, impressions: 0 }).get(key);
+  for (const r of rows) {
+    if (r.kind === clickKind) at(r.key).clicks += r.count;
+    else if (r.kind === imprKind) at(r.key).impressions += r.count;
+  }
+  return [...byKey.values()].sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions || a.label.localeCompare(b.label, "he"));
 }
 
 const METRIC_NAMES = {
@@ -79,6 +108,13 @@ const METRIC_NAMES = {
   search_miss: "חיפוש בלי תוצאות",
   source: "מקור הגעה",
   visitors: "מבקרים ייחודיים",
+  gsc_clicks: "גוגל: קליקים",
+  gsc_impr: "גוגל: חשיפות",
+  gsc_pos: "גוגל: מיקום ממוצע (x10)",
+  gsc_q_clicks: "גוגל: קליקים לחיפוש",
+  gsc_q_impr: "גוגל: חשיפות לחיפוש",
+  gsc_p_clicks: "גוגל: קליקים לעמוד",
+  gsc_p_impr: "גוגל: חשיפות לעמוד",
   device: "סוג מכשיר",
 };
 
