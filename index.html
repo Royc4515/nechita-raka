@@ -2104,6 +2104,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     function paint() {
       results = search();
+      if (input.value.trim()) window.dispatchEvent(new CustomEvent("nr:search", { detail: { q: input.value.trim(), results: results.length } }));
       active = Math.min(active, Math.max(0, results.length - 1));
       if (!results.length) {
         list.replaceChildren(el("li", { class: "p-empty", role: "presentation", text: tr("לא נמצא. נסו מילה אחרת.") }));
@@ -2466,6 +2467,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       else if (total && ranked.mode === "any") statusEl.replaceChildren(tr("לא נמצא משהו שמתאים לכל המילים. {results} שמתאימות לחלק מהן.", { results: resultsText(total) }));
       else statusEl.replaceChildren(resultsText(total));
       announce(active ? statusEl.textContent : "", ANNOUNCE_DELAY_MS);
+      // track.js counts the search a visitor settles on, and whether it found anything.
+      if (active && !fromAddress) window.dispatchEvent(new CustomEvent("nr:search", { detail: { q: raw, results: total } }));
       // The strip appears when there is a lot to sift through, or when a birthday is among the results.
       const showHits = active && (total > TOP_HITS || ranked.list.slice(0, TOP_HITS).some((e) => e.birthday));
       if (showHits) renderTopHits(ranked.list);
@@ -2475,6 +2478,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (!active && wasActive) requestAnimationFrame(() => scrollTimelineTo(timelineState.nextNode));
       wasActive = active;
     }
+    // A query that came in the address (?q=, a shared link) is not a search someone typed: track.js skips it.
+    let fromAddress = false;
     // Fast typing: filter once per frame, not once per key.
     let frame = 0;
     const scheduleApply = () => {
@@ -2500,7 +2505,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return chip;
     }));
     const initial = new URLSearchParams(location.search).get("q");
-    if (initial) { input.value = initial; apply(); }
+    if (initial) { fromAddress = true; input.value = initial; apply(); fromAddress = false; }
     let urlTimer = 0;
     function syncUrl() {
       clearTimeout(urlTimer);

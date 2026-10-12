@@ -2,9 +2,12 @@ import { neon } from "@neondatabase/serverless";
 
 /**
  * Anonymous daily counters for the admin dashboard: one row per (day, kind, key), never anything
- * about a visitor. kind is one of KINDS; key is checked against data.js before it gets here.
+ * about a visitor. Keys are checked (against data.js, or a fixed list) before they get here; the
+ * only free text is a site search, which searchKey() cleans and which is capped per day.
  */
-export const KINDS = Object.freeze(["view", "click", "topic", "chat"]);
+export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device"]);
+/** At most this many different free-text keys per kind per day, so a script can't flood the table. */
+export const MAX_FREE_KEYS_PER_DAY = 300;
 
 const SCHEMA = `create table if not exists site_stats (
   day   date not null,
@@ -12,6 +15,14 @@ const SCHEMA = `create table if not exists site_stats (
   key   text not null check (char_length(key) between 1 and 300),
   count integer not null default 0,
   primary key (day, kind, key)
+)`;
+
+// Today's visitors as salted hashes (never an IP), so each counts once a day; rows older than a
+// day are deleted, the same way the chat's limiter handles its own.
+const VISITORS_SCHEMA = `create table if not exists site_visitors (
+  day  date not null,
+  hash text not null check (char_length(hash) between 1 and 100),
+  primary key (day, hash)
 )`;
 
 /** query: (text, params) => Promise<rows>. */
@@ -22,7 +33,7 @@ export class PgStatsStore {
   }
 
   ensureSchema() {
-    this.schemaReady ??= this.query(SCHEMA).then(() => undefined).catch((err) => {
+    this.schemaReady ??= Promise.all([this.query(SCHEMA), this.query(VISITORS_SCHEMA)]).then(() => undefined).catch((err) => {
       this.schemaReady = null;
       throw err;
     });
@@ -40,6 +51,33 @@ export class PgStatsStore {
        on conflict (day, kind, key) do update set count = s.count + 1`,
       [day, kind, unique],
     );
+  }
+
+  /** Like bump for one free-text key, unless the day already has MAX_FREE_KEYS_PER_DAY other keys of this kind. */
+  async bumpCapped(day, kind, key) {
+    await this.ensureSchema();
+    await this.query(
+      `insert into site_stats as s (day, kind, key, count)
+       select $1::date, $2, $3, 1
+       where exists (select 1 from site_stats where day = $1::date and kind = $2 and key = $3)
+          or (select count(*) from site_stats where day = $1::date and kind = $2) < $4
+       on conflict (day, kind, key) do update set count = s.count + 1`,
+      [day, kind, key, MAX_FREE_KEYS_PER_DAY],
+    );
+  }
+
+  /** true the first time this hash is seen on this day. The first new visitor of a day clears older hashes. */
+  async registerVisitor(day, hash) {
+    await this.ensureSchema();
+    const rows = await this.query(
+      `insert into site_visitors (day, hash) values ($1::date, $2) on conflict do nothing returning hash`,
+      [day, hash],
+    );
+    return rows.length > 0;
+  }
+
+  async forgetOldVisitors(day) {
+    await this.query(`delete from site_visitors where day < $1::date - 1`, [day]);
   }
 
   /**
