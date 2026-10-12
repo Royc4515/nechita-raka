@@ -3,6 +3,7 @@ import { errors, isSameOriginWrite, json, readJsonObject } from "../http.js";
 import { getCatalog } from "../stats/catalog.js";
 import { statsStoreFor } from "../stats/store.js";
 import { adminFromGoogleToken, adminFromRequest, createSession, readAdminConfig, sessionCookie } from "./auth.js";
+import { calendarEvents, insights, isComparable, previousRange } from "./insights.js";
 import { buildReport, parseRange, toCsv } from "./report.js";
 
 const MAX_SESSION_BODY_BYTES = 8_192;
@@ -53,7 +54,8 @@ export async function handleSession(request, deps) {
 
 /**
  * GET /api/admin/stats?from=YYYY-MM-DD&to=YYYY-MM-DD[&format=csv]
- *   -> the report (see report.js), or the raw counters as a CSV download. Admins only.
+ *   -> the report (see report.js) with the previous period's totals, the calendar events in the
+ *      range and a few insights (insights.js); or the raw counters as a CSV download. Admins only.
  */
 export async function handleStats(request, deps) {
   const { config } = deps;
@@ -63,14 +65,19 @@ export async function handleStats(request, deps) {
   const range = parseRange(params);
   if (!range) return errors.badRequest("invalid_range");
 
+  // One read covers the range and the same number of days before it, for the comparison, when
+  // that earlier period is all within the history (a half-empty one would show a false rise).
+  const csv = params.get("format") === "csv";
+  const before = previousRange(range);
+  const compare = !csv && isComparable(before);
   let rows;
   try {
-    rows = await deps.store.read(range.from, range.to);
+    rows = await deps.store.read(compare ? before.from : range.from, range.to);
   } catch (err) {
     console.error(JSON.stringify({ admin: "read_failed", error: err instanceof Error ? err.name : "unknown" }));
     return json({ error: "unavailable" }, 503);
   }
-  if (params.get("format") === "csv") {
+  if (csv) {
     return new Response(toCsv(rows, deps.catalog), {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
@@ -79,5 +86,14 @@ export async function handleStats(request, deps) {
       },
     });
   }
-  return json({ ...buildReport(rows, range, deps.catalog), generatedAt: deps.now().toISOString() });
+  const report = buildReport(rows.filter((r) => r.day >= range.from), range, deps.catalog);
+  const earlier = rows.filter((r) => r.day < range.from);
+  const previous = compare ? buildReport(earlier, before, deps.catalog) : null;
+  return json({
+    ...report,
+    previous: previous && { from: before.from, to: before.to, totals: previous.totals },
+    events: calendarEvents(deps.catalog.data ?? {}, range.from, range.to),
+    insights: insights(report, previous),
+    generatedAt: deps.now().toISOString(),
+  });
 }

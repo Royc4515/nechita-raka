@@ -210,6 +210,15 @@ test("without a salt, views still count but visitors don't", async () => {
   assert.equal(store.counts.get("2026-10-20|visitors|all"), undefined);
 });
 
+test("a once-only claim is taken by one caller, and again only when it went stale", async () => {
+  const calls = [];
+  const store = new PgStatsStore(async (text, params) => { calls.push({ text, params }); return [{ key: params?.[1] }]; });
+  assert.equal(await store.claimOnce("2026-10-24", "weekly-email:2026-10-18", 1000, 360), true);
+  const claim = calls.find((c) => c.text.includes("'system'"));
+  assert.deepEqual(claim.params, ["2026-10-24", "weekly-email:2026-10-18", 1000, 360]);
+  assert.match(claim.text, /where s\.count > 0 and s\.count < \$3::int - \$4::int/);
+});
+
 test("free-text keys are capped per day in SQL, an existing key still counts", async () => {
   const calls = [];
   const store = new PgStatsStore(async (text, params) => { calls.push({ text, params }); return []; });

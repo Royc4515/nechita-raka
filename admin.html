@@ -13,6 +13,7 @@
 <style>
 :root {
   color-scheme: light dark;
+  --event: #e9e3f6; --event-mark: #7a5cc2;
   --bg: #f4f7fb; --surface: #ffffff; --surface-2: #eaf0f7;
   --text: #0f1b2d; --muted: #46566e; --faint: #5c6b82;
   --border: #dde5ef; --border-strong: #c4d0de;
@@ -30,6 +31,7 @@
     --border: #22304a; --border-strong: #2e3f5e;
     --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
     --grid: #1c2840; --live: #4ac26b; --danger: #f97066;
+    --event: #2a2342; --event-mark: #b39ae8;
     --shadow-1: none;
   }
 }
@@ -40,6 +42,7 @@
   --border: #22304a; --border-strong: #2e3f5e;
   --accent: #5cb8f0; --accent-hover: #7cc6f5; --accent-ink: #04213a; --accent-text: #7cc6f5; --accent-soft: #10304d; --focus: #9ad3f7;
   --grid: #1c2840; --live: #4ac26b; --danger: #f97066;
+  --event: #2a2342; --event-mark: #b39ae8;
   --shadow-1: none;
 }
 :root[data-theme="light"] { color-scheme: light; }
@@ -94,6 +97,17 @@ button, input { font: inherit; color: inherit; }
 .tile .label { color: var(--muted); font-size: .875rem; }
 .tile .value { font-size: 2rem; font-weight: 650; line-height: 1.2; margin-block-start: 4px; }
 .tile .sub { color: var(--faint); font-size: .8125rem; margin-block-start: 2px; }
+.tile .delta { font-size: .8125rem; margin-block-start: 2px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tile .delta.up { color: var(--live); }
+.tile .delta.down { color: var(--danger); }
+.insights { margin-block-end: 16px; }
+.insights ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px; }
+.events { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: .8125rem; }
+.events li { display: inline-flex; align-items: center; gap: 6px; }
+.events li::before { content: ""; inline-size: 10px; block-size: 10px; border-radius: 3px; background: var(--event); flex: none; }
+.chart .event-band { fill: var(--event); }
+.chart .event-mark { fill: var(--event-mark); }
+.tip .tip-event { display: block; color: var(--text); white-space: normal; max-inline-size: 240px; margin-block-start: 4px; padding-inline-start: 8px; border-inline-start: 3px solid var(--event-mark); }
 
 /* Cards */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--shadow-1); min-inline-size: 0; }
@@ -187,12 +201,18 @@ td.count, th.count { text-align: end; padding-inline-start: 12px; inline-size: 1
 
     <div class="tiles" id="tiles"></div>
 
+    <section class="card insights" id="insights-card" aria-labelledby="insights-title" hidden>
+      <div class="card-head"><h2 id="insights-title">מה בולט</h2><span class="hint" id="insights-hint"></span></div>
+      <ul id="insights"></ul>
+    </section>
+
     <section class="card" aria-labelledby="daily-title">
       <div class="card-head">
         <h2 id="daily-title">לפי יום</h2>
         <div class="seg" id="metrics" role="group" aria-label="מה להציג בגרף"></div>
       </div>
       <div class="chart" id="chart"></div>
+      <ul class="events" id="events" aria-label="אירועים מלוח השנה בטווח"></ul>
       <details class="table-view" id="daily-table"><summary>הצגה כטבלה</summary><div class="scroll"></div></details>
     </section>
 

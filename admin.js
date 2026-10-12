@@ -4,7 +4,7 @@
   range as raw daily counters. Everything is drawn with textContent: labels come from the server.
 */
 const REFRESH_MS = 30_000;
-const STATS_START = "2026-10-07"; // the first day the site kept any counters (the chat's message total)
+const STATS_START = "2026-10-07"; // the first day the site kept any counters; HISTORY_START in api/_lib/admin/insights.js
 const TOP_ROWS = 10;
 const RANGE_KEY = "nr-admin-range";
 const NO_TRACK_KEY = "nr-no-track";
@@ -266,6 +266,8 @@ $("#metrics").addEventListener("click", (e) => {
 // ---------- render ----------
 function render() {
   renderTiles();
+  renderInsights();
+  renderEvents();
   renderChart();
   renderDailyTable();
   renderRanked($("#pages"), state.report.pages, "view");
@@ -282,18 +284,45 @@ function renderTiles() {
   const { totals, days } = state.report;
   const perDay = (n) => (days.length > 1 ? `${fmt.format(Math.round((n / days.length) * 10) / 10)} ביום בממוצע` : "");
   const answeredShare = totals.chatMessages ? `${fmt.format(totals.answered)} נענו` : "";
-  const tile = (label, value, sub) => el("div", { class: "tile" },
+  const before = state.report.previous && state.report.previous.totals;
+  const tile = (label, key, sub) => el("div", { class: "tile" },
     el("p", { class: "label", text: label }),
-    el("p", { class: "value", text: fmt.format(value) }),
+    el("p", { class: "value", text: fmt.format(totals[key]) }),
+    deltaNode(totals[key], before ? before[key] : null),
     sub ? el("p", { class: "sub", text: sub }) : null);
   $("#tiles").replaceChildren(
-    tile("מבקרים", totals.visitors, days.length > 1 ? "כל מבקר נספר פעם ביום" : ""),
-    tile("צפיות בעמודים", totals.views, perDay(totals.views)),
-    tile("לחיצות על קישורים", totals.clicks, perDay(totals.clicks)),
-    tile("חיפושים באתר", totals.searches, perDay(totals.searches)),
-    tile("הודעות בצ'אט", totals.chatMessages, answeredShare),
-    tile("מבקרים ששאלו בצ'אט", totals.chatVisitors, days.length > 1 ? "סכום של כל יום בנפרד" : ""),
+    tile("מבקרים", "visitors", days.length > 1 ? "כל מבקר נספר פעם ביום" : ""),
+    tile("צפיות בעמודים", "views", perDay(totals.views)),
+    tile("לחיצות על קישורים", "clicks", perDay(totals.clicks)),
+    tile("חיפושים באתר", "searches", perDay(totals.searches)),
+    tile("הודעות בצ'אט", "chatMessages", answeredShare),
+    tile("מבקרים ששאלו בצ'אט", "chatVisitors", days.length > 1 ? "סכום של כל יום בנפרד" : ""),
   );
+}
+
+/** "▲ 40% לעומת 7 הימים שלפני": only when the period before had something to compare with. */
+function deltaNode(now, before) {
+  if (!before) return null;
+  const pct = Math.round(((now - before) / before) * 100);
+  const span = state.report.days.length;
+  const period = span === 1 ? "אתמול" : `${span} הימים שלפני`;
+  const text = pct === 0 ? `ללא שינוי לעומת ${period}` : `${pct > 0 ? "▲" : "▼"} ${Math.abs(pct)}% לעומת ${period}`;
+  return el("p", { class: `delta ${pct > 0 ? "up" : pct < 0 ? "down" : ""}`, text, title: `לפני: ${fmt.format(before)}` });
+}
+
+function renderInsights() {
+  const list = state.report.insights || [];
+  $("#insights-card").hidden = list.length === 0;
+  $("#insights").replaceChildren(...list.map((text) => el("li", { text })));
+  const prev = state.report.previous;
+  const running = state.report.to === israelToday() ? " (היום עוד לא נגמר)" : "";
+  $("#insights-hint").textContent = prev ? `לעומת ${longDate(prev.from)} עד ${longDate(prev.to)}${running}` : "";
+}
+
+function renderEvents() {
+  const events = state.report.events || [];
+  $("#events").replaceChildren(...events.map((e) =>
+    el("li", { text: `${shortDate(e.date)}${e.until ? ` עד ${shortDate(e.until)}` : ""}: ${e.title}` })));
 }
 
 function niceMax(max) {
@@ -352,6 +381,22 @@ function renderChart() {
   root.append(axis);
 
   const tip = el("div", { class: "tip", hidden: true });
+  // Calendar events behind the bars: a soft band over their days, and a dot to hover for the name.
+  const dayIndex = new Map(days.map((d, i) => [d.day, i]));
+  const firstDay = days[0].day;
+  const lastDay = days[days.length - 1].day;
+  const eventLayer = svg("g");
+  for (const ev of state.report.events || []) {
+    const start = dayIndex.get(ev.date < firstDay ? firstDay : ev.date);
+    const end = dayIndex.get((ev.until || ev.date) > lastDay ? lastDay : (ev.until || ev.date));
+    if (start === undefined || end === undefined) continue;
+    const x0 = m.left + band * start;
+    const width = band * (end - start + 1);
+    eventLayer.append(svg("rect", { class: "event-band", x: x0, y: m.top, width, height: ih, opacity: 0.6 }));
+    const mark = svg("circle", { class: "event-mark", cx: x0 + Math.min(width, band) / 2, cy: m.top + 2, r: 4 });
+    eventLayer.append(mark);
+  }
+  root.insertBefore(eventLayer, root.firstChild);
   const bars = svg("g");
   days.forEach((d, i) => {
     const v = d[metric.id];
@@ -360,7 +405,9 @@ function renderChart() {
     const bar = svg("path", { class: "bar", d: v > 0 ? barPath(x, y(v), bw, m.top + ih - y(v)) : "" });
     const show = () => {
       bar.classList.add("on");
-      tip.replaceChildren(el("strong", { class: "num", text: fmt.format(v) }), el("span", { text: `${metric.label} · ${longDate(d.day)}` }));
+      const onDay = (state.report.events || []).filter((ev) => ev.date <= d.day && d.day <= (ev.until || ev.date)).map((ev) => ev.title);
+      tip.replaceChildren(el("strong", { class: "num", text: fmt.format(v) }), el("span", { text: `${metric.label} · ${longDate(d.day)}` }),
+        ...onDay.map((title) => el("span", { class: "tip-event", text: title })));
       tip.hidden = false;
       const px = ((m.left + band * i + band / 2) / W) * box.clientWidth;
       const py = (Math.min(y(v), m.top + ih - 4) / H) * box.clientHeight;
