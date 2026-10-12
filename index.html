@@ -154,6 +154,9 @@ main { padding-block: var(--s2) var(--s8); }
 .step label { padding-block: 9px; cursor: pointer; }
 .step:has(input:checked) label { color: var(--faint); }
 .steps-progress { margin-block-start: var(--s3); color: var(--muted); font-size: var(--fs-small); }
+.guide-map { margin-block-start: var(--s5); }
+.guide-map iframe { display: block; inline-size: 100%; block-size: min(70vh, 520px); border: 0; border-radius: var(--r-lg); background: var(--surface-2); }
+.guide-map .actions { margin-block-start: 0; }
 .tips { margin-block-start: var(--s6); padding: var(--s4) var(--s5); background: var(--surface-2); border-radius: var(--r-lg); }
 .tips h3 { font-size: var(--fs-meta); font-weight: 600; }
 .tips ul { margin: var(--s2) 0 0; padding-inline-start: 1.1em; }
@@ -1476,6 +1479,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return [list, progress];
   }
   const academicYearText = (year) => (year ? `, לשנת הלימודים ${year}` : "");
+  /** A My Maps map for the guide. The iframe (heavy, third-party) loads only when asked for. */
+  function guideMap(guide) {
+    const map = guide.map;
+    if (!map || !isSafeUrl(map.url) || !isSafeUrl(map.embed)) return null;
+    const box = el("section", { class: "guide-map", "aria-label": "מפה" });
+    const show = el("button", { type: "button", class: "btn btn-primary" }, "הצגת המפה כאן");
+    show.addEventListener("click", () => {
+      const frame = el("iframe", { src: map.embed, title: `מפה: ${guide.title}`, loading: "lazy", referrerpolicy: "no-referrer-when-downgrade", allowfullscreen: "" });
+      box.replaceChildren(frame, el("div", { class: "actions" }, linkButton({ url: map.url }, "פתיחה בגוגל מפות")));
+    });
+    box.append(el("div", { class: "actions" }, show, linkButton({ url: map.url }, "פתיחה בגוגל מפות")));
+    return box;
+  }
   function renderGuideView(guide, itemsById, year) {
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
@@ -1484,6 +1500,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
+      guideMap(guide),
       ...stepsList(guide),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
