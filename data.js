@@ -162,6 +162,8 @@ window.SITE_DATA = {
       id: `campus-map`,
       title: `מפת הקמפוס והתמצאות`,
       summary: `איך מוצאים בניין וכיתה, איפה המחלקה והמזכירות, ואיך מנווטים בקמפוס הגדול.`,
+      // מערכת הניווט הרשמית של האוניברסיטה: חיפוש לפי מספר בניין, ניווט עם GPS, ספריות, בתי כנסת, חניונים ועוד.
+      map: { url: `https://www.mobitti.com/app/nav/index.html?navId=m5YPmWleKD`, embed: `https://www.mobitti.com/app/nav/index.html?navId=m5YPmWleKD`, label: `פתיחה במסך מלא` },
       steps: [
         `באינ-בר, במערכת השעות, ליד כל קורס פרונטלי כתוב מספר בניין וחדר. קורס שנלמד רק בזום מסומן "נלמד בזום".`,
         `פותחים את מפת הקמפוס הרשמית. בה רשומים כל הבניינים לפי מספר, וגם המחלקות, תחנות השאטל, בתי תפילה, מסעדות ובתי קפה.`,
@@ -240,7 +242,7 @@ window.SITE_DATA = {
       title: `איפה אוכלים בקמפוס ובסביבה`,
       summary: `כל המסעדות, הקפיטריות והסופרים: מפארק ה-100, דרך הקמפוס ובניין האגודה, ועד המרכז המסחרי רמת אילן.`,
       // מפה ב-Google My Maps. embed נטען בעמוד רק כשלוחצים על "הצגת המפה כאן".
-      map: { url: `https://www.google.com/maps/d/viewer?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA`, embed: `https://www.google.com/maps/d/embed?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA&hl=iw` },
+      map: { url: `https://www.google.com/maps/d/viewer?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8`, embed: `https://www.google.com/maps/d/embed?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8&hl=iw` },
       steps: [
         `פארק ה-100 (מתחם המעונות, ז'בוטינסקי 512–514): בקומת הקרקע של בנייני המעונות יש סופר (מרקט בעיר, לפי גוגל מפות פתוח 24 שעות), Bistro Deli & Coffee bar, טומי רול (המבורגרים), פיצה אחד העם, פלאפל סביח | חומוס בר, חלהס (כריכים בחלה, עד 2:00 בלילה), MEAT TRUCK, קצפת (גלידה וקפה) וגרעיני עפולה. השעות והקישורים של כל מקום בקטגוריה "אוכל בפארק ה-100" בדף הבית.`,
         `צפון הקמפוס (הנדסה, חינוך ופסיכולוגיה): ביס ביס, מסעדה בשרית בכשרות מהדרין ברחבת בניין קורט (1004). אוכל ביתי שמתחלף כל יום, וצ'ולנט בימי חמישי. א'–ה' 10:30–16:00.`,
@@ -269,7 +271,6 @@ window.SITE_DATA = {
         `food-map`,
         `food-hours`,
         `food-campus`,
-        `kashrut`,
         `bis-discounts`,
         { label: `מדריך: מפת הקמפוס והתמצאות`, guide: `campus-map` },
         `campus-nav`,
@@ -612,9 +613,9 @@ window.SITE_DATA = {
       items: [
         {
           id: `food-gmap`,
-          desc: `כל מקומות האוכל והמיקרוגלים על מפה אחת`,
+          desc: `כל מקומות האוכל לפי סוג, ומיקרוגלים, על מפה אחת`,
           name: `המפה: איפה אוכלים בבר-אילן`,
-          url: `https://www.google.com/maps/d/viewer?mid=1s8At5Vy7_QsuM2My2PP87XlatczBmMA`,
+          url: `https://www.google.com/maps/d/viewer?mid=1TSCZK8Zg03ug-EbGs4UiwKiMtWM5r_8`,
           keywords: [`מפה`, `מפת אוכל`, `גוגל מפות`, `my maps`, `אוכל`, `מסעדות`, `מיקרוגל`, `איפה אוכלים`],
         },
         {
@@ -639,13 +640,6 @@ window.SITE_DATA = {
           keywords: [`אוכל`, `סופר`, `מינימרקט`, `פארק ה-100`, `מעונות`, `רמת אילן`, `אגודה`],
         },
         {
-          id: `kashrut`,
-          desc: `תעודות הכשרות של המסעדות בקמפוס`,
-          name: `כשרויות בקמפוס`,
-          url: `https://sites.biu.ac.il/campus-rabbi/page/kashrut`,
-          keywords: [`כשרות`, `כשר`, `מהדרין`, `תעודת כשרות`, `רב הקמפוס`],
-        },
-        {
           id: `bis-discounts`,
           desc: `הנחות לסטודנטים, גם על אוכל`,
           name: `ההטבות של אגודת הסטודנטים`,
@@ -656,7 +650,8 @@ window.SITE_DATA = {
     },
     {
       id: `food-park100`,
-      title: `אוכל בפארק ה-100 (מתחם המעונות)`,
+      title: `אוכל בפארק ה-100 (מעונות)`,
+      collapsed: true, // מופיע כשורה אחת שנפתחת בלחיצה
       items: [
         {
           id: `p100-market`,
@@ -735,6 +730,7 @@ window.SITE_DATA = {
     {
       id: `food-ramat-ilan`,
       title: `אוכל במרכז המסחרי רמת אילן`,
+      collapsed: true,
       items: [
         {
           id: `ri-carrefour`,
@@ -1169,7 +1165,6 @@ window.SITE_DATA = {
       q: `האוכל בקמפוס כשר?`,
       a: `כן. לכל המסעדות בתוך הקמפוס יש תעודת כשרות של רבנות רמת גן, וחלקן בכשרות מהדרין, למשל ביס ביס. את התעודות אפשר לראות באתר של רב הקמפוס.`,
       more: `מחוץ לקמפוס, בפארק ה-100 ובמרכז המסחרי רמת אילן, כל עסק עומד בפני עצמו, ובודקים את התעודה במקום.`,
-      links: [`kashrut`],
       guide: `food`,
       sources: [{ label: `כשרויות בקמפוס, רב הקמפוס`, url: `https://sites.biu.ac.il/campus-rabbi/page/kashrut` }],
       keywords: [`כשר`, `כשרות`, `מהדרין`, `בשרי`, `חלבי`, `רבנות`],
