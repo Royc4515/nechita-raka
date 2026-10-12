@@ -120,6 +120,7 @@ for (const g of data.guides || []) {
   else g.steps.forEach((s, i) => { if (!isText(s)) error(`בצעד ${i + 1} של "${where}" אין טקסט.`, where); });
   if (g.tips != null && !isList(g.tips)) error(`ב"${where}" השדה tips צריך להיות רשימה.`, where);
   checkLinks(g.links, `מדריך "${where}"`, where);
+  if (g.map != null && (!isHttps(g.map.url) || !isHttps(g.map.embed))) error(`במדריך "${where}" ל-map צריך url ו-embed שמתחילים ב-https://.`, where);
   for (const src of g.sources || []) if (!isHttps(src.url)) error(`מקור עם כתובת לא תקינה במדריך "${where}".`, src.label || where);
   if (!isList(g.sources) || !g.sources.length) warn(`למדריך "${where}" אין sources. כדאי לציין מאיפה המידע.`, where);
 }

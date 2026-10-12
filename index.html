@@ -154,6 +154,9 @@ main { padding-block: var(--s2) var(--s8); }
 .step label { padding-block: 9px; cursor: pointer; }
 .step:has(input:checked) label { color: var(--faint); }
 .steps-progress { margin-block-start: var(--s3); color: var(--muted); font-size: var(--fs-small); }
+.guide-map { margin-block-start: var(--s5); }
+.guide-map iframe { display: block; inline-size: 100%; block-size: min(70vh, 520px); border: 0; border-radius: var(--r-lg); background: var(--surface-2); }
+.guide-map .actions { margin-block-start: 0; }
 .tips { margin-block-start: var(--s6); padding: var(--s4) var(--s5); background: var(--surface-2); border-radius: var(--r-lg); }
 .tips h3 { font-size: var(--fs-meta); font-weight: 600; }
 .tips ul { margin: var(--s2) 0 0; padding-inline-start: 1.1em; }
@@ -875,7 +878,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   /** Plain text with Latin runs (Office 365, *9392, @live.biu.ac.il) isolated so RTL never scrambles them. */
   function bidiText(text) {
     const frag = document.createDocumentFragment();
-    const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?/g;
+    const pattern = /[*@A-Za-z](?:[\w@*.\-+/:]*\w)?(?: [\w*@](?:[\w@*.\-+/:]*\w)?)*|\d+(?:[.:/–\-]\d+)+%?|\d+[A-Za-z]+\b/g;
     let last = 0;
     text = String(text ?? "");
     for (const match of text.matchAll(pattern)) {
@@ -891,8 +894,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   function svgIcon(paths) {
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
   }
-  const CATEGORY_ICON = { university: "building", materials: "book", whatsapp: "chat", "courses-a": "chat", perks: "sparkle" };
-  const GUIDE_ICON = { registration: "calendar", "lemida-365": "key", payments: "card", campus: "idcard", "campus-map": "map", shuttle: "bus", help: "help", "first-week": "sparkle" };
+  const CATEGORY_ICON = { university: "building", materials: "book", whatsapp: "chat", "courses-a": "chat", food: "food", "food-park100": "food", "food-ramat-ilan": "food", perks: "sparkle" };
+  const GUIDE_ICON = { registration: "calendar", "lemida-365": "key", payments: "card", campus: "idcard", "campus-map": "map", shuttle: "bus", food: "food", help: "help", "first-week": "sparkle" };
   const iconNode = (name) => {
     const holder = document.createElement("span");
     holder.innerHTML = ICONS[name] || ICONS.sparkle; // static, trusted markup only
@@ -914,6 +917,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     idcard: svgIcon('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 17a3.5 3.5 0 0 1 7 0M15 9h3M15 13h3"/>'),
     help: svgIcon('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>'),
     map: svgIcon('<path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7zM9 4v13M15 7v13"/>'),
+    food: svgIcon('<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v4h3"/>'),
     bus: svgIcon('<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4"/><circle cx="8" cy="14" r=".8"/><circle cx="16" cy="14" r=".8"/>'),
     home: svgIcon('<path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/>'),
     link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
@@ -1475,6 +1479,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return [list, progress];
   }
   const academicYearText = (year) => (year ? `, לשנת הלימודים ${year}` : "");
+  /** A My Maps map for the guide. The iframe (heavy, third-party) loads only when asked for. */
+  function guideMap(guide) {
+    const map = guide.map;
+    if (!map || !isSafeUrl(map.url) || !isSafeUrl(map.embed)) return null;
+    const box = el("section", { class: "guide-map", "aria-label": "מפה" });
+    const show = el("button", { type: "button", class: "btn btn-primary" }, "הצגת המפה כאן");
+    show.addEventListener("click", () => {
+      const frame = el("iframe", { src: map.embed, title: `מפה: ${guide.title}`, loading: "lazy", referrerpolicy: "no-referrer-when-downgrade", allowfullscreen: "" });
+      box.replaceChildren(frame, el("div", { class: "actions" }, linkButton({ url: map.url }, "פתיחה בגוגל מפות")));
+    });
+    box.append(el("div", { class: "actions" }, show, linkButton({ url: map.url }, "פתיחה בגוגל מפות")));
+    return box;
+  }
   function renderGuideView(guide, itemsById, year) {
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
@@ -1483,6 +1500,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("a", { class: "back", href: "#guides" }, "→ כל המדריכים"),
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
+      guideMap(guide),
       ...stepsList(guide),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
