@@ -86,7 +86,7 @@ export function buildWeeklyEmail({ week, report, previous, upcoming }) {
   const html = `<!doctype html><html lang="he" dir="rtl"><body style="margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#0f1b2d">
 <div style="max-width:560px;margin:0 auto;padding:24px 16px" dir="rtl">
 <h1 style="font-size:20px;margin:0 0 4px">סיכום שבועי · נחיתה רכה</h1>
-<p style="margin:0 0 16px;color:#46566e">${escape(range)}, לעומת השבוע שלפני</p>
+<p style="margin:0 0 16px;color:#46566e">${escape(range)}${p ? ", לעומת השבוע שלפני" : ""}</p>
 <table role="presentation" style="width:100%;border-collapse:collapse;background:#fff;border-radius:12px;margin-bottom:16px">
 ${tiles.map(([label, now, before]) => `<tr><td style="${cell};padding-inline:12px">${escape(label)}</td><td style="${cell};font-weight:bold;text-align:left">${fmt.format(now)}</td><td style="${cell};color:#46566e;text-align:left;padding-inline:12px;width:90px">${escape(delta(now, before))}</td></tr>`).join("\n")}
 </table>

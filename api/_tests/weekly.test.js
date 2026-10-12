@@ -153,6 +153,7 @@ test("the first weeks are not compared with a week before the history started", 
   // Week 11.10-17.10 against 4.10-10.10, which started before 7.10: no "rise" from missing days.
   assert.ok(!sent[0].text.includes("▲"));
   assert.ok(!sent[0].text.includes("עלייה"));
+  assert.ok(!sent[0].html.includes("לעומת השבוע שלפני"));
 });
 
 test("the weekly job needs Resend, and the cron secret when one is set", async () => {
