@@ -74,7 +74,9 @@
 .chat-sources a, .chat-sources > span:not(.sources-label) { display: inline-flex; align-items: center; gap: 4px; min-block-size: 32px; padding-inline: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
 .chat-sources a:hover { border-color: var(--accent); }
 .chat-roy { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block-start: var(--s2); padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-size: var(--fs-small); }
-.chat-roy a { color: var(--accent-text); font-weight: 600; }
+.chat-roy .wa-btn { display: inline-flex; align-items: center; gap: 6px; min-block-size: 36px; padding-inline: 12px 14px; border-radius: 999px; background: #25d366; color: #06331b; font-weight: 700; text-decoration: none; box-shadow: 0 1px 2px rgb(0 0 0 / .15); }
+.chat-roy .wa-btn:hover { background: #1fbd5b; }
+.chat-roy .wa-btn svg { inline-size: 18px; block-size: 18px; flex: none; }
 .chat-sources svg { inline-size: 14px; block-size: 14px; flex: none; }
 
 .chat-event { align-self: center; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-small); }
