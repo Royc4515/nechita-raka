@@ -271,6 +271,7 @@ window.SITE_EN = {
     [`ואם עדיין חסר משהו, כתבו לרועי בקבוצה.`, `And if something is still missing, write to Roy in the group.`],
     [`חסר משהו או שקישור לא עובד? תכתבו לרועי בקבוצה.`, `Something missing or a broken link? Write to Roy in the group.`],
     [`להוסיף את האתר למסך הבית`, `Add the site to your home screen`],
+    [`הוספה למסך הבית`, `Add to home screen`],
     [`מכשיר אחר?`, `Another device?`],
     [`אייפון ואייפד:`, `iPhone and iPad:`],
     [`ב-Safari לוחצים על כפתור השיתוף ובוחרים "הוספה למסך הבית".`, `In Safari, tap the Share button and choose "Add to Home Screen".`],
