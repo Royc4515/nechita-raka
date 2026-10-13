@@ -821,8 +821,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       </details>
     </section>
     <div class="meta">
-      <p id="credit">נבנה על ידי רועי כרמלי, חונך בנחיתה רכה, תשפ"ז<!-- pre:credit --></p>
-      <p>אתר עצמאי, יוזמה של סטודנט שהוא חונך בתוכנית. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.</p>
+      <p id="credit">נבנה על ידי רועי כרמלי, תשפ"ז<!-- pre:credit --></p>
+      <p>אתר עצמאי, יוזמה של סטודנט. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.</p>
       <!-- pre:updated -->
     </div>
   </div>
@@ -2276,7 +2276,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   function mentorItem(site) {
     const url = mentorUrl(site, site && site.whatsappText);
-    return url ? { id: "mentor", name: tr("וואטסאפ פרטי לרועי"), desc: tr("הודעה פרטית לחונך"), url } : null;
+    return url ? { id: "mentor", name: tr("וואטסאפ פרטי לרועי"), desc: tr("הודעה פרטית לרועי"), url } : null;
   }
   function renderContact(data) {
     const mentor = mentorItem(data.site);
