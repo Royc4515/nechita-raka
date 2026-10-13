@@ -91,6 +91,16 @@ test("the email escapes what visitors typed and lists the upcoming events", () =
   assert.match(email.html, /\/admin/);
 });
 
+test("the email has a home-screen section only in a week that has home-screen events", () => {
+  const week = { from: "2026-10-18", to: "2026-10-24" };
+  const quiet = buildWeeklyEmail({ week, report: buildReport(rowsFor("2026-10-18", 50), week, catalog), previous: null, upcoming: [] });
+  assert.ok(!quiet.text.includes("מסך הבית:"));
+  const rows = [...rowsFor("2026-10-18", 50), { day: "2026-10-18", kind: "app", key: "launch", count: 7 }, { day: "2026-10-19", kind: "app", key: "button", count: 3 }];
+  const email = buildWeeklyEmail({ week, report: buildReport(rows, week, catalog), previous: null, upcoming: [] });
+  assert.match(email.text, /מסך הבית:\n- כניסות ממסך הבית: 7\n- לחיצות על "הוספה למסך הבית": 3/);
+  assert.match(email.html, /כניסות ממסך הבית/);
+});
+
 /** The same claim rules as PgStatsStore.claimOnce: count is the claim minute, 0 once done. */
 function claimStore() {
   const marks = new Map();
