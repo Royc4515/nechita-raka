@@ -232,6 +232,17 @@ const post = (body, origin = "https://nechita-raka.vercel.app") =>
     body: JSON.stringify(body),
   });
 
+test("a reserve-duty answer without Roy is flagged for his line, others aren't", async () => {
+  const ask = async (question, answer, sources = []) => {
+    const deps = fakeDeps({ chain: () => ({ run: async () => ({ ok: true, value: draft(answer, sources), completion: { model: "m1", promptTokens: 1, cachedTokens: 0 } }) }) });
+    return (await handleChat(post({ persona: "bit", messages: [{ role: "user", content: question }] }), deps)).json();
+  };
+  assert.equal((await ask("אני במילואים, מה עם המבחנים?", "תודה על השירות! מגיע לך מועד נוסף.")).roy, true);
+  assert.equal((await ask("מה מגיע לי?", "מועד נוסף.", ["guide:reserves"])).roy, true);
+  assert.equal((await ask("אני במילואים, מה עם המבחנים?", "תודה! ורועי ישמח לעזור בוואטסאפ.")).roy, undefined);
+  assert.equal((await ask("איך משנים קורס?", "בתקופת השינויים באינ-בר.")).roy, undefined);
+});
+
 test("handler answers with the reply and its sources", async () => {
   const res = await handleChat(post({ persona: "byte", messages: [{ role: "user", content: "איך משנים קורס?" }] }), fakeDeps());
   assert.equal(res.status, 200);

@@ -174,7 +174,7 @@ class ChatPanel {
     const items = [this.botItem(this.greeting, this.persona, [], true)];
     for (const m of this.log) {
       if (m.role === "user") items.push(this.userItem(m.content));
-      else if (m.role === "assistant") items.push(this.botItem(m.content, m.persona, m.sources || []));
+      else if (m.role === "assistant") items.push(this.botItem(m.content, m.persona, m.sources || [], false, m.roy === true));
       else if (m.role === "event") items.push(el("li", { class: "chat-event", text: m.content }));
       else if (m.role === "error") items.push(this.errorItem(m));
     }
@@ -188,7 +188,7 @@ class ChatPanel {
   }
 
   /** Answers are document-style cards (no speech bubble), sources and a copy button inside. */
-  botItem(text, persona, sources, greeting = false) {
+  botItem(text, persona, sources, greeting = false, roy = false) {
     const p = PERSONAS[persona] || PERSONAS.bit;
     const head = el("div", { class: "answer-head" },
       el("img", { class: "chat-avatar small", src: p.avatar, alt: "", width: "24", height: "24" }),
@@ -203,6 +203,13 @@ class ChatPanel {
           chip.prepend(docIcon());
           return chip;
         })));
+    }
+    // A reserve-duty answer that left Roy out gets a line with his private WhatsApp (the server decides).
+    const royUrl = roy ? royWhatsApp() : "";
+    if (royUrl) {
+      card.append(el("p", { class: "chat-roy" },
+        el("span", { text: tr("🫡 רועי, מילואימניק בעצמו עם לא מעט ימים, ישמח לעזור:") }),
+        el("a", { href: royUrl, target: "_blank", rel: "noopener noreferrer", text: tr("וואטסאפ פרטי לרועי") })));
     }
     return el("li", { class: "chat-msg bot" }, card);
   }
@@ -282,7 +289,7 @@ class ChatPanel {
     try {
       const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, lang: EN_STRINGS ? "en" : undefined, messages }) });
       const body = await res.json().catch(() => ({}));
-      if (res.ok && typeof body.reply === "string") reply = { role: "assistant", content: body.reply, persona: this.persona, sources: Array.isArray(body.sources) ? body.sources : [] };
+      if (res.ok && typeof body.reply === "string") reply = { role: "assistant", content: body.reply, persona: this.persona, sources: Array.isArray(body.sources) ? body.sources : [], roy: body.roy === true };
       else reply = { role: "error", error: ERRORS[body.error] ? body.error : "offline", question: text };
     } catch {
       reply = { role: "error", error: "offline", question: text };
@@ -356,6 +363,14 @@ function svg(paths) {
 const closeIcon = () => svg(["M6 6l12 12", "M18 6 6 18"]);
 const copyIcon = () => svg(["M9 9h10v10H9z", "M5 15V5h10"]);
 const docIcon = () => svg(["M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z", "M14 3v5h5"]);
+
+/** Roy's private WhatsApp link, from site.whatsapp in data.js (the same link the site's "mentor" card uses), or "". */
+function royWhatsApp() {
+  const site = window.SITE_DATA?.site || {};
+  const number = String(site.whatsapp || "").replace(/\D/g, "");
+  if (!/^\d{9,15}$/.test(number)) return "";
+  return `https://wa.me/${number}${site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : ""}`;
+}
 
 async function copyText(text, button) {
   try {

@@ -225,6 +225,7 @@ window.SITE_EN = {
     [`ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.`, `Bit and Byte are AI: check dates and rules against the official source. Up to 15 questions a day, and the chat isn't saved on the server.`],
     [`להחליף ל{name}`, `Switch to {name}`],
     [`העתקת התשובה`, `Copy the answer`],
+    [`🫡 רועי, מילואימניק בעצמו עם לא מעט ימים, ישמח לעזור:`, `🫡 Roy, a reservist himself with plenty of days, is happy to help:`],
     [`מקורות:`, `Sources:`],
     [`מה הכי חשוב לדעת על "{title}"?`, `What's most important to know about "{title}"?`],
     [`אפשר להתחיל מכאן:`, `You can start here:`],

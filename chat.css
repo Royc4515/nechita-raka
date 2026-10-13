@@ -73,6 +73,8 @@
 .sources-label { color: var(--faint); font-size: .75rem; font-family: var(--mono); }
 .chat-sources a, .chat-sources > span:not(.sources-label) { display: inline-flex; align-items: center; gap: 4px; min-block-size: 32px; padding-inline: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
 .chat-sources a:hover { border-color: var(--accent); }
+.chat-roy { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block-start: var(--s2); padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-size: var(--fs-small); }
+.chat-roy a { color: var(--accent-text); font-weight: 600; }
 .chat-sources svg { inline-size: 14px; block-size: 14px; flex: none; }
 
 .chat-event { align-self: center; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-small); }
