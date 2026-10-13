@@ -281,6 +281,7 @@ function render() {
   renderRanked($("#misses"), state.report.searchMisses, "search_miss");
   renderRanked($("#sources"), state.report.sources, "source");
   renderRanked($("#devices"), state.report.devices, "device");
+  renderRanked($("#app"), state.report.app || [], "app");
 }
 
 function renderTiles() {

@@ -75,6 +75,8 @@ const done = () => new Response(null, { status: 204, headers: { "Cache-Control":
  *                                              the visitor, their device and where they came from (SOURCES)
  *   { kind: "click", key: "https://..." }       a click on a link from data.js
  *   { kind: "search", key: "...", results: n }  a site search the visitor settled on; results 0 also counts a miss
+ *   { kind: "app", key: "launch" | "installed" | "button" }  opened from the home screen, installed, or the
+ *                                              add-to-home-screen button tapped (APP_EVENTS)
  * Nothing that identifies the visitor is kept: no IP, no cookie, no id (the day's visitor hash is
  * deleted after a day). Unknown keys and bots are answered 204 too and simply not counted.
  */
@@ -111,6 +113,9 @@ async function record(deps, day, body, visitor) {
   } else if (body.kind === "click") {
     const link = catalog.link(body.key);
     if (link) await store.bump(day, "click", [link]);
+  } else if (body.kind === "app") {
+    const event = catalog.app(body.key);
+    if (event) await store.bump(day, "app", [event]);
   } else if (body.kind === "search") {
     const query = searchKey(body.key);
     if (!query || !Number.isInteger(body.results) || body.results < 0 || body.results > 10_000) return;

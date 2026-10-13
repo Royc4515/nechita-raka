@@ -36,6 +36,13 @@ export const SOURCES = Object.freeze({
 /** The kind of device, counted once per visitor per day. */
 export const DEVICES = Object.freeze({ mobile: "טלפון", tablet: "טאבלט", desktop: "מחשב" });
 
+/** The add-to-home-screen events, each a plain count. */
+export const APP_EVENTS = Object.freeze({
+  launch: "כניסות ממסך הבית",
+  installed: "התקנות (Chrome ו-Edge בלבד)",
+  button: "לחיצות על \"הוספה למסך הבית\"",
+});
+
 export function deviceOf(userAgent = "") {
   if (/iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobile))/i.test(userAgent)) return "tablet";
   if (/Mobi|iPhone|iPod|Android/i.test(userAgent)) return "mobile";
@@ -125,6 +132,7 @@ export function buildCatalog(data, chunks, allowedUrls = []) {
     },
     topic: (id) => (topics.has(id) ? id : null),
     source: (key) => (typeof key === "string" && Object.hasOwn(SOURCES, key) ? key : null),
+    app: (key) => (typeof key === "string" && Object.hasOwn(APP_EVENTS, key) ? key : null),
     /** The dashboard name for a counted key; the key itself when data.js no longer has it (and for searches). */
     label(kind, key) {
       if (kind === "gsc_p_clicks" || kind === "gsc_p_impr") return pages.get(key) ?? key;
@@ -135,6 +143,7 @@ export function buildCatalog(data, chunks, allowedUrls = []) {
         chat: new Map(Object.entries(CHAT_OUTCOMES)),
         source: new Map(Object.entries(SOURCES)),
         device: new Map(Object.entries(DEVICES)),
+        app: new Map(Object.entries(APP_EVENTS)),
         visitors: new Map([["all", "מבקרים ייחודיים"]]),
       }[kind];
       return map?.get(key) ?? key;

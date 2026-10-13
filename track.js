@@ -1,7 +1,7 @@
 /*
   Anonymous counters for the admin dashboard: page views, clicks on links from data.js, where the
-  visit came from (a category, never the full address), and the site searches people settle on
-  (not one opened from a ?q= link).
+  visit came from (a category, never the full address), the site searches people settle on
+  (not one opened from a ?q= link), and add-to-home-screen use (launches, installs, button taps).
   Nothing identifies the visitor (no cookie, no id, no storage), and the server keeps only daily
   totals. An admin can turn counting off on their own device from the dashboard.
 */
@@ -59,6 +59,14 @@
     send("view", path, first && landingSource ? { source: landingSource } : undefined);
   }
   view();
+
+  // Add to home screen: a visit opened from the home-screen icon, an install (Chrome and Edge tell the
+  // page; Safari doesn't), and taps on the page's "add to home screen" button.
+  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) send("app", "launch");
+  window.addEventListener("appinstalled", () => send("app", "installed"));
+  document.addEventListener("click", (e) => {
+    if (e.target instanceof Element && e.target.closest("#install-btn")) send("app", "button");
+  }, true);
   // Guides open and close through pushState/replaceState (not always followed by popstate), and
   // Back fires popstate: all three are a route change. view() skips a change that keeps the path.
   for (const name of ["pushState", "replaceState"]) {
