@@ -91,8 +91,11 @@ bdi.run { white-space: nowrap; }
 h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; }
 .tagline { color: var(--muted); margin-block-start: var(--s2); max-inline-size: 52ch; }
 /* Sits at the end of the tagline's last line, so it costs no height of its own. */
-.install-btn { display: inline-flex; align-items: center; gap: 4px; vertical-align: baseline; padding: 4px 2px; margin-inline-start: var(--s1); border: 0; background: none; color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; white-space: nowrap; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.install-btn svg { inline-size: 16px; block-size: 16px; flex: none; align-self: center; }
+.install-btn { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; padding: 5px 12px 5px 10px; margin-inline-start: var(--s1); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; line-height: 1.2; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 2px color-mix(in srgb, var(--accent) 18%, transparent); transition: background-color .15s, border-color .15s, transform .1s; }
+.install-btn:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 16%, var(--accent-soft)); }
+.install-btn:active { transform: scale(.97); }
+.install-btn[aria-expanded="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.install-btn svg { inline-size: 15px; block-size: 15px; flex: none; }
 .install-hint { margin-block-start: var(--s2); max-inline-size: 52ch; font-size: var(--fs-small); color: var(--muted); }
 /* Sticky search */
 .searchbar { position: sticky; inset-block-start: 0; z-index: 20; background: transparent; padding-block: calc(var(--s2) + env(safe-area-inset-top)) var(--s3); border-block-end: 1px solid transparent; }
