@@ -97,7 +97,19 @@ export async function handleChat(request, deps) {
   }
   await record(outcome.draft.inScope === false ? "out_of_scope" : "ok", outcome.draft.sources);
   const sources = outcome.draft.sources.map((id) => ({ title: byId.get(id).title, url: byId.get(id).url }));
-  return json({ reply: outcome.draft.answer, sources });
+  return json({ reply: outcome.draft.answer, sources, ...(needsRoyLine(latest, outcome.draft) ? { roy: true } : {}) });
+}
+
+const RESERVES_RE = /מילואים|מילואימניק|צו 8|אפוד אקדמי|reserv/i;
+const RESERVES_SOURCES = /^(guide|tips):(reserves|academic-vest)$|^link:wa-reserves/;
+
+/**
+ * true when the question is about reserve duty (its words, or the reserves sources the answer used)
+ * and the answer itself didn't point to Roy: the chat then adds a line under it with his WhatsApp.
+ */
+export function needsRoyLine(question, draft) {
+  const aboutReserves = RESERVES_RE.test(question) || draft.sources.some((id) => RESERVES_SOURCES.test(id));
+  return aboutReserves && !/רועי|\bRoy\b/i.test(draft.answer);
 }
 
 /** Dashboard counters: never in the way of an answer, so a failed write is only logged. */

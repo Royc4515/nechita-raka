@@ -73,6 +73,11 @@
 .sources-label { color: var(--faint); font-size: .75rem; font-family: var(--mono); }
 .chat-sources a, .chat-sources > span:not(.sources-label) { display: inline-flex; align-items: center; gap: 4px; min-block-size: 32px; padding-inline: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--accent-text); font-size: var(--fs-small); font-weight: 600; text-decoration: none; }
 .chat-sources a:hover { border-color: var(--accent); }
+.chat-roy { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block-start: var(--s2); padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--text); font-size: var(--fs-small); }
+.chat-roy .wa-btn { display: inline-flex; align-items: center; gap: 6px; min-block-size: 36px; padding-inline: 12px 14px; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; text-decoration: none; box-shadow: 0 1px 2px color-mix(in srgb, var(--accent) 25%, transparent); transition: background-color .15s, transform .1s; }
+.chat-roy .wa-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.chat-roy .wa-btn:active { transform: scale(.97); }
+.chat-roy .wa-btn svg { inline-size: 18px; block-size: 18px; flex: none; }
 .chat-sources svg { inline-size: 14px; block-size: 14px; flex: none; }
 
 .chat-event { align-self: center; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-small); }
