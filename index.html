@@ -1370,7 +1370,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
           ev.note ? el("div", { class: "ev-note", text: ev.note }) : null,
           (isNext || current) ? el("span", { class: "badge", text: relativeLabel(ev, today) }) : null,
           isPast ? el("span", { class: "sr-only", text: tr("(עבר)") }) : null,
-          ev.guide && !isPast ? el("a", { class: "ev-guide", href: guideHref(ev.guide), text: tr("איך עושים את זה ←") }) : null));
+          ev.guide && !isPast ? el("a", { class: "ev-guide", href: guideHref(ev.guide), text: tr("איך עושים את זה ←") }) : null,
+          ev.link && isSafeUrl(ev.link.url) && !isPast ? el("a", { class: "ev-guide", href: ev.link.url, target: "_blank", rel: "noopener noreferrer", text: `${ev.link.label} ←` }) : null));
       if (isNext) { nextNode = li; nextEvent = ev; }
       if (!isPast && !isNext) upcomingCount++;
       if (!isPast && !isNext && upcomingCount >= UPCOMING_SHOWN) li.classList.add("is-later");

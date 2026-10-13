@@ -27,6 +27,19 @@ DESCRIPTION:מקור: לוח הזמנים האקדמי של אוניבר
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:cs-year-opening-2026@biu-cs-5787
+DTSTAMP:20261013T120000Z
+DTSTART:20261021T100000Z
+DTEND:20261021T120000Z
+SUMMARY:מפגש פתיחת שנה במחלקה למדעי המחשב וב
+ ינה מלאכותית
+LOCATION:מרחב הלמידה\, בניין 503
+DESCRIPTION:אוכל\, אנשים\, קהילה. צריך להירשם מר
+ אש: https://forms.gle/w6ZthiDpzTSwHQcd9. שעת הסיום משוערת.
+URL:https://forms.gle/w6ZthiDpzTSwHQcd9
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
 UID:5d7b04ca9669f2f96cf6f72c54ea2790@biu-cs-5787
 DTSTAMP:20261007T120000Z
 DTSTART;VALUE=DATE:20261027
