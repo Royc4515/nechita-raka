@@ -688,6 +688,8 @@ window.SITE_EN = {
     [`נפתחת בהדרגה לפי חלון אישי, המערכת סגורה בשישי ושבת`, `Opens gradually by personal slot; the system is closed Friday and Shabbat`],
     [`מפגש פתיחת שנה במחלקה למדעי המחשב ובינה מלאכותית`, `Year-opening event at the Department of Computer Science and AI`],
     [`במרחב הלמידה, בניין 503. אוכל, אנשים, קהילה, ועוד כמה דברים ששווה להגיע בשבילם. צריך להירשם מראש.`, `In the learning space, building 503. Food, people, community, and a few more things worth showing up for. Registration required.`],
+    [`מפגש פתיחת שנה במחלקה: 21.10 ב-13:00, מרחב הלמידה (503)`, `Year-opening event at the department: 21.10 at 13:00, the learning space (503)`],
+    [`הרשמה למפגש`, `Register for the event`],
     [`להרשמה למפגש`, `Register for the event`],
     [`חופש יום בחירות`, `Election Day break`],
     [`תשלום שכר לימוד`, `Tuition payment`],

@@ -25,7 +25,8 @@ window.SITE_DATA = {
   },
 
   // שורת "הכי שימושי": מזהים (id) של פריטים מהקטגוריות למטה
-  featured: [`inbar`, `lemida`, `cs-drive`, `wa-important`, `gemini`],
+  // `opening-event` למעלה עד המפגש ב-21.10. אחרי זה מוחקים אותו מכאן ומהקטגוריה university.
+  featured: [`opening-event`, `inbar`, `lemida`, `cs-drive`, `wa-important`, `gemini`],
 
   /*
     מדריכים: כל מדריך נפתח בעמוד משלו באתר, בכתובת /ה-id (למשל nechita-raka.vercel.app/exams).
@@ -519,6 +520,13 @@ window.SITE_DATA = {
           name: `תקופת השינויים והרישום`,
           url: `https://www.biu.ac.il/page/22573`,
           keywords: [`שינויים`, `רישום`, `חלון זמן`, `חלון אישי`, `הוספת קורס`, `ביטול קורס`],
+        },
+        {
+          id: `opening-event`,
+          desc: `מפגש פתיחת שנה במחלקה: 21.10 ב-13:00, מרחב הלמידה (503)`,
+          name: `הרשמה למפגש`,
+          url: `https://forms.gle/w6ZthiDpzTSwHQcd9`,
+          keywords: [`מפגש`, `פתיחת שנה`, `אירוע`, `הרשמה`, `קהילה`, `מרחב הלמידה`, `503`],
         },
         {
           id: `cs-contact`,
