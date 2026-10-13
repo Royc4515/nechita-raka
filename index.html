@@ -90,9 +90,9 @@ bdi.run { white-space: nowrap; }
 .brand svg { flex: none; inline-size: 36px; block-size: 36px; border-radius: 10px; }
 h1 { font-size: var(--fs-h1); line-height: 1.2; font-weight: 700; letter-spacing: -.015em; }
 .tagline { color: var(--muted); margin-block-start: var(--s2); max-inline-size: 52ch; }
-.install-top { margin-block-start: var(--s3); }
-.install-btn { display: inline-flex; align-items: center; gap: var(--s2); min-block-size: 44px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
-.install-btn svg { inline-size: 18px; block-size: 18px; flex: none; }
+/* Sits at the end of the tagline's last line, so it costs no height of its own. */
+.install-btn { display: inline-flex; align-items: center; gap: 4px; vertical-align: baseline; padding: 4px 2px; margin-inline-start: var(--s1); border: 0; background: none; color: var(--accent-text); font: inherit; font-size: var(--fs-small); font-weight: 600; white-space: nowrap; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.install-btn svg { inline-size: 16px; block-size: 16px; flex: none; align-self: center; }
 .install-hint { margin-block-start: var(--s2); max-inline-size: 52ch; font-size: var(--fs-small); color: var(--muted); }
 /* Sticky search */
 .searchbar { position: sticky; inset-block-start: 0; z-index: 20; background: transparent; padding-block: calc(var(--s2) + env(safe-area-inset-top)) var(--s3); border-block-end: 1px solid transparent; }
@@ -285,7 +285,7 @@ footer details summary { display: inline-flex; align-items: center; min-block-si
 footer .meta { margin-block-start: var(--s6); font-size: var(--fs-small); color: var(--faint); }
 footer .meta p + p { margin-block-start: var(--s1); }
 footer a { color: inherit; }
-@media (display-mode: standalone) { .install, .install-top { display: none; } }
+@media (display-mode: standalone) { .install, .install-btn, .install-hint { display: none !important; } }
 .fatal { margin-block: var(--s6); padding: var(--s4); border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); }
 [hidden] { display: none !important; }
 /* ---------- Aurora backdrop ---------- */
@@ -707,11 +707,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         <button class="icon-btn" type="button" id="theme-btn" aria-label="ערכת צבעים"></button>
         <button class="icon-btn lang-btn" type="button" id="lang-btn" lang="en" aria-label="English">EN</button>
       </div>
-      <p class="tagline">כל הקישורים, המדריכים והתאריכים לשנה א' במקום אחד.</p>
-      <div class="install-top" id="install-top" hidden>
-        <button class="install-btn" type="button" id="install-btn" aria-expanded="false" aria-controls="install-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v6M9 11h6"/></svg>הוספה למסך הבית</button>
-        <p class="install-hint" id="install-hint" hidden></p>
-      </div>
+      <p class="tagline">כל הקישורים, המדריכים והתאריכים לשנה א' במקום אחד. <button class="install-btn" type="button" id="install-btn" aria-expanded="false" aria-controls="install-hint" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v6M9 11h6"/></svg>הוספה למסך הבית</button></p>
+      <p class="install-hint" id="install-hint" hidden></p>
       <div class="term" dir="ltr" aria-hidden="true">
         <div class="term-bar"><i></i><i></i><i></i><span>~/biu/cs/year-1</span></div>
         <pre class="term-body"><span class="ln" style="--n:25;--at:.3s"><span class="t-prompt">❯</span> python3 soft_landing.py</span><span class="ln" style="--n:18;--at:1s;--d:.3s"><span class="t-out">print("Hello, CS!")</span></span><span class="ln" style="--n:28;--at:1.4s"><span class="t-kw">if</span> self.status == <span class="t-str">"1stYear"</span>:</span><span class="ln" style="--n:26;--at:2.1s">    <span class="t-kw">return</span> <span class="t-str">"Soft Landing"</span><span class="t-caret"></span></span></pre>
@@ -1196,7 +1193,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   // for the "add to home screen" button. Safari has no such dialog, so there the button shows how.
   let installPrompt = null;
   window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; });
-  window.addEventListener("appinstalled", () => { installPrompt = null; $("#install-top").hidden = true; });
+  window.addEventListener("appinstalled", () => { installPrompt = null; $("#install-btn").hidden = true; $("#install-hint").hidden = true; });
   const CAL_HINTS = {
     ios: [tr("לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'.")],
     android: [tr("לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן.")],
@@ -2300,14 +2297,14 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     if (!standalone) {
       const btn = $("#install-btn");
       const hint = $("#install-hint");
-      $("#install-top").hidden = false;
+      btn.hidden = false;
       btn.addEventListener("click", async () => {
         if (installPrompt) {
           const prompt = installPrompt;
           installPrompt = null;
           prompt.prompt();
           const { outcome } = await prompt.userChoice;
-          if (outcome === "accepted") $("#install-top").hidden = true;
+          if (outcome === "accepted") btn.hidden = hint.hidden = true;
           return;
         }
         if (!hint.hasChildNodes()) {
