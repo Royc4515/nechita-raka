@@ -34,7 +34,7 @@ function resolveLinks(links, itemsById) {
 
 function eventLine(ev) {
   const when = ev.until ? `${dmy(ev.date)} עד ${dmy(ev.until)}` : dmy(ev.date);
-  const extra = [ev.time, ev.note].filter(Boolean).join(", ");
+  const extra = [ev.time, ev.note, ev.link && `${ev.link.label}: ${ev.link.url}`].filter(Boolean).join(", ");
   return `${when}: ${ev.title}${extra ? ` (${extra})` : ""}`;
 }
 

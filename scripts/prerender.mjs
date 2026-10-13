@@ -168,7 +168,7 @@ function timelineHtml(data) {
   return events.map((ev) => {
     const datetime = ev.time ? `${ev.date}T${ev.time.padStart(5, "0")}` : ev.date;
     const day = Number(ev.date.slice(8));
-    return `<li class="event${ev.kind === "birthday" ? " birthday" : ""}" data-pre><span class="datechip" aria-hidden="true"><span class="mon">${esc(monthShort(ev.date))}</span><span class="day">${day}</span></span><div><time datetime="${datetime}"><span class="ltr">${esc(formatRange(ev))}</span></time><div class="title">${esc(ev.title)}</div>${ev.kind === "birthday" ? `<span class="bday-badge">🎂 יום הולדת</span>` : ""}${ev.note ? `<div class="ev-note">${esc(ev.note)}</div>` : ""}${ev.guide ? `<a class="ev-guide" href="${guideHref(ev.guide)}">איך עושים את זה ←</a>` : ""}</div></li>`;
+    return `<li class="event${ev.kind === "birthday" ? " birthday" : ""}" data-pre><span class="datechip" aria-hidden="true"><span class="mon">${esc(monthShort(ev.date))}</span><span class="day">${day}</span></span><div><time datetime="${datetime}"><span class="ltr">${esc(formatRange(ev))}</span></time><div class="title">${esc(ev.title)}</div>${ev.kind === "birthday" ? `<span class="bday-badge">🎂 יום הולדת</span>` : ""}${ev.note ? `<div class="ev-note">${esc(ev.note)}</div>` : ""}${ev.guide ? `<a class="ev-guide" href="${guideHref(ev.guide)}">איך עושים את זה ←</a>` : ""}${ev.link && isSafeUrl(ev.link.url) ? external(ev.link.url, `${esc(ev.link.label)} ←`, ` class="ev-guide"`) : ""}</div></li>`;
   }).join("");
 }
 
