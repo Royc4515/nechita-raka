@@ -388,7 +388,7 @@ window.SITE_EN = {
     [`מורידים את האפליקציה My BLE-ID (הקישורים למטה).`, `Download the My BLE-ID app (links below).`],
     [`הולכים למזכירות המחלקה (בניין 503, קומה 1) ומבקשים שיסדרו לכם אישור כניסה למרחב הלמידה. את זה עושים רק פעם אחת.`, `Go to the department office (building 503, floor 1) and ask them to give you access to the learning space. You only do this once.`],
     [`בכל כניסה: פותחים את האפליקציה ולוחצים על Door 1. ה-Bluetooth צריך להיות דלוק, אחרת זה לא עובד.`, `Every time you go in: open the app and tap Door 1. Bluetooth has to be on, or it won't work.`],
-    [`המרחב פתוח תמיד, והחשמל דולק עד 00:00. גיליתם באיזו שעה הוא נדלק בבוקר, או נשארתם אחרי חצות לראות מה קורה? הגזמתם. לכו לישון.`, `The space is always open, and the lights are on until 00:00. Found out what time they come back on in the morning, or stayed past midnight to see what happens? You've overdone it. Go to sleep.`],
+    [`המרחב פתוח תמיד, והחשמל דולק עד 00:00. יודעים באיזו שעה הוא נדלק בבוקר? זה כבר לא מרחב למידה, זו כתובת מגורים, ואת הארנונה משלמים לעיריית רמת גן.`, `The space is always open, and the lights are on until 00:00. Know what time they come back on in the morning? That's not a study space anymore, that's your home address, and the property tax goes to the Ramat Gan municipality.`],
     [`הדלת לא מופיעה באפליקציה או לא נפתחת? גם לה מגיעה הפסקה. לפעמים היא נתקעת לכמה דקות, אז מחכים ומנסים שוב. בינתיים יש לכם תירוץ רשמי להפסקת קפה ארוכה יותר.`, `Door not showing in the app, or not opening? It deserves a break too. Sometimes it gets stuck for a few minutes, so wait and try again. Meanwhile, you have an official excuse for a longer coffee break.`],
     [`My BLE-ID לאנדרואיד`, `My BLE-ID for Android`],
     [`My BLE-ID לאייפון`, `My BLE-ID for iPhone`],
