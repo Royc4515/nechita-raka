@@ -39,7 +39,7 @@ function mentorItem(site) {
   const number = String((site && site.whatsapp) || "").replace(/\D/g, "");
   if (!/^\d{9,15}$/.test(number)) return null;
   const text = site.whatsappText ? `?text=${encodeURIComponent(site.whatsappText)}` : "";
-  return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לחונך", url: `https://wa.me/${number}${text}` };
+  return { id: "mentor", name: "וואטסאפ פרטי לרועי", desc: "הודעה פרטית לרועי", url: `https://wa.me/${number}${text}` };
 }
 
 function itemsById(data) {
@@ -257,7 +257,7 @@ function personNode(site) {
     "@id": `${SITE_URL}/#author`,
     name: site.author || "רועי כרמלי",
     alternateName: "Roy Carmelli",
-    description: "חונך בתוכנית נחיתה רכה לסטודנטים בשנה א' במדעי המחשב בבר אילן, ומי שבנה את האתר.",
+    description: "מי שבנה את נחיתה רכה, האתר לסטודנטים בשנה א' במדעי המחשב בבר אילן.",
     ...(sameAs.length ? { url: sameAs[0], sameAs } : {}),
   };
 }
@@ -457,7 +457,7 @@ export function llmsTxt(data, updated) {
   const lines = [
     `# ${SITE_NAME}`,
     "",
-    `> מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}, חונך בתוכנית נחיתה רכה. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
+    `> מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
     "",
     `עודכן לאחרונה: ${updated}`,
     "",
