@@ -388,7 +388,7 @@ window.SITE_EN = {
     [`מורידים את האפליקציה My BLE-ID (הקישורים למטה).`, `Download the My BLE-ID app (links below).`],
     [`הולכים למזכירות המחלקה (בניין 503, קומה 1) ומבקשים שיסדרו לכם אישור כניסה למרחב הלמידה. את זה עושים רק פעם אחת.`, `Go to the department office (building 503, floor 1) and ask them to give you access to the learning space. You only do this once.`],
     [`בכל כניסה: פותחים את האפליקציה ולוחצים על Door 1. ה-Bluetooth צריך להיות דלוק, אחרת זה לא עובד.`, `Every time you go in: open the app and tap Door 1. Bluetooth has to be on, or it won't work.`],
-    [`הדלת לא מופיעה באפליקציה או לא נפתחת? לפעמים היא נתקעת לכמה דקות. מחכים קצת ומנסים שוב, ואפשר לנצל את זה להפסקה קצת יותר ארוכה.`, `Door not showing in the app, or not opening? Sometimes it gets stuck for a few minutes. Wait a bit and try again, and maybe take a slightly longer break.`],
+    [`הדלת לא מופיעה באפליקציה או לא נפתחת? גם לה מגיעה הפסקה. לפעמים היא נתקעת לכמה דקות, אז מחכים ומנסים שוב. בינתיים יש לכם תירוץ רשמי להפסקת קפה ארוכה יותר: "הדלת לא נתנה לי."`, `Door not showing in the app, or not opening? It deserves a break too. Sometimes it gets stuck for a few minutes, so wait and try again. Meanwhile you have an official excuse for a longer coffee break: "the door wouldn't let me in."`],
     [`My BLE-ID לאנדרואיד`, `My BLE-ID for Android`],
     [`My BLE-ID לאייפון`, `My BLE-ID for iPhone`],
     [`איך נכנסים למרחב הלמידה של מדמ"ח?`, `How do I get into the CS learning space?`],
