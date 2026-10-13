@@ -122,6 +122,7 @@ test("personas mirror the student's gender when it shows, and fall back to the p
     assert.match(prompt, /never guess: use second person plural/);
     assert.match(prompt, /קחי נשימה, תיכנסי/);
     assert.match(prompt, /מישהו יוכל לעזור/);
+    assert.match(prompt, /RESERVE DUTY \(מילואים\)[\s\S]*thank them sincerely[\s\S]*Roy, the first-year mentor, is a reservist himself/);
   }
   // Canned replies never know who they're talking to, so they stay plural.
   for (const reason of ["injection", "empty"]) {
