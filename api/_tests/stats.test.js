@@ -203,6 +203,18 @@ test("track counts searches, misses, and each visitor once a day with their devi
   assert.ok(!visitorHash("1.2.3.4", "2026-10-20", "s".repeat(40)).includes("1.2.3.4"));
 });
 
+test("track counts the add-to-home-screen events, and only those on the list", async () => {
+  const store = memoryStore();
+  const deps = { store, catalog, salt: null, now: () => NOW };
+  for (const key of ["launch", "launch", "installed", "button", "uninstalled", 42]) await handleTrack(track({ kind: "app", key }), deps);
+  const c = (k) => store.counts.get(`2026-10-20|app|${k}`);
+  assert.equal(c("launch"), 2);
+  assert.equal(c("installed"), 1);
+  assert.equal(c("button"), 1);
+  assert.equal(c("uninstalled"), undefined);
+  assert.equal(catalog.label("app", "launch"), "כניסות ממסך הבית");
+});
+
 test("without a salt, views still count but visitors don't", async () => {
   const store = memoryStore();
   await handleTrack(track({ kind: "view", key: "/" }), { store, catalog, salt: null, now: () => NOW });

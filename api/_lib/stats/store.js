@@ -5,7 +5,7 @@ import { neon } from "@neondatabase/serverless";
  * about a visitor. Keys are checked (against data.js, or a fixed list) before they get here; the
  * only free text is a site search, which searchKey() cleans and which is capped per day.
  */
-export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device", "system",
+export const KINDS = Object.freeze(["view", "click", "topic", "chat", "search", "search_miss", "source", "visitors", "device", "app", "system",
   "gsc_clicks", "gsc_impr", "gsc_pos", "gsc_q_clicks", "gsc_q_impr", "gsc_p_clicks", "gsc_p_impr"]);
 /** At most this many different free-text keys per kind per day, so a script can't flood the table. */
 export const MAX_FREE_KEYS_PER_DAY = 300;

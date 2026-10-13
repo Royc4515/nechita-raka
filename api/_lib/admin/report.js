@@ -31,7 +31,7 @@ function ranked(rows, kind, catalog) {
 /**
  * rows: [{ day, kind, key, count }] from PgStatsStore.read.
  * -> { from, to, totals, days: one entry per day (zeros included), and ranked lists: pages, links,
- *      topics, chat, searches, searchMisses, sources, devices }
+ *      topics, chat, searches, searchMisses, sources, devices, app }
  */
 export function buildReport(rows, { from, to }, catalog) {
   const empty = () => ({ views: 0, visitors: 0, clicks: 0, searches: 0, chatMessages: 0, chatVisitors: 0, answered: 0, googleClicks: 0, googleImpressions: 0 });
@@ -68,6 +68,7 @@ export function buildReport(rows, { from, to }, catalog) {
     searchMisses: ranked(rows, "search_miss", catalog),
     sources: ranked(rows, "source", catalog),
     devices: ranked(rows, "device", catalog),
+    app: ranked(rows, "app", catalog),
     googleQueries: pairs(rows, "gsc_q_clicks", "gsc_q_impr", () => null),
     googlePages: pairs(rows, "gsc_p_clicks", "gsc_p_impr", (key) => catalog.label("view", key)),
   };
@@ -116,6 +117,7 @@ const METRIC_NAMES = {
   gsc_p_clicks: "גוגל: קליקים לעמוד",
   gsc_p_impr: "גוגל: חשיפות לעמוד",
   device: "סוג מכשיר",
+  app: "מסך הבית",
 };
 
 /** Excel runs a cell that starts with = + - @ as a formula; a leading ' keeps it text. */
