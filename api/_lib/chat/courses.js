@@ -1,6 +1,6 @@
 /**
  * Course chunks for the chat, built from the scanned catalog JSON (courses-cs-2027.json): one chunk
- * per course code with its groups, days, hours, teachers and exam dates. Unofficial, so every
+ * per course code with its groups, days, hours, rooms, teachers and exam dates. Unofficial, so every
  * chunk carries the scan date and says where the official answer is.
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -21,7 +21,8 @@ const scanDate = (iso) => {
 function groupLine(row, section) {
   const day = section?.day || row.day;
   const hours = section?.session_hours || row.hours;
-  const when = [day && `יום ${day}`, hours].filter(Boolean).join(" ");
+  const place = clean(section?.location || row.location);
+  const when = [day && `יום ${day}`, hours, place && `מיקום: ${place}`].filter(Boolean).join(" ");
   const teachers = clean(section?.teachers || row.teachers);
   return `${row.kind} קבוצה ${row.group}, ${semesterLabel(row.semester)}${when ? `, ${when}` : ""}${teachers ? `, ${teachers}` : ""}`;
 }

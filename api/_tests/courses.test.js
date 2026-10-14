@@ -17,11 +17,12 @@ test("course chunks only link to a page the site already lists", () => {
   for (const c of courses) assert.ok(urls.includes(c.url), c.url);
 });
 
-test("a question about a course finds it by name, with day, hours and teacher", () => {
+test("a question about a course finds it by name, with day, hours, room and teacher", () => {
   const top = retrieve(courses, "מי מרצה בהכנה למדעי המחשב ובאיזה יום")[0];
   assert.equal(top.id, "course:89080");
   assert.match(top.text, /יום ב' 09:00 - 11:00/);
   assert.match(top.text, /בן-ניסן/);
+  assert.match(top.text, /מיקום: חדר מחלקה \/ 999/);
 });
 
 test("exam dates are listed when the catalog has them", () => {
