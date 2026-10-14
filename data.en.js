@@ -277,7 +277,7 @@ window.SITE_EN = {
     [`אייפון ואייפד:`, `iPhone and iPad:`],
     [`ב-Safari לוחצים על כפתור השיתוף ובוחרים "הוספה למסך הבית".`, `In Safari, tap the Share button and choose "Add to Home Screen".`],
     [`אנדרואיד:`, `Android:`],
-    [`ב-Chrome פותחים את התפריט (שלוש הנקודות) ובוחרים "הוספה למסך הבית".`, `In Chrome, open the menu (three dots) and choose "Add to Home screen".`],
+    [`ב-Chrome פותחים את התפריט (שלוש הנקודות) ובוחרים "התקנת אפליקציה" או "הוספה למסך הבית". אם התקנתם ומחקתם בעבר, Chrome לפעמים מסתיר את ההתקנה בלחיצה אחת, והתפריט עדיין עובד.`, `In Chrome, open the menu (three dots) and choose "Install app" or "Add to Home screen". If you installed and removed it before, Chrome sometimes hides one-tap install, and the menu still works.`],
     [`מחשב:`, `Computer:`],
     [`שומרים כסימנייה עם`, `Bookmark it with`],
     [`(או`, `(or`],
