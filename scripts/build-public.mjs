@@ -21,6 +21,7 @@ const FILES = [
   "manifest.webmanifest",
   "robots.txt",
   "biu-5787.ics",
+  "courses-cs-2027.json",
   "assets",
   "icons",
 ];
