@@ -5,6 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { loadCourseChunks } from "./courses.js";
 
 export const SITE_URL = (process.env.SITE_URL || "https://nechita-raka.vercel.app").replace(/\/+$/, "");
 const DATA_URL = new URL("../../../data.js", import.meta.url);
@@ -127,7 +128,7 @@ export function getKnowledge() {
   if (!cached) {
     const data = loadSiteData();
     const { urls, emails } = allowlists(data);
-    cached = { data, chunks: buildChunks(data), allowedUrls: urls, allowedEmails: emails, core: (today) => buildCore(data, today) };
+    cached = { data, chunks: [...buildChunks(data), ...loadCourseChunks()], allowedUrls: urls, allowedEmails: emails, core: (today) => buildCore(data, today) };
   }
   return cached;
 }
