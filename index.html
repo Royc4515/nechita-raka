@@ -25,6 +25,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <script>try { const t = localStorage.getItem("nr-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) { /* storage blocked: follow the device */ }</script>
+<script>/* Chrome fires beforeinstallprompt as soon as the page is installable, which can be before the main script at the end of the body runs, so it is caught here and kept for the install button. */ window.__nrInstall = null; window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); window.__nrInstall = e; });</script>
 <!-- Vercel Web Analytics: cookieless page views. Served from the site's own origin once Analytics is enabled in the Vercel project. -->
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="./track.js"></script>
@@ -1195,9 +1196,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const PLATFORM = detectPlatform();
   // Chrome and Edge offer their own install dialog once the visitor has engaged with the page; it is kept
   // for the "add to home screen" button. Safari has no such dialog, so there the button shows how.
-  let installPrompt = null;
-  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installPrompt = e; });
-  window.addEventListener("appinstalled", () => { installPrompt = null; $("#install-btn").hidden = true; $("#install-hint").hidden = true; });
+  // The event itself is caught by the inline script in <head> (window.__nrInstall), so it is never missed.
+  window.addEventListener("appinstalled", () => { window.__nrInstall = null; $("#install-btn").hidden = true; $("#install-hint").hidden = true; });
   const CAL_HINTS = {
     ios: [tr("לוחצים, ובחלון שנפתח בוחרים 'הוסף הכל'.")],
     android: [tr("לוחצים, פותחים את הקובץ שירד ובוחרים את אפליקציית היומן.")],
@@ -2304,9 +2304,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const hint = $("#install-hint");
       btn.hidden = false;
       btn.addEventListener("click", async () => {
-        if (installPrompt) {
-          const prompt = installPrompt;
-          installPrompt = null;
+        if (window.__nrInstall) {
+          const prompt = window.__nrInstall;
+          window.__nrInstall = null;
           prompt.prompt();
           const { outcome } = await prompt.userChoice;
           if (outcome === "accepted") btn.hidden = hint.hidden = true;
