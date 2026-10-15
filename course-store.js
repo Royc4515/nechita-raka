@@ -32,6 +32,7 @@ function read() {
       year: typeof raw.year === "string" ? raw.year : "all",
       ...(typeof raw.semester === "string" ? { semester: raw.semester } : {}),
       ...(typeof raw.scan === "string" ? { scan: raw.scan } : {}),
+      ...(raw.view === "day" || raw.view === "week" ? { view: raw.view } : {}),
     };
   } catch (err) {
     console.warn("courses: could not read saved courses", err);
@@ -124,6 +125,8 @@ export function createStore() {
     },
     setYear: (year) => save({ ...state, year }),
     setSemester: (semester) => save({ ...state, semester }),
+    /** "day" or "week" for My week. */
+    setView: (view) => save({ ...state, view: view === "day" ? "day" : "week" }),
   };
 }
 

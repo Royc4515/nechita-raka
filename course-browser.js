@@ -144,6 +144,7 @@ export async function mountCourseBrowser(root, helpers) {
     return effective;
   };
   // Which group's "add a time" form is open, kept across redraws.
+  let pickedDay = ""; // the day shown in My week's day view, once the student picks one
   let editingKey = "";
   let draft = {}; // what was typed in the open form, so a redraw (a pick, a star) doesn't clear it
   const editTime = () => ({
@@ -321,6 +322,8 @@ export async function mountCourseBrowser(root, helpers) {
       setStatus("");
       content.replaceChildren(scheduleView({
         backup: () => exportBackup(aiCtx()),
+        pickedDay,
+        onPickDay: (day) => { pickedDay = day; render(); },
         calendar: () => openCalendar({
           helpers: { tr, en }, store, courses: live().courses, semester: state.semester,
           terms: helpers.terms, events: helpers.events, scannedAt: list.scannedAt, now: nowFn(),

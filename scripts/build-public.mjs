@@ -32,6 +32,7 @@ const FILES = [
   "course-schedule.js",
   "course-store.js",
   "course-time.js",
+  "course-week.js",
   "course-browser.css",
   "assets",
   "icons",
