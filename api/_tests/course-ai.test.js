@@ -110,3 +110,19 @@ test("JSON outside a code block is found even with braces in the prose after it;
   const s = parseSchedule('```json\n{"picks":{"89-110-01":["03"],"89-112":["01"]}}\n```', courses);
   assert.deepEqual(s.picks, { 89110: ["03"], 89112: ["01"] });
 });
+
+test("a prompt with no preferences says so (no questions back), and optional groups stay out unless asked", () => {
+  const none = { semester: A, blockedDays: [], earliest: "", latest: "", shape: "any", gaps: "any", notes: "", keep: [] };
+  const prompt = buildPrompt([byCode.get("89110")], none, { scannedAt });
+  assert.match(prompt, /אין לי העדפות מיוחדות/);
+  assert.match(prompt, /לא שואלים אותי שאלות/);
+  assert.match(prompt, /אני לוקח\/ת את כולם/);
+  assert.doesNotMatch(prompt, /- תגבור/); // 89110 has a reinforcement group
+  assert.match(buildPrompt([byCode.get("89110")], { ...none, extras: true }), /- תגבור/);
+});
+
+test("the yearbook says which semester each course is planned in", () => {
+  assert.deepEqual(byCode.get("89110").plannedIn, ["סמסטר א'"]);
+  assert.deepEqual(byCode.get("891200").plannedIn, ["סמסטר ב'"]); // Data Structures runs in A too, for retakes
+  assert.deepEqual(byCode.get("89005").plannedIn, []);
+});

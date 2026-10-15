@@ -26,9 +26,12 @@ export const slotText = (s) => `${s.day} ${s.start}-${s.end}`;
 const placeOf = (g) => [...new Set(timedSlots(g).map((s) => [s.building, s.room && `חדר ${s.room}`].filter(Boolean).join(" ")).filter(Boolean))].join(" / ");
 const dmy = (iso) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}.${iso.slice(0, 4)}`;
 
+/** The kinds every course needs one group of; the rest (reinforcement, department hours...) are optional. */
+export const MAIN_KINDS = ["הרצאה", "תרגיל", "סדנה", "סמינריון", "פרויקט"];
+
 /** One course as compact lines: its groups of this semester, by type, with every weekly meeting. */
-export function courseDataText(course, semester) {
-  const groups = course.groups.filter((g) => inSemester(g, semester));
+export function courseDataText(course, semester, { extras = false } = {}) {
+  const groups = course.groups.filter((g) => inSemester(g, semester) && (extras || MAIN_KINDS.includes(g.kind)));
   const lines = groups.map((g) => {
     const when = timedSlots(g).map(slotText).join(" + ") || "בלי שעה בקטלוג";
     return `- ${g.kind} ${g.group} | ${when}${placeOf(g) ? ` | ${placeOf(g)}` : ""}${g.teachers ? ` | ${g.teachers.replace(/ /g, " ")}` : ""}`;
@@ -61,14 +64,22 @@ export function buildPrompt(courses, prefs, { scannedAt = "", en = false } = {})
     prefs.keep.length ? t(`כבר בחרתי ואני רוצה לשמור: ${prefs.keep.map((k) => `${k.course.code} ${k.group.kind} ${k.group.group}`).join(", ")}.`, `Keep the groups I already chose: ${prefs.keep.map((k) => `${k.course.code} ${k.group.kind} ${k.group.group}`).join(", ")}.`) : "",
     prefs.notes ? t(`עוד חשוב לי: ${prefs.notes}`, `Also: ${prefs.notes}`) : "",
   ].filter(Boolean);
+  // With no preference chosen the AI would stop to ask; say so instead, and let it decide.
+  if (!wants.length) wants.push(t("אין לי העדפות מיוחדות: העיקר שלא יהיו חפיפות. תחליט/י לבד.", "No special preferences: the main thing is no clashes. Decide on your own."));
   // The example uses a code no course has, so pasting the prompt back can never import it as a schedule.
   const example = JSON.stringify({ format: FORMAT, version: VERSION, semester: prefs.semester, picks: { "00000": ["01", "03"] } });
   return [
     t(`אני סטודנט/ית למדעי המחשב באוניברסיטת בר-אילן ובונה מערכת שעות ל${prefs.semester} בשנת תשפ"ז. תעזור לי לבחור קבוצות.`,
       `I'm a Computer Science student at Bar-Ilan University building my timetable for ${prefs.semester === "סמסטר ב'" ? "semester B" : "semester A"} of 2026-27. Help me choose groups.`),
     "",
-    t("המשימה: לכל קורס ברשימה למטה, לבחור קבוצה אחת מכל סוג שיש לו (הרצאה, תרגיל, תגבור וכו'), כך שאין שתי קבוצות שחופפות בזמן, ושהמערכת מתאימה להעדפות שלי ככל האפשר.",
-      "The task: for every course below, choose one group of each type it has (lecture, exercise, etc.) so that no two chosen groups overlap in time, and the week fits my preferences as well as possible."),
+    t(`הקורסים: ${courses.map((c) => `${c.name} (${c.code})`).join(", ")}. אני לוקח/ת את כולם בסמסטר הזה, וצריך לשבץ את כולם.`,
+      `The courses: ${courses.map((c) => `${c.name} (${c.code})`).join(", ")}. I'm taking all of them this semester, and all of them must be scheduled.`),
+    "",
+    t("המשימה: לכל קורס, לבחור קבוצה אחת מכל סוג שיש לו בנתונים (בדרך כלל הרצאה אחת ותרגיל אחד), כך שאין שתי קבוצות שחופפות בזמן, ושהמערכת מתאימה להעדפות שלי ככל האפשר.",
+      "The task: for every course, choose one group of each type it has in the data (usually one lecture and one exercise) so that no two chosen groups overlap in time, and the week fits my preferences as well as possible."),
+    prefs.extras
+      ? t("תגבורים וקבוצות עזר (הדרכה, שעות מחלקה) הם רשות: לשבץ אותם רק אם הם לא יוצרים חפיפה.", "Reinforcement and support groups (tutorials, department hours) are optional: add them only if they create no clash.")
+      : "",
     "",
     wants.length ? t("ההעדפות שלי:", "My preferences:") : "",
     ...wants.map((w) => `- ${w}`),
@@ -78,7 +89,7 @@ export function buildPrompt(courses, prefs, { scannedAt = "", en = false } = {})
     t("2. לקבוצה עם כמה מפגשים בשבוע (למשל \"ב' 09:00-11:00 + ג' 10:00-12:00\") כל המפגשים נחשבים.", "2. A group with several weekly meetings (e.g. \"ב' 09:00-11:00 + ג' 10:00-12:00\") takes all of them."),
     t("3. קבוצה \"בלי שעה בקטלוג\" בוחרים רק אם אין ברירה, ואומרים את זה.", "3. Choose a group with no hours (\"בלי שעה בקטלוג\") only if there is no other option, and say so."),
     t("4. אם אי אפשר לעמוד בכל ההעדפות, מציעים את הפשרה הכי טובה ואומרים מה לא התקיים.", "4. If not every preference can be met, give the best compromise and say what was not met."),
-    t("5. אם חסר לך משהו חשוב כדי להחליט, תשאל אותי קודם.", "5. If something important is missing for the decision, ask me first."),
+    t("5. לא שואלים אותי שאלות לפני שבונים: אם משהו לא ברור, בוחרים את האפשרות הסבירה וכותבים בסוף אילו הנחות הנחת.", "5. Don't ask me questions before building: if something is unclear, choose the reasonable option and list your assumptions at the end."),
     "",
     t("מה להחזיר:", "What to return:"),
     t("א. טבלה של השבוע: יום, שעות, קורס, סוג, מספר קבוצה, חדר.", "a. A table of the week: day, hours, course, type, group number, room."),
@@ -92,7 +103,7 @@ export function buildPrompt(courses, prefs, { scannedAt = "", en = false } = {})
     t(`הנתונים, מקטלוג הקורסים של האוניברסיטה${scannedAt ? ` (נסרק ב-${dmy(scannedAt)}, לא רשמי)` : ""}. שורת קבוצה: סוג, מספר קבוצה | יום ושעות | בניין וחדר | מרצה.`,
       `The data, from the university's course catalog${scannedAt ? ` (scanned on ${dmy(scannedAt)}, unofficial)` : ""}. A group line: type, group number | day and hours | building and room | lecturer. Days are Hebrew letters: א'=Sun, ב'=Mon, ג'=Tue, ד'=Wed, ה'=Thu, ו'=Fri.`),
     "",
-    ...courses.map((c) => courseDataText(c, prefs.semester)),
+    ...courses.map((c) => courseDataText(c, prefs.semester, { extras: prefs.extras })),
   ].join("\n").replace(/\n{3,}/g, "\n\n");
 }
 

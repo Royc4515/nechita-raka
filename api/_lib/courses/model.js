@@ -118,6 +118,8 @@ export function buildCourses(catalog, yearbook = null) {
       nameEn: clean(info?.name_en),
       points,
       year: yearOf(code, yearbook),
+      // The semester(s) the yearbook schedules it in; a course also runs in the other semester for retakes.
+      plannedIn: (yearbook?.semesters || {})[code] || [],
       exams: [...exams.values()].sort((a, b) => a.date.localeCompare(b.date)),
       groups: rows.map((r) => groupOf(r, sections[r.lid])),
     };
