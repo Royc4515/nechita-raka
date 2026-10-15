@@ -215,7 +215,7 @@ function summaryLine(course, groups, ctx) {
 
 /**
  * The card. ctx: { helpers, store, now, semester, semesterIsNow, days, picked: [{ course, group }],
- * open, highlight, yearLabel, onToggle(code, open) }.
+ * open, highlight, yearLabel, anchor (false: a second copy of the card, without the link id), onToggle(code, open) }.
  */
 export function courseCard(course, ctx) {
   const { helpers, store } = ctx;
@@ -229,7 +229,7 @@ export function courseCard(course, ctx) {
   const name = courseName(course, helpers);
   const star = el("button", { type: "button", class: "cb-star", "data-key": `star|${course.code}`, "aria-pressed": String(starred), "aria-label": tr("סימון {name} כקורס שלי", { name }), title: starred ? tr("הסרה מהקורסים שלי") : tr("הוספה לקורסים שלי") });
   star.addEventListener("click", () => store.toggleStar(course.code));
-  const details = el("details", { class: "cb-card", id: `course-${course.code}`, open: ctx.open || undefined },
+  const details = el("details", { class: "cb-card", id: ctx.anchor === false ? undefined : `course-${course.code}`, open: ctx.open || undefined },
     el("summary", { class: "cb-head" },
       el("span", { class: "cb-head-main" },
         el("h4", { class: "cb-name", text: name }),

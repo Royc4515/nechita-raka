@@ -1,13 +1,13 @@
 /**
- * Course chunks for the chat: one per course code with its year, groups, days, hours, rooms,
+ * Course chunks for the chat: one per course code with its yearbook categories, groups, days, hours, rooms,
  * teachers and exam dates (from api/_lib/courses/model.js). Unofficial, so every chunk carries the
  * scan date and says where the official answer is. Its link opens the course's card on /courses.
  */
-import { buildCourses, ELECTIVE, loadCourses } from "../courses/model.js";
+import { buildCourses, CATEGORIES, loadCourses } from "../courses/model.js";
 import { SITE_URL } from "./site.js";
 
 const MAX_GROUP_LINES = 24;
-const YEAR_LABEL = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", [ELECTIVE]: "קורס בחירה" };
+const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
 const dmy = (iso) => {
   const [y, m, d] = String(iso).slice(0, 10).split("-");
@@ -31,10 +31,10 @@ export function courseChunks({ scannedAt, courses }) {
   return courses.map((c) => {
     const lines = c.groups.map(groupLine);
     const shown = lines.slice(0, MAX_GROUP_LINES);
-    const year = YEAR_LABEL[c.year];
+    const categories = (c.categories || []).map((id) => CATEGORY_LABEL[id]).filter(Boolean).join(", ");
     const text = [
       `קורס ${c.code} ${c.name}${c.nameEn ? ` (${c.nameEn})` : ""}${c.points.length === 1 ? `, ${c.points[0]} נ"ז` : ""}.`,
-      year ? `בידיעון של בינה מלאכותית חישובית: ${year}.` : "",
+      categories ? `בידיעון מדעי המחשב: ${categories}.` : "",
       c.exams.length ? `מועדי בחינה: ${c.exams.map((e) => `${e.type} ${dmy(e.date)} ${e.hour}`).join("; ")}.` : "",
       ...shown.map((l) => `- ${l}`),
       lines.length > shown.length ? `- ועוד ${lines.length - shown.length} קבוצות בקטלוג.` : "",
@@ -45,7 +45,7 @@ export function courseChunks({ scannedAt, courses }) {
       title: `${c.name} (${c.code})`,
       url: courseUrl(c.code),
       text,
-      keywords: [c.code, c.name, c.nameEn, year, "קורס", "מערכת שעות", "הרצאה", "תרגיל", "מרצה", "שעות", "קבוצה", "מועד", "חדר"].filter(Boolean),
+      keywords: [c.code, c.name, c.nameEn, categories, "קורס", "מערכת שעות", "הרצאה", "תרגיל", "מרצה", "שעות", "קבוצה", "מועד", "חדר"].filter(Boolean),
     };
   });
 }

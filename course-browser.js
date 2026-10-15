@@ -17,18 +17,24 @@ import { NARROW } from "./course-week.js";
 
 const LIST_URL = "./course-list.json";
 const SEMESTERS = ["סמסטר א'", "סמסטר ב'"];
+/** The yearbook's categories (the same list as CATEGORIES in api/_lib/courses/model.js), short for the chips. */
+const CATEGORIES = [
+  { id: "1", label: "שנה א'", title: "שנה א'" },
+  { id: "2", label: "שנה ב'", title: "שנה ב'" },
+  { id: "3", label: "שנה ג'", title: "שנה ג'" },
+  { id: "cluster1", label: "אשכול 1", title: "אשכול 1: תכנות מתקדם" },
+  { id: "cluster2", label: "אשכול 2", title: "אשכול 2: כללי" },
+  { id: "complement", label: "אשכול השלמה", title: "אשכול השלמה" },
+  { id: "ai", label: "מגמת AI", title: "מגמת AI ומצוינות" },
+];
 const YEARS = [
   { id: "all", label: "הכול" },
-  { id: "1", label: "שנה א'" },
-  { id: "2", label: "שנה ב'" },
-  { id: "3", label: "שנה ג'" },
-  { id: "elective", label: "בחירה" },
+  ...CATEGORIES.map(({ id, label }) => ({ id, label })),
   { id: "seminar", label: "סמינרים" },
   { id: "other", label: "אחר" },
 ];
-const SECTION_TITLES = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", elective: "קורסי בחירה" };
-const YEAR_ORDER = { 1: 0, 2: 1, 3: 2, elective: 3 };
-const YEAR_BOOST = { 1: 3, 2: 2, 3: 2, elective: 1 };
+const CATEGORY_ORDER = Object.fromEntries(CATEGORIES.map((c, i) => [c.id, i]));
+const YEAR_BOOST = { 1: 3, 2: 2, 3: 2 };
 const DAY_EN = { "א'": "Sun", "ב'": "Mon", "ג'": "Tue", "ד'": "Wed", "ה'": "Thu", "ו'": "Fri" };
 
 let listPromise = null;
@@ -50,19 +56,22 @@ export function loadCourseList() {
   return listPromise;
 }
 
-const yearKey = (year) => (year == null ? "other" : String(year));
-/** The year chips also hold "seminars": any course with a seminar group, whatever its year. */
+const categoriesOf = (course) => course.categories || [];
+const inYearbook = (course) => categoriesOf(course).length > 0;
+/** The chips also hold "seminars": any course with a seminar group, whatever its category. */
 const isSeminar = (course) => course.groups.some((g) => g.kind === "סמינריון");
-const matchesYear = (course, year) => year === "all" || (year === "seminar" ? isSeminar(course) : yearKey(course.year) === year);
+/** A course in several categories matches each of them. */
+const matchesYear = (course, chip) => chip === "all" || (chip === "seminar" ? isSeminar(course) : chip === "other" ? !inYearbook(course) : categoriesOf(course).includes(chip));
+const firstCategory = (course) => Math.min(9, ...categoriesOf(course).map((id) => CATEGORY_ORDER[id] ?? 9));
 const dmy = (iso) => {
   const [y, m, d] = String(iso || "").split("-");
   return y && m && d ? `${Number(d)}.${Number(m)}.${y}` : "";
 };
 export const courseHref = (code) => `./courses?c=${encodeURIComponent(code)}`;
 
-function yearLabel(year, tr) {
-  const found = YEARS.find((y) => y.id === yearKey(year));
-  return found && !["other", "all", "seminar"].includes(found.id) ? tr(found.label) : "";
+/** "שנה ב' · אשכול 1": every category the course is in. */
+function yearLabel(course, tr) {
+  return CATEGORIES.filter((c) => categoriesOf(course).includes(c.id)).map((c) => tr(c.label)).join(" · ");
 }
 
 /** A course as the site search sees it: name in the title, code and year as keywords, teachers in the body. */
@@ -70,7 +79,7 @@ function courseDoc(course, { tr, searchDoc }) {
   const teachers = [...new Set(course.groups.flatMap((g) => g.teachers.split(", ")).filter(Boolean))];
   // Same name, two courses (מבני נתונים for CS and for another track): the one in the yearbook comes first.
   const boost = YEAR_BOOST[course.year] || 0;
-  return searchDoc(course.name, [course.code, course.nameEn, yearLabel(course.year, tr), tr("קורס")].filter(Boolean).join(" "), teachers.join(" "), boost);
+  return searchDoc(course.name, [course.code, course.nameEn, yearLabel(course, tr), tr("קורס")].filter(Boolean).join(" "), teachers.join(" "), boost);
 }
 
 /** Entries for index.html's search box and palette: one per course, opening its card. */
@@ -81,7 +90,7 @@ export function courseSearchEntries(list, helpers) {
     return {
       type: tr("קורס"),
       title: (en && course.nameEn) || course.name,
-      sub: [course.code, yearLabel(course.year, tr), lecture && lecture.teachers.split(", ")[0]].filter(Boolean).join(" · "),
+      sub: [course.code, yearLabel(course, tr), lecture && lecture.teachers.split(", ")[0]].filter(Boolean).join(" · "),
       doc: courseDoc(course, helpers),
       href: courseHref(course.code),
       run: () => navigate(courseHref(course.code)),
@@ -127,7 +136,8 @@ export async function mountCourseBrowser(root, helpers) {
     // ?tab=mine (the home page's "My schedule" link) opens the schedule even before anything is picked.
     tab: target ? "all" : params.get("tab") === "mine" || store.get().starred.length ? "mine" : "all",
     q: params.get("cq") || "",
-    year: store.get().year || "all",
+    // A chip saved before the categories changed (the old "elective") falls back to all.
+    year: YEARS.some((y) => y.id === store.get().year) ? store.get().year : "all",
     // The semester someone last chose (planning semester B in October), else the current one.
     semester: SEMESTERS.includes(store.get().semester) ? store.get().semester : SEMESTERS.includes(thisSemester) ? thisSemester : SEMESTERS[0],
     days: new Set(),
@@ -157,7 +167,7 @@ export async function mountCourseBrowser(root, helpers) {
   });
   const closed = new Set(); // cards someone closed stay closed, even ones that open by default
   const untimedOpen = new Set(); // courses whose "no time" fold is open
-  const ordered = [...list.courses].sort((a, b) => (YEAR_ORDER[a.year] ?? 9) - (YEAR_ORDER[b.year] ?? 9));
+  const ordered = [...list.courses].sort((a, b) => firstCategory(a) - firstCategory(b));
   const entries = ordered.map((course) => ({ course, doc: courseDoc(course, helpers) }));
   const dayLabel = (d) => (en ? DAY_EN[d] : d);
 
@@ -236,7 +246,7 @@ export async function mountCourseBrowser(root, helpers) {
   }
 
   // ---------- the list ----------
-  function cardFor(raw, { open = false, badge = false } = {}) {
+  function cardFor(raw, { open = false, badge = false, anchor = true } = {}) {
     const course = live().byCode.get(raw.code) || raw;
     return courseCard(course, {
       helpers: { tr, en },
@@ -250,7 +260,8 @@ export async function mountCourseBrowser(root, helpers) {
       untimedOpen: untimedOpen.has(course.code),
       onUntimed: (code, isOpen) => { if (isOpen) untimedOpen.add(code); else untimedOpen.delete(code); },
       highlight: course.code === state.target,
-      yearLabel: badge ? yearLabel(course.year, tr) : "",
+      yearLabel: badge ? yearLabel(course, tr) : "",
+      anchor,
       editTime: editTime(),
       onToggle: (code, isOpen) => {
         if (isOpen) { opened.add(code); closed.delete(code); } else { opened.delete(code); closed.add(code); }
@@ -291,20 +302,26 @@ export async function mountCourseBrowser(root, helpers) {
       return [el("div", { class: "cb-list" }, ...found.map((c) => cardFor(c, { badge: true, open: found.length === 1 })))];
     }
     const inYear = ordered.filter((c) => matchesYear(c, state.year) && hasVisible(c));
-    const shownCount = state.year === "all" && !state.showOther ? inYear.filter((c) => yearKey(c.year) !== "other").length : inYear.length;
+    const shownCount = state.year === "all" && !state.showOther ? inYear.filter(inYearbook).length : inYear.length;
     // Say how many courses the day filter took away, so a missing course has a reason.
     const hiddenByDays = state.days.size ? ordered.filter((c) => matchesYear(c, state.year) && visibleGroups(c, { semester: state.semester, days: new Set() }).length && !hasVisible(c)).length : 0;
     setStatus([shownCount === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: shownCount }), hiddenByDays ? tr("{n} הוסתרו כי אין להם קבוצה בימים שבחרתם", { n: hiddenByDays }) : ""].filter(Boolean).join(" · "));
     if (state.year !== "all") return [el("div", { class: "cb-list" }, ...inYear.map((c) => cardFor(c)))];
-    // All years: one section per year; the courses outside the yearbook (mostly graduate) wait behind a button.
-    const sections = Object.keys(SECTION_TITLES).map((y) => {
-      const courses = inYear.filter((c) => yearKey(c.year) === y);
+    // All: one section per yearbook category, a course in several shown in each (the first copy is the
+    // link target); the courses outside the yearbook (mostly graduate) wait behind a button.
+    const anchored = new Set();
+    const sections = CATEGORIES.map(({ id, title }) => {
+      const courses = inYear.filter((c) => categoriesOf(c).includes(id));
       if (!courses.length) return null;
-      return el("section", { class: "cb-section", "aria-label": tr(SECTION_TITLES[y]) },
-        el("h3", { class: "cb-section-h" }, tr(SECTION_TITLES[y]), el("span", { class: "cb-count", text: ` ${courses.length}` })),
-        el("div", { class: "cb-list" }, ...courses.map((c) => cardFor(c))));
+      return el("section", { class: "cb-section", "aria-label": tr(title) },
+        el("h3", { class: "cb-section-h" }, tr(title), el("span", { class: "cb-count", text: ` ${courses.length}` })),
+        el("div", { class: "cb-list" }, ...courses.map((c) => {
+          const anchor = !anchored.has(c.code);
+          anchored.add(c.code);
+          return cardFor(c, { anchor });
+        })));
     });
-    const others = inYear.filter((c) => yearKey(c.year) === "other");
+    const others = inYear.filter((c) => !inYearbook(c));
     let otherNode = null;
     if (others.length && state.showOther) {
       otherNode = el("section", { class: "cb-section", "aria-label": tr("קורסים נוספים") },
