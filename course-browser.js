@@ -185,7 +185,10 @@ export async function mountCourseBrowser(root, helpers) {
   const importBtn = el("button", { type: "button", class: "cb-import-btn" }, el("span", { class: "cb-import-icon", "aria-hidden": "true" }), el("span", { text: tr("ייבוא") }));
   importBtn.addEventListener("click", () => openImport(aiCtx()));
   const actions = el("div", { class: "cb-actions" }, planBtn, importBtn);
-  const note = el("p", { class: "cb-note" }, tr("נסרק ב-"), el("bdi", { dir: "ltr", text: dmy(list.scannedAt) }), tr(" · לא רשמי, בודקים באינ-בר"));
+  // The tool that collected the data, as a quiet credit next to the scan date.
+  const CRAWLER_URL = "https://github.com/Royc4515/biu-courses-crawler";
+  const note = el("p", { class: "cb-note" }, tr("נסרק ב-"), el("bdi", { dir: "ltr", text: dmy(list.scannedAt) }), tr(" · לא רשמי, בודקים באינ-בר"),
+    " · ", el("a", { href: CRAWLER_URL, target: "_blank", rel: "noopener noreferrer", class: "cb-note-link", text: tr("איך נאסף") }));
 
   function saveToAddress() {
     const url = new URL(location.href);

@@ -172,6 +172,7 @@
 .cb-status-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--s1) var(--s4); margin-block: var(--s4) var(--s2); }
 .cb-status { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
 .cb-note { font-size: var(--fs-small); color: var(--faint); }
+.cb-note-link { color: var(--muted); text-decoration: underline dotted; text-underline-offset: .2em; }
 
 /* ---------- year sections and the list ---------- */
 .cb-section + .cb-section, .cb-section + .cb-more { margin-block-start: var(--s6); }

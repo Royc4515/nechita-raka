@@ -259,6 +259,7 @@ window.SITE_EN = {
     [`ניקוי החיפוש`, `Clear search`],
     [`ניווט ראשי`, `Main navigation`],
     [`הכי מתאים`, `Best matches`],
+    [`איך נאסף`, `How it was collected`],
     [`עריכת השעה`, `Edit the time`],
     [`שעה שהוספתם`, `Time you added`],
     [`+ הוספת שעה ידנית`, `+ Add a time by hand`],
@@ -539,6 +540,7 @@ window.SITE_EN = {
     [`Esc סגירה`, `Esc close`],
   ],
   content: [
+    [`biu-courses-crawler: הכלי שאסף את הנתונים (קוד פתוח)`, `biu-courses-crawler: the tool that collected the data (open source)`],
     [`כל הקורסים: שעות, חדרים ומרצים`, `All courses: hours, rooms and lecturers`],
     [`כל קורסי מדמ"ח בשנת תשפ"ז במקום אחד: קבוצות, ימים, שעות, חדרים, מרצים ומועדי בחינות.`, `Every CS course for 5787 in one place: groups, days, hours, rooms, lecturers and exam dates.`],
     [`בוחרים סמסטר, ומחפשים קורס לפי שם, מספר או מרצה. אפשר לסנן לפי שנה, סמינרים או ימים שנוחים לכם.`, `Choose a semester and search for a course by name, number or lecturer. You can filter by year, seminars or the days that suit you.`],
