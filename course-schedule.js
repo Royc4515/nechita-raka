@@ -103,5 +103,10 @@ export function scheduleView(ctx) {
     el("section", { class: "cs-courses", "aria-labelledby": "cs-courses-h" },
       el("h3", { id: "cs-courses-h", class: "cs-h", text: tr("הקורסים שלי") }),
       el("div", { class: "cb-list" }, ...starred.map((c) => ctx.card(c, !store.picks(c.code).length)))),
-    el("p", { class: "cb-muted cs-foot", text: tr("נבנה מסריקה לא רשמית. את המערכת הסופית בודקים באינ-בר, במערכת שעות. הבחירות נשמרות רק במכשיר הזה.") }));
+    el("p", { class: "cb-muted cs-foot", text: tr("נבנה מסריקה לא רשמית. את המערכת הסופית בודקים באינ-בר, במערכת שעות. הבחירות נשמרות רק במכשיר הזה.") }),
+    ctx.backup ? (() => {
+      const b = el("button", { type: "button", class: "cb-link", text: tr("גיבוי המערכת לקובץ (לייבוא בטלפון אחר)") });
+      b.addEventListener("click", ctx.backup);
+      return b;
+    })() : null);
 }

@@ -24,6 +24,7 @@ const FILES = [
   "biu-5787.ics",
   "courses-cs-2027.json",
   "course-browser.js",
+  "course-ai.js",
   "course-card.js",
   "course-schedule.js",
   "course-store.js",

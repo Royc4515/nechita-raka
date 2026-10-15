@@ -83,6 +83,20 @@ export function createStore() {
       save({ ...state, starred, picks, scan: scannedAt });
       return dropped;
     },
+    /**
+     * Saves a schedule read by course-ai.js (an AI's answer or a backup). Its courses (and `starred`,
+     * from a backup) are starred; nothing is ever unstarred. With `replace`, the current picks the import
+     * covers are dropped first: `covers(code, group)` says which (this semester's, or the named courses');
+     * picks it doesn't cover, like the other semester's, stay. Without `replace`, picks are only added.
+     */
+    importPicks(picks, { replace = true, semester = "", starred: extra = [], covers = () => true } = {}) {
+      const codes = Object.keys(picks);
+      const kept = Object.fromEntries(Object.entries(state.picks).map(([code, groups]) => [code, replace ? groups.filter((g) => !covers(code, g)) : groups]));
+      const merged = { ...kept };
+      for (const [code, groups] of Object.entries(picks)) merged[code] = [...new Set([...(merged[code] || []), ...groups])];
+      const starred = [...new Set([...state.starred, ...codes, ...extra])];
+      save({ ...state, starred, picks: merged, ...(semester ? { semester } : {}) });
+    },
     setYear: (year) => save({ ...state, year }),
     setSemester: (semester) => save({ ...state, semester }),
   };

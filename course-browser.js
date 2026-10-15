@@ -8,6 +8,7 @@
   index.html passes in its own helpers (tr, rank, searchDoc...) so search behaves the same everywhere.
 */
 import { courseCard, el, visibleGroups } from "./course-card.js";
+import { exportBackup, openImport, openPlanner } from "./course-ai.js";
 import { scheduleView } from "./course-schedule.js";
 import { createStore } from "./course-store.js";
 import { currentSemester, DAYS } from "./course-time.js";
@@ -147,6 +148,16 @@ export async function mountCourseBrowser(root, helpers) {
   const daysRow = el("div", { class: "cb-days-row" });
   const status = el("p", { class: "cb-status", role: "status", "aria-live": "polite" });
   const content = el("div", { class: "cb-content" });
+  // Build a schedule with your own AI, and bring its answer (or a backup) back in.
+  const aiCtx = () => ({
+    helpers: { tr, en }, store, list, semester: state.semester,
+    onImported: (semester) => set({ tab: "mine", ...(SEMESTERS.includes(semester) ? { semester } : {}), ...widen() }),
+  });
+  const planBtn = el("button", { type: "button", class: "btn btn-solid cb-plan-btn" }, el("span", { "aria-hidden": "true", text: "✨ " }), tr("בניית מערכת עם AI"));
+  planBtn.addEventListener("click", () => openPlanner(aiCtx()));
+  const importBtn = el("button", { type: "button", class: "btn cb-import-btn", text: tr("ייבוא") });
+  importBtn.addEventListener("click", () => openImport(aiCtx()));
+  const actions = el("div", { class: "cb-actions" }, planBtn, importBtn);
   const note = el("p", { class: "cb-note" }, tr("נסרק ב-"), el("bdi", { dir: "ltr", text: dmy(list.scannedAt) }), tr(" · לא רשמי, בודקים באינ-בר"));
 
   function saveToAddress() {
@@ -275,6 +286,7 @@ export async function mountCourseBrowser(root, helpers) {
     if (state.tab === "mine") {
       status.textContent = "";
       content.replaceChildren(scheduleView({
+        backup: () => exportBackup(aiCtx()),
         helpers: { tr, en },
         store,
         now: nowFn(),
@@ -301,9 +313,17 @@ export async function mountCourseBrowser(root, helpers) {
   });
   clearBtn.addEventListener("click", () => { input.value = ""; clearBtn.hidden = true; set({ q: "" }); input.focus(); });
   store.subscribe(() => render());
+  // Once someone saves a schedule, ask the browser not to clear this site's storage on its own.
+  let askedToPersist = false;
+  store.subscribe((s) => {
+    if (askedToPersist || !s.starred.length || !navigator.storage || !navigator.storage.persist) return;
+    askedToPersist = true;
+    navigator.storage.persist().catch(() => {});
+  });
 
   root.replaceChildren(...[
     tabsNode,
+    actions,
     dropped.length ? el("p", { class: "cb-banner", role: "status", text: tr("הקטלוג התעדכן, ו-{n} קבוצות שבחרתם כבר לא קיימות. כדאי לבחור מחדש בקורסים: {list}.", { n: dropped.length, list: [...new Set(dropped.map((d) => (list.courses.find((c) => c.code === d.code) || { name: d.code }).name))].join(", ") }) }) : null,
     el("div", { class: "cb-controls" }, semesterRow, searchBox, filterRow, daysRow),
     el("div", { class: "cb-status-row" }, status, note),
