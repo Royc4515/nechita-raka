@@ -1578,7 +1578,14 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   // ---------- Courses (course-browser.js, loaded only when needed) ----------
   // Course words ("סמסטר א'") may already be in data.en.js as content rather than UI, so either one translates.
   const courseTr = (he, vars) => tr(CONTENT_EN.get(he) || he, vars);
-  const courseHelpers = () => ({ tr: courseTr, en: EN, rank: rankEntries, searchDoc, navigate: navigateTo });
+  // "Now" follows ?today= like the rest of the page, at the current clock time; terms say which semester it is.
+  const courseNow = () => {
+    const day = getToday();
+    const clock = new Date();
+    day.setHours(clock.getHours(), clock.getMinutes());
+    return day;
+  };
+  const courseHelpers = () => ({ tr: courseTr, en: EN, rank: rankEntries, searchDoc, navigate: navigateTo, now: courseNow, terms: (window.SITE_DATA.calendar || {}).terms || [] });
   function courseBrowserNode() {
     const node = el("section", { class: "course-browser", id: "course-browser", "aria-label": tr("הקורסים") });
     import("./course-browser.js")
