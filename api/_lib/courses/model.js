@@ -85,11 +85,17 @@ function groupOf(row, section) {
 /** Exam dates in January to April belong to semester A, the rest to semester B (and the summer). */
 const examSemester = (iso) => (Number(iso.slice(5, 7)) <= 4 ? "סמסטר א'" : "סמסטר ב'");
 
-/** The course's credit points: its lecture's when it has one (exercise sections list their own). */
+/**
+ * The course's credit points: each kind of group (lecture, exercise, ...) lists its own share, and a
+ * student takes one group of each, so the course is the sum of each kind's points, counted once.
+ */
 function pointsOf(rows, sections) {
-  const lecture = rows.find((r) => clean(r.kind) === "הרצאה" && sections[r.lid]?.points);
-  const all = rows.map((r) => Number(sections[r.lid]?.points)).filter((n) => n > 0);
-  const value = lecture ? Number(sections[lecture.lid].points) : all.length ? Math.max(...all) : 0;
+  const byKind = new Map();
+  for (const r of rows) {
+    const p = Number(sections[r.lid]?.points) || 0;
+    byKind.set(clean(r.kind), Math.max(byKind.get(clean(r.kind)) || 0, p));
+  }
+  const value = [...byKind.values()].reduce((a, b) => a + b, 0);
   return value > 0 ? [value] : [];
 }
 
