@@ -147,12 +147,15 @@ export async function mountCourseBrowser(root, helpers) {
   const filterRow = el("div", { class: "cb-filter-row" });
   const daysRow = el("div", { class: "cb-days-row" });
   const status = el("p", { class: "cb-status", role: "status", "aria-live": "polite" });
+  const announcer = el("p", { class: "sr-only", role: "status", "aria-live": "polite" });
+  const setStatus = (text) => { if (status.textContent !== text) status.textContent = text; };
   const content = el("div", { class: "cb-content" });
   // Build a schedule with your own AI, and bring its answer (or a backup) back in.
   const aiCtx = () => ({
     helpers: { tr, en }, store, list, semester: state.semester,
-    onImported: (semester) => {
+    onImported: (semester, count) => {
       set({ tab: "mine", ...(SEMESTERS.includes(semester) ? { semester } : {}), ...widen() });
+      announcer.textContent = tr("נשמרו {n} קבוצות במערכת שלי.", { n: count || 0 });
       // Start the new schedule from its top, where the next class and the week are.
       root.scrollIntoView({ block: "start", behavior: "smooth" });
     },
@@ -200,7 +203,7 @@ export async function mountCourseBrowser(root, helpers) {
         if (days.has(id)) days.delete(id); else days.add(id);
         set({ days, ...widen() });
       }, { tr }),
-      state.days.size ? (() => { const b = el("button", { type: "button", class: "cb-link", text: tr("ניקוי") }); b.addEventListener("click", () => set({ days: new Set() })); return b; })() : null,
+      state.days.size ? (() => { const b = el("button", { type: "button", class: "cb-link", "data-key": "days|clear", text: tr("ניקוי") }); b.addEventListener("click", () => set({ days: new Set() })); return b; })() : null,
     ].filter(Boolean));
     searchBox.hidden = state.tab !== "all";
   }
@@ -234,6 +237,8 @@ export async function mountCourseBrowser(root, helpers) {
         clearBtn.hidden = false;
         set({ tab: "all", q: name, year: "all", days: new Set(), ...widen() });
         root.scrollIntoView({ block: "start" });
+        // The tapped link may now be inside a closed card; the search box with their name holds focus.
+        input.focus({ preventScroll: true });
       },
     });
   }
@@ -247,20 +252,20 @@ export async function mountCourseBrowser(root, helpers) {
       const course = list.courses.find((c) => c.code === state.target);
       const back = el("button", { type: "button", class: "cb-link", text: tr("→ כל הקורסים") });
       back.addEventListener("click", () => set({ target: "" }));
-      status.textContent = course ? tr("קורס אחד") : tr("הקורס לא נמצא בקטלוג.");
+      setStatus(course ? tr("קורס אחד") : tr("הקורס לא נמצא בקטלוג."));
       return [course ? el("div", { class: "cb-list" }, cardFor(course, { open: true, badge: true })) : null, back];
     }
     const raw = state.q.trim();
     if (raw) {
       const found = rank(entries, raw).list.map((e) => e.course).filter((c) => matchesYear(c, state.year)).filter((c) => !state.days.size || hasVisible(c));
-      status.textContent = found.length === 0 ? tr("לא נמצא קורס. נסו מילה אחרת או סננו פחות.") : found.length === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: found.length });
+      setStatus(found.length === 0 ? tr("לא נמצא קורס. נסו מילה אחרת או סננו פחות.") : found.length === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: found.length }));
       return [el("div", { class: "cb-list" }, ...found.map((c) => cardFor(c, { badge: true, open: found.length === 1 })))];
     }
     const inYear = ordered.filter((c) => matchesYear(c, state.year) && hasVisible(c));
     const shownCount = state.year === "all" && !state.showOther ? inYear.filter((c) => yearKey(c.year) !== "other").length : inYear.length;
     // Say how many courses the day filter took away, so a missing course has a reason.
     const hiddenByDays = state.days.size ? ordered.filter((c) => matchesYear(c, state.year) && visibleGroups(c, { semester: state.semester, days: new Set() }).length && !hasVisible(c)).length : 0;
-    status.textContent = [shownCount === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: shownCount }), hiddenByDays ? tr("{n} הוסתרו כי אין להם קבוצה בימים שבחרתם", { n: hiddenByDays }) : ""].filter(Boolean).join(" · ");
+    setStatus([shownCount === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: shownCount }), hiddenByDays ? tr("{n} הוסתרו כי אין להם קבוצה בימים שבחרתם", { n: hiddenByDays }) : ""].filter(Boolean).join(" · "));
     if (state.year !== "all") return [el("div", { class: "cb-list" }, ...inYear.map((c) => cardFor(c)))];
     // All years: one section per year; the courses outside the yearbook (mostly graduate) wait behind a button.
     const sections = Object.keys(SECTION_TITLES).map((y) => {
@@ -277,7 +282,7 @@ export async function mountCourseBrowser(root, helpers) {
         el("h3", { class: "cb-section-h" }, tr("קורסים נוספים"), el("span", { class: "cb-count", text: ` ${others.length}` })),
         el("div", { class: "cb-list" }, ...others.map((c) => cardFor(c))));
     } else if (others.length) {
-      otherNode = el("button", { type: "button", class: "btn cb-more", text: tr("עוד {n} קורסים (תואר שני ואחרים)", { n: others.length }) });
+      otherNode = el("button", { type: "button", class: "btn cb-more", "data-key": "more|other", text: tr("עוד {n} קורסים (תואר שני ואחרים)", { n: others.length }) });
       otherNode.addEventListener("click", () => set({ showOther: true }));
     }
     return [...sections, otherNode];
@@ -288,7 +293,7 @@ export async function mountCourseBrowser(root, helpers) {
     const focusKey = document.activeElement && root.contains(document.activeElement) ? document.activeElement.dataset.key : "";
     renderControls();
     if (state.tab === "mine") {
-      status.textContent = "";
+      setStatus("");
       content.replaceChildren(scheduleView({
         backup: () => exportBackup(aiCtx()),
         helpers: { tr, en },
@@ -328,6 +333,7 @@ export async function mountCourseBrowser(root, helpers) {
   root.replaceChildren(...[
     tabsNode,
     actions,
+    announcer,
     dropped.length ? el("p", { class: "cb-banner", role: "status", text: tr("הקטלוג התעדכן, ו-{n} קבוצות שבחרתם כבר לא קיימות. כדאי לבחור מחדש בקורסים: {list}.", { n: dropped.length, list: [...new Set(dropped.map((d) => (list.courses.find((c) => c.code === d.code) || { name: d.code }).name))].join(", ") }) }) : null,
     el("div", { class: "cb-controls" }, semesterRow, searchBox, filterRow, daysRow),
     el("div", { class: "cb-status-row" }, status, note),

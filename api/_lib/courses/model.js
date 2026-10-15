@@ -40,7 +40,8 @@ const PENDING = "טרם שובץ";
 /** The catalog's placeholder room for "the department arranges it". */
 const DEPARTMENT_ROOM = "999";
 /** "משפטים-304" -> "משפטים 304"; several buildings glued together are split ("יהדות-402חברה-905"). */
-const buildingsOf = (s) => clean(s).split(/(?<=\d)(?=[א-ת])/).map((b) => b.replace(/-(?=\d)/, " ").trim()).filter(Boolean);
+// Only the dash between a name and its number becomes a space; "טבע 211-2" is a hall and keeps its dash.
+const buildingsOf = (s) => clean(s).split(/(?<=\d)(?=[א-ת])/).map((b) => b.replace(/(?<=[א-ת])-(?=\d)/, " ").trim()).filter(Boolean);
 const timesOf = (s) => [...String(s ?? "").matchAll(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/g)].map((m) => [m[1].padStart(5, "0"), m[2].padStart(5, "0")]);
 
 /**

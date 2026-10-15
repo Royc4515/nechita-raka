@@ -97,3 +97,10 @@ test("a missing or broken catalog gives no chunks instead of crashing", () => {
   assert.deepEqual(loadCourseChunks(new URL("file:///nope.json")), []);
   assert.deepEqual(buildCourseChunks({}), []);
 });
+
+test("a hall named with a dash keeps it, and the chat lists each weekly meeting with its own day", () => {
+  const calc2 = byCode.get("89133").groups.find((g) => g.group === "01");
+  assert.ok(calc2.slots.some((s) => s.building === "טבע 211-2"), JSON.stringify(calc2.slots));
+  const discrete = chunks.find((c) => c.id === "course:891195").text;
+  assert.match(discrete, /יום ב' 09:00 - 11:00, יום ג' 10:00 - 12:00/);
+});

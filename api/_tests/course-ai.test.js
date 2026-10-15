@@ -95,3 +95,18 @@ test("replacing an imported semester keeps the other semester's picks and never 
   assert.deepEqual(store.get().starred.sort(), ["89110", "89112", "891195"]);
   delete globalThis.localStorage;
 });
+
+test("a pasted unclosed code fence is read quickly (no regex freeze), and ```js blocks still count", () => {
+  const start = Date.now();
+  assert.equal(parseSchedule("```" + " ".repeat(200_000), courses).error, "no-json");
+  assert.ok(Date.now() - start < 200, `took ${Date.now() - start} ms`);
+  const r = parseSchedule('```js\n{"picks":{"89110":["01"]}}\n```', courses);
+  assert.deepEqual(r.picks, { 89110: ["01"] });
+});
+
+test("JSON outside a code block is found even with braces in the prose after it; dashed codes with a group suffix work", () => {
+  const r = parseSchedule('הנה: {"picks":{"89110":["01"]}} תודה {x} ועוד }', courses);
+  assert.deepEqual(r.picks, { 89110: ["01"] });
+  const s = parseSchedule('```json\n{"picks":{"89-110-01":["03"],"89-112":["01"]}}\n```', courses);
+  assert.deepEqual(s.picks, { 89110: ["03"], 89112: ["01"] });
+});

@@ -15,7 +15,9 @@ const dmy = (iso) => {
 };
 
 function groupLine(g) {
-  const when = [g.day && `יום ${g.day}`, g.hours, g.place && `מיקום: ${g.place}`].filter(Boolean).join(" ");
+  // Each weekly meeting with its own day and hours ("יום ב' 09:00 - 11:00, יום ג' 10:00 - 12:00").
+  const meetings = (g.slots || []).filter((s) => s.day && s.start).map((s) => `יום ${s.day} ${s.start} - ${s.end}`).join(", ");
+  const when = [meetings || (g.day && `יום ${g.day}`), g.place && `מיקום: ${g.place}`].filter(Boolean).join(" ");
   return `${g.kind} קבוצה ${g.group}, ${g.semester.replace(/, /g, " + ")}${when ? `, ${when}` : ""}${g.teachers ? `, ${g.teachers}` : ""}`;
 }
 

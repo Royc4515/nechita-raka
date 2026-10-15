@@ -111,13 +111,54 @@ export function aiLink(aiId, prompt) {
  * ones are dropped and listed. Returns { semester, picks: { code: [group] }, dropped: [string] } or { error }.
  */
 export function parseSchedule(text, courses) {
+  return parseText(text, courses);
+}
+
+/** A schedule block is tiny; this is far more than any AI answer with it. */
+const PASTE_MAX = 60_000;
+
+/**
+ * The contents of every ``` fenced block, found with indexOf rather than a regex: a pattern with two
+ * overlapping wildcards was quadratic on an unclosed fence (a paste of "```" and many spaces froze the tab).
+ */
+function fencedBlocks(source) {
+  const blocks = [];
+  for (let at = source.indexOf("```"); at !== -1;) {
+    const close = source.indexOf("```", at + 3);
+    if (close === -1) break;
+    blocks.push(source.slice(at + 3, close).replace(/^json\b/i, "").trim());
+    at = source.indexOf("```", close + 3);
+  }
+  return blocks;
+}
+
+/** The {...} that starts at `start` and closes at its matching brace (strings respected), or "". */
+function balancedFrom(source, start) {
+  let depth = 0;
+  let inString = false;
+  const limit = Math.min(source.length, start + 20_000);
+  for (let i = start; i < limit; i++) {
+    const ch = source[i];
+    if (inString) {
+      if (ch === "\\") i++;
+      else if (ch === '"') inString = false;
+    } else if (ch === '"') inString = true;
+    else if (ch === "{") depth++;
+    else if (ch === "}" && --depth === 0) return source.slice(start, i + 1);
+  }
+  return "";
+}
+
+function parseText(text, courses) {
   // The block is asked for at the very end, so a long paste keeps its tail.
-  const source = String(text || "").slice(-200_000);
+  const source = String(text || "").slice(-PASTE_MAX);
   // Code blocks first, the last one first (the AI was asked to end with it); then any {...} from the end.
-  const candidates = [...source.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)].map((m) => m[1]).reverse();
+  const candidates = fencedBlocks(source).reverse();
   const end = source.lastIndexOf("}");
   for (let i = source.lastIndexOf("{"), n = 0; i >= 0 && end > i && n < 50; i = i > 0 ? source.lastIndexOf("{", i - 1) : -1, n++) {
-    candidates.push(source.slice(i, end + 1));
+    // The object that starts here and ends at its own matching brace, so prose after it doesn't matter.
+    const object = balancedFrom(source, i);
+    if (object) candidates.push(object);
   }
   let data = null;
   for (const c of candidates) {
@@ -132,7 +173,8 @@ export function parseSchedule(text, courses) {
   const picks = {};
   const dropped = [];
   for (const [rawCode, rawGroups] of Object.entries(data.picks)) {
-    const code = String(rawCode).replace(/\D/g, "");
+    // "89-110" and "89110" are one code; "89-110-01" carries a group suffix, which is dropped.
+    const code = String(rawCode).trim().replace(/^(\d{2})-(\d{3,4})-\d{1,2}$/, "$1$2").replace(/\D/g, "");
     const course = byCode.get(code);
     const groups = (Array.isArray(rawGroups) ? rawGroups : [rawGroups]).map((g) => String(g ?? "").trim()).filter(Boolean)
       .map((g) => (/^\d$/.test(g) ? `0${g}` : g));

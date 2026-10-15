@@ -48,7 +48,7 @@ function teachersNode(teachers, ctx) {
   const extra = names.length - shown.length;
   const nameNode = (name) => {
     if (!ctx.onTeacher) return el("span", { text: name });
-    const b = el("button", { type: "button", class: "cb-teacher-link", text: name, title: ctx.helpers.tr("כל הקורסים של {name}", { name }) });
+    const b = el("button", { type: "button", class: "cb-teacher-link", "data-key": `teacher|${name}`, text: name, title: ctx.helpers.tr("כל הקורסים של {name}", { name }) });
     b.addEventListener("click", () => ctx.onTeacher(name));
     return b;
   };
@@ -107,7 +107,7 @@ function kindSections(course, groups, ctx) {
     const list = bySoonest(timed.filter((g) => g.kind === kind), ctx.now);
     if (!list.length) return null;
     return el("section", { class: "cb-kind-block" },
-      el("h4", { class: "cb-kind-h" }, ctx.helpers.tr(heading), el("span", { class: "cb-count", text: ` ${list.length}` })),
+      el("h5", { class: "cb-kind-h" }, ctx.helpers.tr(heading), el("span", { class: "cb-count", text: ` ${list.length}` })),
       el("ul", { class: "cb-rows" }, ...list.map((g) => groupRow(course, g, ctx, g === soonest && ctx.semesterIsNow))));
   });
 }
@@ -145,17 +145,17 @@ function summaryLine(course, groups, ctx) {
       const n = nextMeeting(g, now);
       return `${tr(g.kind)} ${dayShort(n.slot.day, helpers)} ${n.slot.start}`;
     });
-    return el("p", { class: "cb-line is-mine" }, el("span", { class: "cb-line-label", text: tr("שלך:") }), ` ${parts.join(" · ")}`);
+    return el("span", { class: "cb-line is-mine" }, el("span", { class: "cb-line-label", text: tr("שלך:") }), ` ${parts.join(" · ")}`);
   }
   const soonest = bySoonest(groups.filter(hasTime), now)[0];
   if (soonest && ctx.semesterIsNow) {
-    return el("p", { class: "cb-line" }, `${tr("הקרוב:")} ${whenText(nextMeeting(soonest, now), now, { tr, dayName: (d) => dayName(d, helpers) })} · ${tr(soonest.kind)}`);
+    return el("span", { class: "cb-line" }, `${tr("הקרוב:")} ${whenText(nextMeeting(soonest, now), now, { tr, dayName: (d) => dayName(d, helpers) })} · ${tr(soonest.kind)}`);
   }
   if (soonest) {
     const days = [...new Set(groups.filter(hasTime).flatMap((g) => timedSlots(g).map((s) => s.day)))].sort((a, b) => DAYS.indexOf(a) - DAYS.indexOf(b));
-    return el("p", { class: "cb-line" }, `${tr("בימים:")} ${days.map((d) => dayShort(d, helpers)).join(" ")}`);
+    return el("span", { class: "cb-line" }, `${tr("בימים:")} ${days.map((d) => dayShort(d, helpers)).join(" ")}`);
   }
-  return el("p", { class: "cb-line cb-missing", text: groups.length ? tr("אין שעות בקטלוג עדיין") : tr("לא נלמד בסמסטר הזה") });
+  return el("span", { class: "cb-line cb-missing", text: groups.length ? tr("אין שעות בקטלוג עדיין") : tr("לא נלמד בסמסטר הזה") });
 }
 
 /**
@@ -167,7 +167,9 @@ export function courseCard(course, ctx) {
   const { tr } = helpers;
   const groups = visibleGroups(course, ctx);
   const untimed = groups.filter((g) => !hasTime(g));
-  const otherSemester = course.groups.length - course.groups.filter((g) => inSemester(g, ctx.semester)).length;
+  // Summer groups ("סמסטר ק'") aren't in either semester's planning; they get a note of their own.
+  const summer = course.groups.filter((g) => g.semester === "סמסטר ק'").length;
+  const otherSemester = course.groups.length - course.groups.filter((g) => inSemester(g, ctx.semester)).length - summer;
   const starred = store.isStarred(course.code);
   const name = courseName(course, helpers);
   const star = el("button", { type: "button", class: "cb-star", "data-key": `star|${course.code}`, "aria-pressed": String(starred), "aria-label": tr("סימון {name} כקורס שלי", { name }), title: starred ? tr("הסרה מהקורסים שלי") : tr("הוספה לקורסים שלי") });
@@ -175,7 +177,7 @@ export function courseCard(course, ctx) {
   const details = el("details", { class: "cb-card", id: `course-${course.code}`, open: ctx.open || undefined },
     el("summary", { class: "cb-head" },
       el("span", { class: "cb-head-main" },
-        el("h3", { class: "cb-name", text: name }),
+        el("h4", { class: "cb-name", text: name }),
         el("span", { class: "cb-meta" },
           el("bdi", { dir: "ltr", text: course.code }),
           ctx.yearLabel ? el("span", { class: "cb-year", text: ctx.yearLabel }) : null,
@@ -189,11 +191,12 @@ export function courseCard(course, ctx) {
       ...kindSections(course, groups, ctx),
       untimed.length ? untimedFold(course, untimed, ctx) : null,
       otherSemester > 0 && ctx.semester && ctx.onOtherSemester ? (() => {
-        const b = el("button", { type: "button", class: "cb-link", text: tr("ועוד {n} קבוצות בסמסטר האחר: הצגה", { n: otherSemester }) });
+        const b = el("button", { type: "button", class: "cb-link", "data-key": `other|${course.code}`, text: tr("ועוד {n} קבוצות בסמסטר האחר: הצגה", { n: otherSemester }) });
         b.addEventListener("click", () => ctx.onOtherSemester(course.code));
         return b;
       })() : null,
+      summer ? el("p", { class: "cb-muted", text: summer === 1 ? tr("ועוד קבוצה אחת בסמסטר קיץ (בודקים באינ-בר)") : tr("ועוד {n} קבוצות בסמסטר קיץ (בודקים באינ-בר)", { n: summer }) }) : null,
       examTable(course, helpers)));
   details.addEventListener("toggle", () => ctx.onToggle && ctx.onToggle(course.code, details.open));
-  return el("div", { class: `cb-item${ctx.highlight ? " is-target" : ""}${starred ? " is-starred" : ""}` }, details, star);
+  return el("div", { class: `cb-item${ctx.highlight ? " is-target" : ""}${starred ? " is-starred" : ""}` }, star, details);
 }

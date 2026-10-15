@@ -93,8 +93,10 @@ function copy(text) {
 /** On Android, ChatGPT's site link bounces through the app to the browser; an intent opens the app itself. */
 function openHref(aiId, url) {
   if (aiId === "chatgpt" && /Android/i.test(navigator.userAgent)) {
-    // The same address (with ?q= when the prompt fits) as an intent; without the app, the browser opens it.
-    return { href: `intent://${url.replace(/^https:\/\//, "")}#Intent;scheme=https;package=com.openai.chatgpt;S.browser_fallback_url=${encodeURIComponent(url)};end`, target: null };
+    // The same address (with ?q= when the prompt fits) as an intent; without the app, the browser opens
+    // the plain site. The prompt goes in once: twice (doubly encoded) made Hebrew links too long to open.
+    const fallback = encodeURIComponent(url.replace(/\?.*$/, ""));
+    return { href: `intent://${url.replace(/^https:\/\//, "")}#Intent;scheme=https;package=com.openai.chatgpt;S.browser_fallback_url=${fallback};end`, target: null };
   }
   return { href: url, target: "_blank" };
 }
@@ -121,6 +123,11 @@ function sheet(tr) {
   let downOnBackdrop = false;
   dialog.addEventListener("pointerdown", (e) => { downOnBackdrop = e.target === dialog; });
   dialog.addEventListener("click", (e) => { if (e.target === dialog && downOnBackdrop) dialog.close(); });
+  // The on-screen keyboard doesn't shrink dvh; follow the visual viewport so the save button stays visible.
+  const vv = window.visualViewport;
+  const fit = () => { dialog.style.maxBlockSize = vv ? `${Math.round(vv.height - 8)}px` : ""; };
+  if (vv) vv.addEventListener("resize", fit);
+  dialog.addEventListener("close", () => { if (vv) vv.removeEventListener("resize", fit); });
   dialog.addEventListener("close", () => dialog.remove());
   document.body.append(dialog);
   // Files dropped anywhere on the sheet go to the step that takes them (the import), set by onFile().
@@ -165,19 +172,19 @@ function sheet(tr) {
 function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) {
   const value = multi ? new Set(initial) : { v: initial };
   const buttons = options.map((o) => {
-    const b = el("button", { type: "button", class: "cb-pill", "aria-pressed": "false", text: tr(o.label) });
+    const b = el("button", { type: "button", class: "cb-pill", role: multi ? null : "radio", "aria-pressed": multi ? "false" : null, "aria-checked": multi ? null : "false", text: tr(o.label) });
     b.addEventListener("click", () => {
       if (multi) { if (value.has(o.id)) value.delete(o.id); else value.add(o.id); } else value.v = o.id;
       paint();
     });
     return b;
   });
-  const paint = () => buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(multi ? value.has(options[i].id) : value.v === options[i].id)));
+  const paint = () => buttons.forEach((b, i) => b.setAttribute(multi ? "aria-pressed" : "aria-checked", String(multi ? value.has(options[i].id) : value.v === options[i].id)));
   paint();
   const node = el("fieldset", { class: "cb-question" },
     el("legend", { text: tr(label) }),
     hint ? el("p", { class: "cb-question-hint", text: tr(hint) }) : null,
-    el("div", { class: "cb-pills" }, ...buttons));
+    el("div", { class: "cb-pills", role: multi ? "group" : "radiogroup", "aria-label": tr(label) }, ...buttons));
   return { node, get: () => (multi ? [...value] : value.v) };
 }
 
@@ -257,7 +264,7 @@ export function openPlanner(ctx) {
       const link = aiLink(ai.id, prompt);
       const { href, target } = openHref(ai.id, link.url);
       const tile = aiTile(ai.id);
-      const a = el("a", { class: "cb-ai-row-link", href, target, rel: "noopener noreferrer" },
+      const a = el("a", { class: "cb-ai-row-link", href, target, rel: "noopener noreferrer", "aria-label": tr("{ai}: מעתיק את הפרומפט ופותח בלשונית חדשה", { ai: ai.label }) },
         tile,
         el("span", { class: "cb-ai-text" }, el("span", { class: "cb-ai-name", text: ai.label }), el("span", { class: "cb-ai-sub", text: link.prefilled ? tr("נפתח עם הפרומפט") : tr("מעתיק ופותח") })),
         el("span", { class: "cb-go", "aria-hidden": "true" }));
@@ -356,12 +363,13 @@ function importStep(ui, ctx, back) {
     const covers = (code, g) => {
       if (!semester) return code in parsed.picks;
       const group = byCode.get(code) && byCode.get(code).groups.find((x) => x.group === g);
-      return Boolean(group) && group.semester.split(", ").includes(semester);
+      // Only groups of exactly this semester: a year-long pick also serves the other one, so it stays.
+      return Boolean(group) && group.semester === semester;
     };
     pending = () => {
       ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers });
       ui.dialog.close();
-      ctx.onImported && ctx.onImported(semester);
+      ctx.onImported && ctx.onImported(semester, chosen.length);
     };
     save.disabled = false;
     const byCourse = new Map();
