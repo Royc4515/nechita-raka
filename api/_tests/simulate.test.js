@@ -58,7 +58,7 @@ test("every persona in management/users parses with ten questions and a mascot",
 // ---------- production guard ----------
 
 test("the guard refuses production in any spelling and accepts previews and localhost", () => {
-  for (const url of ["https://nechita-raka.vercel.app", "https://NECHITA-RAKA.vercel.app/api/chat", "http://nechita-raka.vercel.app:80/"]) {
+  for (const url of ["https://nechita-raka.vercel.app", "https://NECHITA-RAKA.vercel.app/api/chat", "http://nechita-raka.vercel.app:80/", "https://nechita-raka.vercel.app./", "https://nechita-raka.vercel.app%2e/"]) {
     assert.throws(() => assertNotProduction(url), /production/, url);
   }
   assert.equal(assertNotProduction("http://localhost:3000").hostname, "localhost");
@@ -109,6 +109,20 @@ test("askOnce turns a network failure into an error outcome and sends the same-o
   assert.equal(seen.init.headers.Origin, "http://localhost:3000");
   assert.equal(seen.init.headers["x-vercel-protection-bypass"], "s");
   assert.equal(JSON.parse(seen.init.body).persona, "bit");
+  assert.equal(seen.init.redirect, "manual");
+});
+
+test("askOnce reports a redirect or an HTML page as an error instead of following or parsing it", async () => {
+  const persona = { id: "p", mascot: "bit", language: "hebrew" };
+  const redirecting = async () => new Response(null, { status: 307, headers: { location: "https://nechita-raka.vercel.app/api/chat" } });
+  const moved = await askOnce("http://localhost:3000", persona, "q", { fetchImpl: redirecting });
+  assert.equal(moved.outcome, "error");
+  assert.match(moved.detail, /307 redirect to https:\/\/nechita-raka\.vercel\.app\/api\/chat/);
+  // Vercel Authentication answers a protected preview with an HTML page.
+  const html = async () => new Response("<!doctype html><title>Authentication Required</title>", { status: 401, headers: { "content-type": "text/html" } });
+  assert.deepEqual(await askOnce("http://localhost:3000", persona, "q", { fetchImpl: html }), { outcome: "error", answer: "", sources: [], detail: "HTTP 401" });
+  const htmlOk = async () => new Response("<html>not json</html>", { status: 200 });
+  assert.equal((await askOnce("http://localhost:3000", persona, "q", { fetchImpl: htmlOk })).outcome, "error");
 });
 
 // ---------- transcript and grades ----------

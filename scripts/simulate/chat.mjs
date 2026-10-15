@@ -15,7 +15,9 @@ export function assertNotProduction(target) {
     throw new Error(`--target must be a full URL such as http://localhost:3000, got "${target}"`);
   }
   if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error(`--target must be http or https, got ${url.protocol}`);
-  if (PRODUCTION_HOSTS.has(url.hostname.toLowerCase())) {
+  // "nechita-raka.vercel.app." (trailing dot) resolves to the same site, so the dot is dropped first.
+  const host = url.hostname.toLowerCase().replace(/\.+$/, "");
+  if (PRODUCTION_HOSTS.has(host)) {
     throw new Error(`refusing to run against production (${url.hostname}); use a preview deployment or localhost`);
   }
   return url;
@@ -56,8 +58,13 @@ export async function askOnce(target, persona, text, { fetchImpl = fetch, timeou
       // The handler accepts writes only from its own origin; the limiter is what protects the quota.
       headers: { ...headers, "Content-Type": "application/json", Origin: url.origin },
       body: JSON.stringify(buildChatRequest(persona, text)),
+      // A redirect would re-send the question to a host the production guard never saw.
+      redirect: "manual",
       signal: AbortSignal.timeout(timeoutMs),
     });
+    if (res.status >= 300 && res.status < 400) {
+      return { outcome: "error", answer: "", sources: [], detail: `HTTP ${res.status} redirect to ${res.headers.get("location") ?? "?"} (not followed)` };
+    }
     const raw = await res.text();
     let body = null;
     try {

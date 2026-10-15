@@ -16,7 +16,7 @@ Options: `--limit <n>` (first n questions per persona), `--delay-ms <ms>` (at le
 
 ## Target: a preview deployment
 
-Every push to a branch gets a preview URL (`https://nechita-raka-git-<branch>-<account>.vercel.app`, shown on the PR). Before the first run, in Vercel > Settings > Environment Variables, set for the **Preview** environment only:
+Every push to a branch gets a preview URL (`https://nechita-raka-git-<branch>-<account>.vercel.app`, shown on the PR). Use that branch URL: the script refuses only `nechita-raka.vercel.app`, and a production deployment's unique URL (`nechita-raka-<hash>-<account>.vercel.app`) runs with the production env. Before the first run, in Vercel > Settings > Environment Variables, set for the **Preview** environment only:
 
 | Variable | Value |
 | --- | --- |

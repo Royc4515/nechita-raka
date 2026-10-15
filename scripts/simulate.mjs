@@ -4,7 +4,7 @@
 // Never against production: the target must be a preview deployment or localhost
 // (management/simulations/README.md). No dependencies beyond Node's fetch.
 // Env: VERCEL_AUTOMATION_BYPASS_SECRET (optional) gets a protected preview deployment to answer.
-import { appendFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { MIN_DELAY_MS, askOnce, assertNotProduction } from "./simulate/chat.mjs";
@@ -60,14 +60,15 @@ async function main() {
   const personas = ids.map((id) => loadPersona(id));
   mkdirSync(options.out, { recursive: true });
   console.log(`target ${run.target}, personas ${ids.join(", ")}, output ${options.out}`);
+  // One grades sheet per run: a rerun into the same folder starts it over, like the transcripts.
+  const grades = join(options.out, "grades.md");
+  writeFileSync(grades, gradesHeader(run) + "\n");
 
   const totals = [];
   for (const [i, persona] of personas.entries()) {
     if (i > 0) await sleep(options.delayMs);
     const results = await runPersona(persona, run, options);
     writeFileSync(join(options.out, `${persona.id}.md`), renderTranscript(run, persona, results) + "\n");
-    const grades = join(options.out, "grades.md");
-    if (!existsSync(grades)) writeFileSync(grades, gradesHeader(run) + "\n");
     appendFileSync(grades, gradeRows(persona, results) + "\n");
     totals.push(...results);
   }

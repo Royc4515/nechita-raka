@@ -5,7 +5,7 @@ import { handleChat } from "../_lib/chat/handler.js";
 import { cannedReply, runOutputHooks } from "../_lib/chat/hooks.js";
 import { parseHistory, retrievalQuery } from "../_lib/chat/history.js";
 import { allowlists, buildChunks, buildCore, loadSiteData } from "../_lib/chat/knowledge.js";
-import { clientIp, PgChatLimiter, GLOBAL_DAILY, PER_VISITOR_DAILY } from "../_lib/chat/limiter.js";
+import { clientIp, limiterFor, PgChatLimiter, GLOBAL_DAILY, PER_VISITOR_DAILY } from "../_lib/chat/limiter.js";
 import { FallbackChain, OpenAICompatibleProvider } from "../_lib/chat/llm.js";
 import { buildRequest, canaryFor, parseDraft, systemPrompt } from "../_lib/chat/prompt.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
@@ -155,6 +155,18 @@ test("CHAT_GLOBAL_DAILY and CHAT_PER_VISITOR_DAILY override the caps only as pos
   assert.equal(raised.globalDaily, 600);
   assert.equal(raised.perVisitorDaily, 100);
   for (const bad of ["0", "-5", "1.5", "abc", "", "1e3", "007", undefined]) assert.equal(dailyCap(bad, GLOBAL_DAILY), GLOBAL_DAILY, JSON.stringify(bad));
+});
+
+test("limiterFor reuses one limiter per database and caps, and rebuilds it when a cap changes", () => {
+  const url = "postgres://u:p@host.neon.tech/db";
+  const caps = { perVisitorDaily: PER_VISITOR_DAILY, globalDaily: GLOBAL_DAILY };
+  const first = limiterFor(url, SALT, caps);
+  assert.equal(limiterFor(url, SALT, { ...caps }), first);
+  const raised = limiterFor(url, SALT, { perVisitorDaily: 500, globalDaily: 1000 });
+  assert.notEqual(raised, first);
+  assert.equal(raised.perVisitorDaily, 500);
+  assert.equal(raised.globalDaily, 1000);
+  assert.deepEqual([limiterFor(url, SALT).perVisitorDaily, limiterFor(url, SALT).globalDaily], [PER_VISITOR_DAILY, GLOBAL_DAILY]);
 });
 
 test("client IP comes from x-real-ip, else Vercel's x-forwarded-for", () => {
