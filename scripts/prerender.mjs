@@ -199,7 +199,16 @@ function updatedHtml(iso, year) {
 }
 
 /** A guide as renderGuideView() in index.html draws it: steps, tips, links and sources. */
-function guideViewHtml(guide, items, year) {
+const COURSE_YEAR = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", elective: "בחירה" };
+
+/** The courses page before course-browser.js takes over: every course by name, for search engines and no-JS. */
+function coursesHtml(courses) {
+  if (!courses || !courses.courses.length) return "";
+  const rows = courses.courses.map((c) => `<li><a href="./courses?c=${esc(c.code)}">${esc(c.name)}</a> <span class="ltr">${esc(c.code)}</span>${COURSE_YEAR[c.year] ? `, ${COURSE_YEAR[c.year]}` : ""}</li>`).join("");
+  return `<section class="course-browser" id="course-browser" aria-label="הקורסים"><ul class="course-static">${rows}</ul></section>`;
+}
+
+function guideViewHtml(guide, items, year, courses = null) {
   const steps = guide.steps.map((step, i) => {
     const id = `step-${guide.id}-${i}`;
     return `<li class="step"><input type="checkbox" id="${id}" data-n="${String(i + 1).padStart(2, "0")}" aria-label="צעד ${i + 1}"><label for="${id}">${bidi(step)}</label></li>`;
@@ -216,6 +225,7 @@ function guideViewHtml(guide, items, year) {
     guide.summary ? `<p class="guide-summary">${bidi(guide.summary)}</p>` : "",
     guide.map && isSafeUrl(guide.map.url) && isSafeUrl(guide.map.embed)
       ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, guide.map.label || "פתיחה בגוגל מפות")}</div></section>` : "",
+    guide.courses ? coursesHtml(courses) : "",
     `<ol class="steps">${steps}</ol>`,
     `<p class="steps-progress"><span>אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.</span></p>`,
     tips,
@@ -434,7 +444,7 @@ export function homePage(template, data, updated) {
 }
 
 /** A guide's own page: the same page, opened on the guide, as /#guide-<id> used to look. */
-export function guidePage(template, data, guide, updated) {
+export function guidePage(template, data, guide, updated, courses = null) {
   const items = itemsById(data);
   let html = withHead(template, guideHead(data, guide, updated));
   html = swap(html, `<html lang="he" dir="rtl">`, `<html lang="he" dir="rtl" data-home-title="${esc(HOME_TITLE)}">`);
@@ -442,7 +452,7 @@ export function guidePage(template, data, guide, updated) {
   html = swap(html, `<div id="jump-nav">`, `<div id="jump-nav" hidden>`);
   html = swap(html, `<div class="layout">`, `<div class="layout" hidden>`);
   html = swap(html, `<article class="guide-view" id="guide-view" hidden>`, `<article class="guide-view" id="guide-view">`);
-  html = fill(html, "pre:guide", guideViewHtml(guide, items, data.site.academicYear));
+  html = fill(html, "pre:guide", guideViewHtml(guide, items, data.site.academicYear, courses));
   return common(html, data, updated);
 }
 

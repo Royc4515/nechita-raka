@@ -6,6 +6,7 @@
 // the HTML, one page per guide (public/<id>.html, served at /<id> thanks to cleanUrls in vercel.json),
 // sitemap.xml and llms.txt. robots.txt is copied as is.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { loadCourses } from "../api/_lib/courses/model.js";
 import { guidePage, homePage, lastUpdated, llmsTxt, loadData, sitemapXml } from "./prerender.mjs";
 
 const OUT = "public";
@@ -22,11 +23,13 @@ const FILES = [
   "robots.txt",
   "biu-5787.ics",
   "courses-cs-2027.json",
+  "course-browser.js",
+  "course-browser.css",
   "assets",
   "icons",
 ];
 // Names a guide's address must not take: they are files the site already serves, or generated ones.
-const RESERVED = new Set(["index", "sitemap", "llms", "api", "_vercel", ...FILES.map((f) => f.replace(/\..*$/, ""))]);
+const RESERVED = new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...FILES.map((f) => f.replace(/\..*$/, ""))]);
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT);
@@ -45,12 +48,15 @@ const dataJs = readFileSync(`${OUT}/data.js`, "utf8");
 writeFileSync(`${OUT}/data.js`, `var __wa = ["https:", "", ["chat", "whatsapp", "com"].join("."), ""].join("/");\n${dataJs.replaceAll("`" + WA, "`${__wa}")}`);
 
 const data = loadData();
+// The courses page and the site search read this smaller, shaped copy of the catalog scan (api/_lib/courses/model.js).
+const courses = loadCourses();
+writeFileSync(`${OUT}/course-list.json`, JSON.stringify(courses));
 const template = readFileSync("index.html", "utf8");
 const updated = lastUpdated(data);
 writeFileSync(`${OUT}/index.html`, hideWhatsAppInHtml(homePage(template, data, updated)));
 for (const guide of data.guides) {
   if (RESERVED.has(guide.id)) throw new Error(`build-public: the guide id "${guide.id}" is taken by a file of the site; pick another id`);
-  writeFileSync(`${OUT}/${guide.id}.html`, hideWhatsAppInHtml(guidePage(template, data, guide, updated)));
+  writeFileSync(`${OUT}/${guide.id}.html`, hideWhatsAppInHtml(guidePage(template, data, guide, updated, courses)));
 }
 writeFileSync(`${OUT}/sitemap.xml`, sitemapXml(data, updated));
 writeFileSync(`${OUT}/llms.txt`, llmsTxt(data, updated));
@@ -59,4 +65,4 @@ writeFileSync(`${OUT}/llms.txt`, llmsTxt(data, updated));
 const walk = (dir) => readdirSync(dir).flatMap((name) => (statSync(`${dir}/${name}`).isDirectory() ? walk(`${dir}/${name}`) : [`${dir}/${name}`]));
 const leaks = walk(OUT).filter((file) => /\.(html|js|txt|xml|json|webmanifest|ics|css)$/.test(file) && readFileSync(file, "utf8").includes("chat.whatsapp.com"));
 if (leaks.length) throw new Error(`build-public: WhatsApp links are exposed in ${leaks.join(", ")}`);
-console.log(`build-public: copied ${FILES.length} entries and wrote index.html, ${data.guides.length} guide pages, sitemap.xml and llms.txt to ${OUT}/ (last updated ${updated})`);
+console.log(`build-public: copied ${FILES.length} entries and wrote index.html, ${data.guides.length} guide pages, sitemap.xml and llms.txt to ${OUT}/ (last updated ${updated}), and ${courses.courses.length} courses to course-list.json`);
