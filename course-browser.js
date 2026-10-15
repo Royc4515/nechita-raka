@@ -124,7 +124,8 @@ export async function mountCourseBrowser(root, helpers) {
   const params = new URLSearchParams(location.search);
   const target = params.get("c") || "";
   const state = {
-    tab: target || !store.get().starred.length ? "all" : "mine",
+    // ?tab=mine (the home page's "My schedule" link) opens the schedule even before anything is picked.
+    tab: target ? "all" : params.get("tab") === "mine" || store.get().starred.length ? "mine" : "all",
     q: params.get("cq") || "",
     year: store.get().year || "all",
     // The semester someone last chose (planning semester B in October), else the current one.
@@ -196,6 +197,7 @@ export async function mountCourseBrowser(root, helpers) {
     const url = new URL(location.href);
     if (state.target) url.searchParams.set("c", state.target); else url.searchParams.delete("c");
     if (state.q.trim()) url.searchParams.set("cq", state.q.trim()); else url.searchParams.delete("cq");
+    if (state.tab === "mine") url.searchParams.set("tab", "mine"); else url.searchParams.delete("tab");
     history.replaceState(history.state, "", url);
   }
   function set(changes) {
