@@ -13,6 +13,7 @@ import { openCalendar } from "./course-calendar-dialog.js";
 import { scheduleView } from "./course-schedule.js";
 import { applyCustom, createStore } from "./course-store.js";
 import { currentSemester, DAYS } from "./course-time.js";
+import { NARROW } from "./course-week.js";
 
 const LIST_URL = "./course-list.json";
 const SEMESTERS = ["סמסטר א'", "סמסטר ב'"];
@@ -324,6 +325,13 @@ export async function mountCourseBrowser(root, helpers) {
         backup: () => exportBackup(aiCtx()),
         pickedDay,
         onPickDay: (day) => { pickedDay = day; render(); },
+        events: helpers.events,
+        // "Switch group": open that course's card in the full list.
+        openCourse: (code) => {
+          opened.add(code);
+          set({ tab: "all", target: code });
+          document.getElementById(`course-${code}`)?.scrollIntoView({ block: "start" }); // render is synchronous
+        },
         calendar: () => openCalendar({
           helpers: { tr, en }, store, courses: live().courses, semester: state.semester,
           terms: helpers.terms, events: helpers.events, scannedAt: list.scannedAt, now: nowFn(),
@@ -372,6 +380,8 @@ export async function mountCourseBrowser(root, helpers) {
     content,
   ].filter(Boolean));
   render();
+  // Turning a phone or resizing a window switches My week between the phone and wide layouts.
+  if (typeof matchMedia === "function") matchMedia(NARROW).addEventListener("change", () => { if (state.tab === "mine") render(); });
   if (state.target) {
     const card = document.getElementById(`course-${state.target}`);
     if (card) requestAnimationFrame(() => card.scrollIntoView({ block: "start" }));

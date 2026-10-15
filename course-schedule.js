@@ -6,7 +6,8 @@
 */
 import { courseName, dayName, el, placeText, timeRange } from "./course-card.js";
 import { inSemester, nextMeeting, timedSlots, upcomingExams, whenText } from "./course-time.js";
-import { weekSection } from "./course-week.js";
+import { holidayMap } from "./course-calendar.js";
+import { currentView, weekSection } from "./course-week.js";
 
 const dmy = (iso) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}.${iso.slice(0, 4)}`;
 /** Inbar, where the official schedule and rooms are (the same link as the "inbar" item in data.js). */
@@ -22,11 +23,16 @@ function nextClass(picked, ctx) {
   if (!best) return null;
   const { tr } = helpers;
   const place = placeText(best.n.slot, helpers);
-  return el("section", { class: "cs-next", "aria-label": tr("השיעור הבא") },
+  // In the day view the timeline already has the details: the card stays short.
+  const compact = currentView(ctx.store) === "day";
+  const iso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const holiday = ctx.holidays && ctx.holidays.get(iso);
+  return el("section", { class: `cs-next${compact ? " is-compact" : ""}`, "aria-label": tr("השיעור הבא") },
+    holiday ? el("p", { class: "cs-next-holiday", text: tr("היום {name}: אין לימודים.", { name: holiday }) }) : null,
     el("p", { class: "cs-next-when", text: whenText(best.n, now, { tr, dayName: (d) => dayName(d, helpers) }) }),
     el("p", { class: "cs-next-name", text: courseName(best.course, helpers) }),
     el("p", { class: "cs-next-sub" }, timeRange(best.n.slot), ` · ${tr(best.group.kind)}, ${tr("קבוצה {n}", { n: best.group.group })}`),
-    best.group.teachers ? el("p", { class: "cs-next-sub", text: best.group.teachers }) : null,
+    best.group.teachers && !compact ? el("p", { class: "cs-next-sub", text: best.group.teachers }) : null,
     place && !best.group.pending
       ? el("p", { class: "cs-next-place", text: place })
       : el("p", { class: "cs-next-place is-missing" },
@@ -56,6 +62,7 @@ function examsList(courses, ctx) {
 export function scheduleView(ctx) {
   const { helpers, store, semester } = ctx;
   const { tr } = helpers;
+  ctx = { ...ctx, holidays: holidayMap(ctx.events) };
   const starred = ctx.courses.filter((c) => store.isStarred(c.code));
   if (!starred.length) {
     const go = el("button", { type: "button", class: "btn cs-go", text: tr("לכל הקורסים") });
