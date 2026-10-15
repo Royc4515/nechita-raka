@@ -172,8 +172,8 @@ main { padding-block: var(--s2) var(--s8); }
 .step label { display: block; padding-block: 9px; cursor: pointer; }
 .step:has(input:checked) label { color: var(--faint); }
 .step-body { min-inline-size: 0; }
-.step-links { display: flex; flex-wrap: wrap; gap: var(--s2); padding-block-end: var(--s1); }
-.step-links .btn { min-block-size: 44px; padding-inline: var(--s4); font-size: var(--fs-small); }
+.step-link { color: var(--accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.step-more { margin: 0; padding-block-end: var(--s1); font-size: var(--fs-small); }
 .steps-progress { margin-block-start: var(--s6); color: var(--muted); font-size: var(--fs-small); }
 .steps-progress + .steps { margin-block-start: var(--s3); }
 .guide-map { margin-block-start: var(--s5); }
@@ -1552,7 +1552,35 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const linkButton = (link, text) => link.guide
     ? el("a", { class: "btn", href: guideHref(link.guide), text: link.label })
     : openLink(link.url, link.label, text);
-  // The check-off hint comes first, so it is read before the steps. guide.stepLinks maps a step number (1-based) to buttons shown under that step.
+  // A link inside a step: plain underlined text, so it takes no room. Another guide opens in place, anything else in a new tab.
+  const stepAnchor = (link, content) => link.guide
+    ? el("a", { class: "step-link", href: guideHref(link.guide), title: link.label }, content)
+    : el("a", { class: "step-link", href: link.url, target: "_blank", rel: "noopener noreferrer", title: tr("{text} (נפתח בלשונית חדשה)", { text: link.label }) }, content);
+  /** guide.stepLinks[n] holds the links of step n (1-based). A link with `at` turns that phrase of the step into the link; the others follow as small links under the step. */
+  function stepLinksFor(guide, n, itemsById) {
+    return ((guide.stepLinks || {})[n] || []).map((raw) => {
+      const entry = raw && typeof raw === "object" ? raw : {};
+      const link = resolveLinks({ links: [entry.id || raw] }, itemsById)[0];
+      return link && entry.at ? { ...link, at: entry.at } : link;
+    }).filter(Boolean);
+  }
+  function stepContent(step, links) {
+    const placed = [];
+    let end = 0;
+    const wanted = links.filter((l) => l.at && step.includes(l.at)).map((link) => ({ link, from: step.indexOf(link.at) })).sort((a, b) => a.from - b.from);
+    for (const entry of wanted) if (entry.from >= end) { placed.push(entry); end = entry.from + entry.link.at.length; }
+    const text = [];
+    let pos = 0;
+    for (const { link, from } of placed) {
+      text.push(bidiText(step.slice(pos, from)), stepAnchor(link, bidiText(link.at)));
+      pos = from + link.at.length;
+    }
+    text.push(bidiText(step.slice(pos)));
+    const rest = links.filter((l) => !placed.some((p) => p.link === l));
+    const more = rest.length ? el("p", { class: "step-more" }, ...rest.flatMap((l, k) => [k ? " · " : null, stepAnchor(l, l.label)])) : null;
+    return { text, more };
+  }
+  // The check-off hint comes first, so it is read before the steps.
   function stepsList(guide, itemsById) {
     let checked = guideProgress(guide);
     const progressText = el("span");
@@ -1574,10 +1602,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         updateProgress();
         refreshGuideCard(guide);
       });
-      const stepLinks = resolveLinks({ links: (guide.stepLinks || {})[i + 1] }, itemsById);
-      return el("li", { class: "step" }, box, el("div", { class: "step-body" },
-        el("label", { for: id }, bidiText(step)),
-        stepLinks.length ? el("div", { class: "step-links" }, ...stepLinks.map((l) => linkButton(l, l.label))) : null));
+      const { text, more } = stepContent(step, stepLinksFor(guide, i + 1, itemsById));
+      return el("li", { class: "step" }, box, el("div", { class: "step-body" }, el("label", { for: id }, ...text), more));
     }));
     updateProgress();
     return [progress, list];

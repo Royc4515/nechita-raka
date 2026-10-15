@@ -208,12 +208,40 @@ function coursesHtml(courses) {
   return `<section class="course-browser" id="course-browser" aria-label="הקורסים"><ul class="course-static">${rows}</ul></section>`;
 }
 
+/** Same as stepContent() in index.html: a link with `at` wraps that phrase of the step, the others follow as small links. */
+const stepAnchor = (link, content) => (link.guide
+  ? `<a class="step-link" href="${guideHref(link.guide)}" title="${esc(link.label)}">${content}</a>`
+  : external(link.url, content, ` class="step-link" title="${esc(`${link.label} (נפתח בלשונית חדשה)`)}"`));
+
+function stepLinksFor(guide, n, items) {
+  return ((guide.stepLinks || {})[n] || []).map((raw) => {
+    const entry = raw && typeof raw === "object" ? raw : {};
+    const link = resolveLinks([entry.id || raw], items)[0];
+    return link && entry.at ? { ...link, at: entry.at } : link;
+  }).filter(Boolean);
+}
+
+function stepContent(step, links) {
+  const placed = [];
+  let end = 0;
+  const wanted = links.filter((l) => l.at && step.includes(l.at)).map((link) => ({ link, from: step.indexOf(link.at) })).sort((a, b) => a.from - b.from);
+  for (const entry of wanted) if (entry.from >= end) { placed.push(entry); end = entry.from + entry.link.at.length; }
+  let html = "";
+  let pos = 0;
+  for (const { link, from } of placed) {
+    html += bidi(step.slice(pos, from)) + stepAnchor(link, bidi(link.at));
+    pos = from + link.at.length;
+  }
+  html += bidi(step.slice(pos));
+  const rest = links.filter((l) => !placed.some((p) => p.link === l));
+  return { text: html, more: rest.length ? `<p class="step-more">${rest.map((l) => stepAnchor(l, esc(l.label))).join(" · ")}</p>` : "" };
+}
+
 function guideViewHtml(guide, items, year, courses = null) {
   const steps = guide.steps.map((step, i) => {
     const id = `step-${guide.id}-${i}`;
-    const stepLinks = resolveLinks((guide.stepLinks || {})[i + 1], items);
-    const buttons = stepLinks.length ? `<div class="step-links">${stepLinks.map((l) => linkButton(l, l.label)).join("")}</div>` : "";
-    return `<li class="step"><input type="checkbox" id="${id}" data-n="${String(i + 1).padStart(2, "0")}" aria-label="צעד ${i + 1}"><div class="step-body"><label for="${id}">${bidi(step)}</label>${buttons}</div></li>`;
+    const { text, more } = stepContent(step, stepLinksFor(guide, i + 1, items));
+    return `<li class="step"><input type="checkbox" id="${id}" data-n="${String(i + 1).padStart(2, "0")}" aria-label="צעד ${i + 1}"><div class="step-body"><label for="${id}">${text}</label>${more}</div></li>`;
   }).join("");
   const tips = guide.tips && guide.tips.length
     ? `<section class="tips" aria-labelledby="tips-h"><h3 id="tips-h">כדאי לדעת</h3><ul>${guide.tips.map((t) => `<li>${bidi(t)}</li>`).join("")}</ul></section>`

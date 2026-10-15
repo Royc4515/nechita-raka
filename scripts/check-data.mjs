@@ -125,7 +125,12 @@ for (const g of data.guides || []) {
     else for (const [n, stepLinks] of Object.entries(g.stepLinks)) {
       const number = Number(n);
       if (!Number.isInteger(number) || number < 1 || number > (g.steps || []).length) error(`ב-stepLinks של "${where}" אין צעד ${n}. מספרים את הצעדים מ-1.`, where);
-      checkLinks(stepLinks, `צעד ${n} של "${where}"`, where);
+      const owner = `צעד ${n} של "${where}"`;
+      if (!isList(stepLinks)) { error(`ב${owner} הקישורים צריכים להיות רשימה.`, where); continue; }
+      checkLinks(stepLinks.map((link) => (link && typeof link === "object" && link.id ? link.id : link)), owner, where);
+      for (const link of stepLinks) {
+        if (link && typeof link === "object" && link.at != null && !String((g.steps || [])[number - 1] || "").includes(link.at)) error(`ב${owner} הביטוי at "${link.at}" לא מופיע בטקסט הצעד.`, link.at);
+      }
     }
   }
   if (g.map != null && (!isHttps(g.map.url) || !isHttps(g.map.embed))) error(`במדריך "${where}" ל-map צריך url ו-embed שמתחילים ב-https://.`, where);
