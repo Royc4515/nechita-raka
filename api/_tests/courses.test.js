@@ -25,12 +25,35 @@ test("the yearbook gives first-year courses year 1 and its elective groups 'elec
   assert.equal(byCode.get("89005").year, null); // not in the yearbook
 });
 
-test("a group carries its day, hours, room and teacher; exam dates are ISO and sorted", () => {
+test("a group carries its weekly meetings, room and teacher; exam dates are ISO, sorted and tied to a semester", () => {
   const lecture = byCode.get("89080").groups.find((g) => g.group === "03");
-  assert.deepEqual(lecture, { kind: "הרצאה", group: "03", semester: "סמסטר א'", day: "ב'", hours: "09:00 - 11:00", place: "חדר מחלקה / 999", teachers: "ד\"ר מרים בן-ניסן" });
+  assert.deepEqual(lecture.slots, [{ day: "ב'", start: "09:00", end: "11:00", building: "חדר מחלקה", room: "" }]);
+  assert.equal(lecture.teachers, "ד\"ר מרים בן-ניסן"); // the title stays on the name's line
   const exams = byCode.get("895224").exams;
-  assert.deepEqual(exams[0], { type: "מועד א'", date: "2027-06-28", hour: "16:00" });
+  assert.deepEqual(exams[0], { type: "מועד א'", date: "2027-06-28", hour: "16:00", semester: "סמסטר ב'" });
   assert.deepEqual(exams.map((e) => e.date), [...exams.map((e) => e.date)].sort());
+  assert.equal(byCode.get("89110").exams[0].semester, "סמסטר א'");
+});
+
+test("a group that meets on two days becomes two meetings, each in its own building", () => {
+  const discrete = byCode.get("891195").groups.find((g) => g.group === "01");
+  assert.deepEqual(discrete.slots.map((s) => [s.day, s.start, s.building]), [["ב'", "09:00", "יהדות 402"], ["ג'", "10:00", "חברה 905"]]);
+  const room = byCode.get("89110").groups.find((g) => g.group === "01").slots[0];
+  assert.deepEqual([room.building, room.room], ["משפטים 304", "1"]);
+});
+
+test("glued names split only after a whole name; first names ending in a title stay whole", () => {
+  const one = (teachers) => buildCourses({ rows: [{ code: "1", name: "x", group: "01", kind: "הרצאה", semester: "סמסטר א'", teachers, day: "", hours: "", lid: "1" }] }).courses[0].groups[0].teachers;
+  assert.equal(one("גב' תמר מייקלסון"), "גב'\u00a0תמר מייקלסון");
+  assert.equal(one("מר עומר כהן"), "מר\u00a0עומר כהן");
+  assert.equal(one("מר הראל רוזנפלדמר ידידיה בלונדרגב' טל אריאל סגל"), "מר\u00a0הראל רוזנפלד, מר\u00a0ידידיה בלונדר, גב'\u00a0טל אריאל סגל");
+});
+
+test("after splitting, every teacher in the catalog has one title, at the start", () => {
+  const titleAtWord = /(?:^|[\s ])(?:מר|גב'|ד"ר|פרופ')[\s ]/g;
+  const names = shaped.courses.flatMap((c) => c.groups.flatMap((g) => g.teachers.split(", ").filter(Boolean)));
+  const bad = names.filter((n) => (n.match(titleAtWord) || []).length > 1);
+  assert.deepEqual(bad, []);
 });
 
 test("a year-long semester reads as two semesters, and a missing yearbook only drops the years", () => {
@@ -61,7 +84,7 @@ test("a question about a course finds it by name, with day, hours, room, teacher
   const top = retrieve(chunks, "מי מרצה בהכנה למדעי המחשב ובאיזה יום")[0];
   assert.equal(top.id, "course:89080");
   assert.match(top.text, /יום ב' 09:00 - 11:00/);
-  assert.match(top.text, /מיקום: חדר מחלקה \/ 999/);
+  assert.match(top.text, /מיקום: חדר מחלקה/);
   assert.match(top.text, /בן-ניסן/);
   assert.match(chunks.find((c) => c.id === "course:89110").text, /שנה א'/);
 });

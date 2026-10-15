@@ -26,16 +26,70 @@ function yearOf(code, yearbook) {
   return (yearbook?.electives || []).includes(code) ? ELECTIVE : null;
 }
 
+/**
+ * Teacher names glued together by the catalog ("מר אבי כדריהמר הראל...") are split before each title,
+ * but only after a whole name (title, first name, last name), so "גב' תמר" or "מר עומר" stay intact.
+ */
+const TITLES = `(?:מר|גב'|ד"ר|פרופ'|עו"ד|הרב)`;
+const TITLE = new RegExp(`(?<=${TITLES} [^\\s,]+(?: [^\\s,]+)* [^\\s,]+)(?=${TITLES} )`, "g");
+/** A title stays on the same line as its name ("פרופ' משה", not "פרופ'" then "משה"). */
+const ATTACH_TITLE = /(^|, )(מר|גב'|ד"ר|פרופ'|עו"ד|הרב) /g;
+const teachersOf = (s) => clean(s).replace(TITLE, ", ").replace(ATTACH_TITLE, "$1$2 ");
+
+const PENDING = "טרם שובץ";
+/** The catalog's placeholder room for "the department arranges it". */
+const DEPARTMENT_ROOM = "999";
+/** "משפטים-304" -> "משפטים 304"; several buildings glued together are split ("יהדות-402חברה-905"). */
+const buildingsOf = (s) => clean(s).split(/(?<=\d)(?=[א-ת])/).map((b) => b.replace(/-(?=\d)/, " ").trim()).filter(Boolean);
+const timesOf = (s) => [...String(s ?? "").matchAll(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/g)].map((m) => [m[1].padStart(5, "0"), m[2].padStart(5, "0")]);
+
+/**
+ * A group's weekly meetings: [{ day, start, end, building, room }]. A group can meet on several days
+ * ("ב',ג'" with one time per day). With several meetings the catalog glues their rooms into one number,
+ * which can't be split, so each meeting keeps its building and the room is left to Inbar.
+ */
+function slotsOf(section, row) {
+  const days = clean(section?.day || row.day).split(/\s*,\s*/).filter(Boolean);
+  const times = timesOf(section?.session_hours || row.hours);
+  const pending = [section?.building, section?.room, row.location].some((v) => String(v ?? "").includes(PENDING));
+  const buildings = pending ? [] : buildingsOf(section?.building ?? String(row.location || "").split(" / ")[0]);
+  const rawRoom = pending ? "" : clean(section?.room ?? String(row.location || "").split(" / ")[1]);
+  const room = rawRoom === DEPARTMENT_ROOM ? "" : rawRoom;
+  const count = Math.max(days.length, days.length ? 0 : times.length ? 1 : 0);
+  return Array.from({ length: count }, (_, i) => {
+    const [start, end] = times[i] || times[0] || ["", ""];
+    return { day: days[i] || "", start, end, building: buildings[i] || (buildings.length === 1 ? buildings[0] : ""), room: count === 1 ? room : "" };
+  });
+}
+
+const placeText = (slot) => [slot.building, slot.room && `חדר ${slot.room}`].filter(Boolean).join(", ");
+
 function groupOf(row, section) {
+  const slots = slotsOf(section, row);
+  const pending = [section?.building, section?.room, row.location].some((v) => String(v ?? "").includes(PENDING));
   return {
     kind: clean(row.kind),
     group: clean(row.group),
     semester: semester(row.semester),
-    day: clean(section?.day || row.day),
-    hours: clean(section?.session_hours || row.hours),
-    place: clean(section?.location || row.location),
-    teachers: clean(section?.teachers || row.teachers),
+    slots,
+    pending,
+    // Plain-text forms, for the chat
+    day: slots.map((sl) => sl.day).filter(Boolean).join(", "),
+    hours: slots.filter((sl) => sl.start).map((sl) => `${sl.start} - ${sl.end}`).join(", "),
+    place: pending ? PENDING : [...new Set(slots.map(placeText).filter(Boolean))].join("; "),
+    teachers: teachersOf(section?.teachers || row.teachers),
   };
+}
+
+/** Exam dates in January to April belong to semester A, the rest to semester B (and the summer). */
+const examSemester = (iso) => (Number(iso.slice(5, 7)) <= 4 ? "סמסטר א'" : "סמסטר ב'");
+
+/** The course's credit points: its lecture's when it has one (exercise sections list their own). */
+function pointsOf(rows, sections) {
+  const lecture = rows.find((r) => clean(r.kind) === "הרצאה" && sections[r.lid]?.points);
+  const all = rows.map((r) => Number(sections[r.lid]?.points)).filter((n) => n > 0);
+  const value = lecture ? Number(sections[lecture.lid].points) : all.length ? Math.max(...all) : 0;
+  return value > 0 ? [value] : [];
 }
 
 /** { scannedAt, courses: [{ code, name, nameEn, points, year, exams, groups }] }, courses in catalog order. */
@@ -49,12 +103,12 @@ export function buildCourses(catalog, yearbook = null) {
   }
   const courses = [...byCode].map(([code, rows]) => {
     const info = rows.map((r) => sections[r.lid]).find(Boolean);
-    const points = [...new Set(rows.map((r) => sections[r.lid]?.points).filter(Boolean).map(Number))];
+    const points = pointsOf(rows, sections);
     const exams = new Map();
     for (const r of rows) {
       for (const t of sections[r.lid]?.terms || []) {
         const date = isoDate(t.date);
-        if (date) exams.set(`${t.type}|${date}|${t.hour}`, { type: clean(t.type), date, hour: clean(t.hour) });
+        if (date) exams.set(`${t.type}|${date}|${t.hour}`, { type: clean(t.type), date, hour: clean(t.hour), semester: examSemester(date) });
       }
     }
     return {
