@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { loadCourseChunks } from "./courses.js";
+import { hidePhones } from "./phones.js";
 import { SITE_URL } from "./site.js";
 
 export { SITE_URL };
@@ -82,7 +83,8 @@ export function buildChunks(data) {
     text: [...data.calendar.terms.map((t) => `${t.label}: ${dmy(t.from)} עד ${dmy(t.to)}`), ...events.map(eventLine)].join("\n"),
     keywords: ["לוח שנה", "תאריכים", "מתי", "סמסטר", "חופשה", "חג", "בחינות", "מועד"],
   });
-  return chunks;
+  // No phone number from data.js reaches the model (phones.js); the site itself still shows them.
+  return chunks.map((c) => ({ ...c, text: hidePhones(c.text) }));
 }
 
 /** Today in Israel as YYYY-MM-DD. */

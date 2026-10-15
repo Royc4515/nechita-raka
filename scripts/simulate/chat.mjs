@@ -1,9 +1,20 @@
 // One question to <target>/api/chat, shaped like the browser's chat.js sends it; the server side
-// is api/_lib/chat/handler.js. Nothing here retries: the transcript records what happened.
+// is api/_lib/chat/handler.js. askOnce never retries: the transcript records what happened.
+// askWithBackoff retries only a 503 `busy` (the model provider's per-minute token budget), which
+// refills within about a minute; everything else is recorded as it came.
 
 /** Hosts the script refuses: production is capped and its dashboard would count the run. */
 export const PRODUCTION_HOSTS = new Set(["nechita-raka.vercel.app"]);
 export const MIN_DELAY_MS = 1000;
+/**
+ * Pause between questions. The prompt is about 8,000 characters of Hebrew per message; at one
+ * second both Groq models hit their per-minute token budget after about seven messages (baseline
+ * run of 15.10.2026), at twenty seconds a full run of 50 messages went through without a `busy`.
+ */
+export const DEFAULT_DELAY_MS = 20_000;
+/** A `busy` answer is retried this many times, after this wait: the budget refills per minute. */
+export const BUSY_RETRIES = 2;
+export const BUSY_WAIT_MS = 60_000;
 const REQUEST_TIMEOUT_MS = 40_000;
 
 /** The target as a URL, or throws when it is not http(s) or is the production site. */
@@ -80,3 +91,26 @@ export async function askOnce(target, persona, text, { fetchImpl = fetch, timeou
     return { outcome: "error", answer: "", sources: [], detail: `${err?.name ?? "Error"}: ${err?.message ?? err}${why ? ` (${why})` : ""}` };
   }
 }
+
+const isBusy = (reply) => reply.outcome === "error" && reply.detail === "HTTP 503 busy";
+const times = (n, what) => `${n} ${n === 1 ? what : what.replace(/y$/, "ies")}`;
+
+/**
+ * askOnce, retried while the server answers 503 `busy`. After a retry the reply keeps its own
+ * outcome and detail (an `ok`, or whatever failed last, `busy` included) and `detail` gains the
+ * retry count. `sleep` is injectable for tests.
+ */
+export async function askWithBackoff(target, persona, text, { retries = BUSY_RETRIES, waitMs = BUSY_WAIT_MS, sleep = defaultSleep, ...askOptions } = {}) {
+  let reply = await askOnce(target, persona, text, askOptions);
+  let attempts = 0;
+  while (isBusy(reply) && attempts < retries) {
+    attempts += 1;
+    await sleep(waitMs);
+    reply = await askOnce(target, persona, text, askOptions);
+  }
+  if (attempts === 0) return reply;
+  const retried = `after ${times(attempts, "busy retry")}`;
+  return { ...reply, detail: reply.detail ? `${reply.detail} (${retried})` : retried };
+}
+
+const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

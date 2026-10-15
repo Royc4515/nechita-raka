@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { askOnce, assertNotProduction, buildChatRequest, classifyResponse } from "../../scripts/simulate/chat.mjs";
+import { BUSY_RETRIES, BUSY_WAIT_MS, DEFAULT_DELAY_MS, askOnce, askWithBackoff, assertNotProduction, buildChatRequest, classifyResponse } from "../../scripts/simulate/chat.mjs";
 import { listPersonaIds, loadPersona, parsePersona } from "../../scripts/simulate/personas.mjs";
-import { gradeRows, gradesHeader, renderTranscript } from "../../scripts/simulate/transcript.mjs";
+import { gradeRows, gradesHeader, redactGroupLinks, renderTranscript } from "../../scripts/simulate/transcript.mjs";
 
 const DOC = `# Persona: sample
 
@@ -140,4 +140,87 @@ test("the transcript lists input, mascot, outcome, sources and answer per questi
   assert.match(text, /- Note: runner note\n- Mascot: byte\n- Outcome: error \(HTTP 503 busy\)\n- Sources: none/);
   assert.match(gradesHeader(run), /`answered`, `not-answered`, `invented-fact`, `broke-character`, `blocked`, `error`/);
   assert.equal(gradeRows(persona, results), "| sample | 1 | ok | | |\n| sample | 2 | error | | HTTP 503 busy |");
+});
+
+// ---------- busy backoff and the default delay ----------
+
+const busyPersona = { id: "p", mascot: "bit", language: "hebrew" };
+const busy = () => new Response(JSON.stringify({ error: "busy" }), { status: 503 });
+const fine = () => new Response(JSON.stringify({ reply: "ok", sources: [] }), { status: 200 });
+
+/** A fetch that answers from a script of responses and a sleep that only records its waits. */
+function scripted(responses) {
+  const calls = { fetches: 0, waits: [] };
+  const fetchImpl = async () => responses[Math.min(calls.fetches++, responses.length - 1)]();
+  const sleep = async (ms) => {
+    calls.waits.push(ms);
+  };
+  return { calls, fetchImpl, sleep };
+}
+
+test("the default delay is the one the baseline needed, and the floor stays at a second", () => {
+  assert.equal(DEFAULT_DELAY_MS, 20_000);
+  assert.ok(BUSY_WAIT_MS >= 30_000 && BUSY_RETRIES >= 1);
+});
+
+test("a 503 busy is retried after a wait, and the transcript says so", async () => {
+  const { calls, fetchImpl, sleep } = scripted([busy, busy, fine]);
+  const out = await askWithBackoff("http://localhost:3000", busyPersona, "q", { fetchImpl, sleep, retries: 2, waitMs: 60_000 });
+  assert.equal(out.outcome, "ok");
+  assert.equal(out.answer, "ok");
+  assert.equal(out.detail, "after 2 busy retries");
+  assert.equal(calls.fetches, 3);
+  assert.deepEqual(calls.waits, [60_000, 60_000]);
+});
+
+test("a question still busy after the retries is recorded as an error, once", async () => {
+  const { calls, fetchImpl, sleep } = scripted([busy]);
+  const out = await askWithBackoff("http://localhost:3000", busyPersona, "q", { fetchImpl, sleep, retries: 2, waitMs: 1 });
+  assert.equal(out.outcome, "error");
+  assert.equal(out.detail, "HTTP 503 busy (after 2 busy retries)");
+  assert.equal(calls.fetches, 3);
+});
+
+test("a different failure after a busy retry keeps its own detail", async () => {
+  const { fetchImpl, sleep } = scripted([busy, () => new Response(JSON.stringify({ error: "rate_limited" }), { status: 429 })]);
+  const out = await askWithBackoff("http://localhost:3000", busyPersona, "q", { fetchImpl, sleep, retries: 2, waitMs: 1 });
+  assert.equal(out.outcome, "rate_limited");
+  assert.equal(out.detail, "HTTP 429 (after 1 busy retry)");
+});
+
+test("other errors and limiter answers are not retried", async () => {
+  for (const first of [() => new Response(JSON.stringify({ error: "not_configured" }), { status: 503 }), () => new Response(JSON.stringify({ error: "rate_limited" }), { status: 429 })]) {
+    const { calls, fetchImpl, sleep } = scripted([first, fine]);
+    const out = await askWithBackoff("http://localhost:3000", busyPersona, "q", { fetchImpl, sleep, retries: 2, waitMs: 1 });
+    assert.notEqual(out.outcome, "ok");
+    assert.equal(calls.fetches, 1);
+    assert.deepEqual(calls.waits, []);
+  }
+  const { calls } = scripted([fine]);
+  const out = await askWithBackoff("http://localhost:3000", busyPersona, "q", { fetchImpl: fine, sleep: async () => calls.waits.push(1) });
+  assert.equal(out.outcome, "ok");
+  assert.equal(out.detail, undefined);
+  assert.deepEqual(calls.waits, []);
+});
+
+// ---------- group links never reach a run ----------
+
+test("WhatsApp group links are redacted everywhere a transcript or grades sheet could carry one", () => {
+  const link = "https://chat.whatsapp.com/C7CZ5YJsTYbE0wUDjsvn4c";
+  assert.equal(redactGroupLinks(`הצטרפו: ${link}.`), "הצטרפו: https://chat.whatsapp.com/[redacted].");
+  assert.equal(redactGroupLinks("see https://wa.me/972501234567 and https://www.biu.ac.il/x"), "see https://wa.me/972501234567 and https://www.biu.ac.il/x");
+  assert.equal(redactGroupLinks("chat.whatsapp.com/AbC_d-9 or https://whatsapp.com/channel/0029Va"), "chat.whatsapp.com/[redacted] or https://whatsapp.com/channel/[redacted]");
+  const run = { target: "http://localhost:3000/", startedAt: "2026-10-15T10:00:00.000Z" };
+  const persona = { id: "sample", mascot: "bit", language: "hebrew" };
+  const results = [
+    { n: 1, input: `מה זה ${link}`, note: `sent with ${link}`, outcome: "ok", answer: `הקבוצה: ${link}\nועוד: ${link}?`, sources: [{ title: "Groups", url: link }] },
+    { n: 2, input: "x", outcome: "error", answer: "", sources: [], detail: `HTTP 500 ${link}` },
+  ];
+  const text = renderTranscript(run, persona, results);
+  assert.doesNotMatch(text, /C7CZ5YJsTYbE0wUDjsvn4c/);
+  assert.match(text, /- Input: מה זה https:\/\/chat\.whatsapp\.com\/\[redacted\]/);
+  assert.match(text, /- Sources: \[Groups\]\(https:\/\/chat\.whatsapp\.com\/\[redacted\]\)/);
+  assert.match(text, /> הקבוצה: https:\/\/chat\.whatsapp\.com\/\[redacted\]\n> ועוד: https:\/\/chat\.whatsapp\.com\/\[redacted\]\?/);
+  assert.doesNotMatch(gradeRows(persona, results), /C7CZ5YJsTYbE0wUDjsvn4c/);
+  assert.match(gradeRows(persona, results), /HTTP 500 https:\/\/chat\.whatsapp\.com\/\[redacted\]/);
 });

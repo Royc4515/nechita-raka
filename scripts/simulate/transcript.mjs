@@ -11,6 +11,17 @@ export function tally(results) {
 
 const cell = (text) => String(text).replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
 
+const GROUP_LINK = /((?:https?:\/\/)?(?:www\.)?(?:chat\.)?whatsapp\.com\/(?:channel\/)?)[\w-]+/gi;
+
+/**
+ * A run never contains a group link (management/simulations/README.md): the invite code of a
+ * group or channel link, with or without a scheme, is replaced wherever an answer, a question,
+ * a source, an error detail or the console line could carry one.
+ */
+export function redactGroupLinks(text) {
+  return text.replace(GROUP_LINK, "$1[redacted]");
+}
+
 /** One markdown file per persona: input, answer, mascot, sources and outcome for every question. */
 export function renderTranscript({ target, startedAt }, persona, results) {
   const counts = tally(results);
@@ -32,7 +43,7 @@ export function renderTranscript({ target, startedAt }, persona, results) {
     if (r.roy) lines.push("- Roy line: yes");
     lines.push("- Answer:", "", ...(r.answer ? r.answer.split("\n").map((l) => `> ${l}`) : ["> (no answer)"]), "");
   }
-  return lines.join("\n");
+  return redactGroupLinks(lines.join("\n"));
 }
 
 export function gradesHeader({ target, startedAt }) {
@@ -51,5 +62,5 @@ export function gradesHeader({ target, startedAt }) {
 /** Table rows for one persona, grade and note left empty for QA. */
 export function gradeRows(persona, results) {
   const note = (r) => (r.outcome === "error" && r.detail ? ` ${cell(r.detail)}` : "");
-  return results.map((r) => `| ${persona.id} | ${r.n} | ${r.outcome} | |${note(r)} |`).join("\n");
+  return redactGroupLinks(results.map((r) => `| ${persona.id} | ${r.n} | ${r.outcome} | |${note(r)} |`).join("\n"));
 }
