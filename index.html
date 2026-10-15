@@ -2374,8 +2374,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     // Guides open in place (pushState fires no event), so watch the guide view itself.
     if ($("#guide-view")) new MutationObserver(() => requestAnimationFrame(update)).observe($("#guide-view"), { attributes: true, attributeFilter: ["hidden"] });
     update();
-    // hide the bottom bar while the on-screen keyboard is likely open
-    document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea")) document.body.classList.add("kb"); });
+    // hide the bottom bar while the on-screen keyboard is likely open (text fields only: a ticked step is an input too)
+    const TEXT_FIELD = "textarea, input:not([type=checkbox], [type=radio], [type=button], [type=submit], [type=reset], [type=range], [type=file], [type=color])";
+    document.addEventListener("focusin", (e) => { if (e.target.matches(TEXT_FIELD)) document.body.classList.add("kb"); });
     document.addEventListener("focusout", () => document.body.classList.remove("kb"));
   }
   // ---------- Theme: auto → dark → light ----------
