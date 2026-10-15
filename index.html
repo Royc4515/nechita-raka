@@ -281,6 +281,9 @@ main { padding-block: var(--s2) var(--s8); }
 .my-schedule svg { flex: none; inline-size: 28px; block-size: 28px; }
 .my-schedule-text { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; flex: 1; }
 .my-schedule-title { font-weight: 700; font-size: var(--fs-title); }
+.new-pill { align-self: flex-start; padding: 1px 10px; border-radius: 999px; background: var(--party); color: #fff; font-size: var(--fs-small); font-weight: 700; }
+.tabs a.is-new, .tabbar a.is-new { position: relative; }
+.tabs a.is-new::after, .tabbar a.is-new::after { content: ""; position: absolute; inset-block-start: 6px; inset-inline-end: 6px; inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--party); box-shadow: 0 0 0 2px var(--surface); }
 .my-schedule-sub { font-size: var(--fs-meta); opacity: .9; }
 .my-schedule-go { flex: none; font-weight: 700; font-size: 1.25rem; }
 .my-schedule:hover { background: var(--accent-hover); }
@@ -1750,14 +1753,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   }
   // ---------- "My schedule": the course planner's saved picks, one tap from the home page ----------
   // Reads only the count from course-store.js's key, so the home page never loads the course list.
+  // Marked as new until someone opens the schedule (course-browser.js sets the key) or the date passes.
+  const NEW_SCHEDULE_UNTIL = new Date(2026, 10, 30);
   function renderMySchedule() {
     const link = $("#my-schedule");
     if (!link) return;
+    const isNew = !store.get("nr-new-mine-seen", false) && new Date() < NEW_SCHEDULE_UNTIL;
+    document.querySelectorAll('#tabs a[data-target="mine"], #tabbar a[data-target="mine"]').forEach((a) => a.classList.toggle("is-new", isNew));
     const saved = store.get("nr-courses", null);
     const n = saved && Array.isArray(saved.starred) ? saved.starred.filter((x) => typeof x === "string").length : 0;
     link.href = n ? "./courses?tab=mine" : "./courses";
     link.replaceChildren(iconNode("timetable"),
       el("span", { class: "my-schedule-text" },
+        isNew ? el("span", { class: "new-pill", text: tr("✨ חדש · שווה לנסות") }) : null,
         el("span", { class: "my-schedule-title", text: n ? tr("המערכת שלי · {n} קורסים", { n }) : tr("בונים את המערכת שלי") }),
         el("span", { class: "my-schedule-sub", text: n
           ? tr("השבוע שלי, השיעור הבא והחדר, והמבחנים. נשמר במכשיר הזה.")
@@ -2760,6 +2768,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     setupEasterEggs();
     setupPointerGlow();
     setupNav();
+    renderMySchedule();
     setupTheme();
     requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode));
   }

@@ -322,6 +322,7 @@ export async function mountCourseBrowser(root, helpers) {
     const focusKey = document.activeElement && root.contains(document.activeElement) ? document.activeElement.dataset.key : "";
     renderControls();
     if (state.tab === "mine") {
+      try { localStorage.setItem("nr-new-mine-seen", "true"); } catch (err) { /* storage blocked: the home page keeps its "new" mark */ }
       setStatus("");
       content.replaceChildren(scheduleView({
         backup: () => exportBackup(aiCtx()),

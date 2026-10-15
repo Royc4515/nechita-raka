@@ -483,6 +483,7 @@ window.SITE_EN = {
     [`המערכת שלי`, `My schedule`],
     [`המערכת שלי · {n} קורסים`, `My schedule · {n} courses`],
     [`בונים את המערכת שלי`, `Build my schedule`],
+    [`✨ חדש · שווה לנסות`, `✨ New · worth a try`],
     [`המערכת`, `Schedule`],
     [`השבוע שלי, השיעור הבא והחדר, והמבחנים. נשמר במכשיר הזה.`, `My week, my next class and its room, and my exams. Saved on this device.`],
     [`בוחרים קורסים וקבוצות, ורואים שבוע, חדרים, מבחנים וחפיפות. נשמר במכשיר הזה.`, `Pick courses and groups, and see your week, rooms, exams and clashes. Saved on this device.`],
