@@ -2,6 +2,8 @@
 
 Faculty: neuro (combined track with psychology). Language: Hebrew, polite, full sentences, masculine forms ("אני לומד").
 
+Mascot: byte.
+
 ## Who
 
 First year in the brain sciences program, combined with psychology. Takes courses from biology, psychology and the program itself, in buildings across campus. Until the neuro site exists he lands on the CS site from a Google search and asks about his own program; the CS mascots must not invent neuro facts. Once the neuro site exists he is its main persona.

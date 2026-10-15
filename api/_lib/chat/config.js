@@ -1,4 +1,5 @@
 /** The chat's server config, read per request so a missing variable answers 503, not a crash. */
+import { GLOBAL_DAILY, PER_VISITOR_DAILY } from "./limiter.js";
 
 /** Best free-tier quality first, then a smaller model with its own separate Groq quota. */
 export const DEFAULT_MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
@@ -7,6 +8,17 @@ export const GUARD_MODEL = "meta-llama/llama-prompt-guard-2-86m";
 /** A short salt makes the hashed IPs guessable by brute force over the IPv4 space. */
 const MIN_SALT_LENGTH = 32;
 const MODEL_ID = /^[\w./:-]{1,100}$/;
+const POSITIVE_INT = /^[1-9]\d{0,8}$/;
+
+/**
+ * A daily cap from the env: the value when it is a positive integer, else the constant.
+ * CHAT_GLOBAL_DAILY and CHAT_PER_VISITOR_DAILY are meant for a Preview deployment that runs
+ * simulations (management/simulations/README.md); Production leaves both unset.
+ */
+export function dailyCap(raw, fallback) {
+  const value = raw?.trim();
+  return value && POSITIVE_INT.test(value) ? Number(value) : fallback;
+}
 
 /**
  * `null` (chat off) unless the Groq key, the database and a long salt are all present.
@@ -29,5 +41,7 @@ export function readChatConfig(env = process.env) {
     guardModel: env.CHAT_GUARD?.trim().toLowerCase() === "off" ? null : GUARD_MODEL,
     databaseUrl,
     salt,
+    globalDaily: dailyCap(env.CHAT_GLOBAL_DAILY, GLOBAL_DAILY),
+    perVisitorDaily: dailyCap(env.CHAT_PER_VISITOR_DAILY, PER_VISITOR_DAILY),
   };
 }

@@ -1,9 +1,15 @@
 import { createHash } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 
-/** Messages one visitor may send per day (Israel's date). A real conversation is rarely longer. */
+/**
+ * Messages one visitor may send per day (Israel's date). A real conversation is rarely longer.
+ * CHAT_PER_VISITOR_DAILY overrides it per deployment (see config.js).
+ */
 export const PER_VISITOR_DAILY = 15;
-/** Messages the whole site may send per day (Israel's date), under the two models' free daily token limits. */
+/**
+ * Messages the whole site may send per day (Israel's date), under the two models' free daily
+ * token limits. CHAT_GLOBAL_DAILY overrides it per deployment (see config.js).
+ */
 export const GLOBAL_DAILY = 150;
 
 /** The visitor's bucket key: a salted hash, so the table never holds an IP address. */
@@ -28,11 +34,16 @@ const SCHEMA = `create table if not exists chat_usage (
   count  integer not null default 0
 )`;
 
-/** query: (text, params) => Promise<rows>. take() resolves to "ok" | "rate_limited" | "daily_cap". */
+/**
+ * query: (text, params) => Promise<rows>. take() resolves to "ok" | "rate_limited" | "daily_cap".
+ * The caps are this deployment's (the constants unless the env overrides them).
+ */
 export class PgChatLimiter {
-  constructor(query, salt) {
+  constructor(query, salt, { perVisitorDaily = PER_VISITOR_DAILY, globalDaily = GLOBAL_DAILY } = {}) {
     this.query = query;
     this.salt = salt;
+    this.perVisitorDaily = perVisitorDaily;
+    this.globalDaily = globalDaily;
     this.schemaReady = null;
   }
 
@@ -59,21 +70,22 @@ export class PgChatLimiter {
     const mine = await this.bump(visitorBucket(visitor, day, this.salt), day);
     // Usage stats: a visitor's first message of the day counts them once in visitors:<day>.
     if (mine === 1) await this.bump(`visitors:${day}`, day);
-    if (mine > PER_VISITOR_DAILY) return "rate_limited";
+    if (mine > this.perVisitorDaily) return "rate_limited";
     const total = await this.bump(`global:${day}`, day);
     // The first message of a day clears out older visitor rows: the hashes are useless after their
     // day. The global:<day> and visitors:<day> totals stay, as the chat's daily usage history.
     if (total === 1) await this.query(`delete from chat_usage where day < $1::date - 1 and bucket like 'ip:%'`, [day]);
-    return total > GLOBAL_DAILY ? "daily_cap" : "ok";
+    return total > this.globalDaily ? "daily_cap" : "ok";
   }
 }
 
 let shared = null;
 
-export function limiterFor(databaseUrl, salt) {
-  if (shared?.url !== databaseUrl) {
+export function limiterFor(databaseUrl, salt, caps = {}) {
+  const key = `${databaseUrl}|${caps.perVisitorDaily ?? PER_VISITOR_DAILY}|${caps.globalDaily ?? GLOBAL_DAILY}`;
+  if (shared?.key !== key) {
     const sql = neon(databaseUrl);
-    shared = { url: databaseUrl, limiter: new PgChatLimiter((text, params) => sql.query(text, params), salt) };
+    shared = { key, limiter: new PgChatLimiter((text, params) => sql.query(text, params), salt, caps) };
   }
   return shared.limiter;
 }

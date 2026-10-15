@@ -2,6 +2,8 @@
 
 Faculty: CS, first year. Language: English only; reads Hebrew slowly and cannot find buttons on Hebrew screens.
 
+Mascot: bit.
+
 ## Who
 
 Moved to Israel last year. Understands spoken Hebrew but not the Inbar interface. Uses the site's EN button. Needs the English meaning of a screen label and then the Hebrew label in quotes so they can match it on screen. Gets lost when an answer switches to Hebrew mid-way.
