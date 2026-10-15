@@ -54,7 +54,7 @@ function pickGreeting(persona) {
   return p.hellos[Math.floor(Math.random() * p.hellos.length)];
 }
 const OTHER = { bit: "byte", byte: "bit" };
-const SUGGESTIONS = [tr("מתי מתחילות הבחינות?"), tr("איך משנים קורס באינ-בר?"), tr("שכחתי סיסמה ללמדה"), tr("מה עושים עם מבחן במילואים?")];
+const SUGGESTIONS = [tr("מתי מתחילות הבחינות?"), tr("איך משנים קורס באינ-בר?"), tr("שכחתי סיסמה ללמדה"), tr("מה עושים עם מבחן במילואים?"), tr("באיזה חדר ההרצאה בהכנה למדעי המחשב?")];
 const ERRORS = {
   rate_limited: { code: "429 daily limit", text: tr("הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה."), retry: false },
   daily_cap: { code: "429 site limit", text: tr("הרבה סטודנטים שאלו היום והגענו למכסה היומית. נחזור מחר! בינתיים החיפוש באתר עובד מצוין."), retry: false },
