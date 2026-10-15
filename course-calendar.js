@@ -21,6 +21,16 @@ export function eventType(ev) {
   return "other";
 }
 
+/** Every holiday date (no classes) in the year, as Map(YYYY-MM-DD → title). Shared with My week. */
+export function holidayMap(events) {
+  const map = new Map();
+  for (const ev of events || []) {
+    if (eventType(ev) !== "holiday") continue;
+    for (const d of datesIn(ev.date, ev.until || ev.date)) map.set(d, ev.title);
+  }
+  return map;
+}
+
 /** Kinds of class, for the filter: lectures, exercises, and everything else (workshops, reinforcement...). */
 export const CLASS_KINDS = ["lecture", "exercise", "other"];
 export const classKind = (kind) => (kind === "הרצאה" ? "lecture" : kind === "תרגיל" ? "exercise" : "other");
