@@ -276,6 +276,15 @@ main { padding-block: var(--s2) var(--s8); }
 .start-here { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); margin-block-end: var(--s4); padding: var(--s2) var(--s4); border-radius: var(--r-lg); background: var(--accent-soft); color: var(--accent-text); text-decoration: none; font-size: var(--fs-meta); }
 .start-here .mascot { flex: none; block-size: 88px; margin-block: -12px; }
 .start-here:hover strong { text-decoration: underline; }
+.my-schedule { display: flex; align-items: center; gap: var(--s3); margin-block-start: var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r-lg); background: var(--accent); color: var(--accent-ink); text-decoration: none; box-shadow: var(--shadow-2); }
+.my-schedule[hidden] { display: none; }
+.my-schedule svg { flex: none; inline-size: 28px; block-size: 28px; }
+.my-schedule-text { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; flex: 1; }
+.my-schedule-title { font-weight: 700; font-size: var(--fs-title); }
+.my-schedule-sub { font-size: var(--fs-meta); opacity: .9; }
+.my-schedule-go { flex: none; font-weight: 700; font-size: 1.25rem; }
+.my-schedule:hover { background: var(--accent-hover); }
+.my-schedule:hover .my-schedule-title { text-decoration: underline; }
 .special-mascot { flex: none; block-size: 84px; margin-block: -14px; }
 footer .contact-row { display: flex; align-items: center; gap: var(--s3); }
 footer .contact-row .mascot { flex: none; block-size: 68px; }
@@ -507,7 +516,7 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .mini-brand svg { inline-size: 28px; block-size: 28px; border-radius: 8px; }
 .tabs { display: none; }
 .tabs a, .tabbar a { text-decoration: none; }
-.tabbar { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px max(6px, env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)); background: var(--surface); border-block-start: 1px solid var(--border); box-shadow: 0 -8px 24px -16px rgb(11 30 60 / 25%); }
+.tabbar { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 30; display: grid; grid-template-columns: repeat(6, 1fr); padding: 4px max(6px, env(safe-area-inset-left)) calc(4px + env(safe-area-inset-bottom)); background: var(--surface); border-block-start: 1px solid var(--border); box-shadow: 0 -8px 24px -16px rgb(11 30 60 / 25%); }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .tabbar { background: color-mix(in srgb, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); }
 }
@@ -752,6 +761,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     <ol></ol>
   </section>
   <div id="jump-nav">
+    <a class="my-schedule" id="my-schedule" href="./courses?tab=mine" hidden></a>
     <section class="now" id="now" aria-label="איפה אנחנו בשנה" hidden></section>
   </div>
   <div class="layout">
@@ -977,6 +987,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     door: svgIcon('<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12.5" r=".9"/>'),
     food: svgIcon('<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v4h3"/>'),
     bus: svgIcon('<rect x="4" y="3" width="16" height="14" rx="2"/><path d="M4 11h16M8 21v-4M16 21v-4"/><circle cx="8" cy="14" r=".8"/><circle cx="16" cy="14" r=".8"/>'),
+    timetable: svgIcon('<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12M15 9v12M3 15h18"/>'),
     home: svgIcon('<path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/>'),
     link: svgIcon('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
     sun: svgIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
@@ -1688,10 +1699,17 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       // A section link (#calendar from the tabs) on a guide's address means that section of the home page,
       // as it did when guides lived in the hash. The skip link (#content) stays on the guide.
       if (location.hash.length > 1 && location.hash !== "#content") {
-        history.replaceState(null, "", `/${location.search}${location.hash}`);
+        history.replaceState(null, "", `/${homeSearch()}${location.hash}`);
         return null;
       }
       return guide;
+    }
+    // The courses page's own address (?c=, ?cq=, ?tab=) means nothing on the home page.
+    function homeSearch() {
+      const params = new URLSearchParams(location.search);
+      ["c", "cq", "tab"].forEach((key) => params.delete(key));
+      const qs = params.toString();
+      return qs ? `?${qs}` : "";
     }
     let current = null;
     let currentSearch = location.search;
@@ -1712,7 +1730,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const link = e.target instanceof Element ? e.target.closest("a[href]") : null;
       if (!link || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || link.target) return;
       const url = new URL(link.href);
-      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return;
       const match = url.pathname.match(GUIDE_PATH);
       if (!(match && byId.has(match[1])) && url.pathname !== "/") return;
       e.preventDefault();
@@ -1725,15 +1743,27 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return {
       isOpen: () => !view.hidden,
       close: () => {
-        // The courses page's own search (?c=, ?cq=) means nothing on the home page.
-        const params = new URLSearchParams(location.search);
-        params.delete("c");
-        params.delete("cq");
-        const qs = params.toString();
-        history.pushState(null, "", `/${qs ? `?${qs}` : ""}`);
+        history.pushState(null, "", `/${homeSearch()}`);
         route(false);
       },
     };
+  }
+  // ---------- "My schedule": the course planner's saved picks, one tap from the home page ----------
+  // Reads only the count from course-store.js's key, so the home page never loads the course list.
+  function renderMySchedule() {
+    const link = $("#my-schedule");
+    if (!link) return;
+    const saved = store.get("nr-courses", null);
+    const n = saved && Array.isArray(saved.starred) ? saved.starred.filter((x) => typeof x === "string").length : 0;
+    link.href = n ? "./courses?tab=mine" : "./courses";
+    link.replaceChildren(iconNode("timetable"),
+      el("span", { class: "my-schedule-text" },
+        el("span", { class: "my-schedule-title", text: n ? tr("המערכת שלי · {n} קורסים", { n }) : tr("בונים את המערכת שלי") }),
+        el("span", { class: "my-schedule-sub", text: n
+          ? tr("השבוע שלי, השיעור הבא והחדר, והמבחנים. נשמר במכשיר הזה.")
+          : tr("בוחרים קורסים וקבוצות, ורואים שבוע, חדרים, מבחנים וחפיפות. נשמר במכשיר הזה.") })),
+      el("span", { class: "my-schedule-go", "aria-hidden": "true", text: EN ? "→" : "←" }));
+    link.hidden = false;
   }
   // ---------- "Now" panel: where we are in the year ----------
   const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2256,23 +2286,24 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   // ---------- Navigation: desktop tabs + mobile tab bar with scroll-spy ----------
   const NAV_ITEMS = [
     { id: "top", label: tr("בית"), icon: "home", mobileOnly: true },
+    { id: "mine", label: tr("המערכת שלי"), short: tr("המערכת"), icon: "timetable", href: "./courses?tab=mine" },
     { id: "guides", label: tr("מדריכים"), icon: "calendar" },
     { id: "categories", label: tr("קישורים"), icon: "link" },
     { id: "calendar", label: tr("לוח שנה"), icon: "calendar" },
     { id: "faq", label: tr("שאלות"), icon: "help" },
   ];
-  NAV_ITEMS[1].icon = "book";
+  NAV_ITEMS[2].icon = "book";
   function setupNav() {
     const links = [];
-    const build = (container, items) => {
+    const build = (container, items, compact) => {
       container.replaceChildren(...items.map((item) => {
-        const a = el("a", { href: `#${item.id}`, "data-target": item.id }, iconNode(item.icon), el("span", { text: item.label }));
+        const a = el("a", { href: item.href || `#${item.id}`, "data-target": item.id }, iconNode(item.icon), el("span", { text: (compact && item.short) || item.label }));
         links.push(a);
         return a;
       }));
     };
     build($("#tabs"), NAV_ITEMS.filter((i) => !i.mobileOnly));
-    build($("#tabbar"), NAV_ITEMS);
+    build($("#tabbar"), NAV_ITEMS, true);
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -2280,13 +2311,13 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       let current = "top";
       let best = -Infinity;
       for (const item of NAV_ITEMS) {
-        if (item.id === "top") continue;
+        if (item.id === "top" || item.href) continue;
         const node = document.getElementById(item.id);
         if (!node || node.hidden || node.offsetParent === null) continue;
         const top = node.getBoundingClientRect().top;
         if (top <= threshold && top > best) { best = top; current = item.id; }
       }
-      if ($("#guide-view") && !$("#guide-view").hidden) current = "guides";
+      if ($("#guide-view") && !$("#guide-view").hidden) current = location.pathname === "/courses" ? "mine" : "guides";
       links.forEach((a) => {
         if (a.dataset.target === current) a.setAttribute("aria-current", "true");
         else a.removeAttribute("aria-current");
@@ -2294,6 +2325,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     };
     window.addEventListener("scroll", () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
     window.addEventListener("hashchange", () => requestAnimationFrame(update));
+    // Guides open in place (pushState fires no event), so watch the guide view itself.
+    if ($("#guide-view")) new MutationObserver(() => requestAnimationFrame(update)).observe($("#guide-view"), { attributes: true, attributeFilter: ["hidden"] });
     update();
     // hide the bottom bar while the on-screen keyboard is likely open
     document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea")) document.body.classList.add("kb"); });
@@ -2719,8 +2752,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const nav = { router: null };
     const searchIndex = buildPaletteIndex(data, itemsById, faq, timeline.entries);
     setupSearch({ guides, categories, events: timeline.entries, faq }, timeline, nav, saved, searchIndex);
-    nav.router = setupGuideRouting(data, itemsById, () => requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode)));
+    nav.router = setupGuideRouting(data, itemsById, () => { renderMySchedule(); requestAnimationFrame(() => scrollTimelineTo(timeline.nextNode)); });
     renderNow(data);
+    renderMySchedule();
+    window.addEventListener("storage", (e) => { if (e.key === "nr-courses") renderMySchedule(); });
     setupPalette(searchIndex, nav);
     setupEasterEggs();
     setupPointerGlow();
