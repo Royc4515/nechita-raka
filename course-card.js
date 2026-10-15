@@ -95,7 +95,62 @@ function groupRow(course, group, ctx, isNext) {
         isNext ? el("span", { class: "cb-next-tag", text: tr("הבא") }) : null),
       clashesWith.length ? el("p", { class: picked ? "cb-clash" : "cb-would-clash" },
         el("span", { class: "cb-clash-icon", "aria-hidden": "true", text: "⚠" }),
-        ` ${picked ? tr("חפיפה עם {names}", { names: clashNames }) : tr("חופף ל{names}", { names: clashNames })}`) : null));
+        ` ${picked ? tr("חפיפה עם {names}", { names: clashNames }) : tr("חופף ל{names}", { names: clashNames })}`) : null,
+      timeControls(course, group, ctx)));
+}
+
+/**
+ * A group with no time in the catalog can get one by hand (from Inbar, or the lecturer's email); it then
+ * counts like any other in the week, clashes and the calendar. A time added by hand says so and can change.
+ */
+function timeControls(course, group, ctx) {
+  if (!ctx.editTime) return null;
+  const { tr } = ctx.helpers;
+  const key = `${course.code}|${group.group}`;
+  if (ctx.editTime.key === key) return timeForm(course, group, ctx);
+  if (group.customTime) {
+    const edit = el("button", { type: "button", class: "cb-link", "data-key": `time|${key}`, text: tr("עריכת השעה") });
+    edit.addEventListener("click", () => ctx.editTime.open(key));
+    return el("p", { class: "cb-custom-note" }, el("span", { class: "cb-custom-tag", text: tr("שעה שהוספתם") }), edit);
+  }
+  if (timedSlots(group).length) return null;
+  const add = el("button", { type: "button", class: "cb-link", "data-key": `time|${key}`, text: tr("+ הוספת שעה ידנית") });
+  add.addEventListener("click", () => ctx.editTime.open(key));
+  return add;
+}
+
+function timeForm(course, group, ctx) {
+  const { tr } = ctx.helpers;
+  const saved = ctx.store.customSlots(course.code, group.group)[0] || {};
+  const draft = ctx.editTime.draft || {};
+  const current = { ...saved, ...draft };
+  const day = el("select", { class: "cb-time-input", "aria-label": tr("יום") }, ...DAYS.map((d) => el("option", { value: d, text: dayName(d, ctx.helpers), selected: d === current.day || undefined })));
+  const start = el("input", { type: "time", class: "cb-time-input", value: current.start || "", "aria-label": tr("שעת התחלה"), step: "300" });
+  const end = el("input", { type: "time", class: "cb-time-input", value: current.end || "", "aria-label": tr("שעת סיום"), step: "300" });
+  const building = el("input", { type: "text", class: "cb-time-input is-wide", value: current.building || "", maxlength: "60", placeholder: tr("בניין וחדר (לא חובה)"), "aria-label": tr("בניין וחדר") });
+  const error = el("p", { class: "cb-warn", role: "alert" });
+  for (const [name, input] of [["day", day], ["start", start], ["end", end], ["building", building]]) {
+    input.dataset.key = `timeform|${course.code}|${group.group}|${name}`;
+    input.addEventListener("input", () => { draft[name] = input.value; });
+  }
+  const save = el("button", { type: "button", class: "cb-small-primary", "data-key": `timeform|${course.code}|${group.group}|save`, text: tr("שמירה") });
+  const cancel = el("button", { type: "button", class: "cb-link", text: tr("ביטול") });
+  const remove = saved.day ? el("button", { type: "button", class: "cb-link is-danger", text: tr("מחיקת השעה") }) : null;
+  save.addEventListener("click", () => {
+    if (!start.value || !end.value || start.value >= end.value) { error.textContent = tr("בוחרים שעת התחלה לפני שעת הסיום."); return; }
+    ctx.store.setCustom(course.code, group.group, [{ day: day.value, start: start.value, end: end.value, building: building.value.trim() }]);
+    ctx.editTime.close();
+  });
+  cancel.addEventListener("click", () => ctx.editTime.close());
+  if (remove) remove.addEventListener("click", () => { ctx.store.setCustom(course.code, group.group, null); ctx.editTime.close(); });
+  return el("div", { class: "cb-time-form", role: "group", "aria-label": tr("שעה ידנית לקבוצה {n}", { n: group.group }) },
+    el("div", { class: "cb-time-fields" },
+      el("label", {}, el("span", { text: tr("יום") }), day),
+      el("label", {}, el("span", { text: tr("מ-") }), start),
+      el("label", {}, el("span", { text: tr("עד") }), end)),
+    building,
+    error,
+    el("div", { class: "cb-time-actions" }, save, cancel, remove));
 }
 
 function kindSections(course, groups, ctx) {

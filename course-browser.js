@@ -9,8 +9,9 @@
 */
 import { courseCard, el, visibleGroups } from "./course-card.js";
 import { exportBackup, openImport, openPlanner } from "./course-ai-dialog.js";
+import { openCalendar } from "./course-calendar-dialog.js";
 import { scheduleView } from "./course-schedule.js";
-import { createStore } from "./course-store.js";
+import { applyCustom, createStore } from "./course-store.js";
 import { currentSemester, DAYS } from "./course-time.js";
 
 const LIST_URL = "./course-list.json";
@@ -132,6 +133,25 @@ export async function mountCourseBrowser(root, helpers) {
     showOther: false,
   };
   const opened = new Set(target ? [target] : []);
+  // The courses with the student's manual times folded in, rebuilt only when the saved state changes.
+  let effective = { state: null, courses: list.courses, byCode: new Map() };
+  const live = () => {
+    const s = store.get();
+    if (effective.state !== s) {
+      const courses = applyCustom(list.courses, s.custom);
+      effective = { state: s, courses, byCode: new Map(courses.map((c) => [c.code, c])) };
+    }
+    return effective;
+  };
+  // Which group's "add a time" form is open, kept across redraws.
+  let editingKey = "";
+  let draft = {}; // what was typed in the open form, so a redraw (a pick, a star) doesn't clear it
+  const editTime = () => ({
+    key: editingKey,
+    draft,
+    open: (key) => { editingKey = key; draft = {}; render(); },
+    close: () => { editingKey = ""; draft = {}; render(); },
+  });
   const closed = new Set(); // cards someone closed stay closed, even ones that open by default
   const untimedOpen = new Set(); // courses whose "no time" fold is open
   const ordered = [...list.courses].sort((a, b) => (YEAR_ORDER[a.year] ?? 9) - (YEAR_ORDER[b.year] ?? 9));
@@ -152,7 +172,7 @@ export async function mountCourseBrowser(root, helpers) {
   const content = el("div", { class: "cb-content" });
   // Build a schedule with your own AI, and bring its answer (or a backup) back in.
   const aiCtx = () => ({
-    helpers: { tr, en }, store, list, semester: state.semester,
+    helpers: { tr, en }, store, list: { ...list, courses: live().courses }, semester: state.semester,
     onImported: (semester, count) => {
       set({ tab: "mine", ...(SEMESTERS.includes(semester) ? { semester } : {}), ...widen() });
       announcer.textContent = tr("נשמרו {n} קבוצות במערכת שלי.", { n: count || 0 });
@@ -209,7 +229,8 @@ export async function mountCourseBrowser(root, helpers) {
   }
 
   // ---------- the list ----------
-  function cardFor(course, { open = false, badge = false } = {}) {
+  function cardFor(raw, { open = false, badge = false } = {}) {
+    const course = live().byCode.get(raw.code) || raw;
     return courseCard(course, {
       helpers: { tr, en },
       store,
@@ -223,6 +244,7 @@ export async function mountCourseBrowser(root, helpers) {
       onUntimed: (code, isOpen) => { if (isOpen) untimedOpen.add(code); else untimedOpen.delete(code); },
       highlight: course.code === state.target,
       yearLabel: badge ? yearLabel(course.year, tr) : "",
+      editTime: editTime(),
       onToggle: (code, isOpen) => {
         if (isOpen) { opened.add(code); closed.delete(code); } else { opened.delete(code); closed.add(code); }
       },
@@ -243,9 +265,9 @@ export async function mountCourseBrowser(root, helpers) {
     });
   }
   function pickedAll() {
-    return list.courses.flatMap((course) => course.groups.filter((g) => store.isPicked(course.code, g.group)).map((group) => ({ course, group })));
+    return live().courses.flatMap((course) => course.groups.filter((g) => store.isPicked(course.code, g.group)).map((group) => ({ course, group })));
   }
-  const hasVisible = (course) => visibleGroups(course, state).length > 0;
+  const hasVisible = (course) => visibleGroups(live().byCode.get(course.code) || course, state).length > 0;
 
   function allView() {
     if (state.target) {
@@ -296,12 +318,16 @@ export async function mountCourseBrowser(root, helpers) {
       setStatus("");
       content.replaceChildren(scheduleView({
         backup: () => exportBackup(aiCtx()),
+        calendar: () => openCalendar({
+          helpers: { tr, en }, store, courses: live().courses, semester: state.semester,
+          terms: helpers.terms, events: helpers.events, scannedAt: list.scannedAt, now: nowFn(),
+        }),
         helpers: { tr, en },
         store,
         now: nowFn(),
         semester: state.semester,
         semesterIsNow: state.semester === thisSemester,
-        courses: list.courses,
+        courses: live().courses,
         card: (course, open) => cardFor(course, { open }),
         goToAll: () => set({ tab: "all" }),
       }));

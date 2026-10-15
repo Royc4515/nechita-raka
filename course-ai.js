@@ -186,11 +186,19 @@ function parseText(text, courses) {
   const starred = (Array.isArray(data.starred) ? data.starred : []).map((c) => String(c).replace(/\D/g, "")).filter((c) => byCode.has(c));
   if (!Object.keys(picks).length && !starred.length) return { error: "empty", dropped };
   const semester = ["סמסטר א'", "סמסטר ב'"].includes(data.semester) ? data.semester : "";
-  return { semester, picks, starred, dropped };
+  // Manual times from a backup: only for groups that exist; the store checks each meeting when it saves.
+  const custom = data.custom && typeof data.custom === "object" && !Array.isArray(data.custom)
+    ? Object.fromEntries(Object.entries(data.custom).filter(([key, slots]) => {
+      const [code, group] = String(key).split("|");
+      const course = byCode.get(code);
+      return Boolean(course && course.groups.some((g) => g.group === group)) && Array.isArray(slots);
+    }))
+    : {};
+  return { semester, picks, starred, dropped, custom };
 }
 
 /** The whole schedule in the import format (both semesters, and starred courses with no pick yet), for a backup. */
 export function exportSchedule(state) {
   const picks = Object.fromEntries(Object.entries(state.picks).filter(([code, groups]) => groups.length && state.starred.includes(code)));
-  return JSON.stringify({ format: FORMAT, version: VERSION, semester: "", starred: state.starred, picks }, null, 2);
+  return JSON.stringify({ format: FORMAT, version: VERSION, semester: "", starred: state.starred, picks, custom: state.custom || {} }, null, 2);
 }

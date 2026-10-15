@@ -94,10 +94,13 @@ export function scheduleView(ctx) {
   const picked = starred.flatMap((course) => course.groups.filter((g) => store.isPicked(course.code, g.group) && inSemester(g, semester)).map((group) => ({ course, group })));
   const untimed = picked.filter((p) => !timedSlots(p.group).length);
   const noPicks = starred.filter((c) => !store.picks(c.code).length);
+  const calendar = ctx.calendar ? el("button", { type: "button", class: "cs-calendar-btn", "data-key": "calendar" }, el("span", { class: "cs-calendar-icon", "aria-hidden": "true" }), el("span", { text: tr("הוספה ליומן") })) : null;
+  if (calendar) calendar.addEventListener("click", ctx.calendar);
   return el("div", { class: "cs-view" },
+    calendar,
     ctx.semesterIsNow ? nextClass(picked, ctx) : null,
     weekAgenda(picked, ctx),
-    untimed.length ? el("p", { class: "cb-muted", text: tr("בלי שעה בקטלוג: {list}", { list: untimed.map((p) => `${courseName(p.course, helpers)} (${tr(p.group.kind)} ${p.group.group})`).join(", ") }) }) : null,
+    untimed.length ? el("p", { class: "cb-muted", text: tr("בלי שעה בקטלוג: {list}. אפשר להוסיף שעה ידנית בכרטיס הקורס.", { list: untimed.map((p) => `${courseName(p.course, helpers)} (${tr(p.group.kind)} ${p.group.group})`).join(", ") }) }) : null,
     noPicks.length ? el("p", { class: "cs-hint", text: tr("עוד לא בחרתם קבוצה ב: {list}. פותחים את הקורס למטה ולוחצים על העיגול ליד קבוצה.", { list: noPicks.map((c) => courseName(c, helpers)).join(", ") }) }) : null,
     examsList(starred, ctx),
     el("section", { class: "cs-courses", "aria-labelledby": "cs-courses-h" },

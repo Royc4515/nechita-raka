@@ -73,7 +73,7 @@ function aiTile(id) {
   return el("span", { class: `cb-ai-tile is-${id}`, style: `background: ${logo.tile}` }, svg);
 }
 
-function download(name, text, type) {
+export function download(name, text, type) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const a = el("a", { href: url, download: name });
   document.body.append(a);
@@ -105,7 +105,7 @@ function openHref(aiId, url) {
  * The sheet: a header with back, title and close, a scrolling body and a footer for the main action.
  * show({ title, step, body, footer, back }) swaps the step and scrolls it to its top.
  */
-function sheet(tr) {
+export function sheet(tr) {
   const back = el("button", { type: "button", class: "cb-sheet-back", "aria-label": tr("חזרה") });
   const close = el("button", { type: "button", class: "cb-sheet-close", "aria-label": tr("סגירה") });
   const title = el("h3", { class: "cb-sheet-title", tabindex: "-1" });
@@ -169,7 +169,7 @@ function sheet(tr) {
 }
 
 /** A question with one answer (or several, with `multi`), as chips. */
-function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) {
+export function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) {
   const value = multi ? new Set(initial) : { v: initial };
   const buttons = options.map((o) => {
     const b = el("button", { type: "button", class: "cb-pill", role: multi ? null : "radio", "aria-pressed": multi ? "false" : null, "aria-checked": multi ? null : "false", text: tr(o.label) });
@@ -188,7 +188,7 @@ function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) 
   return { node, get: () => (multi ? [...value] : value.v) };
 }
 
-const primary = (text, onClick, extra = {}) => {
+export const primary = (text, onClick, extra = {}) => {
   const b = el("button", { type: "button", class: "cb-primary", ...extra }, text);
   b.addEventListener("click", onClick);
   return b;
@@ -367,7 +367,7 @@ function importStep(ui, ctx, back) {
       return Boolean(group) && group.semester === semester;
     };
     pending = () => {
-      ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers });
+      ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers, custom: parsed.custom });
       ui.dialog.close();
       ctx.onImported && ctx.onImported(semester, chosen.length);
     };
