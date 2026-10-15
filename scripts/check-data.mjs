@@ -122,8 +122,10 @@ for (const g of data.guides || []) {
   checkLinks(g.links, `מדריך "${where}"`, where);
   if (g.map != null && (!isHttps(g.map.url) || !isHttps(g.map.embed))) error(`במדריך "${where}" ל-map צריך url ו-embed שמתחילים ב-https://.`, where);
   for (const src of g.sources || []) if (!isHttps(src.url)) error(`מקור עם כתובת לא תקינה במדריך "${where}".`, src.label || where);
+  if (g.courses != null && g.courses !== true) error(`במדריך "${where}" השדה courses הוא true או שלא כותבים אותו.`, where);
   if (!isList(g.sources) || !g.sources.length) warn(`למדריך "${where}" אין sources. כדאי לציין מאיפה המידע.`, where);
 }
+if ((data.guides || []).filter((g) => g.courses === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת הקורסים (courses: true).", "courses: true");
 
 const cal = data.calendar || {};
 for (const t of cal.terms || []) {

@@ -6,8 +6,10 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { loadCourseChunks } from "./courses.js";
+import { SITE_URL } from "./site.js";
 
-export const SITE_URL = (process.env.SITE_URL || "https://nechita-raka.vercel.app").replace(/\/+$/, "");
+export { SITE_URL };
+
 const DATA_URL = new URL("../../../data.js", import.meta.url);
 const TIME_ZONE = "Asia/Jerusalem";
 const DAY_MS = 86_400_000;
