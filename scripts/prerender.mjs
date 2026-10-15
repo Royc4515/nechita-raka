@@ -55,7 +55,7 @@ function resolveLinks(links, items) {
       const item = items.get(link);
       return item ? { label: item.name, url: item.url } : null;
     }
-    if (link && link.guide && link.label) return link;
+    if (link && link.guide && link.label && /^[a-z0-9-]+$/.test(link.guide)) return link;
     return link && isSafeUrl(link.url) && link.label ? link : null;
   }).filter(Boolean);
 }
@@ -211,7 +211,7 @@ function coursesHtml(courses) {
 /** Same as stepContent() in index.html: a link with `at` wraps that phrase of the step, the others follow as small links. */
 const stepAnchor = (link, content) => (link.guide
   ? `<a class="step-link" href="${guideHref(link.guide)}" title="${esc(link.label)}">${content}</a>`
-  : external(link.url, content, ` class="step-link" title="${esc(`${link.label} (נפתח בלשונית חדשה)`)}"`));
+  : external(link.url, content, ` class="step-link" aria-label="${esc(`${link.label} (נפתח בלשונית חדשה)`)}"`));
 
 function stepLinksFor(guide, n, items) {
   return ((guide.stepLinks || {})[n] || []).map((raw) => {
@@ -234,7 +234,7 @@ function stepContent(step, links) {
   }
   html += bidi(step.slice(pos));
   const rest = links.filter((l) => !placed.some((p) => p.link === l));
-  return { text: html, more: rest.length ? `<p class="step-more">${rest.map((l) => stepAnchor(l, esc(l.label))).join(" · ")}</p>` : "" };
+  return { text: html, more: rest.length ? `<p class="step-more">${rest.map((l) => stepAnchor(l, esc(l.label))).join("")}</p>` : "" };
 }
 
 function guideViewHtml(guide, items, year, courses = null) {

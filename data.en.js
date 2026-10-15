@@ -1227,8 +1227,9 @@ window.SITE_EN = {
     [`בטופס הפנייה באתר המחלקה`, `contact form on the department website`],
     [`בקבוצת הוואטסאפ הראשית`, `main WhatsApp group`],
     [`בהודעה פרטית`, `private message`],
-    [`חשבון 365`, `365 account`],
+    [`לחשבון 365`, `365 account`],
     [`כרטיס סטודנט דיגיטלי`, `digital student card`],
-    [`קבוצת הוואטסאפ הראשית`, `main first-year WhatsApp group`],
+    [`לקבוצת הוואטסאפ הראשית`, `main first-year WhatsApp group`],
+    [`ובאתר Bar-Gate`, `Bar-Gate website`],
   ],
 };

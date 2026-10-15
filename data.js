@@ -31,7 +31,7 @@ window.SITE_DATA = {
   /*
     מדריכים: כל מדריך נפתח בעמוד משלו באתר, בכתובת /ה-id (למשל nechita-raka.vercel.app/exams).
     steps: הצעדים לפי הסדר. tips: "כדאי לדעת". links: מזהים של פריטים מלמטה, או { label, url }.
-    stepLinks: כפתורים מתחת לצעד עצמו. המפתח הוא מספר הצעד (מתחיל מ-1), והערך רשימה באותו פורמט כמו links.
+    stepLinks: קישורים בתוך הצעד עצמו (at: הביטוי שהופך לקישור). המפתח הוא מספר הצעד (מתחיל מ-1), והערך רשימה באותו פורמט כמו links.
     sources: מאיפה נלקח המידע. כל עובדה כאן נלקחה מאתר האוניברסיטה בתאריך שב-checkedOn.
   */
   guides: [
@@ -51,7 +51,7 @@ window.SITE_DATA = {
       // קישורים בתוך הצעד (מספר הצעד מתחיל מ-1). at: הביטוי בצעד שהופך לקישור. בלי at הקישור מופיע מתחת לצעד.
       stepLinks: {
         1: [{ id: `inbar`, at: `באינ-בר` }],
-        2: [{ id: `changes`, at: `תקופת השינויים` }],
+        2: [`changes`],
         7: [{ id: `inbar`, at: `באינ-בר` }],
       },
       tips: [
@@ -184,7 +184,7 @@ window.SITE_DATA = {
       stepLinks: {
         1: [{ label: `האפליקציה לאנדרואיד`, url: `https://play.google.com/store/apps/details?id=com.mobitti.barilan` }, { label: `האפליקציה לאייפון`, url: `https://apps.apple.com/ag/app/%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%AA-%D7%91%D7%A8-%D7%90%D7%99%D7%9C%D7%9F/id1207648282` }],
         3: [{ id: `inbar`, at: `באינ-בר` }],
-        5: [{ label: `מדריך: כניסה בשערים האוטומטיים`, guide: `bar-gate`, at: `כניסה בשערים האוטומטיים` }, { label: `אתר Bar-Gate`, url: `https://bar-gate.biu.ac.il/`, at: `אתר Bar-Gate` }],
+        5: [{ label: `מדריך: כניסה בשערים האוטומטיים`, guide: `bar-gate`, at: `כניסה בשערים האוטומטיים` }, { label: `אתר Bar-Gate`, url: `https://bar-gate.biu.ac.il/`, at: `ובאתר Bar-Gate` }],
       },
       tips: [
         `הכרטיס משמש גם ככרטיס קורא בספריות.`,
@@ -439,7 +439,9 @@ window.SITE_DATA = {
       // קישורים בתוך הצעד (מספר הצעד מתחיל מ-1). at: הביטוי בצעד שהופך לקישור. בלי at הקישור מופיע מתחת לצעד.
       stepLinks: {
         1: [{ id: `inbar`, at: `באינ-בר` }],
+        3: [{ id: `inbar`, at: `באינ-בר` }],
         4: [{ id: `inbar`, at: `באינ-בר` }],
+        7: [{ id: `inbar`, at: `באינ-בר` }],
         8: [{ id: `inbar`, at: `באינ-בר` }],
       },
       tips: [
@@ -580,11 +582,11 @@ window.SITE_DATA = {
       ],
       // קישורים בתוך הצעד (מספר הצעד מתחיל מ-1). at: הביטוי בצעד שהופך לקישור. בלי at הקישור מופיע מתחת לצעד.
       stepLinks: {
-        1: [{ label: `מדריך: למדה וחשבון 365`, guide: `lemida-365`, at: `חשבון 365` }, { label: `שכחתי סיסמה`, url: `https://sspr.biu.ac.il/sspr/public/forgottenpassword`, at: `שכחתי סיסמה` }],
+        1: [{ label: `מדריך: למדה וחשבון 365`, guide: `lemida-365`, at: `לחשבון 365` }, { label: `שכחתי סיסמה`, url: `https://sspr.biu.ac.il/sspr/public/forgottenpassword`, at: `שכחתי סיסמה` }],
         2: [{ id: `lemida`, at: `ללמדה` }],
         3: [{ label: `האפליקציה לאנדרואיד`, url: `https://play.google.com/store/apps/details?id=com.mobitti.barilan` }, { label: `האפליקציה לאייפון`, url: `https://apps.apple.com/ag/app/%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%AA-%D7%91%D7%A8-%D7%90%D7%99%D7%9C%D7%9F/id1207648282` }, { label: `מדריך: כרטיס סטודנט וכניסה`, guide: `campus`, at: `כרטיס סטודנט דיגיטלי` }],
         4: [{ id: `inbar`, at: `באינ-בר` }],
-        5: [{ id: `wa-main`, at: `קבוצת הוואטסאפ הראשית` }],
+        5: [{ id: `wa-main`, at: `לקבוצת הוואטסאפ הראשית` }],
       },
       tips: [
         `כל שיעור נמשך 90 דקות, ואחריו הפסקה של 30 דקות.`,

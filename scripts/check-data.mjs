@@ -209,6 +209,13 @@ try {
   const paired = new Set(content.map(([he]) => he));
   const missing = [...hebrew].filter((s) => !paired.has(s));
   const unused = [...paired].filter((s) => !hebrew.has(s));
+  const enOf = new Map(content);
+  for (const g of data.guides || []) for (const [n, links] of Object.entries(g.stepLinks || {})) for (const link of isList(links) ? links : []) {
+    if (!link || typeof link !== "object" || !link.at) continue;
+    const enStep = enOf.get((g.steps || [])[n - 1]);
+    const enAt = enOf.get(link.at);
+    if (enStep && enAt && !enStep.includes(enAt)) warn(`ב"${g.title}", צעד ${n}: הביטוי "${enAt}" לא מופיע בנוסח האנגלי של הצעד, ולכן הקישור יופיע מתחת לצעד.`, link.at);
+  }
   if (missing.length) warn(`${missing.length} טקסטים בלי תרגום לאנגלית ב-data.en.js (יופיעו בעברית במצב אנגלית): ${sample(missing)}`);
   if (unused.length) warn(`${unused.length} תרגומים ב-data.en.js שהטקסט העברי שלהם כבר לא קיים (כנראה שונה): ${sample(unused)}`);
   // The page's own text: every tr("...") in the page, the chat and the launcher.
