@@ -747,6 +747,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     <h2 id="top-hits-h">הכי מתאים</h2>
     <ol></ol>
   </section>
+  <section class="top-hits" id="course-hits" aria-labelledby="course-hits-h" hidden>
+    <h2 id="course-hits-h">קורסים</h2>
+    <ol></ol>
+  </section>
   <div id="jump-nav">
     <section class="now" id="now" aria-label="איפה אנחנו בשנה" hidden></section>
   </div>
@@ -1571,6 +1575,35 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     box.append(el("div", { class: "actions" }, show, linkButton({ url: map.url }, openLabel)));
     return box;
   }
+  // ---------- Courses (course-browser.js, loaded only when needed) ----------
+  // Course words ("סמסטר א'") may already be in data.en.js as content rather than UI, so either one translates.
+  const courseTr = (he, vars) => tr(CONTENT_EN.get(he) || he, vars);
+  const courseHelpers = () => ({ tr: courseTr, en: EN, rank: rankEntries, searchDoc, navigate: navigateTo });
+  function courseBrowserNode() {
+    const node = el("section", { class: "course-browser", id: "course-browser", "aria-label": tr("הקורסים") });
+    import("./course-browser.js")
+      .then((mod) => mod.mountCourseBrowser(node, courseHelpers()))
+      .catch((err) => {
+        console.warn("courses: could not load the course browser", err);
+        node.replaceChildren(el("p", { text: tr("לא הצלחנו לטעון את רשימת הקורסים. נסו לרענן, או חפשו בשהם, קטלוג הקורסים.") }));
+      });
+    return node;
+  }
+  // The site search and the palette get one entry per course, once the list is loaded (on first use).
+  let courseEntries = [];
+  let courseLoad = null;
+  function ensureCourseEntries() {
+    courseLoad ??= import("./course-browser.js")
+      .then((mod) => mod.loadCourseList().then((list) => { courseEntries = mod.courseSearchEntries(list, courseHelpers()); }))
+      .catch((err) => { courseLoad = null; console.warn("courses: search without courses", err); });
+    return courseLoad;
+  }
+  /** Courses that match every word typed; empty until the list is loaded. */
+  function rankCourses(raw) {
+    if (!courseEntries.length || !normalize(raw)) return [];
+    const ranked = rankEntries(courseEntries, raw);
+    return ranked.mode === "all" ? ranked.list : [];
+  }
   function renderGuideView(guide, itemsById, year) {
     const links = resolveLinks(guide, itemsById);
     const sources = (guide.sources || []).filter((src) => isSafeUrl(src.url));
@@ -1580,6 +1613,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       el("h2", { id: "guide-title", tabindex: "-1", text: guide.title }),
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
       guideMap(guide),
+      guide.courses ? courseBrowserNode() : null,
       ...stepsList(guide),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
@@ -1592,7 +1626,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     ].filter(Boolean));
   }
   // Opens an address inside the site without reloading; setupGuideRouting listens for popstate.
+  // Set by navigateTo, so a link to the guide already open (another course on /courses) still redraws it.
+  let forceRoute = false;
   function navigateTo(url) {
+    forceRoute = true;
     history.pushState(null, "", url);
     window.dispatchEvent(new PopStateEvent("popstate"));
   }
@@ -1650,9 +1687,14 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return guide;
     }
     let current = null;
+    let currentSearch = location.search;
     function route(animate) {
       const guide = guideFromUrl();
-      if ((guide || null) === current && (guide || view.hidden)) return;
+      // The courses guide keeps its search in the address, so another course link (or Back to one) redraws it.
+      const newCourse = Boolean(guide && guide.courses && guide === current && (forceRoute || location.search !== currentSearch));
+      forceRoute = false;
+      currentSearch = location.search;
+      if (!newCourse && (guide || null) === current && (guide || view.hidden)) return;
       current = guide || null;
       const update = () => { if (guide) show(guide); else if (!view.hidden) hide(); };
       if (animate && (guide || !view.hidden)) withTransition(update); else update();
@@ -1675,7 +1717,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     route(false);
     return {
       isOpen: () => !view.hidden,
-      close: () => { history.pushState(null, "", `/${location.search}`); route(false); },
+      close: () => {
+        // The courses page's own search (?c=, ?cq=) means nothing on the home page.
+        const params = new URLSearchParams(location.search);
+        params.delete("c");
+        params.delete("cq");
+        const qs = params.toString();
+        history.pushState(null, "", `/${qs ? `?${qs}` : ""}`);
+        route(false);
+      },
     };
   }
   // ---------- "Now" panel: where we are in the year ----------
@@ -2118,7 +2168,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const raw = input.value.trim();
       const q = normalize(raw);
       if (!q) return index.filter((e) => e.suggest).slice(0, 8);
-      return rankEntries(index, raw).list.slice(0, 10);
+      // Site results first, then up to three courses, so a course name never hides a guide.
+      const site = rankEntries(index, raw).list.slice(0, 10);
+      const courses = rankCourses(raw).slice(0, 3);
+      return [...site.slice(0, 10 - courses.length), ...courses];
     }
     function paint() {
       results = search();
@@ -2155,6 +2208,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     function open() {
       if (dialog.open) return;
+      ensureCourseEntries().then(() => { if (dialog.open && input.value.trim()) paint(); });
       input.value = "";
       active = 0;
       paint();
@@ -2414,6 +2468,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const sections = { guides: $("#guides"), categories: $("#categories"), calendar: $("#calendar"), faq: $("#faq") };
     const topHits = $("#top-hits");
     const TOP_HITS = 3;
+    const courseHits = $("#course-hits");
+    const COURSE_HITS = 4;
     let wasActive = false;
     let lastKey = null;
     for (const list of [groups.guides, groups.events, groups.faq, groups.categories]) list.forEach((e, i) => { e.i = i; });
@@ -2477,6 +2533,22 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         return el("li", {}, action);
       }));
     }
+    // Courses that match, as links to their cards, with one more link to all of them on the courses page.
+    function renderCourseHits(raw) {
+      const found = rankCourses(raw);
+      setHidden(courseHits, !found.length);
+      if (!found.length) return 0;
+      const hitLink = (href, ...body) => el("li", {}, el("a", { class: "hit", href }, ...body));
+      const items = found.slice(0, COURSE_HITS).map((hit) => hitLink(hit.href,
+        el("span", { class: "p-type", text: hit.type }),
+        el("span", { class: "p-main" }, el("span", { class: "p-title", text: hit.title }), el("span", { class: "p-sub", text: hit.sub }))));
+      if (found.length > COURSE_HITS) {
+        items.push(hitLink(`./courses?cq=${encodeURIComponent(raw)}`,
+          el("span", { class: "p-main" }, el("span", { class: "p-title", text: tr("כל {n} הקורסים שמתאימים", { n: found.length }) }))));
+      }
+      courseHits.querySelector("ol").replaceChildren(...items);
+      return found.length;
+    }
     function apply() {
       const raw = input.value.trim();
       const key = normalize(raw);
@@ -2495,9 +2567,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (!active) {
         total = filterAll(null);
         sortResults(false);
+        setHidden(courseHits, true);
       } else {
         ranked = rankEntries(index, raw);
         total = filterAll(ranked.query, ranked.mode);
+        total += renderCourseHits(raw);
         sortTimer = setTimeout(() => sortResults(true), SORT_DELAY_MS);
       }
       setHidden(empty, !active || total > 0);
@@ -2537,6 +2611,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       scheduleApply();
     });
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") input.blur(); });
+    // The course list loads on the first search, then the results are drawn again with the courses in them.
+    // Drawing again sends the search to track.js once more, with the courses counted; it keeps the latest count.
+    // A search that came in the address stays uncounted.
+    const withCourses = (fromAddr = false) => ensureCourseEntries().then(() => {
+      if (!courseEntries.length || !input.value.trim()) return;
+      const was = fromAddress;
+      fromAddress = fromAddr;
+      lastKey = null;
+      apply();
+      fromAddress = was;
+    });
+    input.addEventListener("focus", () => withCourses(), { once: true });
+    input.addEventListener("input", () => withCourses(), { once: true });
     clearBtn.addEventListener("click", clear);
     $("#empty-clear").addEventListener("click", clear);
     $("#empty-chips").replaceChildren(...EMPTY_SUGGESTIONS.map((word) => {
@@ -2545,7 +2632,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       return chip;
     }));
     const initial = new URLSearchParams(location.search).get("q");
-    if (initial) { fromAddress = true; input.value = initial; apply(); fromAddress = false; }
+    if (initial) { fromAddress = true; input.value = initial; apply(); fromAddress = false; withCourses(true); }
     let urlTimer = 0;
     function syncUrl() {
       clearTimeout(urlTimer);

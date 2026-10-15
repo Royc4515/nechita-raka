@@ -1,0 +1,30 @@
+/* The courses page (course-browser.js). Uses the site's tokens from index.html, so dark mode just works. */
+.course-browser { margin-block: var(--s5); }
+.cb-note { color: var(--muted); font-size: var(--fs-small); margin-block-end: var(--s3); }
+.cb-controls { display: grid; gap: var(--s3); margin-block-end: var(--s3); }
+.cb-q { inline-size: 100%; min-block-size: 48px; padding: var(--s2) var(--s4); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r); font-size: 1.0625rem; appearance: none; -webkit-appearance: none; }
+.cb-filter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.cb-filter-label { font-size: var(--fs-small); font-weight: 700; color: var(--muted); min-inline-size: 3em; }
+.cb-chip { min-block-size: 40px; padding-inline: var(--s3); border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: var(--fs-small); font-weight: 600; cursor: pointer; }
+.cb-chip:hover { background: var(--surface-2); }
+.cb-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.cb-status { font-size: var(--fs-small); color: var(--muted); margin-block-end: var(--s2); }
+.cb-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); }
+.cb-card { padding: var(--s4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); scroll-margin-block-start: calc(var(--sticky-h) + 16px); }
+.cb-card.is-target { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent); }
+.cb-head h3 { font-size: var(--fs-title); line-height: 1.35; }
+.cb-meta { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); margin-block-start: var(--s1); color: var(--muted); font-size: var(--fs-small); }
+.cb-year { font-weight: 700; color: var(--accent-text); background: var(--accent-soft); border-radius: 6px; padding-inline: 8px; }
+.cb-exams { margin-block-start: var(--s2); font-size: var(--fs-small); }
+.cb-groups { list-style: none; margin: var(--s3) 0 0; padding: 0; display: grid; gap: var(--s2); }
+.cb-group { display: flex; align-items: flex-start; gap: var(--s2); padding-block-start: var(--s2); border-block-start: 1px solid var(--border); font-size: var(--fs-small); }
+.cb-kind { flex: none; min-inline-size: 4.5em; text-align: center; font-size: .75rem; font-weight: 700; border-radius: 6px; padding: 1px 8px; background: var(--surface-2); color: var(--muted); }
+.cb-kind-lecture { background: var(--accent-soft); color: var(--accent-text); }
+.cb-group-main { display: flex; flex-direction: column; min-inline-size: 0; }
+.cb-when { font-weight: 600; }
+.cb-place, .cb-teachers { color: var(--muted); }
+.cb-missing { color: var(--faint); font-weight: 400; }
+.cb-more { margin-block-start: var(--s4); }
+.cb-loading, .cb-error { color: var(--muted); }
+.course-static { columns: 2 16em; padding-inline-start: var(--s5); }
+@media (min-width: 900px) { .cb-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cb-controls { grid-template-columns: minmax(0, 1fr); } }
