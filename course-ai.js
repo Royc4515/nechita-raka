@@ -6,15 +6,15 @@
   format, which "import" reads back, checks against the catalog and saves as "my schedule".
   The same format is the backup: export it here, import it on another phone.
   Nothing is sent anywhere by this page; the student takes the prompt to their own AI.
+  This module has no DOM (the tests import it); the dialogs are in course-ai-dialog.js.
 */
-import { courseName, el } from "./course-card.js";
-import { clash, inSemester, timedSlots } from "./course-time.js";
+import { inSemester, timedSlots } from "./course-time.js";
 
 export const FORMAT = "nechita-raka-schedule";
 const VERSION = 1;
 /** Links longer than this are cut by some servers; past it the AI opens empty and the prompt is pasted. */
 const MAX_LINK = 7000;
-const NOTES_MAX = 300;
+export const NOTES_MAX = 300;
 export const AIS = [
   { id: "chatgpt", label: "ChatGPT", url: (q) => `https://chatgpt.com/${q ? `?q=${q}` : ""}` },
   { id: "claude", label: "Claude", url: (q) => `https://claude.ai/new${q ? `?q=${q}` : ""}` },
@@ -22,7 +22,7 @@ export const AIS = [
   { id: "gemini", label: "Gemini", url: () => "https://gemini.google.com/app" },
 ];
 
-const slotText = (s) => `${s.day} ${s.start}-${s.end}`;
+export const slotText = (s) => `${s.day} ${s.start}-${s.end}`;
 const placeOf = (g) => [...new Set(timedSlots(g).map((s) => [s.building, s.room && `חדר ${s.room}`].filter(Boolean).join(" ")).filter(Boolean))].join(" / ");
 const dmy = (iso) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}.${iso.slice(0, 4)}`;
 
@@ -151,216 +151,4 @@ export function parseSchedule(text, courses) {
 export function exportSchedule(state) {
   const picks = Object.fromEntries(Object.entries(state.picks).filter(([code, groups]) => groups.length && state.starred.includes(code)));
   return JSON.stringify({ format: FORMAT, version: VERSION, semester: "", starred: state.starred, picks }, null, 2);
-}
-
-// ---------- DOM: the two dialogs ----------
-
-function download(name, text, type) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const a = el("a", { href: url, download: name });
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function copy(text) {
-  try {
-    return navigator.clipboard ? navigator.clipboard.writeText(text).then(() => true, () => false) : Promise.resolve(false);
-  } catch {
-    return Promise.resolve(false);
-  }
-}
-
-function dialogShell(title, tr) {
-  const close = el("button", { type: "button", class: "cb-dialog-close", "aria-label": tr("סגירה"), text: "×" });
-  const body = el("div", { class: "cb-dialog-body" });
-  const dialog = el("dialog", { class: "cb-dialog", "aria-label": title },
-    el("div", { class: "cb-dialog-head" }, el("h3", { text: title }), close), body);
-  close.addEventListener("click", () => dialog.close());
-  // Close on a tap on the backdrop only when it also started there (not a text selection that overshot).
-  let downOnBackdrop = false;
-  dialog.addEventListener("pointerdown", (e) => { downOnBackdrop = e.target === dialog; });
-  dialog.addEventListener("click", (e) => { if (e.target === dialog && downOnBackdrop) dialog.close(); });
-  dialog.addEventListener("close", () => dialog.remove());
-  document.body.append(dialog);
-  return { dialog, body };
-}
-
-/** A question with one answer (or several, with `multi`), as the page's chips. */
-function choice(label, options, initial, { tr, multi = false } = {}) {
-  const value = multi ? new Set(initial) : { v: initial };
-  const buttons = options.map((o) => {
-    const b = el("button", { type: "button", class: "cb-chip", "aria-pressed": "false", text: tr(o.label) });
-    b.addEventListener("click", () => {
-      if (multi) { if (value.has(o.id)) value.delete(o.id); else value.add(o.id); } else value.v = o.id;
-      paint();
-    });
-    return b;
-  });
-  const paint = () => buttons.forEach((b, i) => b.setAttribute("aria-pressed", String(multi ? value.has(options[i].id) : value.v === options[i].id)));
-  paint();
-  const node = el("fieldset", { class: "cb-q-field" }, el("legend", { text: tr(label) }), el("div", { class: "cb-q-chips" }, ...buttons));
-  return { node, get: () => (multi ? [...value] : value.v) };
-}
-
-/**
- * The questions, then the prompt and the AI buttons. ctx: { helpers: { tr, en }, store, list, semester }.
- */
-export function openPlanner(ctx) {
-  const { tr, en } = ctx.helpers;
-  const { dialog, body } = dialogShell(tr("בניית מערכת עם AI"), tr);
-  const state = ctx.store.get();
-  const offered = (c) => c.groups.some((g) => inSemester(g, ctx.semester));
-  const starred = ctx.list.courses.filter((c) => state.starred.includes(c.code) && offered(c));
-  const byYear = (y) => ctx.list.courses.filter((c) => c.year === y && offered(c));
-  const sets = [
-    { id: "starred", label: tr("הקורסים שסימנתי ({n})", { n: starred.length }), courses: starred },
-    ...[1, 2, 3].map((y) => ({ id: `y${y}`, label: tr("כל קורסי שנה {y} ({n})", { y: ["א'", "ב'", "ג'"][y - 1], n: byYear(y).length }), courses: byYear(y) })),
-  ].filter((s) => s.courses.length);
-  const which = choice("אילו קורסים?", sets.map((s) => ({ id: s.id, label: s.label })), sets[0]?.id, { tr });
-  const semester = choice("סמסטר", ["סמסטר א'", "סמסטר ב'"].map((s) => ({ id: s, label: s })), ctx.semester, { tr });
-  const blocked = choice("ימים שאני לא יכול/ה להגיע", ["א'", "ב'", "ג'", "ד'", "ה'", "ו'"].map((d) => ({ id: d, label: d })), [], { tr, multi: true });
-  const earliest = choice("לא לפני", [{ id: "", label: "לא משנה" }, { id: "09:00", label: "09:00" }, { id: "10:00", label: "10:00" }, { id: "12:00", label: "12:00" }], "", { tr });
-  const latest = choice("לסיים עד", [{ id: "", label: "לא משנה" }, { id: "14:00", label: "14:00" }, { id: "16:00", label: "16:00" }, { id: "18:00", label: "18:00" }], "", { tr });
-  const shape = choice("איך השבוע?", [{ id: "compact", label: "מעט ימים, ארוכים" }, { id: "spread", label: "ימים קצרים" }, { id: "any", label: "לא משנה" }], "any", { tr });
-  const gaps = choice("חלונות בין שיעורים", [{ id: "none", label: "בלי חלונות" }, { id: "lunch", label: "הפסקת צהריים" }, { id: "any", label: "לא משנה" }], "any", { tr });
-  const keepPicks = Object.values(state.picks).some((g) => g.length);
-  const keep = keepPicks ? choice("קבוצות שכבר בחרתי", [{ id: "keep", label: "לשמור אותן" }, { id: "free", label: "לבחור מחדש" }], "keep", { tr }) : null;
-  const notes = el("textarea", { class: "cb-q-notes", rows: "2", maxlength: String(NOTES_MAX), placeholder: tr("עוד משהו? למשל: מרצה שאני מעדיף/ה, עבודה ביום שלישי בבוקר") });
-  const next = el("button", { type: "button", class: "btn btn-solid cb-q-next", text: tr("יצירת הפרומפט") });
-  if (!sets.length) {
-    body.replaceChildren(el("p", { text: tr("אין קורסים בסמסטר הזה. סמנו ☆ קורסים ונסו שוב.") }));
-    dialog.showModal();
-    return;
-  }
-  body.replaceChildren(
-    el("p", { class: "cb-q-intro", text: tr("כמה שאלות קצרות, ואז הפרומפט מוכן לבינה המלאכותית שלכם. התשובה שלה חוזרת לכאן בלחיצה על \"ייבוא\".") }),
-    which.node, semester.node, blocked.node, earliest.node, latest.node, shape.node, gaps.node, keep ? keep.node : null,
-    el("label", { class: "cb-q-field" }, el("span", { class: "cb-q-label", text: tr("הערות (לא חובה)") }), notes),
-    next);
-  next.addEventListener("click", () => {
-    const set = sets.find((s) => s.id === which.get()) || sets[0];
-    const sem = semester.get();
-    const courses = set.courses.filter((c) => c.groups.some((g) => inSemester(g, sem)));
-    const keepList = keep && keep.get() === "keep"
-      ? ctx.list.courses.flatMap((course) => course.groups.filter((g) => ctx.store.isPicked(course.code, g.group) && inSemester(g, sem)).map((group) => ({ course, group })))
-      : [];
-    // Courses of groups to keep go into the data too, or the AI can't place them.
-    const withKept = [...new Set([...courses, ...keepList.map((k) => k.course)])];
-    const prompt = buildPrompt(withKept, {
-      semester: sem, blockedDays: blocked.get(), earliest: earliest.get(), latest: latest.get(),
-      shape: shape.get(), gaps: gaps.get(), notes: notes.value.trim().slice(0, NOTES_MAX), keep: keepList,
-    }, { scannedAt: ctx.list.scannedAt, en });
-    showPrompt(body, prompt, withKept, ctx, dialog);
-  });
-  dialog.showModal();
-}
-
-function showPrompt(body, prompt, courses, ctx, dialog) {
-  const { tr } = ctx.helpers;
-  const status = el("p", { class: "cb-q-status", role: "status" });
-  const aiButtons = AIS.map((ai) => {
-    const link = aiLink(ai.id, prompt);
-    const a = el("a", { class: "btn cb-ai-btn", href: link.url, target: "_blank", rel: "noopener noreferrer", text: tr("העתקה ופתיחה ב-{ai}", { ai: ai.label }) });
-    // The click opens the AI (a plain link, so no popup blocker), and copies the prompt as it goes.
-    a.addEventListener("click", () => {
-      copy(prompt).then((ok) => {
-        status.textContent = link.prefilled
-          ? tr("{ai} נפתח עם הפרומפט. שולחים, ובסוף מעתיקים את התשובה ולוחצים כאן על \"ייבוא\".", { ai: ai.label })
-          : ok ? tr("הפרומפט הועתק. ב-{ai} מדביקים (לחיצה ארוכה ← הדבקה, או Ctrl+V) ושולחים.", { ai: ai.label })
-            : tr("לא הצלחנו להעתיק. מעתיקים מהתיבה למטה ומדביקים ב-{ai}.", { ai: ai.label });
-      });
-    });
-    return a;
-  });
-  const copyBtn = el("button", { type: "button", class: "btn", text: tr("העתקת הפרומפט") });
-  copyBtn.addEventListener("click", () => copy(prompt).then((ok) => { status.textContent = ok ? tr("הועתק.") : tr("לא הצלחנו להעתיק. מסמנים את הטקסט בתיבה ומעתיקים."); }));
-  const txtBtn = el("button", { type: "button", class: "btn", text: tr("הורדה כקובץ טקסט") });
-  txtBtn.addEventListener("click", () => download("schedule-prompt.txt", prompt, "text/plain;charset=utf-8"));
-  const jsonBtn = el("button", { type: "button", class: "btn", text: tr("הורדת הנתונים (JSON)") });
-  jsonBtn.addEventListener("click", () => download("courses-for-ai.json", JSON.stringify({ scannedAt: ctx.list.scannedAt, courses }, null, 2), "application/json"));
-  const importBtn = el("button", { type: "button", class: "btn btn-solid", text: tr("יש לי תשובה: ייבוא") });
-  importBtn.addEventListener("click", () => { dialog.close(); openImport(ctx); });
-  const box = el("textarea", { class: "cb-q-prompt", rows: "6", readonly: true, "aria-label": tr("הפרומפט") });
-  box.value = prompt;
-  body.replaceChildren(
-    el("p", { class: "cb-q-intro", text: tr("הפרומפט מוכן ({n} קורסים). בוחרים AI: הוא נפתח בלשונית חדשה והפרומפט מועתק.", { n: courses.length }) }),
-    el("div", { class: "cb-ai-row" }, ...aiButtons),
-    status,
-    box,
-    el("div", { class: "cb-ai-row is-secondary" }, copyBtn, txtBtn, jsonBtn),
-    el("p", { class: "cb-muted", text: tr("כשה-AI מסיים, מעתיקים את כל התשובה שלו (או רק את בלוק ה-JSON) ולוחצים על ייבוא.") }),
-    importBtn);
-}
-
-/**
- * Paste or upload a schedule (an AI's answer, or a backup), see what it holds and its clashes, then save.
- * ctx: { helpers, store, list, onImported(semester) }.
- */
-export function openImport(ctx) {
-  const { tr } = ctx.helpers;
-  const { dialog, body } = dialogShell(tr("ייבוא מערכת"), tr);
-  const area = el("textarea", { class: "cb-q-prompt", rows: "6", placeholder: tr("מדביקים כאן את התשובה של ה-AI, או קובץ גיבוי של המערכת"), "aria-label": tr("התשובה של ה-AI") });
-  const file = el("input", { type: "file", accept: ".json,.txt,application/json,text/plain", class: "cb-file" });
-  const check = el("button", { type: "button", class: "btn btn-solid", text: tr("בדיקה") });
-  const result = el("div", { class: "cb-import-result", role: "status" });
-  file.addEventListener("change", () => {
-    const f = file.files && file.files[0];
-    if (!f) return;
-    if (f.size > 200_000) { result.textContent = tr("הקובץ גדול מדי."); return; }
-    f.text().then((text) => { area.value = text; check.click(); }, () => { result.textContent = tr("לא הצלחנו לקרוא את הקובץ."); });
-    file.value = "";
-  });
-  check.addEventListener("click", () => preview(area.value));
-  function preview(text) {
-    const parsed = parseSchedule(text, ctx.list.courses);
-    if (parsed.error) {
-      result.replaceChildren(el("p", { class: "cb-clash", text: parsed.error === "format" ? tr("זה לא בפורמט של המערכת.") : tr("לא מצאנו כאן מערכת. צריך את בלוק ה-JSON מסוף התשובה של ה-AI.") }));
-      return;
-    }
-    const byCode = new Map(ctx.list.courses.map((c) => [c.code, c]));
-    const semester = parsed.semester || "";
-    const chosen = Object.entries(parsed.picks).flatMap(([code, groups]) => groups.map((g) => ({ course: byCode.get(code), group: byCode.get(code).groups.find((x) => x.group === g) })));
-    const clashes = chosen.flatMap((a, i) => chosen.slice(i + 1).filter((b) => clash(a.group, b.group, semester || a.group.semester.split(", ")[0])).map((b) => [a, b]));
-    // Two lecture groups of one course is usually the AI's slip, not a plan.
-    const doubles = [...new Set(chosen.filter((a, i) => chosen.some((b, j) => j < i && b.course === a.course && b.group.kind === a.group.kind)).map((p) => `${courseName(p.course, ctx.helpers)} (${tr(p.group.kind)})`))];
-    const replace = el("input", { type: "checkbox", checked: true, id: "cb-import-replace" });
-    const save = el("button", { type: "button", class: "btn btn-solid", text: tr("שמירה במערכת שלי") });
-    // Replacing covers this semester's picks (an AI plan is per semester), or, with no semester (a backup),
-    // the courses the import names. The other semester and other courses stay as they are.
-    const covers = (code, g) => {
-      if (!semester) return code in parsed.picks;
-      const group = byCode.get(code) && byCode.get(code).groups.find((x) => x.group === g);
-      return Boolean(group) && group.semester.split(", ").includes(semester);
-    };
-    save.addEventListener("click", () => {
-      ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers });
-      dialog.close();
-      ctx.onImported && ctx.onImported(semester);
-    });
-    result.replaceChildren(
-      el("p", { class: "cb-q-intro", text: tr("נמצאו {n} קבוצות ב-{c} קורסים{s}.", { n: chosen.length, c: Object.keys(parsed.picks).length, s: semester ? ` (${tr(semester)})` : "" }) }),
-      el("ul", { class: "cb-import-list" }, ...chosen.map((p) => el("li", {}, `${courseName(p.course, ctx.helpers)}: ${tr(p.group.kind)} ${p.group.group} · ${timedSlots(p.group).map(slotText).join(" + ") || tr("בלי שעה בקטלוג")}`))),
-      clashes.length ? el("p", { class: "cb-clash", text: tr("⚠ {n} חפיפות. אפשר לשמור ולתקן במערכת שלי.", { n: clashes.length }) }) : null,
-      doubles.length ? el("p", { class: "cb-clash", text: tr("⚠ יותר מקבוצה אחת מאותו סוג ב: {list}. בדרך כלל לוקחים אחת.", { list: doubles.join(", ") }) }) : null,
-      parsed.dropped.length ? el("p", { class: "cb-muted", text: tr("לא נמצאו בקטלוג ולכן דולגו: {list}", { list: parsed.dropped.join(", ") }) }) : null,
-      el("label", { class: "cb-check", for: "cb-import-replace" }, replace,
-        semester ? tr("להחליף את הבחירות שלי ב{semester} (הסמסטר השני לא משתנה)", { semester: tr(semester) }) : tr("להחליף את הבחירות בקורסים האלה (השאר לא משתנים)")),
-      save);
-  }
-  body.replaceChildren(
-    el("p", { class: "cb-q-intro", text: tr("מדביקים את התשובה של ה-AI (אפשר את כולה) או מעלים קובץ גיבוי.") }),
-    area,
-    el("div", { class: "cb-ai-row is-secondary" }, check, el("label", { class: "btn cb-file-label" }, tr("העלאת קובץ"), file)),
-    result);
-  dialog.showModal();
-  area.focus();
-}
-
-/** Backup: download the schedule as a file, or copy it, in the import format. */
-export function exportBackup(ctx) {
-  const text = exportSchedule(ctx.store.get());
-  download("my-schedule.json", text, "application/json");
-  return text;
 }

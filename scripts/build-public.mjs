@@ -25,6 +25,7 @@ const FILES = [
   "courses-cs-2027.json",
   "course-browser.js",
   "course-ai.js",
+  "course-ai-dialog.js",
   "course-card.js",
   "course-schedule.js",
   "course-store.js",

@@ -8,7 +8,7 @@
   index.html passes in its own helpers (tr, rank, searchDoc...) so search behaves the same everywhere.
 */
 import { courseCard, el, visibleGroups } from "./course-card.js";
-import { exportBackup, openImport, openPlanner } from "./course-ai.js";
+import { exportBackup, openImport, openPlanner } from "./course-ai-dialog.js";
 import { scheduleView } from "./course-schedule.js";
 import { createStore } from "./course-store.js";
 import { currentSemester, DAYS } from "./course-time.js";
@@ -151,11 +151,15 @@ export async function mountCourseBrowser(root, helpers) {
   // Build a schedule with your own AI, and bring its answer (or a backup) back in.
   const aiCtx = () => ({
     helpers: { tr, en }, store, list, semester: state.semester,
-    onImported: (semester) => set({ tab: "mine", ...(SEMESTERS.includes(semester) ? { semester } : {}), ...widen() }),
+    onImported: (semester) => {
+      set({ tab: "mine", ...(SEMESTERS.includes(semester) ? { semester } : {}), ...widen() });
+      // Start the new schedule from its top, where the next class and the week are.
+      root.scrollIntoView({ block: "start", behavior: "smooth" });
+    },
   });
-  const planBtn = el("button", { type: "button", class: "btn btn-solid cb-plan-btn" }, el("span", { "aria-hidden": "true", text: "✨ " }), tr("בניית מערכת עם AI"));
+  const planBtn = el("button", { type: "button", class: "cb-plan-btn" }, el("span", { class: "cb-plan-icon", "aria-hidden": "true" }), el("span", { text: tr("בניית מערכת עם AI") }));
   planBtn.addEventListener("click", () => openPlanner(aiCtx()));
-  const importBtn = el("button", { type: "button", class: "btn cb-import-btn", text: tr("ייבוא") });
+  const importBtn = el("button", { type: "button", class: "cb-import-btn" }, el("span", { class: "cb-import-icon", "aria-hidden": "true" }), el("span", { text: tr("ייבוא") }));
   importBtn.addEventListener("click", () => openImport(aiCtx()));
   const actions = el("div", { class: "cb-actions" }, planBtn, importBtn);
   const note = el("p", { class: "cb-note" }, tr("נסרק ב-"), el("bdi", { dir: "ltr", text: dmy(list.scannedAt) }), tr(" · לא רשמי, בודקים באינ-בר"));
@@ -241,7 +245,7 @@ export async function mountCourseBrowser(root, helpers) {
   function allView() {
     if (state.target) {
       const course = list.courses.find((c) => c.code === state.target);
-      const back = el("button", { type: "button", class: "cb-link", text: tr("← הצגת כל הקורסים") });
+      const back = el("button", { type: "button", class: "cb-link", text: tr("→ כל הקורסים") });
       back.addEventListener("click", () => set({ target: "" }));
       status.textContent = course ? tr("קורס אחד") : tr("הקורס לא נמצא בקטלוג.");
       return [course ? el("div", { class: "cb-list" }, cardFor(course, { open: true, badge: true })) : null, back];
