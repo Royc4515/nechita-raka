@@ -73,7 +73,7 @@ function aiTile(id) {
   return el("span", { class: `cb-ai-tile is-${id}`, style: `background: ${logo.tile}` }, svg);
 }
 
-function download(name, text, type) {
+export function download(name, text, type) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const a = el("a", { href: url, download: name });
   document.body.append(a);
@@ -105,7 +105,7 @@ function openHref(aiId, url) {
  * The sheet: a header with back, title and close, a scrolling body and a footer for the main action.
  * show({ title, step, body, footer, back }) swaps the step and scrolls it to its top.
  */
-function sheet(tr) {
+export function sheet(tr) {
   const back = el("button", { type: "button", class: "cb-sheet-back", "aria-label": tr("חזרה") });
   const close = el("button", { type: "button", class: "cb-sheet-close", "aria-label": tr("סגירה") });
   const title = el("h3", { class: "cb-sheet-title", tabindex: "-1" });
@@ -169,7 +169,7 @@ function sheet(tr) {
 }
 
 /** A question with one answer (or several, with `multi`), as chips. */
-function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) {
+export function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) {
   const value = multi ? new Set(initial) : { v: initial };
   const buttons = options.map((o) => {
     const b = el("button", { type: "button", class: "cb-pill", role: multi ? null : "radio", "aria-pressed": multi ? "false" : null, "aria-checked": multi ? null : "false", text: tr(o.label) });
@@ -188,7 +188,7 @@ function choice(label, options, initial, { tr, multi = false, hint = "" } = {}) 
   return { node, get: () => (multi ? [...value] : value.v) };
 }
 
-const primary = (text, onClick, extra = {}) => {
+export const primary = (text, onClick, extra = {}) => {
   const b = el("button", { type: "button", class: "cb-primary", ...extra }, text);
   b.addEventListener("click", onClick);
   return b;
@@ -212,7 +212,7 @@ export function openPlanner(ctx) {
   const byYear = (y) => ctx.list.courses.filter((c) => c.year === y && offered(c));
   const sets = [
     { id: "starred", label: tr("הקורסים שסימנתי ({n})", { n: starred.length }), courses: starred },
-    ...[1, 2, 3].map((y) => ({ id: `y${y}`, label: tr("כל קורסי שנה {y} ({n})", { y: ["א'", "ב'", "ג'"][y - 1], n: byYear(y).length }), courses: byYear(y) })),
+    ...[1, 2, 3].map((y) => ({ id: `y${y}`, year: y, label: tr("הקורסים של שנה {y} לפי הידיעון", { y: ["א'", "ב'", "ג'"][y - 1] }), courses: byYear(y) })),
   ].filter((s) => s.courses.length);
   if (!sets.length) {
     ui.show({ title, body: [el("p", { class: "cb-sheet-lead", text: tr("אין קורסים בסמסטר הזה. סמנו ☆ קורסים ונסו שוב.") })] });
@@ -225,6 +225,7 @@ export function openPlanner(ctx) {
   const latest = choice("לסיים עד", [{ id: "", label: "לא משנה" }, { id: "14:00", label: "14:00" }, { id: "16:00", label: "16:00" }, { id: "18:00", label: "18:00" }], "", { tr });
   const shape = choice("איך השבוע?", [{ id: "compact", label: "מעט ימים, ארוכים" }, { id: "spread", label: "ימים קצרים" }, { id: "any", label: "לא משנה" }], "any", { tr });
   const gaps = choice("חלונות בין שיעורים", [{ id: "none", label: "בלי חלונות" }, { id: "lunch", label: "הפסקת צהריים" }, { id: "any", label: "לא משנה" }], "any", { tr });
+  const extras = choice("תגבורים וקבוצות עזר", [{ id: "no", label: "בלי" }, { id: "yes", label: "לשבץ אם מתאים" }], "no", { tr });
   const keep = Object.values(state.picks).some((g) => g.length)
     ? choice("קבוצות שכבר בחרתי", [{ id: "keep", label: "לשמור אותן" }, { id: "free", label: "לבחור מחדש" }], "keep", { tr }) : null;
   const notes = el("textarea", { class: "cb-field", rows: "2", maxlength: String(NOTES_MAX), placeholder: tr("עוד משהו? למשל: מרצה שאני מעדיף/ה, עבודה ביום שלישי בבוקר") });
@@ -236,7 +237,7 @@ export function openPlanner(ctx) {
       step: tr("שלב {n} מתוך 3", { n: 1 }),
       body: [
         el("p", { class: "cb-sheet-lead", text: tr("כמה שאלות קצרות, ואז הפרומפט מוכן לבינה המלאכותית שלכם. התשובה שלה חוזרת לכאן בלחיצה על \"ייבוא\".") }),
-        which.node, semester.node, blocked.node, earliest.node, latest.node, shape.node, gaps.node, keep && keep.node, notesField,
+        which.node, semester.node, blocked.node, earliest.node, latest.node, shape.node, gaps.node, extras.node, keep && keep.node, notesField,
       ],
       footer: [primary(tr("יצירת הפרומפט"), makePrompt)],
     });
@@ -245,7 +246,9 @@ export function openPlanner(ctx) {
   function makePrompt() {
     const set = sets.find((s) => s.id === which.get()) || sets[0];
     const sem = semester.get();
-    const courses = set.courses.filter((c) => c.groups.some((g) => inSemester(g, sem)));
+    // A year's courses are the ones its yearbook puts in this semester (others also run now, for retakes).
+    const courses = (set.year ? ctx.list.courses.filter((c) => c.year === set.year) : set.courses)
+      .filter((c) => c.groups.some((g) => inSemester(g, sem)) && (!set.year || !(c.plannedIn || []).length || c.plannedIn.includes(sem)));
     const keepList = keep && keep.get() === "keep"
       ? ctx.list.courses.flatMap((course) => course.groups.filter((g) => ctx.store.isPicked(course.code, g.group) && inSemester(g, sem)).map((group) => ({ course, group })))
       : [];
@@ -253,7 +256,7 @@ export function openPlanner(ctx) {
     const withKept = [...new Set([...courses, ...keepList.map((k) => k.course)])];
     const prompt = buildPrompt(withKept, {
       semester: sem, blockedDays: blocked.get(), earliest: earliest.get(), latest: latest.get(),
-      shape: shape.get(), gaps: gaps.get(), notes: notes.value.trim().slice(0, NOTES_MAX), keep: keepList,
+      shape: shape.get(), gaps: gaps.get(), notes: notes.value.trim().slice(0, NOTES_MAX), keep: keepList, extras: extras.get() === "yes",
     }, { scannedAt: ctx.list.scannedAt, en });
     ready(prompt, withKept);
   }
@@ -367,7 +370,7 @@ function importStep(ui, ctx, back) {
       return Boolean(group) && group.semester === semester;
     };
     pending = () => {
-      ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers });
+      ctx.store.importPicks(parsed.picks, { replace: replace.checked, semester, starred: parsed.starred, covers, custom: parsed.custom });
       ui.dialog.close();
       ctx.onImported && ctx.onImported(semester, chosen.length);
     };

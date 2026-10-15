@@ -1585,7 +1585,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     day.setHours(clock.getHours(), clock.getMinutes());
     return day;
   };
-  const courseHelpers = () => ({ tr: courseTr, en: EN, rank: rankEntries, searchDoc, navigate: navigateTo, now: courseNow, terms: (window.SITE_DATA.calendar || {}).terms || [] });
+  const courseHelpers = () => ({ tr: courseTr, en: EN, rank: rankEntries, searchDoc, navigate: navigateTo, now: courseNow, terms: (window.SITE_DATA.calendar || {}).terms || [], events: (window.SITE_DATA.calendar || {}).events || [] });
   function courseBrowserNode() {
     const node = el("section", { class: "course-browser", id: "course-browser", "aria-label": tr("הקורסים") });
     import("./course-browser.js")

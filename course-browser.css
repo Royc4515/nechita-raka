@@ -172,6 +172,7 @@
 .cb-status-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--s1) var(--s4); margin-block: var(--s4) var(--s2); }
 .cb-status { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
 .cb-note { font-size: var(--fs-small); color: var(--faint); }
+.cb-note-link { color: var(--muted); text-decoration: underline dotted; text-underline-offset: .2em; }
 
 /* ---------- year sections and the list ---------- */
 .cb-section + .cb-section, .cb-section + .cb-more { margin-block-start: var(--s6); }
@@ -280,3 +281,33 @@
 .course-static { columns: 2 16em; padding-inline-start: var(--s5); }
 
 @media (prefers-reduced-motion: reduce) { .cb-chevron { transition: none; } }
+
+/* ---------- manual time for a group with none (course-card.js) ---------- */
+.cb-custom-note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.cb-custom-tag { font-size: .8125rem; font-weight: 600; color: var(--accent-text); background: var(--accent-soft); border-radius: 6px; padding: 1px 8px; }
+.cb-time-form { display: grid; gap: var(--s2); margin-block: var(--s2); padding: var(--s3); border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+.cb-time-fields { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: var(--s2); }
+.cb-time-fields label { display: grid; gap: 2px; font-size: .8125rem; color: var(--muted); }
+.cb-time-input { inline-size: 100%; min-block-size: 44px; padding-inline: var(--s2); border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; font-size: 16px; }
+.cb-time-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.cb-small-primary { min-block-size: 44px; padding-inline: var(--s4); border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 600; cursor: pointer; }
+.cb-link.is-danger { color: var(--cb-danger); }
+
+/* ---------- add to calendar (course-calendar-dialog.js) ---------- */
+.cs-calendar-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); min-block-size: 48px; border: 1px solid var(--border-strong); border-radius: var(--r); background: var(--surface); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+@media (hover: hover) { .cs-calendar-btn:hover { background: var(--surface-2); } }
+.cs-calendar-icon { inline-size: 18px; block-size: 18px; background: var(--accent-text); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2.5'/%3E%3Cpath d='M4 10h16M9 3v4M15 3v4M12 13v4M10 15h4'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='4' y='5' width='16' height='15' rx='2.5'/%3E%3Cpath d='M4 10h16M9 3v4M15 3v4M12 13v4M10 15h4'/%3E%3C/svg%3E") center / contain no-repeat; }
+.cb-cal-section { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.cb-cal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-block-size: 56px; padding-inline: var(--s4); background: var(--bg); }
+.cb-cal-head h4 { font-size: var(--fs-meta); font-weight: 600; }
+.cb-cal-body { display: grid; gap: var(--s4); padding: var(--s4); }
+.cb-cal-section.is-off .cb-cal-body { display: none; }
+.cb-switch { appearance: none; -webkit-appearance: none; position: relative; flex: none; inline-size: 48px; block-size: 28px; margin: 0; border-radius: 999px; background: var(--border-strong); cursor: pointer; transition: background-color .15s; }
+.cb-switch::after { content: ""; position: absolute; inset-block-start: 3px; inset-inline-start: 3px; inline-size: 22px; block-size: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / 25%); transition: inset-inline-start .15s; }
+.cb-switch:checked { background: var(--accent); }
+.cb-switch:checked::after { inset-inline-start: 23px; }
+.cb-switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .cb-switch, .cb-switch::after { transition: none; } }
+.cb-cal-summary { display: grid; gap: 2px; padding: var(--s3) var(--s4); border-radius: 14px; background: var(--accent-soft); }
+.cb-cal-total { font-weight: 600; color: var(--accent-text); }
+.cb-cal-split { font-size: .8125rem; color: var(--muted); }

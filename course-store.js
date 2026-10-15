@@ -5,7 +5,13 @@
 */
 const KEY = "nr-courses";
 
-const EMPTY = { starred: [], picks: {}, year: "all" };
+const EMPTY = { starred: [], picks: {}, custom: {}, year: "all" };
+const DAY_NAMES = ["א'", "ב'", "ג'", "ד'", "ה'", "ו'"];
+const isTime = (t) => typeof t === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(t);
+/** A manual meeting is kept only if it is a real weekday with a start before its end. */
+const cleanSlot = (s) => (s && DAY_NAMES.includes(s.day) && isTime(s.start) && isTime(s.end) && s.start < s.end
+  ? { day: s.day, start: s.start, end: s.end, building: typeof s.building === "string" ? s.building.slice(0, 60) : "", room: "", custom: true }
+  : null);
 const strings = (list) => (Array.isArray(list) ? list.filter((x) => typeof x === "string") : []);
 
 /** Saved state, cleaned: anything malformed (an old version, a hand edit) is dropped, never trusted. */
@@ -16,9 +22,13 @@ function read() {
     const picks = raw.picks && typeof raw.picks === "object" && !Array.isArray(raw.picks)
       ? Object.fromEntries(Object.entries(raw.picks).map(([code, groups]) => [code, strings(groups)]))
       : {};
+    const custom = raw.custom && typeof raw.custom === "object" && !Array.isArray(raw.custom)
+      ? Object.fromEntries(Object.entries(raw.custom).map(([key, slots]) => [key, (Array.isArray(slots) ? slots : []).map(cleanSlot).filter(Boolean)]).filter(([, slots]) => slots.length))
+      : {};
     return {
       starred: strings(raw.starred),
       picks,
+      custom,
       year: typeof raw.year === "string" ? raw.year : "all",
       ...(typeof raw.semester === "string" ? { semester: raw.semester } : {}),
       ...(typeof raw.scan === "string" ? { scan: raw.scan } : {}),
@@ -89,15 +99,45 @@ export function createStore() {
      * covers are dropped first: `covers(code, group)` says which (this semester's, or the named courses');
      * picks it doesn't cover, like the other semester's, stay. Without `replace`, picks are only added.
      */
-    importPicks(picks, { replace = true, semester = "", starred: extra = [], covers = () => true } = {}) {
+    importPicks(picks, { replace = true, semester = "", starred: extra = [], covers = () => true, custom: extraCustom = {} } = {}) {
       const codes = Object.keys(picks);
       const kept = Object.fromEntries(Object.entries(state.picks).map(([code, groups]) => [code, replace ? groups.filter((g) => !covers(code, g)) : groups]));
       const merged = { ...kept };
       for (const [code, groups] of Object.entries(picks)) merged[code] = [...new Set([...(merged[code] || []), ...groups])];
       const starred = [...new Set([...state.starred, ...codes, ...extra])];
-      save({ ...state, starred, picks: merged, ...(semester ? { semester } : {}) });
+      // Manual times from a backup, each checked like one typed here.
+      const custom = { ...(state.custom || {}) };
+      for (const [key, slots] of Object.entries(extraCustom || {})) {
+        const clean = (Array.isArray(slots) ? slots : []).map(cleanSlot).filter(Boolean);
+        if (clean.length) custom[key] = clean;
+      }
+      save({ ...state, starred, picks: merged, custom, ...(semester ? { semester } : {}) });
+    },
+    /** A time added by hand to a group the catalog has none for; `slots` null or [] removes it. */
+    customSlots: (code, group) => (state.custom || {})[`${code}|${group}`] || [],
+    setCustom(code, group, slots) {
+      const key = `${code}|${group}`;
+      const clean = (slots || []).map(cleanSlot).filter(Boolean);
+      const custom = { ...(state.custom || {}) };
+      if (clean.length) custom[key] = clean; else delete custom[key];
+      save({ ...state, custom });
     },
     setYear: (year) => save({ ...state, year }),
     setSemester: (semester) => save({ ...state, semester }),
   };
+}
+
+/**
+ * The courses with the times a student added by hand: a group with no time in the catalog takes its manual
+ * meetings (marked custom), so the card, the week, clashes and the calendar treat it like any other.
+ * Returns new objects; the catalog list is never changed.
+ */
+export function applyCustom(courses, custom) {
+  if (!custom || !Object.keys(custom).length) return courses;
+  return courses.map((course) => {
+    // Only groups the catalog has no time for: once a rescan brings a real time, the catalog wins.
+    const fills = (g) => custom[`${course.code}|${g.group}`] && !(g.slots || []).some((s) => s.day && s.start);
+    if (!course.groups.some(fills)) return course;
+    return { ...course, groups: course.groups.map((g) => (fills(g) ? { ...g, slots: custom[`${course.code}|${g.group}`], customTime: true } : g)) };
+  });
 }
