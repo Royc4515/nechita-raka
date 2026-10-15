@@ -35,6 +35,12 @@ test("a group carries its weekly meetings, room and teacher; exam dates are ISO,
   assert.equal(byCode.get("89110").exams[0].semester, "סמסטר א'");
 });
 
+test("a course's points add its lecture and its exercise, each counted once", () => {
+  assert.deepEqual(byCode.get("895656").points, [5]); // מבוא לקריפטוגרפיה: 3 + 2
+  assert.deepEqual(byCode.get("89110").points, [5]); // two lecture groups and two exercise groups
+  assert.deepEqual(byCode.get("89200").points, [3]); // לוגיקה מתמטית: 2 + 1
+});
+
 test("a group that meets on two days becomes two meetings, each in its own building", () => {
   const discrete = byCode.get("891195").groups.find((g) => g.group === "01");
   assert.deepEqual(discrete.slots.map((s) => [s.day, s.start, s.building]), [["ב'", "09:00", "יהדות 402"], ["ג'", "10:00", "חברה 905"]]);
