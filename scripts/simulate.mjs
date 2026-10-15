@@ -1,17 +1,17 @@
 // Sends each persona's seed questions to a chat deployment, one fresh conversation per question,
 // and writes one transcript per persona plus a grades sheet for QA.
-// Run: node scripts/simulate.mjs --target <url> --persona <id|all> --out <dir> [--delay-ms 1000] [--limit N]
+// Run: node scripts/simulate.mjs --target <url> --persona <id|all> --out <dir> [--delay-ms 20000] [--limit N]
 // Never against production: the target must be a preview deployment or localhost
 // (management/simulations/README.md). No dependencies beyond Node's fetch.
 // Env: VERCEL_AUTOMATION_BYPASS_SECRET (optional) gets a protected preview deployment to answer.
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { MIN_DELAY_MS, askOnce, assertNotProduction } from "./simulate/chat.mjs";
+import { DEFAULT_DELAY_MS, MIN_DELAY_MS, askWithBackoff, assertNotProduction } from "./simulate/chat.mjs";
 import { listPersonaIds, loadPersona } from "./simulate/personas.mjs";
-import { gradeRows, gradesHeader, renderTranscript, tally } from "./simulate/transcript.mjs";
+import { gradeRows, gradesHeader, redactGroupLinks, renderTranscript, tally } from "./simulate/transcript.mjs";
 
-const USAGE = "usage: node scripts/simulate.mjs --target <url> --persona <id|all> --out <dir> [--delay-ms 1000] [--limit N]";
+const USAGE = `usage: node scripts/simulate.mjs --target <url> --persona <id|all> --out <dir> [--delay-ms ${DEFAULT_DELAY_MS}] [--limit N]`;
 
 function readOptions(argv) {
   const { values } = parseArgs({
@@ -20,7 +20,7 @@ function readOptions(argv) {
       target: { type: "string" },
       persona: { type: "string" },
       out: { type: "string" },
-      "delay-ms": { type: "string", default: String(MIN_DELAY_MS) },
+      "delay-ms": { type: "string", default: String(DEFAULT_DELAY_MS) },
       limit: { type: "string" },
     },
     strict: true,
@@ -46,8 +46,9 @@ async function runPersona(persona, run, { delayMs, limit }) {
   const results = [];
   for (const [i, q] of questions.entries()) {
     if (i > 0) await sleep(delayMs);
-    const reply = await askOnce(run.target, persona, q.text, { headers: bypassHeaders() });
-    console.log(`[${persona.id}] ${q.n}/${questions.length} ${reply.outcome}${reply.detail ? ` (${reply.detail})` : ""}`);
+    // A `busy` answer (the provider's per-minute budget) waits a minute and tries again before it counts.
+    const reply = await askWithBackoff(run.target, persona, q.text, { headers: bypassHeaders() });
+    console.log(redactGroupLinks(`[${persona.id}] ${q.n}/${questions.length} ${reply.outcome}${reply.detail ? ` (${reply.detail})` : ""}`));
     results.push({ n: q.n, input: q.text, note: q.note, ...reply });
   }
   return results;

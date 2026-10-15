@@ -5,6 +5,7 @@
  * rewritten) or { ok: false, reason } to replace the answer with a canned reply.
  * ctx: { canary, allowedUrls, allowedEmails, chunkIds }
  */
+import { PHONE_NOTE, replacePhones } from "./phones.js";
 
 const pass = (draft) => ({ ok: true, draft });
 const rewrite = (draft, answer) => ({ ok: true, draft: { ...draft, answer } });
@@ -16,20 +17,17 @@ export const canaryHook = {
 };
 
 /**
- * 9+ digits written as one number: a phone number, never a date or a count. Models also write
- * Unicode hyphens and dashes ("03\u20115317000"), which styleHook later turns into "-", so those
- * count as separators. Dots don't: Israeli numbers aren't written with them, and with dots a date
- * range ("14.10-28.10.2026") read as one long number.
+ * The facts carry no phone numbers (phones.js hides them), so a number here is one the model
+ * invented: a long one becomes "ask in the WhatsApp group", a short star number the facts' own
+ * note. Digits inside a link are left to linkAllowlistHook.
  */
-const PHONE = /\+?\(?\d[\d\s()\-\u2010-\u2015\u2212]{7,}\d/g;
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
 const ASK_ROY = "קבוצת הוואטסאפ של נחיתה רכה";
 
 export const piiHook = {
   name: "pii",
   apply: (draft, { allowedEmails }) => {
-    const answer = draft.answer
-      .replace(PHONE, (m) => (m.replace(/\D/g, "").length >= 9 ? ASK_ROY : m))
+    const answer = replacePhones(draft.answer, { long: ASK_ROY, star: PHONE_NOTE })
       .replace(EMAIL, (m) => (allowedEmails.includes(m.toLowerCase()) ? m : ASK_ROY));
     return answer === draft.answer ? pass(draft) : rewrite(draft, answer);
   },

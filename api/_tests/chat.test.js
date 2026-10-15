@@ -5,6 +5,7 @@ import { handleChat } from "../_lib/chat/handler.js";
 import { cannedReply, runOutputHooks } from "../_lib/chat/hooks.js";
 import { parseHistory, retrievalQuery } from "../_lib/chat/history.js";
 import { allowlists, buildChunks, buildCore, loadSiteData } from "../_lib/chat/knowledge.js";
+import { PHONE_NOTE, hidePhones } from "../_lib/chat/phones.js";
 import { clientIp, limiterFor, PgChatLimiter, GLOBAL_DAILY, PER_VISITOR_DAILY } from "../_lib/chat/limiter.js";
 import { FallbackChain, OpenAICompatibleProvider } from "../_lib/chat/llm.js";
 import { buildRequest, canaryFor, parseDraft, systemPrompt } from "../_lib/chat/prompt.js";
@@ -79,6 +80,39 @@ test("parseDraft accepts the schema and rejects junk", () => {
   assert.equal(parseDraft('{"answer":"  "}'), null);
 });
 
+// ---------- phone numbers never reach the model ----------
+
+test("the model never sees phone numbers: the facts say where to find them instead", () => {
+  const facts = chunks.map((c) => c.text).join("\n");
+  const raw = JSON.stringify(data);
+  assert.match(raw, /\*9392/, "data.js still has the number the site shows");
+  assert.match(raw, /03-5318866/);
+  assert.doesNotMatch(facts, /\*\s?\d{3,5}(?!\d)|9392|5317000|5318866|6171988/);
+  assert.match(facts, new RegExp(PHONE_NOTE.replace(/[()]/g, "\$&")));
+  // Dates stay, and so do long numbers inside links.
+  assert.match(facts, /\d{1,2}\.\d{1,2}\.20\d\d/);
+  const appLinks = raw.match(/https:\/\/apps\.apple\.com\/[^"\s]+\/id\d{6,}/g) ?? [];
+  assert.ok(appLinks.length > 0, "data.js has an App Store link to test with");
+  for (const url of appLinks) assert.ok(facts.includes(url), url);
+});
+
+test("hidePhones keeps the sentence readable and collapses alternatives", () => {
+  assert.equal(hidePhones("הטלפון של המחלקה: 03-5318866."), `הטלפון של המחלקה: ${PHONE_NOTE}.`);
+  assert.equal(hidePhones("מרכז שירות וגיוס: *9392 או 03-5317000."), `מרכז שירות וגיוס: ${PHONE_NOTE}.`);
+  assert.equal(hidePhones("וואטסאפ 052-6171988, טלפון *9392 או 03-5317000, בימים א'–ה'"), `וואטסאפ ${PHONE_NOTE}, טלפון ${PHONE_NOTE}, בימים א'–ה'`);
+  assert.equal(hidePhones("*9392 שלוחה 3 בבוקר"), `${PHONE_NOTE} בבוקר`);
+  for (const keep of ["בין 14.10-28.10.2026", "https://wa.me/972501234567", "https://apps.apple.com/il/app/x/id1130916736", "3*100 זה 300", "**2026** היא השנה", "*2026* היא השנה", "בניין 503, חדר 12", "2026\n2027\n2028 2029"]) {
+    assert.equal(hidePhones(keep), keep);
+  }
+  // Parentheses stay balanced, and a number the model glues to a word is still a phone.
+  assert.equal(hidePhones("(03) 5317000 או (03-5317000)"), `${PHONE_NOTE} או (${PHONE_NOTE})`);
+  assert.equal(hidePhones("tel0501234567"), `tel${PHONE_NOTE}`);
+});
+
+test("the prompt tells the model what the phone note means", () => {
+  assert.match(systemPrompt("bit", "core", canaryFor(SALT)), /מספר הטלפון מופיע באתר/);
+});
+
 // ---------- output hooks ----------
 
 const draft = (answer, sources = []) => ({ answer, inScope: true, sources });
@@ -105,6 +139,23 @@ test("hooks remove phone numbers written with Unicode hyphens or dashes", () => 
     const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
     assert.ok(/28\.10\.2026|12\.10\.2026/.test(out.draft.answer), text);
   }
+});
+
+test("hooks remove short star service numbers but keep bold, bullets and multiplication", () => {
+  for (const text of ["חייגו למרכז השירות *9392 או לקבוצה", "חייגו ל- *9392", "התקשרו ל* 2828"]) {
+    const out = runOutputHooks(draft(text), hooksCtx);
+    assert.doesNotMatch(out.draft.answer, /9392|2828/, text);
+  }
+  for (const [text, keep] of [["**2026** היא השנה", "2026"], ["*2026* היא השנה", "2026"], ["* 2026 היא השנה", "2026"], ["3*100 זה 300", "3*100"]]) {
+    const out = runOutputHooks(draft(text), hooksCtx);
+    assert.ok(out.draft.answer.includes(keep) && !out.draft.answer.includes("מספר הטלפון"), `${text} -> ${out.draft.answer}`);
+  }
+});
+
+test("hooks keep long numbers that are part of a link", () => {
+  const url = JSON.stringify(data).match(/https:\/\/apps\.apple\.com\/[^"\s]+\/id\d{6,}/)[0];
+  const out = runOutputHooks(draft(`האפליקציה לאייפון: ${url}`), hooksCtx);
+  assert.ok(out.draft.answer.includes(url), out.draft.answer);
 });
 
 test("hooks keep data.js links, cut others, and fix style", () => {
