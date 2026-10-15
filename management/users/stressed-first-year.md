@@ -2,6 +2,8 @@
 
 Faculty: CS, first year. Language: Hebrew, student slang, typos, no punctuation, sometimes a voice-message-style wall of text.
 
+Mascot: bit.
+
 ## Who
 
 Started two days ago. Has three required courses whose groups overlap, got a personal Inbar window at an inconvenient hour, and heard from the group that "everything fills up". Does not know the difference between Inbar, Lemida and 365. Asks several things in one message and gets more anxious when the answer is long.

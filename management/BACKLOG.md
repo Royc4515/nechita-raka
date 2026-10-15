@@ -12,8 +12,8 @@ Columns: S = students, U = urgency, E = effort.
 | Content split shared/ and faculties/cs (PR 2) | 5 | 3 | 4 | 3.8 | planned | Byte-identical merged `data.js`. |
 | Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | planned | Catalog, yearbook, categories, hero variant, synonyms, eggs. |
 | Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | planned | `FACULTY` env, tests parametrized, placeholder `faculties/neuro/`. |
-| Simulation script and `chat-local` launch config | 3 | 2 | 2 | 3.0 | planned | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. |
-| Chat daily cap as an env override for previews | 2 | 2 | 1 | 4.0 | planned | `GLOBAL_DAILY` is a constant in `api/_lib/chat/limiter.js`. |
+| Simulation script | 3 | 2 | 2 | 3.0 | in review | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
+| Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | in review | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
 | Weekly report also written to a file the board can read | 2 | 1 | 2 | 1.0 | idea | Today it is only an email; the board needs Roy to paste it. |
 
 ## CS

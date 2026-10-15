@@ -20,7 +20,7 @@ export function defaultChatDeps() {
   return {
     config: readChatConfig(),
     knowledge: getKnowledge(),
-    limiter: (config) => limiterFor(config.databaseUrl, config.salt),
+    limiter: (config) => limiterFor(config.databaseUrl, config.salt, { perVisitorDaily: config.perVisitorDaily, globalDaily: config.globalDaily }),
     stats: (config) => statsStoreFor(config.databaseUrl),
     guard: (config) =>
       config.guardModel ? new PromptGuard(new OpenAICompatibleProvider(config.guardModel, config.groqApiKey, { timeoutMs: 4_000 })) : null,

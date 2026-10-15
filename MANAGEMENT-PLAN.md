@@ -151,6 +151,6 @@ Still open: the weekly agent budget (low, medium, high) and whether the agents k
 1. Decide the answers to the questions and update this document.
 2. `management/` with a roadmap, an empty backlog per faculty, a decision log, and the first 5 personas.
 3. `.claude/agents/` with the nine roles (thin wrappers over ECC agents), and the `/board` command.
-4. `scripts/simulate.mjs` and a `chat-local` configuration in `.claude/launch.json` (local server plus separate env).
+4. `scripts/simulate.mjs`, the chat caps as env overrides for previews, and the local-server procedure in `management/simulations/README.md` (`.claude/launch.json` is gitignored and machine-specific).
 5. First board meeting on the next weekly report; output: a prioritized CS backlog and the list of content missing for neuro.
 6. After two weeks: check what was useful and what was theater, and cut roles if needed.

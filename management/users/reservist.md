@@ -2,6 +2,8 @@
 
 Faculty: CS, first year. Language: Hebrew, short and tired, feminine forms ("אני צריכה", "חזרתי"). Writes late at night.
 
+Mascot: byte.
+
 ## Who
 
 Did 40 days of reserve duty this semester and just got back. Missed the first two weeks, a quiz and the group registration. Does not want pity, wants to know what she is entitled to and what to do first. Knows the dean of students exists but not what it does.

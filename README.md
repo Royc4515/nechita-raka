@@ -189,6 +189,7 @@ node scripts/check-data.mjs
 | `DATABASE_URL` | נוסף לבד כשמחברים את Neon בלשונית Storage. |
 | `CHAT_SALT` | מחרוזת אקראית של 64 תווים, למונה המוצפן. |
 | `CHAT_ENABLED` | `false` מכבה את הצ'אט מיד (אחרי Redeploy). |
+| `CHAT_GLOBAL_DAILY`, `CHAT_PER_VISITOR_DAILY` | לא חובה. המגבלה היומית של כל האתר (ברירת מחדל 150) ושל מבקר אחד (ברירת מחדל 15). מספר שלם חיובי; כל ערך אחר מתעלמים ממנו. מיועד רק לסביבת Preview, כדי שסימולציה (`management/simulations/`) תיכנס ביום אחד. ב-Production משאירים ריק. |
 
 לכבות מיד: לבטל את המפתח ב-console.groq.com. הצ'אט יענה שהוא לא זמין, ושאר האתר ממשיך לעבוד.
 

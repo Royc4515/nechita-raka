@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { readChatConfig } from "../_lib/chat/config.js";
+import { dailyCap, readChatConfig } from "../_lib/chat/config.js";
 import { handleChat } from "../_lib/chat/handler.js";
 import { cannedReply, runOutputHooks } from "../_lib/chat/hooks.js";
 import { parseHistory, retrievalQuery } from "../_lib/chat/history.js";
@@ -147,6 +147,16 @@ test("config is off without all secrets, or with the kill switch", () => {
   assert.equal(readChatConfig({ ...env, CHAT_ENABLED: "false" }), null);
 });
 
+test("CHAT_GLOBAL_DAILY and CHAT_PER_VISITOR_DAILY override the caps only as positive integers", () => {
+  const env = { GROQ_API_KEY: "k", DATABASE_URL: "postgres://x", CHAT_SALT: SALT };
+  assert.equal(readChatConfig(env).globalDaily, GLOBAL_DAILY);
+  assert.equal(readChatConfig(env).perVisitorDaily, PER_VISITOR_DAILY);
+  const raised = readChatConfig({ ...env, CHAT_GLOBAL_DAILY: " 600 ", CHAT_PER_VISITOR_DAILY: "100" });
+  assert.equal(raised.globalDaily, 600);
+  assert.equal(raised.perVisitorDaily, 100);
+  for (const bad of ["0", "-5", "1.5", "abc", "", "1e3", "007", undefined]) assert.equal(dailyCap(bad, GLOBAL_DAILY), GLOBAL_DAILY, JSON.stringify(bad));
+});
+
 test("client IP comes from x-real-ip, else Vercel's x-forwarded-for", () => {
   assert.equal(clientIp(new Request("https://a.b", { headers: { "x-real-ip": "1.1.1.1", "x-forwarded-for": "9.9.9.9" } })), "1.1.1.1");
   assert.equal(clientIp(new Request("https://a.b", { headers: { "x-forwarded-for": "2.2.2.2" } })), "2.2.2.2");
@@ -180,6 +190,11 @@ test("limiter counts per visitor and per site", async () => {
   assert.equal(await limiter.take("1.1.1.1", "2026-10-20"), "rate_limited");
   counts.set("global:2026-10-20", GLOBAL_DAILY);
   assert.equal(await limiter.take("2.2.2.2", "2026-10-20"), "daily_cap");
+  // Raised caps (the CHAT_*_DAILY overrides on a preview) let the same day continue.
+  // 1.1.1.1 already sent 16 (15 ok, one refused), so a cap of 17 allows exactly one more.
+  const roomy = new PgChatLimiter(query, SALT, { perVisitorDaily: PER_VISITOR_DAILY + 2, globalDaily: GLOBAL_DAILY + 10 });
+  assert.equal(await roomy.take("1.1.1.1", "2026-10-20"), "ok");
+  assert.equal(await roomy.take("1.1.1.1", "2026-10-20"), "rate_limited");
 });
 
 test("limiter keeps daily totals and only clears visitor hashes", async () => {
