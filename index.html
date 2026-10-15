@@ -169,9 +169,13 @@ main { padding-block: var(--s2) var(--s8); }
 .step input::before { content: attr(data-n); }
 .step input:checked { background: var(--accent); border-color: var(--accent); }
 .step input:checked::before { content: ""; inline-size: 18px; block-size: 18px; background: var(--accent-ink); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / contain no-repeat; }
-.step label { padding-block: 9px; cursor: pointer; }
+.step label { display: block; padding-block: 9px; cursor: pointer; }
 .step:has(input:checked) label { color: var(--faint); }
-.steps-progress { margin-block-start: var(--s3); color: var(--muted); font-size: var(--fs-small); }
+.step-body { min-inline-size: 0; }
+.step-links { display: flex; flex-wrap: wrap; gap: var(--s2); padding-block-end: var(--s1); }
+.step-links .btn { min-block-size: 44px; padding-inline: var(--s4); font-size: var(--fs-small); }
+.steps-progress { margin-block-start: var(--s6); color: var(--muted); font-size: var(--fs-small); }
+.steps-progress + .steps { margin-block-start: var(--s3); }
 .guide-map { margin-block-start: var(--s5); }
 .guide-map iframe { display: block; inline-size: 100%; block-size: min(70vh, 520px); border: 0; border-radius: var(--r-lg); background: var(--surface-2); }
 .guide-map .actions { margin-block-start: 0; }
@@ -1548,7 +1552,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const linkButton = (link, text) => link.guide
     ? el("a", { class: "btn", href: guideHref(link.guide), text: link.label })
     : openLink(link.url, link.label, text);
-  function stepsList(guide) {
+  // The check-off hint comes first, so it is read before the steps. guide.stepLinks maps a step number (1-based) to buttons shown under that step.
+  function stepsList(guide, itemsById) {
     let checked = guideProgress(guide);
     const progressText = el("span");
     const doneMascot = setMascot(el("img", { class: "mascot done-mascot", alt: "", decoding: "async" }), "celebrate", 112);
@@ -1569,10 +1574,13 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         updateProgress();
         refreshGuideCard(guide);
       });
-      return el("li", { class: "step" }, box, el("label", { for: id }, bidiText(step)));
+      const stepLinks = resolveLinks({ links: (guide.stepLinks || {})[i + 1] }, itemsById);
+      return el("li", { class: "step" }, box, el("div", { class: "step-body" },
+        el("label", { for: id }, bidiText(step)),
+        stepLinks.length ? el("div", { class: "step-links" }, ...stepLinks.map((l) => linkButton(l, l.label))) : null));
     }));
     updateProgress();
-    return [list, progress];
+    return [progress, list];
   }
   const academicYearText = (year) => (year ? tr(", לשנת הלימודים {year}", { year }) : "");
   /** An embedded map for the guide (My Maps, the campus navigation app). The iframe is heavy and third-party, so it loads only when asked for. */
@@ -1635,7 +1643,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
       guideMap(guide),
       guide.courses ? courseBrowserNode() : null,
-      ...stepsList(guide),
+      ...stepsList(guide, itemsById),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
         el("h3", { id: "tips-h", text: tr("כדאי לדעת") }),

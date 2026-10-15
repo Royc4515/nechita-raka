@@ -120,6 +120,14 @@ for (const g of data.guides || []) {
   else g.steps.forEach((s, i) => { if (!isText(s)) error(`בצעד ${i + 1} של "${where}" אין טקסט.`, where); });
   if (g.tips != null && !isList(g.tips)) error(`ב"${where}" השדה tips צריך להיות רשימה.`, where);
   checkLinks(g.links, `מדריך "${where}"`, where);
+  if (g.stepLinks != null) {
+    if (typeof g.stepLinks !== "object" || Array.isArray(g.stepLinks)) error(`ב"${where}" השדה stepLinks צריך להיות { מספר צעד: [קישורים] }.`, where);
+    else for (const [n, stepLinks] of Object.entries(g.stepLinks)) {
+      const number = Number(n);
+      if (!Number.isInteger(number) || number < 1 || number > (g.steps || []).length) error(`ב-stepLinks של "${where}" אין צעד ${n}. מספרים את הצעדים מ-1.`, where);
+      checkLinks(stepLinks, `צעד ${n} של "${where}"`, where);
+    }
+  }
   if (g.map != null && (!isHttps(g.map.url) || !isHttps(g.map.embed))) error(`במדריך "${where}" ל-map צריך url ו-embed שמתחילים ב-https://.`, where);
   for (const src of g.sources || []) if (!isHttps(src.url)) error(`מקור עם כתובת לא תקינה במדריך "${where}".`, src.label || where);
   if (g.courses != null && g.courses !== true) error(`במדריך "${where}" השדה courses הוא true או שלא כותבים אותו.`, where);

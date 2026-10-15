@@ -211,7 +211,9 @@ function coursesHtml(courses) {
 function guideViewHtml(guide, items, year, courses = null) {
   const steps = guide.steps.map((step, i) => {
     const id = `step-${guide.id}-${i}`;
-    return `<li class="step"><input type="checkbox" id="${id}" data-n="${String(i + 1).padStart(2, "0")}" aria-label="צעד ${i + 1}"><label for="${id}">${bidi(step)}</label></li>`;
+    const stepLinks = resolveLinks((guide.stepLinks || {})[i + 1], items);
+    const buttons = stepLinks.length ? `<div class="step-links">${stepLinks.map((l) => linkButton(l, l.label)).join("")}</div>` : "";
+    return `<li class="step"><input type="checkbox" id="${id}" data-n="${String(i + 1).padStart(2, "0")}" aria-label="צעד ${i + 1}"><div class="step-body"><label for="${id}">${bidi(step)}</label>${buttons}</div></li>`;
   }).join("");
   const tips = guide.tips && guide.tips.length
     ? `<section class="tips" aria-labelledby="tips-h"><h3 id="tips-h">כדאי לדעת</h3><ul>${guide.tips.map((t) => `<li>${bidi(t)}</li>`).join("")}</ul></section>`
@@ -226,8 +228,8 @@ function guideViewHtml(guide, items, year, courses = null) {
     guide.map && isSafeUrl(guide.map.url) && isSafeUrl(guide.map.embed)
       ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, guide.map.label || "פתיחה בגוגל מפות")}</div></section>` : "",
     guide.courses ? coursesHtml(courses) : "",
-    `<ol class="steps">${steps}</ol>`,
     `<p class="steps-progress"><span>אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.</span></p>`,
+    `<ol class="steps">${steps}</ol>`,
     tips,
     links.length ? `<div class="actions">${links.map((l) => linkButton(l, l.label)).join("")}</div>` : "",
     sources.length ? sourceLine(sources, checked) : "",
