@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { buildCourseChunks, courseUrl, loadCourseChunks } from "../_lib/chat/courses.js";
 import { SITE_URL } from "../_lib/chat/knowledge.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
-import { buildCourses, ELECTIVE, loadCourses } from "../_lib/courses/model.js";
+import { buildCourses, CATEGORIES, loadCourses } from "../_lib/courses/model.js";
 
 const shaped = loadCourses();
 const byCode = new Map(shaped.courses.map((c) => [c.code, c]));
@@ -17,12 +17,25 @@ test("every course code in the catalog becomes one course, with the scan date", 
   assert.equal(shaped.scannedAt, "2026-10-14");
 });
 
-test("the yearbook gives first-year courses year 1 and its elective groups 'elective'", () => {
-  assert.equal(byCode.get("89110").year, 1); // מבוא למדעי המחשב
+test("the CS yearbook gives each course its year, and the year list drives course.year", () => {
+  assert.deepEqual(byCode.get("89110").categories, ["1"]); // מבוא למדעי המחשב
+  assert.equal(byCode.get("89110").year, 1);
   assert.equal(byCode.get("891200").year, 1); // מבני נתונים
   assert.equal(byCode.get("89220").year, 2); // אלגוריתמים 1
-  assert.equal(byCode.get("896885").year, ELECTIVE); // מודלי שפה גדולים
-  assert.equal(byCode.get("89005").year, null); // not in the yearbook
+  assert.equal(byCode.get("891111").year, 2); // תכנות מונחה עצמים
+  assert.deepEqual(byCode.get("892322").categories, ["3"]); // אלגוריתמים מתקדמים
+  assert.deepEqual(byCode.get("89005").categories, []); // not in the yearbook
+  assert.equal(byCode.get("89005").year, null);
+});
+
+test("a course listed in several parts of the yearbook carries every one of them", () => {
+  assert.deepEqual(byCode.get("895656").categories, ["cluster2", "ai"]); // מבוא לקריפטוגרפיה
+  assert.deepEqual(byCode.get("893210").categories, ["cluster1", "ai"]); // תכנות מערכות מתקדם
+  assert.deepEqual(byCode.get("896877").categories, ["complement", "ai"]); // דיפ לרנינג
+  assert.deepEqual(byCode.get("89200").categories, ["complement"]); // לוגיקה מתמטית
+  assert.deepEqual(byCode.get("892512").categories, ["ai"]); // AI track only
+  const known = new Set(CATEGORIES.map((c) => c.id));
+  for (const c of shaped.courses) for (const id of c.categories) assert.ok(known.has(id), `${c.code}: ${id}`);
 });
 
 test("a group carries its weekly meetings, room and teacher; exam dates are ISO, sorted and tied to a semester", () => {
@@ -70,6 +83,7 @@ test("a year-long semester reads as two semesters, and a missing yearbook only d
   };
   const [course] = buildCourses(catalog).courses;
   assert.equal(course.year, null);
+  assert.deepEqual(course.categories, []);
   assert.equal(course.groups[0].semester, "סמסטר א', סמסטר ב'");
   assert.equal(course.groups[0].teachers, "א, ב");
   assert.deepEqual(buildCourses({}), { scannedAt: "", courses: [] });
@@ -92,7 +106,8 @@ test("a question about a course finds it by name, with day, hours, room, teacher
   assert.match(top.text, /יום ב' 09:00 - 11:00/);
   assert.match(top.text, /מיקום: חדר מחלקה/);
   assert.match(top.text, /בן-ניסן/);
-  assert.match(chunks.find((c) => c.id === "course:89110").text, /שנה א'/);
+  assert.match(chunks.find((c) => c.id === "course:89110").text, /בידיעון מדעי המחשב: שנה א'./);
+  assert.match(chunks.find((c) => c.id === "course:895656").text, /אשכול 2: כללי, מגמת AI ומצוינות/);
 });
 
 test("exam dates are listed when the catalog has them", () => {

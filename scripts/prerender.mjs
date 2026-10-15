@@ -199,12 +199,12 @@ function updatedHtml(iso, year) {
 }
 
 /** A guide as renderGuideView() in index.html draws it: steps, tips, links and sources. */
-const COURSE_YEAR = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", elective: "בחירה" };
+const COURSE_CATEGORY = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", cluster1: "אשכול 1", cluster2: "אשכול 2", complement: "אשכול השלמה", ai: "מגמת AI" };
 
 /** The courses page before course-browser.js takes over: every course by name, for search engines and no-JS. */
 function coursesHtml(courses) {
   if (!courses || !courses.courses.length) return "";
-  const rows = courses.courses.map((c) => `<li><a href="./courses?c=${esc(c.code)}">${esc(c.name)}</a> <span class="ltr">${esc(c.code)}</span>${COURSE_YEAR[c.year] ? `, ${COURSE_YEAR[c.year]}` : ""}</li>`).join("");
+  const rows = courses.courses.map((c) => `<li><a href="./courses?c=${esc(c.code)}">${esc(c.name)}</a> <span class="ltr">${esc(c.code)}</span>${(c.categories || []).length ? `, ${c.categories.map((id) => COURSE_CATEGORY[id]).filter(Boolean).join(", ")}` : ""}</li>`).join("");
   return `<section class="course-browser" id="course-browser" aria-label="הקורסים"><ul class="course-static">${rows}</ul></section>`;
 }
 

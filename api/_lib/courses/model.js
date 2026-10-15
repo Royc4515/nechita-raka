@@ -2,15 +2,26 @@
  * The CS courses, shaped once for every reader: the chat (api/_lib/chat/courses.js), the courses page
  * (course-browser.js reads public/course-list.json, written by scripts/build-public.mjs) and their tests.
  * Two inputs: the catalog scan (courses-cs-2027.json, unofficial) and the department yearbook
- * (courses-yearbook.json), which says which year each course belongs to.
+ * (courses-yearbook.json, from the CS yearbook), which says which categories each course belongs to.
  */
 import { existsSync, readFileSync } from "node:fs";
 
 export const CATALOG_FILE = new URL("../../../courses-cs-2027.json", import.meta.url);
 export const YEARBOOK_FILE = new URL("../../../courses-yearbook.json", import.meta.url);
 
-/** Year values on a course: 1-3 from the yearbook, "elective" for its elective groups, null for the rest. */
-export const ELECTIVE = "elective";
+/**
+ * The yearbook's categories, in the order the page shows them. A course can be in several (a course in
+ * the general cluster is also in the AI track's list), and then it shows under each of them.
+ */
+export const CATEGORIES = [
+  { id: "1", label: "שנה א'" },
+  { id: "2", label: "שנה ב'" },
+  { id: "3", label: "שנה ג'" },
+  { id: "cluster1", label: "אשכול 1: תכנות מתקדם" },
+  { id: "cluster2", label: "אשכול 2: כללי" },
+  { id: "complement", label: "אשכול השלמה" },
+  { id: "ai", label: "מגמת AI ומצוינות" },
+];
 
 const clean = (s) => String(s ?? "").replace(/\s*\n\s*/g, ", ").trim();
 /** "סמסטר א'סמסטר ב'" and "סמסטר א'\nסמסטר ב'" both mean a year-long group. */
@@ -21,10 +32,12 @@ const isoDate = (d) => {
   return m ? `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}` : "";
 };
 
-function yearOf(code, yearbook) {
-  for (const [year, codes] of Object.entries(yearbook?.years || {})) if (codes.includes(code)) return Number(year);
-  return (yearbook?.electives || []).includes(code) ? ELECTIVE : null;
-}
+const categoriesOf = (code, yearbook) => [...((yearbook?.categories || {})[code] || [])];
+/** The study year (1-3) when the course is in one of the year lists, else null. */
+const yearOf = (categories) => {
+  const year = categories.find((c) => /^[123]$/.test(c));
+  return year ? Number(year) : null;
+};
 
 /**
  * Teacher names glued together by the catalog ("מר אבי כדריהמר הראל...") are split before each title,
@@ -99,7 +112,7 @@ function pointsOf(rows, sections) {
   return value > 0 ? [value] : [];
 }
 
-/** { scannedAt, courses: [{ code, name, nameEn, points, year, exams, groups }] }, courses in catalog order. */
+/** { scannedAt, courses: [{ code, name, nameEn, points, categories, year, exams, groups }] }, courses in catalog order. */
 export function buildCourses(catalog, yearbook = null) {
   if (!catalog || !Array.isArray(catalog.rows)) return { scannedAt: "", courses: [] };
   const sections = catalog.sections || {};
@@ -111,6 +124,7 @@ export function buildCourses(catalog, yearbook = null) {
   const courses = [...byCode].map(([code, rows]) => {
     const info = rows.map((r) => sections[r.lid]).find(Boolean);
     const points = pointsOf(rows, sections);
+    const categories = categoriesOf(code, yearbook);
     const exams = new Map();
     for (const r of rows) {
       for (const t of sections[r.lid]?.terms || []) {
@@ -123,7 +137,8 @@ export function buildCourses(catalog, yearbook = null) {
       name: clean(info?.title || rows[0].name),
       nameEn: clean(info?.name_en),
       points,
-      year: yearOf(code, yearbook),
+      categories,
+      year: yearOf(categories),
       // The semester(s) the yearbook schedules it in; a course also runs in the other semester for retakes.
       plannedIn: (yearbook?.semesters || {})[code] || [],
       exams: [...exams.values()].sort((a, b) => a.date.localeCompare(b.date)),
