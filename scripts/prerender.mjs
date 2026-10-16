@@ -12,12 +12,14 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { FACULTY, THEME_KEYS } from "../faculties/index.js";
 
-export const SITE_URL = "https://nechita-raka.vercel.app";
-const OG_IMAGE = { url: `${SITE_URL}/assets/og-image-v2.jpg`, width: 600, height: 600, alt: "נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים" };
-const BRAND = "נחיתה רכה";
-const SITE_NAME = `נחיתה רכה - מדמ"ח בר אילן`;
-const HOME_TITLE = `מדעי המחשב בבר אילן, שנה א' - קישורים, מדריכים ולוח שנה | ${BRAND}`;
+// The page identity comes from the faculty manifest (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md D4).
+export const SITE_URL = FACULTY.site.url;
+const OG_IMAGE = { ...FACULTY.site.ogImage, url: `${SITE_URL}/${FACULTY.site.ogImage.path}` };
+const BRAND = FACULTY.site.brand;
+const SITE_NAME = FACULTY.site.name;
+const HOME_TITLE = FACULTY.site.title;
 const NOT_OFFICIAL = "יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.";
 const BIU = { "@type": "CollegeOrUniversity", "@id": `${SITE_URL}/#biu`, name: "אוניברסיטת בר-אילן", alternateName: "Bar-Ilan University", url: "https://www.biu.ac.il/" };
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -337,9 +339,13 @@ function eventNodes(data) {
 
 const faqAnswerText = (f) => [f.a, f.more].filter(Boolean).join(" ");
 
+/** The manifest's home description with {year} filled from data.js (or dropped, with its space, when there is no year). */
+export function homeDescription(year) {
+  return `${FACULTY.site.description.replace(/ ?\{year\}/g, year ? ` ${year}` : "")} ${NOT_OFFICIAL}`;
+}
+
 function homeHead(data, updated) {
-  const year = data.site.academicYear || "";
-  const description = `רישום לקורסים, למדה ו-365, שכר לימוד, בחינות ומועד ב', מילואים ולוח השנה האקדמי${year ? ` ${year}` : ""}, לסטודנטים בשנה א' במדעי המחשב בבר אילן. ${NOT_OFFICIAL}`;
+  const description = homeDescription(data.site.academicYear || "");
   const url = `${SITE_URL}/`;
   const graph = [
     websiteNode(description),
@@ -452,7 +458,38 @@ function withHead(html, head) {
   return html.slice(0, start) + head + html.slice(end + "<!-- /seo:head -->".length);
 }
 
+// ---------- The faculty's look: accent colors and the terminal label (MULTI-FACULTY-PLAN.md D6, D8) ----------
+
+const CSS_VAR = { accent: "--accent", accentHover: "--accent-hover", accentInk: "--accent-ink", accentText: "--accent-text", accentSoft: "--accent-soft", focus: "--focus" };
+// A whole line holding only the six variables: the :root blocks. The memorial-day override (one line with its selector) is not touched.
+const ACCENT_LINE_RE = new RegExp(`^([ \\t]*)${THEME_KEYS.map((key) => `${CSS_VAR[key]}: #[0-9a-f]{6};`).join(" ")}[ \\t]*$`, "gm");
+const DARK_SPLIT = "@media (prefers-color-scheme: dark)";
+
+/** The six accent variables of one mode as they appear on their line in index.html. */
+export const accentLine = (mode) => THEME_KEYS.map((key) => `${CSS_VAR[key]}: ${mode[key]};`).join(" ");
+
+/** The accent set of the manifest written into the :root blocks: the light one before the dark-mode media query, the two dark ones after it. */
+export function withTheme(html, theme) {
+  const split = html.indexOf(DARK_SPLIT);
+  if (split < 0) throw new Error(`prerender: index.html is missing ${DARK_SPLIT}`);
+  const light = html.slice(0, split);
+  const dark = html.slice(split);
+  if ((light.match(ACCENT_LINE_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one light accent line before the dark-mode block");
+  if ((dark.match(ACCENT_LINE_RE) || []).length !== 2) throw new Error("prerender: index.html should have exactly two dark accent lines (media query and data-theme)");
+  return light.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.light)) + dark.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.dark));
+}
+
+const HERO_PATH_RE = /(<div class="term-bar"><i><\/i><i><\/i><i><\/i><span>)[^<]*(<\/span><\/div>)/g;
+
+/** The path shown in the hero's terminal bar ("~/biu/cs/year-1"). */
+export function withHeroPath(html, path) {
+  if ((html.match(HERO_PATH_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one hero terminal bar");
+  return html.replace(HERO_PATH_RE, (m, open, close) => `${open}${esc(path)}${close}`);
+}
+
 function common(html, data, updated) {
+  html = withTheme(html, FACULTY.theme);
+  html = withHeroPath(html, FACULTY.labels.heroPath);
   html = fill(html, "pre:credit", creditHtml(data.site || {}));
   return fill(html, "pre:updated", updatedHtml(updated, data.site.academicYear));
 }

@@ -1,7 +1,8 @@
 /*
-  The Bit and Byte chat panel. Loaded on the first click of the launcher (index.html), so the
-  page itself stays as fast as before. Talks to POST /api/chat (api/chat.js).
-  The conversation lives in this tab only (sessionStorage); the server stores nothing.
+  The chat panel of the faculty's two mascots (Bit and Byte for CS). Loaded on the first click of
+  the launcher (index.html), so the page itself stays as fast as before. Talks to POST /api/chat
+  (api/chat.js). The conversation lives in this tab only (sessionStorage); the server stores nothing.
+  Names, greetings and images come from faculty.js (window.FACULTY, built from faculties/<id>/faculty.js).
 */
 // English (see index.html): each Hebrew string with a pair in data.en.js is swapped; {name} is filled in at run time.
 const EN_STRINGS = document.documentElement.lang === "en" && window.SITE_EN ? window.SITE_EN : null;
@@ -12,38 +13,18 @@ const tr = (he, vars) => {
 };
 const CONTENT_EN = new Map(EN_STRINGS ? EN_STRINGS.content : []);
 const trContent = (he) => CONTENT_EN.get(he) || he;
-const PERSONAS = {
-  bit: {
-    name: tr("ביט"), avatar: "./assets/mascot/avatar-bit.webp", joined: tr("ביט הצטרף לשיחה"),
-    hellos: [
-      tr("היי, אני ביט 👋 סטודנט שנה א' כמוכם, רק עם יותר מדי קפה. רישום, מבחנים, למדה, או סתם איך שורדים את השבוע הראשון? יאללה, שאלו."),
-      tr("מה קורה? 😄 ביט כאן. הייתי אבוד בדיוק כמוכם בשבוע הראשון, אז כנראה כבר נפלתי בכל בור. על מה נדבר?"),
-      tr("שלום שלום! אני ביט, מומחה עולמי לדחיינות ולמציאת כפתורים מוחבאים באינ-בר. מה צריך?"),
-      tr("היי 👋 בדיוק סיימתי את הקפה השלישי של היום, אז אני ער לגמרי. מה רציתם לשאול?"),
-      tr("ביט מדבר ☕ שאלה על מבחנים, למדה, רישום, או רק צריכים מישהו שיגיד שיהיה בסדר? (יהיה בסדר.)"),
-    ],
-    timely: {
-      morning: tr("בוקר טוב! ☀️ ביט כאן, עדיין מחמם מנועים עם קפה. מה על הפרק היום?"),
-      evening: tr("ערב טוב 🌙 ביט כאן. יום ארוך? ספרו מה צריך ונסדר."),
-      night: tr("עוד ערים? 🦉 גם אני, מסתבר. מה מטריד אתכם בשעה כזאת?"),
-    },
-  },
-  byte: {
-    name: tr("בייט"), avatar: "./assets/mascot/avatar-byte.webp", joined: tr("בייט הצטרפה לשיחה"),
-    hellos: [
-      tr("היי, אני בייט 👋 זאת עם הלוח שנה הצבעוני. רישום, מבחנים, מערכות, או איך לא להיגרר אחרי ביט לדחיינות? במה אני עוזרת?"),
-      tr("שלום 🙂 בייט כאן. יש לי רשימה לכל דבר, כנראה גם לשאלה שלכם. מה נבדוק?"),
-      tr("היי! אני בייט. נשמו רגע, שנה א' נראית מפחידה רק מבחוץ. מה רציתם לדעת?"),
-      tr("בייט מדברת 👋 תשאלו ישר, אני אענה ישר. ואם ביט כבר בלבל אתכם, הגעתם למקום הנכון."),
-      tr("היי 🙂 מבחנים, למדה, אינ-בר או סתם עצה לשבוע הראשון? תבחרו, אני על זה."),
-    ],
-    timely: {
-      morning: tr("בוקר טוב ☀️ בייט כאן, עם תה ורשימת משימות. מה מוסיפים לה היום?"),
-      evening: tr("ערב טוב 🌙 בייט כאן. בואו נסגור את מה שנשאר פתוח מהיום."),
-      night: tr("לילה טוב... או שעדיין לא? 🦉 בייט כאן. מה צריך לפני שהולכים לישון?"),
-    },
-  },
-};
+const FACULTY = window.FACULTY;
+const DEFAULT_PERSONA = FACULTY.defaultMascot;
+/** A mascot as the panel shows it: translated lines, the avatar's address, and the "thinking…" verb in its gender. */
+const persona = (m) => ({
+  name: EN_STRINGS ? m.nameEn : m.name,
+  avatar: `./assets/mascot/${m.files.avatar}`,
+  joined: tr(m.joined),
+  thinking: tr(m.thinking),
+  hellos: m.hellos.map((line) => tr(line)),
+  timely: { morning: tr(m.timely.morning), evening: tr(m.timely.evening), night: tr(m.timely.night) },
+});
+const PERSONAS = Object.fromEntries(FACULTY.mascots.map((m) => [m.id, persona(m)]));
 
 /** A fresh opening line each time the chat opens: one in three times it fits the hour. */
 function pickGreeting(persona) {
@@ -53,7 +34,8 @@ function pickGreeting(persona) {
   if (slot && Math.random() < 1 / 3) return p.timely[slot];
   return p.hellos[Math.floor(Math.random() * p.hellos.length)];
 }
-const OTHER = { bit: "byte", byte: "bit" };
+// The switch button's target: the mascot that is not the current one.
+const OTHER = Object.fromEntries(FACULTY.mascots.map((m, i, all) => [m.id, all[(i + 1) % all.length].id]));
 const SUGGESTIONS = [tr("מתי מתחילות הבחינות?"), tr("איך משנים קורס באינ-בר?"), tr("שכחתי סיסמה ללמדה"), tr("מה עושים עם מבחן במילואים?"), tr("באיזה חדר ההרצאה בהכנה למדעי המחשב?")];
 const ERRORS = {
   rate_limited: { code: "429 daily limit", text: tr("הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה."), retry: false },
@@ -94,7 +76,7 @@ function el(tag, attrs = {}, ...children) {
 /** The persona picked for this page load (index.html sets it before this file loads). */
 export function currentPersona() {
   const saved = store.get(STORE_PERSONA);
-  return PERSONAS[saved] ? saved : "bit";
+  return Object.hasOwn(PERSONAS, saved) ? saved : DEFAULT_PERSONA;
 }
 
 /** Text with https links turned into anchors; links to this site's guides open in place. */
@@ -112,7 +94,7 @@ function richText(text, onInternal) {
 }
 
 /** This site's links open in place (the answer may name the deployed address or this one). */
-const SITE_ORIGINS = new Set([location.origin, "https://nechita-raka.vercel.app"]);
+const SITE_ORIGINS = new Set([location.origin, FACULTY.site.url]);
 
 function linkTo(url, label, onInternal) {
   let parsed;
@@ -164,7 +146,7 @@ class ChatPanel {
     const p = PERSONAS[this.persona];
     this.avatar.src = p.avatar;
     this.title.textContent = p.name;
-    this.root.querySelector(".chat-path").textContent = `~/year-1 › ask ${this.persona}`;
+    this.root.querySelector(".chat-path").textContent = `${FACULTY.labels.chatPath} › ask ${this.persona}`;
     this.switchBtn.textContent = tr("להחליף ל{name}", { name: PERSONAS[OTHER[this.persona]].name });
     window.dispatchEvent(new CustomEvent("nr-chat-persona", { detail: this.persona }));
   }
@@ -189,7 +171,7 @@ class ChatPanel {
 
   /** Answers are document-style cards (no speech bubble), sources and a copy button inside. */
   botItem(text, persona, sources, greeting = false, roy = false) {
-    const p = PERSONAS[persona] || PERSONAS.bit;
+    const p = PERSONAS[persona] || PERSONAS[DEFAULT_PERSONA];
     const head = el("div", { class: "answer-head" },
       el("img", { class: "chat-avatar small", src: p.avatar, alt: "", width: "24", height: "24" }),
       el("span", { class: "answer-who", text: p.name }),
@@ -243,7 +225,7 @@ class ChatPanel {
     const p = PERSONAS[this.persona];
     return el("li", { class: "chat-typing", role: "status" },
       el("img", { class: "chat-avatar small bob", src: p.avatar, alt: "", width: "24", height: "24" }),
-      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${this.persona === "byte" ? tr("מקלידה") : tr("חושב")}…`, el("span", { class: "cursor", "aria-hidden": "true" })));
+      el("code", {}, el("span", { class: "prompt", text: "$ " }), `${p.name} ${p.thinking}…`, el("span", { class: "cursor", "aria-hidden": "true" })));
   }
 
   autosize() {
