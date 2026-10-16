@@ -27,7 +27,6 @@ Columns: S = students, U = urgency, E = effort.
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Verify change-period dates and the 14.10 course scan hold through 28.10 | 5 | 5 | 1 | 25.0 | open | cs-owner checks Inbar announcements; update `checkedOn`. |
-| Confirm Inbar group-change mechanics (arrows icon, free-place rule) and restore them to the registration FAQ if true | 4 | 4 | 1 | 16.0 | open | Removed from PR #74 for lack of a source; Roy can confirm in Inbar during the change period. |
 | Exam-season guide refresh before מועד א' of semester א' | 5 | 2 | 2 | 5.0 | open | Dates come in December; sources to be checked then. |
 
 ## Neuro
@@ -47,5 +46,6 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | Date | Notes |
 | --- | --- | --- |
+| Inbar group-change mechanics confirmed by Roy and restored to the FAQ (#76) | 16.10.2026 | |
 | Yearbook categories (#68), chat facts from the baseline (#74) | 16.10.2026 | #74 merged after the CS owner's fact check. |
 | Plans written and decided | 15.10.2026 | `MULTI-FACULTY-PLAN.md`, `MANAGEMENT-PLAN.md`. |
