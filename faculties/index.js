@@ -13,12 +13,24 @@ export const DEFAULT_FACULTY = "cs";
 export const MASCOT_POSES = Object.freeze(["wave", "think", "celebrate", "point", "calendar", "idea", "laptop"]);
 /** The accent set a theme mode holds (index.html :root). */
 export const THEME_KEYS = Object.freeze(["accent", "accentHover", "accentInk", "accentText", "accentSoft", "focus"]);
+/** The hero blocks the prerender can render (MULTI-FACULTY-PLAN.md D8); "terminal" is the typing terminal of index.html. */
+export const HERO_VARIANTS = Object.freeze(["terminal"]);
+/** The colored pieces a terminal line may hold (the .t-* classes in index.html). */
+export const TERMINAL_TOKEN_KINDS = Object.freeze(["prompt", "kw", "str", "out", "dim"]);
+
+const ROOT = new URL("../", import.meta.url);
+/** A file of the faculty's folder, repo-relative ("faculties/cs/courses/catalog.json"). */
+export const facultyPath = (faculty, file) => `faculties/${faculty.id}/${file}`;
+/** The same file as a URL, resolved from this module, so it opens from any working directory and on Vercel. */
+export const facultyFile = (faculty, file) => new URL(facultyPath(faculty, file), ROOT);
 
 const ID_RE = /^[a-z][a-z0-9-]*$/;
 const COLOR_RE = /^#[0-9a-f]{6}$/;
 const NAME_RE = /^[\w-]+$/;
 const IMAGE_RE = /^[\w-]+\.(webp|jpg|png)$/;
 const CONTENT_ID_RE = /^[a-z0-9-]+$/; // guide and category ids, as check-data.mjs requires them
+const JSON_PATH_RE = /^[\w-]+(\/[\w-]+)*\.json$/; // a data file inside faculties/<id>/, no ".." and no absolute path
+const JSON_NAME_RE = /^[\w-]+\.json$/;
 
 const fail = (id, what) => { throw new Error(`faculty "${id}": ${what}`); };
 const nonEmpty = (value) => typeof value === "string" && value.trim().length > 0;
@@ -58,6 +70,63 @@ function checkContentOrder(id, content) {
   }
 }
 
+const isPositiveNumber = (value) => typeof value === "number" && Number.isFinite(value) && value > 0;
+// A plain text token may be only spaces (an indent), so it is not trimmed.
+const isToken = (token) => (typeof token === "string" && token.length > 0) || (Array.isArray(token) && token.length === 2 && TERMINAL_TOKEN_KINDS.includes(token[0]) && typeof token[1] === "string");
+
+/** hero: the variant the prerender renders, its bar label and, for the terminal, the typed lines (D8). */
+function checkHero(id, hero) {
+  if (!hero || typeof hero !== "object") fail(id, "hero is missing");
+  if (!HERO_VARIANTS.includes(hero.variant)) fail(id, `hero.variant must be one of ${HERO_VARIANTS.join(", ")}`);
+  if (!nonEmpty(hero.path)) fail(id, "hero.path is missing");
+  if (!Array.isArray(hero.lines) || !hero.lines.length) fail(id, "hero.lines must be a non-empty list");
+  hero.lines.forEach((line, i) => {
+    const where = `hero.lines[${i}]`;
+    if (!line || typeof line !== "object") fail(id, `${where} is not an object`);
+    if (!Number.isInteger(line.steps) || line.steps <= 0) fail(id, `${where}.steps must be a positive whole number`);
+    if (!isPositiveNumber(line.start) && line.start !== 0) fail(id, `${where}.start must be a number of seconds`);
+    if (line.duration !== undefined && !isPositiveNumber(line.duration)) fail(id, `${where}.duration must be a positive number of seconds`);
+    if (!Array.isArray(line.tokens) || !line.tokens.length || !line.tokens.every(isToken)) fail(id, `${where}.tokens must be texts or [kind, text] pairs with a kind from ${TERMINAL_TOKEN_KINDS.join(", ")}`);
+  });
+}
+
+/** courses: the files api/_lib/courses/model.js reads, the published name, the categories and the source line (D9). */
+function checkCourses(id, courses) {
+  if (!courses || typeof courses !== "object") fail(id, "courses is missing");
+  for (const key of ["catalog", "yearbook"]) if (!JSON_PATH_RE.test(courses[key] || "")) fail(id, `courses.${key} must be a relative .json path inside faculties/${id}/`);
+  if (!JSON_NAME_RE.test(courses.download || "")) fail(id, "courses.download must be a plain .json file name");
+  if (!Array.isArray(courses.categories) || !courses.categories.length) fail(id, "courses.categories must be a non-empty list");
+  courses.categories.forEach((category, i) => {
+    if (!category || typeof category !== "object") fail(id, `courses.categories[${i}] is not an object`);
+    if (!nonEmpty(category.id)) fail(id, `courses.categories[${i}].id is missing`);
+    if (!nonEmpty(category.label)) fail(id, `courses.categories[${i}].label is missing`);
+  });
+  const ids = courses.categories.map((c) => c.id);
+  if (new Set(ids).size !== ids.length) fail(id, "courses.categories lists an id twice");
+  if (!nonEmpty(courses.officialSource)) fail(id, "courses.officialSource is missing");
+}
+
+/** search.synonyms: groups of at least two words, merged into the page's synonym table. */
+function checkSearch(id, search) {
+  const groups = (search || {}).synonyms;
+  if (!Array.isArray(groups)) fail(id, "search.synonyms must be a list of word groups");
+  groups.forEach((group, i) => {
+    if (!Array.isArray(group) || group.length < 2 || !group.every(nonEmpty)) fail(id, `search.synonyms[${i}] must be a list of at least two words`);
+  });
+}
+
+/** eggs: the words that trigger each one, its toast and an optional effect for index.html's playEffect(). */
+function checkEggs(id, eggs) {
+  if (!Array.isArray(eggs)) fail(id, "eggs must be a list");
+  eggs.forEach((egg, i) => {
+    const where = `eggs[${i}]`;
+    if (!egg || typeof egg !== "object") fail(id, `${where} is not an object`);
+    if (!Array.isArray(egg.words) || !egg.words.length || !egg.words.every(nonEmpty)) fail(id, `${where}.words must be a non-empty list of texts`);
+    if (!nonEmpty(egg.toast)) fail(id, `${where}.toast is missing`);
+    if (egg.effect !== undefined && (!egg.effect || typeof egg.effect !== "object" || !nonEmpty(egg.effect.type))) fail(id, `${where}.effect must be an object with a type`);
+  });
+}
+
 /** Throws with the field's name when the manifest is not usable; returns it otherwise. */
 export function validateFaculty(faculty) {
   const id = faculty && faculty.id;
@@ -74,7 +143,11 @@ export function validateFaculty(faculty) {
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");
   checkTheme(id, faculty.theme);
-  for (const key of ["chatPath", "heroPath"]) if (!nonEmpty((faculty.labels || {})[key])) fail(id, `labels.${key} is missing`);
+  if (!nonEmpty((faculty.labels || {}).chatPath)) fail(id, "labels.chatPath is missing");
+  checkHero(id, faculty.hero);
+  checkCourses(id, faculty.courses);
+  checkSearch(id, faculty.search);
+  checkEggs(id, faculty.eggs);
   checkContentOrder(id, faculty.content);
   if (!Array.isArray(faculty.mascots) || faculty.mascots.length !== 2) fail(id, "mascots must be a list of exactly two");
   faculty.mascots.forEach((m, i) => checkMascot(id, m, i));

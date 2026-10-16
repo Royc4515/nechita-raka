@@ -8,8 +8,7 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Content split shared/ and faculties/cs (PR 2) | 5 | 3 | 4 | 3.8 | in review | `shared/data.js` + `faculties/cs/data.js`, merged by `faculties/content.js`; `scripts/compare-content.mjs` proves the merged data deep-equal to main's `data.js`. |
-| Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | planned | Catalog, yearbook, categories, hero variant, synonyms, eggs. |
+| Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | in review | Course files under `faculties/cs/courses/`, catalog, yearbook, categories and source line from the `courses` block; `hero` (terminal variant), `search.synonyms` and `eggs` from the manifest. No visible change. |
 | Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | planned | `FACULTY` env, tests parametrized, placeholder `faculties/neuro/`. |
 | Simulation script | 3 | 2 | 2 | 3.0 | in review | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
 | Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | in review | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
@@ -36,7 +35,7 @@ Columns: S = students, U = urgency, E = effort.
 | Department contacts, office, hours | 4 | 2 | 1 | 8.0 | open | Official site only. |
 | Buildings and study spaces neuro students use | 3 | 2 | 1 | 6.0 | open | Gonda building 901 is already in the CS campus guide. |
 | WhatsApp groups per track and year | 4 | 2 | 1 | 8.0 | open | Links never enter this folder; they go straight to `faculties/neuro/data.js`. |
-| Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | open | Follows the rules in `scripts/UPDATING-COURSES.md`. |
+| Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | open | Follows the rules in `faculties/cs/courses/README.md`. |
 | נוי ורון character briefs | 3 | 1 | 2 | 1.5 | open | Ron masculine, Noi feminine. Contrast like Bit and Byte. |
 | Violet palette, light and dark, contrast-checked | 3 | 1 | 1 | 3.0 | open | designer |
 | Hero variant for neuro | 2 | 1 | 2 | 1.0 | open | CSS-only, same size as the terminal. |
@@ -45,6 +44,7 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | Date | Notes |
 | --- | --- | --- |
+| Content split shared/ and faculties/cs (PR 2, #79) | 16.10.2026 | `shared/data.js` + `faculties/cs/data.js`, merged by `faculties/content.js`; `scripts/compare-content.mjs` proves the merged data deep-equal to the old `data.js`. No visible change. |
 | Faculty manifest, CS only (PR 1, #78) | 16.10.2026 | Theme, mascots, meta from `faculties/cs/faculty.js`. No visible change. |
 | Inbar group-change mechanics confirmed by Roy and restored to the FAQ (#76) | 16.10.2026 | |
 | Yearbook categories (#68), chat facts from the baseline (#74) | 16.10.2026 | #74 merged after the CS owner's fact check. |

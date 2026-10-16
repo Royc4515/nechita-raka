@@ -9,7 +9,7 @@
   - כל טקסט נמצא בין גרשיים הפוכים `כך`. בתוכם מותר לכתוב " ו-' בחופשיות.
   - אחרי כל שדה יש פסיק.
   - טקסט בעברית שמופיע בדפדפן (שמות, ברכות, משפטי הבועה) צריך תרגום ב-data.en.js (ברשימת ui).
-  - התמונות יושבות בתיקייה faculties/cs/mascot/ ולידה og-image.jpg. הבנייה נכשלת אם קובץ חסר.
+  - התמונות יושבות בתיקייה faculties/cs/mascot/ ולידה og-image.jpg, וקובצי הקורסים ב-faculties/cs/courses/. הבנייה נכשלת אם קובץ חסר.
 */
 export default {
   // המזהה של הפקולטה: אותיות קטנות באנגלית. זה גם שם התיקייה.
@@ -48,11 +48,61 @@ export default {
     dark: { accent: `#5cb8f0`, accentHover: `#7cc6f5`, accentInk: `#04213a`, accentText: `#7cc6f5`, accentSoft: `#10304d`, focus: `#9ad3f7` },
   },
 
-  // התוויות בסגנון טרמינל: השורה בראש הצ'אט ("~/year-1 › ask bit") והשורה בחלון הטרמינל שבראש הדף.
+  // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit").
   labels: {
     chatPath: `~/year-1`,
-    heroPath: `~/biu/cs/year-1`,
   },
+
+  // החלון המונפש שבראש הדף. variant: הסוג (כרגע יש רק `terminal`, חלון טרמינל שמקליד קוד).
+  // path: השורה בפס העליון של החלון. lines: השורות שמוקלדות, לפי הסדר; בכל שורה:
+  //   steps: מספר צעדי ההקלדה (בערך מספר התווים), start: מתי מתחילים להקליד (שניות),
+  //   duration: כמה זמן ההקלדה נמשכת (שניות, לא חובה), tokens: קטעי הטקסט, טקסט רגיל או זוג
+  //   [סוג, טקסט] לצבע: prompt (סימן השורה), kw (מילה שמורה), str (מחרוזת), out (פלט), dim (עמום).
+  hero: {
+    variant: `terminal`,
+    path: `~/biu/cs/year-1`,
+    lines: [
+      { steps: 25, start: 0.3, tokens: [[`prompt`, `❯`], ` python3 soft_landing.py`] },
+      { steps: 18, start: 1, duration: 0.3, tokens: [[`out`, `print("Hello, CS!")`]] },
+      { steps: 28, start: 1.4, tokens: [[`kw`, `if`], ` self.status == `, [`str`, `"1stYear"`], `:`] },
+      { steps: 26, start: 2.1, tokens: [`    `, [`kw`, `return`], ` `, [`str`, `"Soft Landing"`]] },
+    ],
+  },
+
+  // הקורסים (faculties/cs/courses/, ההוראות לסריקה ב-README.md שם). catalog: קובץ הסריקה של הקטלוג,
+  // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
+  // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
+  // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג).
+  // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בידיעון מדעי המחשב: שנה א'").
+  courses: {
+    catalog: `courses/catalog.json`,
+    yearbook: `courses/yearbook.json`,
+    download: `courses-cs-2027.json`,
+    categories: [
+      { id: `1`, label: `שנה א'` },
+      { id: `2`, label: `שנה ב'` },
+      { id: `3`, label: `שנה ג'` },
+      { id: `cluster1`, label: `אשכול 1: תכנות מתקדם` },
+      { id: `cluster2`, label: `אשכול 2: כללי` },
+      { id: `complement`, label: `אשכול השלמה` },
+      { id: `ai`, label: `מגמת AI ומצוינות` },
+    ],
+    officialSource: `ידיעון מדעי המחשב`,
+  },
+
+  // החיפוש באתר: קבוצות של מילים נרדפות של הפקולטה, נוספות לקבוצות המשותפות שב-index.html.
+  // מילה מקבוצה מוצאת גם את שאר המילים שבה ("מדמח" מוצא "מדעי המחשב").
+  search: {
+    synonyms: [
+      [`מדמ"ח`, `מדעי המחשב`, `computer science`],
+    ],
+  },
+
+  // ביצי פסחא של הפקולטה, נוספות למשותפות: הקלדת אחת המילים בתיבת החיפוש מציגה את ההודעה (toast),
+  // ואפשר גם אפקט (effect, לא חובה): { type: `drift`, code: true, glyphs: [...] } מרחף תווים על המסך.
+  eggs: [
+    { words: [`hello world`, `print hello world`, `שלום עולם`], toast: `Hello, CS! 👋`, effect: { type: `drift`, code: true, glyphs: [`{ }`, `;`, `</>`, `0`, `1`, `λ`, `()`, `=>`] } },
+  ],
 
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/cs/data.js),
   // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.

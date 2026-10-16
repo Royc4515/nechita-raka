@@ -19,7 +19,7 @@ You own what first-year brain sciences students at Bar-Ilan will find on the neu
 1. **Programs and tracks.** List every brain sciences program at Bar-Ilan with its official page, the yearbook for תשפ"ז, the department that runs it, and the track id you propose for the manifest. Mark what is confirmed and what is a guess.
 2. **Content checklist.** For each item in `management/BACKLOG.md` under Neuro: the source URL, the date checked, and the Hebrew text ready for `data.js` in the site's style (guides with steps, tips, links, keywords, `checkedOn`).
 3. **What differs by track.** Secretariat, buildings, groups, registration quirks: note which apply to all tracks and which to one.
-4. **Courses.** Which departments teach into the tracks, so the catalog scan (`scripts/UPDATING-COURSES.md` rules) covers them; a first mapping of course codes to `track:year` categories from the yearbooks.
+4. **Courses.** Which departments teach into the tracks, so the catalog scan (the rules in `faculties/cs/courses/README.md`) covers them; a first mapping of course codes to `track:year` categories from the yearbooks.
 
 ## What you do once the site exists
 

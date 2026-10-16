@@ -26,6 +26,9 @@ export function browserFaculty(faculty) {
     site: { url: faculty.site.url },
     theme: faculty.theme,
     labels: faculty.labels,
+    // The search's faculty synonyms and the faculty's easter eggs, merged by index.html into its shared lists.
+    search: faculty.search,
+    eggs: faculty.eggs,
     defaultMascot: faculty.defaultMascot,
     mascots: faculty.mascots.map(browserMascot),
   };

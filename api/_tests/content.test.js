@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { BROWSER_FILES, contentFiles, evalScript, loadContent, loadEnglish, mergeContent, mergeEnglish, siteScript } from "../../faculties/content.js";
-import { FACULTY } from "../../faculties/index.js";
+import { FACULTY, facultyPath } from "../../faculties/index.js";
 
 const guide = (id, extra = {}) => ({ id, title: `t-${id}`, steps: [`s`], ...extra });
 const category = (id) => ({ id, title: `c-${id}`, items: [] });
@@ -82,12 +82,13 @@ test("siteScript writes a script the browser evaluates back to the same data, wi
   assert.equal(BROWSER_FILES.SITE_DATA, "data.js");
 });
 
-test("every Vercel function bundles the content files the loader reads", () => {
+test("every Vercel function bundles the content files the loader reads and the course files the model reads", () => {
   const { functions } = JSON.parse(readFileSync("vercel.json", "utf8"));
   const globToRe = (glob) => new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^/]*")}$`);
+  const needed = [...contentFiles(FACULTY).data, facultyPath(FACULTY, FACULTY.courses.catalog), facultyPath(FACULTY, FACULTY.courses.yearbook)];
   for (const [fn, { includeFiles }] of Object.entries(functions)) {
     const patterns = includeFiles.replace(/^\{|\}$/g, "").split(",").map(globToRe);
-    for (const file of contentFiles(FACULTY).data) assert.ok(patterns.some((re) => re.test(file)), `${fn} includes ${file}`);
+    for (const file of needed) assert.ok(patterns.some((re) => re.test(file)), `${fn} includes ${file}`);
   }
 });
 

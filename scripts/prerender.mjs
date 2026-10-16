@@ -12,7 +12,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { contentFiles, loadContent } from "../faculties/content.js";
-import { FACULTY, THEME_KEYS } from "../faculties/index.js";
+import { FACULTY, HERO_VARIANTS, TERMINAL_TOKEN_KINDS, THEME_KEYS } from "../faculties/index.js";
 
 // The page identity comes from the faculty manifest (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md D4).
 export const SITE_URL = FACULTY.site.url;
@@ -457,7 +457,7 @@ function withHead(html, head) {
   return html.slice(0, start) + head + html.slice(end + "<!-- /seo:head -->".length);
 }
 
-// ---------- The faculty's look: accent colors and the terminal label (MULTI-FACULTY-PLAN.md D6, D8) ----------
+// ---------- The faculty's look: accent colors and the hero (MULTI-FACULTY-PLAN.md D6, D8) ----------
 
 const CSS_VAR = { accent: "--accent", accentHover: "--accent-hover", accentInk: "--accent-ink", accentText: "--accent-text", accentSoft: "--accent-soft", focus: "--focus" };
 // A whole line holding only the six variables: the :root blocks. The memorial-day override (one line with its selector) is not touched.
@@ -478,17 +478,50 @@ export function withTheme(html, theme) {
   return light.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.light)) + dark.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.dark));
 }
 
-const HERO_PATH_RE = /(<div class="term-bar"><i><\/i><i><\/i><i><\/i><span>)[^<]*(<\/span><\/div>)/g;
+// The hero block of index.html: the switch point for the variants (D8). Today the only variant is the
+// terminal, so the block is the terminal's markup and the renderer fills its bar label and typed lines;
+// a new variant would render its own markup in place of the whole block.
+const HERO_BLOCK_RE = /<div class="term" dir="ltr" aria-hidden="true">[\s\S]*?<\/pre>\s*<\/div>/g;
+const TERM_BAR_RE = /(<div class="term-bar"><i><\/i><i><\/i><i><\/i><span>)[^<]*(<\/span><\/div>)/g;
+const TERM_BODY_RE = /<pre class="term-body">[\s\S]*?<\/pre>/g;
 
-/** The path shown in the hero's terminal bar ("~/biu/cs/year-1"). */
-export function withHeroPath(html, path) {
-  if ((html.match(HERO_PATH_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one hero terminal bar");
-  return html.replace(HERO_PATH_RE, (m, open, close) => `${open}${esc(path)}${close}`);
+/** Text inside an element: only the three characters that would start markup (quotes stay, the lines show them). */
+const escText = (text) => String(text ?? "").replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[ch]);
+/** 0.3 -> ".3s", 1 -> "1s", 1.4 -> "1.4s": the CSS time as index.html writes it. */
+const seconds = (value) => `${String(value).replace(/^0\./, ".")}s`;
+function tokenHtml(token) {
+  if (!Array.isArray(token)) return escText(token);
+  if (!TERMINAL_TOKEN_KINDS.includes(token[0])) throw new Error(`prerender: unknown terminal token kind "${token[0]}"`);
+  return `<span class="t-${token[0]}">${escText(token[1])}</span>`;
+}
+
+/** One typed line: its typing steps and timing as custom properties, its tokens, and the blinking caret on the last line. */
+function terminalLine({ steps, start, duration, tokens }, last) {
+  // The manifest is validated (faculties/index.js), but the numbers land in a style attribute, so they are checked here too.
+  if (!Number.isInteger(steps) || !Number.isFinite(start) || (duration !== undefined && !Number.isFinite(duration))) throw new Error("prerender: a hero line needs whole steps and numeric start and duration");
+  const timing = `--n:${steps};--at:${seconds(start)}${duration === undefined ? "" : `;--d:${seconds(duration)}`}`;
+  return `<span class="ln" style="${timing}">${tokens.map(tokenHtml).join("")}${last ? '<span class="t-caret"></span>' : ""}</span>`;
+}
+
+function terminalHero(block, hero) {
+  if ((block.match(TERM_BAR_RE) || []).length !== 1 || (block.match(TERM_BODY_RE) || []).length !== 1) throw new Error("prerender: the hero block of index.html should hold one terminal bar and one terminal body");
+  const body = hero.lines.map((line, i) => terminalLine(line, i === hero.lines.length - 1)).join("");
+  return block.replace(TERM_BAR_RE, (m, open, close) => `${open}${esc(hero.path)}${close}`).replace(TERM_BODY_RE, `<pre class="term-body">${body}</pre>`);
+}
+
+const HERO_RENDERERS = { terminal: terminalHero };
+
+/** The hero of the manifest written into index.html's hero block: the variant picks the renderer. */
+export function withHero(html, hero) {
+  const render = HERO_RENDERERS[hero.variant];
+  if (!render || !HERO_VARIANTS.includes(hero.variant)) throw new Error(`prerender: unknown hero variant "${hero.variant}"`);
+  if ((html.match(HERO_BLOCK_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one hero block");
+  return html.replace(HERO_BLOCK_RE, (block) => render(block, hero));
 }
 
 function common(html, data, updated) {
   html = withTheme(html, FACULTY.theme);
-  html = withHeroPath(html, FACULTY.labels.heroPath);
+  html = withHero(html, FACULTY.hero);
   html = fill(html, "pre:credit", creditHtml(data.site || {}));
   return fill(html, "pre:updated", updatedHtml(updated, data.site.academicYear));
 }
