@@ -8,8 +8,7 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Faculty manifest, CS only (PR 1) | 5 | 3 | 3 | 5.0 | planned | Theme, mascots, meta from `faculties/cs/faculty.js`. No visible change. |
-| Content split shared/ and faculties/cs (PR 2) | 5 | 3 | 4 | 3.8 | planned | Byte-identical merged `data.js`. |
+| Content split shared/ and faculties/cs (PR 2) | 5 | 3 | 4 | 3.8 | in review | `shared/data.js` + `faculties/cs/data.js`, merged by `faculties/content.js`; `scripts/compare-content.mjs` proves the merged data deep-equal to main's `data.js`. |
 | Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | planned | Catalog, yearbook, categories, hero variant, synonyms, eggs. |
 | Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | planned | `FACULTY` env, tests parametrized, placeholder `faculties/neuro/`. |
 | Simulation script | 3 | 2 | 2 | 3.0 | in review | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
@@ -46,6 +45,7 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | Date | Notes |
 | --- | --- | --- |
+| Faculty manifest, CS only (PR 1, #78) | 16.10.2026 | Theme, mascots, meta from `faculties/cs/faculty.js`. No visible change. |
 | Inbar group-change mechanics confirmed by Roy and restored to the FAQ (#76) | 16.10.2026 | |
 | Yearbook categories (#68), chat facts from the baseline (#74) | 16.10.2026 | #74 merged after the CS owner's fact check. |
 | Plans written and decided | 15.10.2026 | `MULTI-FACULTY-PLAN.md`, `MANAGEMENT-PLAN.md`. |

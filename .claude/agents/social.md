@@ -12,7 +12,7 @@ You help students hear about נחיתה רכה at the moment it is useful to the
 - Channels: WhatsApp groups (year, course, reservist groups; the main traffic source) and Roy's LinkedIn. Nothing else for now (`management/DECISIONS.md`).
 - Share links with `?src=wa` for WhatsApp so the dashboard counts the source; guide pages have their own addresses (`/registration`, `/exams`, ...), use the specific one. The link itself must never be a `chat.whatsapp.com` group link, and group links never appear in your drafts or files.
 - The site's voice: Hebrew of students, warm, short, no hype, plural forms where gender is unknown, no em dashes, dates as DD.MM.YYYY. The mascots can be mentioned by name (ביט ובייט on CS, נוי ורון on neuro) but a draft is from Roy, not from a mascot.
-- Calendar events live in `data.js` (`calendar`), guides in `guides`. The weekly report and dashboard aggregates tell you which pages and sources moved.
+- Calendar events live in `shared/data.js` (`calendar`), guides in `guides`. The weekly report and dashboard aggregates tell you which pages and sources moved.
 - Drafts go to `management/social/<date>-<topic>.md`, each with: channel, when to post (tied to a calendar event), the text in Hebrew, the link, and one line on why now. English for the notes.
 
 ## What you do

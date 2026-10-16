@@ -11,7 +11,7 @@
 // and each guide answers a different search.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import vm from "node:vm";
+import { contentFiles, loadContent } from "../faculties/content.js";
 import { FACULTY, THEME_KEYS } from "../faculties/index.js";
 
 // The page identity comes from the faculty manifest (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md D4).
@@ -26,11 +26,10 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // ---------- Data ----------
 
-export function loadData(file = "data.js") {
-  const sandbox = { window: {} };
-  vm.runInNewContext(readFileSync(file, "utf8"), sandbox, { filename: file, timeout: 1000 });
-  const data = sandbox.window.SITE_DATA;
-  if (!data || !Array.isArray(data.categories) || !Array.isArray(data.guides)) throw new Error("prerender: data.js did not set window.SITE_DATA");
+/** The site's content: shared/data.js and faculties/<id>/data.js merged (faculties/content.js, MULTI-FACULTY-PLAN.md D5). */
+export function loadData(faculty = FACULTY) {
+  const data = loadContent(faculty);
+  if (!Array.isArray(data.categories) || !Array.isArray(data.guides)) throw new Error("prerender: the merged content has no categories or guides");
   return data;
 }
 
@@ -94,12 +93,12 @@ function israelOffset(iso) {
   return m ? m[1] : "+02:00";
 }
 
-/** When the content last changed: the last commit to data.js, or the latest "checked on" date if git is not there. */
-export function lastUpdated(data) {
+/** When the content last changed: the last commit to either content file, or the latest "checked on" date if git is not there. */
+export function lastUpdated(data, faculty = FACULTY) {
   const checked = [data.calendar && data.calendar.checkedOn, ...data.guides.map((g) => g.checkedOn)].map(isoFromDmy).filter(Boolean);
   let committed = null;
   try {
-    committed = execFileSync("git", ["log", "-1", "--format=%cs", "--", "data.js"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || null;
+    committed = execFileSync("git", ["log", "-1", "--format=%cs", "--", ...contentFiles(faculty).data], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || null;
   } catch {
     committed = null; // no git history in this build: fall back to the checked-on dates
   }

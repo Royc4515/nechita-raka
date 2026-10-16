@@ -9,7 +9,7 @@ You own what first-year brain sciences students at Bar-Ilan will find on the neu
 
 ## Site context
 
-- Prerendered Hebrew site built per faculty: shared Bar-Ilan content in `shared/` and faculty content in `faculties/<id>/` (planned; today everything is in `data.js`, see `MULTI-FACULTY-PLAN.md`). Chat and analytics are Vercel functions under `api/`; the neuro site gets its own Vercel project, database and Groq key.
+- Prerendered Hebrew site built per faculty: shared Bar-Ilan content in `shared/` and faculty content in `faculties/<id>/` (since PR 2; see `MULTI-FACULTY-PLAN.md`). Chat and analytics are Vercel functions under `api/`; the neuro site gets its own Vercel project, database and Groq key.
 - Every Bar-Ilan fact needs an official source and a `checkedOn` date. No source, no fact.
 - WhatsApp group links go only into the faculty `data.js`; never into `management/` or your reports. Never store or quote real student messages, names or phone numbers.
 - Memory: `management/` (`ROADMAP.md`, `BACKLOG.md`, `DECISIONS.md`, `meetings/`, `users/neuro-first-year.md`). English there; Hebrew for site copy. Mascots: נוי (feminine voice) and רון (masculine voice).
