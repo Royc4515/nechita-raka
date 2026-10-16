@@ -3,6 +3,7 @@
 // Warnings are worth a look but do not fail the check.
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { FACULTY } from "../faculties/index.js";
 
 const DATA_FILE = "data.js";
 const ICS_FILE = "biu-5787.ics";
@@ -218,10 +219,12 @@ try {
   }
   if (missing.length) warn(`${missing.length} טקסטים בלי תרגום לאנגלית ב-data.en.js (יופיעו בעברית במצב אנגלית): ${sample(missing)}`);
   if (unused.length) warn(`${unused.length} תרגומים ב-data.en.js שהטקסט העברי שלהם כבר לא קיים (כנראה שונה): ${sample(unused)}`);
-  // The page's own text: every tr("...") in the page, the chat and the launcher.
+  // The page's own text: every tr("...") in the page, the chat and the launcher, plus the mascots' lines
+  // that the chat and the launcher take from the faculty manifest (faculties/<id>/faculty.js).
   const keys = new Set(ui.map(([he]) => he));
   const used = ["index.html", "chat.js", "peek.js"].flatMap((f) => [...readFileSync(f, "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)));
-  const missingUi = [...new Set(used)].filter((s) => !keys.has(s));
+  const mascotLines = FACULTY.mascots.flatMap((m) => [m.joined, m.thinking, ...m.hellos, ...Object.values(m.timely), ...m.peekLines]);
+  const missingUi = [...new Set([...used, ...mascotLines])].filter((s) => !keys.has(s));
   if (missingUi.length) warn(`${missingUi.length} טקסטים של הדף בלי תרגום ב-data.en.js (ui): ${sample(missingUi)}`);
 } catch (err) {
   warn(`לא הצלחתי לקרוא את data.en.js: ${err.message}`);

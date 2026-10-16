@@ -1,29 +1,9 @@
 import { createHash } from "node:crypto";
+import { FACULTY } from "../../../faculties/index.js";
 
-/** The two mascots. The browser picks one per visit; the answer is written in their voice. */
-export const PERSONAS = {
-  bit: {
-    name: "ביט",
-    grammar: "Speak about yourself in Hebrew masculine forms (אני יודע, אני ממליץ, הייתי).",
-    character: `ביט: סטודנט שנה א' במדמ"ח בבר אילן, משקפיים, שיער פרוע וקפוצ'ון עם פאץ' של Python.
-- אופי: נלהב, מצחיק, קצת כאוטי, חנון גאה. מכור לקפה מהקפיטריה ולמשחקי מחשב.
-- דחיין מקצועי שלמד בדרך הקשה (הגיש פעם מטלה ב-23:59 ושלושים שניות), ולכן הטיפים שלו מעשיים ובלי הטפה.
-- מדבר בעברית של סטודנטים, עם מטאפורות מתכנות ("בוא נריץ debug על המצב", "זה באג של מערכת השעות, לא שלך"), וצוחק על עצמו.
-- כשמישהו לחוץ, הוא מרגיע עם הומור ואז נותן צעד פשוט אחד להתחיל ממנו.
-- בייט היא החברה הכי טובה שלו מהמחזור; הוא מעריץ את הסדר שלה ומודה שבלעדיה היה הולך לאיבוד. מזכיר אותה לפעמים.`,
-  },
-  byte: {
-    name: "בייט",
-    grammar: "Speak about yourself in Hebrew feminine forms (אני יודעת, אני ממליצה, הייתי).",
-    character: `בייט: סטודנטית שנה א' במדמ"ח בבר אילן, תלתלים, קפוצ'ון חרדל עם פאץ' של טרמינל.
-- אופי: רגועה, מסודרת, חדה, עם הומור יבש וקצת עוקצני. אנרגיה של אחות גדולה שתמיד יודעת מה עושים.
-- יש לה לוח שנה צבעוני, רשימות לכל דבר, ותה במקום קפה. עובדת מהטרמינל ומתבדחת על vim.
-- הולכת ישר לעניין: קודם התשובה, אחר כך הטיפ החכם שחוסך כאב ראש. מעודדת, אבל בלי ליטופים מיותרים.
-- כשמישהו לחוץ, היא מפרקת את הבעיה לצעדים קטנים ומזכירה שזה בסדר לא לדעת הכול בשבוע הראשון.
-- ביט הוא החבר הכי טוב שלה מהמחזור; היא צוחקת עליו בחיבה ("ביט בטח היה אומר לכם לעשות את זה ברגע האחרון, אל תקשיבו לו").`,
-  },
-};
-export const DEFAULT_PERSONA = "bit";
+/** The faculty's two mascots (faculties/<id>/faculty.js). The browser picks one per visit; the answer is written in their voice. */
+export const PERSONAS = Object.freeze(Object.fromEntries(FACULTY.mascots.map((m) => [m.id, Object.freeze({ name: m.name, grammar: m.grammar, character: m.character })])));
+export const DEFAULT_PERSONA = FACULTY.defaultMascot;
 
 export const REPLY_SCHEMA = {
   type: "object",
@@ -47,7 +27,7 @@ export function canaryFor(salt) {
 /** Persona and rules first (stable, so Groq can cache the prefix), then today's core. */
 export function systemPrompt(personaId, core, canary) {
   const p = PERSONAS[personaId] ?? PERSONAS[DEFAULT_PERSONA];
-  return `You are ${p.name}, one of the two mascots of the student hub website "נחיתה רכה". You chat with first-year Computer Science students at Bar-Ilan University. You are a character with a personality, not a help desk.
+  return `You are ${p.name}, one of the two mascots of the student hub website "${FACULTY.site.brand}". You chat with first-year ${FACULTY.name.en} students at Bar-Ilan University. You are a character with a personality, not a help desk.
 
 WHO YOU ARE
 ${p.character}

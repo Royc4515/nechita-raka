@@ -698,6 +698,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 @media print { .peek, .peek-bubble, .chat-panel { display: none !important; } }
 </style>
 <script src="./data.js"></script>
+<!-- The faculty (names, mascots, theme), written by the build from faculties/<id>/faculty.js; read by the launcher below, peek.js and chat.js. -->
+<script src="./faculty.js"></script>
 <script>
   /* Language: Hebrew by default. ?lang=en (or the EN button) switches and is remembered on this device.
      The English strings (data.en.js) load only in English, before the page script reads them. */
@@ -862,18 +864,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
 </button>
 <script>
   /* Picks the mascot before the first paint, so a reload never flashes the other one (peek.js reads data-persona).
-     Every load gets the one the last load didn't, so they take turns. */
+     Every load gets the one the last load didn't, so the faculty's two (window.FACULTY, faculty.js) take turns. */
   (() => {
     const launcher = document.getElementById("chat-launcher");
+    const [first, second] = window.FACULTY.mascots;
     let last = null;
     try { last = JSON.parse(localStorage.getItem("nr-chat-last")); } catch (e) { /* storage blocked */ }
-    const persona = last === "bit" ? "byte" : last === "byte" ? "bit" : Math.random() < 0.5 ? "bit" : "byte";
+    const mascot = last === first.id ? second : last === second.id ? first : Math.random() < 0.5 ? first : second;
     try {
-      localStorage.setItem("nr-chat-last", JSON.stringify(persona));
-      sessionStorage.setItem("nr-chat-persona", JSON.stringify(persona)); // the chat panel opens with the same one
+      localStorage.setItem("nr-chat-last", JSON.stringify(mascot.id));
+      sessionStorage.setItem("nr-chat-persona", JSON.stringify(mascot.id)); // the chat panel opens with the same one
     } catch (e) { /* storage blocked: random each load */ }
-    launcher.dataset.persona = persona;
-    launcher.querySelector("img").src = `./assets/mascot/peek-${persona}.webp`;
+    launcher.dataset.persona = mascot.id;
+    launcher.querySelector("img").src = `./assets/mascot/${mascot.files.peek}`;
   })();
 </script>
 <div class="peek-bubble" id="peek-bubble" aria-hidden="true" hidden><span class="peek-who"></span><span class="peek-text"></span></div>
@@ -2116,19 +2119,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return el("span", { class: "menorah", dir: "ltr", role: "img", "aria-label": tr("חנוכייה עם {n} נרות דולקים", { n: lit }) },
       ...order.map((n) => el("i", { class: `candle${n === 0 ? " shamash lit" : n <= lit ? " lit" : ""}` })));
   }
-  // ---------- Mascots: two characters, he (mascot-*) and she (her-*). Each page load picks
-  // who goes first at random, then every mascot spot alternates between them. ----------
-  const MASCOT_FILES = { he: "mascot", she: "her" };
-  // Width of each pose at 480px tall (the WebP files), so every slot keeps its size while loading.
-  const MASCOT_WIDTH_AT_480 = {
-    he: { wave: 271, think: 203, celebrate: 372, point: 306, calendar: 311, idea: 272, laptop: 432 },
-    she: { wave: 271, think: 240, celebrate: 400, point: 310, calendar: 286, idea: 252, laptop: 497 },
-  };
+  // ---------- Mascots: the faculty's two characters (window.FACULTY, faculty.js), each with the same
+  // seven poses under its own file prefix. Each page load picks who goes first at random, then every
+  // mascot spot alternates between them. poseWidths is each pose's width at 480px tall (the WebP
+  // files), so every slot keeps its size while loading. ----------
+  const MASCOTS = window.FACULTY.mascots;
   let mascotTurn = Math.random() < 0.5 ? 0 : 1;
   function setMascot(img, pose, height) {
-    const who = mascotTurn++ % 2 ? "she" : "he";
-    img.src = `./assets/mascot/${MASCOT_FILES[who]}-${pose}.webp`;
-    img.width = Math.round((MASCOT_WIDTH_AT_480[who][pose] * height) / 480);
+    const who = MASCOTS[mascotTurn++ % MASCOTS.length];
+    img.src = `./assets/mascot/${who.files.poses}-${pose}.webp`;
+    img.width = Math.round((who.poseWidths[pose] * height) / 480);
     img.height = height;
     return img;
   }
