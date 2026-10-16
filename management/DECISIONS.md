@@ -26,4 +26,8 @@ Append only. Newest at the bottom. Format: date, decision, who, why. Roy's decis
 | 15.10.2026 | Plans, reports and agent prompts are written in English; Hebrew only for site copy and names. | Roy ("it needs to be in english its much more tokens friendly") | Token cost. |
 | 15.10.2026 | Agent ids are plain role names (orchestrator, cs-owner, neuro-owner, designer, ux-reviewer, engineer, qa, security, social, student-user); the corporate titles stay in the plan as nicknames. | Orchestrator, pending Roy's answer | Grand titles make agents expand their authority; ids are easy to rename. |
 
-Open, waiting for Roy: the weekly agent budget (low, medium, high; the backlog assumes medium), which faculties might follow neuro.
+| 16.10.2026 | Weekly agent budget: medium. One board meeting plus one or two PRs a week, 2 to 3 roles per task. | Roy | Fits the plan's default; revisit after two weeks. |
+| 16.10.2026 | Faculties after neuro, if any: psychology and engineering are the candidates. Nothing committed; no generic hero variant yet. | Roy ("all are just a plan, idk if I'll really do those") | Keeps the hero work to CS and neuro. |
+| 16.10.2026 | PR #74 (chat facts from the baseline) merged after the CS owner's fact check; unsourced claims (Inbar arrows icon, free-place rule) were removed rather than kept. Open question for Roy: does the arrows icon work for every multi-group course, and is "free place, no overlap" the actual rule? | Orchestrator, under the content-merge rule | Facts without an official source do not reach the site. |
+
+Open, waiting for Roy: the Inbar group-change mechanics (arrows icon, free-place rule) for the registration FAQ; the service-center hours (the official page sits behind a bot check).
