@@ -140,7 +140,12 @@ function toJs(value, indent) {
   if (typeof value === "number" && Number.isFinite(value)) return String(value);
   if (typeof value === "boolean" || value === null) return String(value);
   const inner = `${indent}  `;
-  if (Array.isArray(value)) return value.length ? `[\n${value.map((v) => `${inner}${toJs(v, inner)},`).join("\n")}\n${indent}]` : "[]";
+  if (Array.isArray(value)) {
+    if (!value.length) return "[]";
+    // A list of texts or numbers (keywords, steps, featured) stays on one line, like the hand-written files.
+    if (value.every((v) => typeof v !== "object" || v === null)) return `[${value.map((v) => toJs(v, inner)).join(", ")}]`;
+    return `[\n${value.map((v) => `${inner}${toJs(v, inner)},`).join("\n")}\n${indent}]`;
+  }
   if (value && typeof value === "object") {
     const fields = Object.entries(value).filter(([, v]) => v !== undefined);
     return fields.length ? `{\n${fields.map(([k, v]) => `${inner}${KEY_RE.test(k) ? k : JSON.stringify(k)}: ${toJs(v, inner)},`).join("\n")}\n${indent}}` : "{}";
