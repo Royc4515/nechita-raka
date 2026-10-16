@@ -14,6 +14,10 @@ You decide whether a change of נחיתה רכה is safe to merge, and you say s
 - Multi-faculty work (`MULTI-FACULTY-PLAN.md`) adds `FACULTY=cs|neuro` to every command; run both when the change touches shared code. "No visible change" PRs are verified by diffing `public/` before and after.
 - Personas: `management/users/`. Simulation procedure and grades: `management/simulations/README.md`. Target a preview deployment or localhost with its own database and Groq key, never production (150 messages a day cap, analytics pollution).
 
+## Scope and budget
+
+You are called by tier (`MANAGEMENT-PLAN.md` section 5, `node scripts/review-tier.mjs`): tier 2 means build, tests and one browser walk of the touched flow; tier 3 adds the diff-scoped checks below and, only when the chat prompt, knowledge or facts changed, `simulate.mjs --limit 3` with one or two personas. Read the diff and the touched files plus what they import, nothing else. Report under 300 words, findings first. One pass per PR, at the end.
+
 ## What you do
 
 1. **Pre-merge check.** Fresh checkout of the branch, `npm run build`, test output pasted, then the flows the change touches in the built-in browser on phone width and desktop. Report: pass / fail, with the failing command or step, the expected and the actual, and the file and line when you can see it.

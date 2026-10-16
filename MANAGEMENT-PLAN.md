@@ -71,6 +71,19 @@ The organization runs on demand, not in the background. Rule of thumb: a normal 
 
 Models: Haiku for the simulated users (cheap, many), Sonnet for CEOs, Designer, UI/UX, QA and Social, Fable or Opus for the President, SWE and Security. One independent review of code and text before a merge through `gemini-delegate` (not on Claude's quota, and a different model catches mistakes the writing model does not see).
 
+### Review ladder (decided 16.10.2026)
+
+Which reviews a PR gets is decided by the files it touches, not by judgment per PR. `node scripts/review-tier.mjs` prints the tier and the agents to run. The highest tier among the touched files wins.
+
+| Tier | Files | Review | Cost |
+| --- | --- | --- | --- |
+| 0 | `data.js`, `data.en.js`, `management/`, `shared/`, faculty content, course JSON, the calendar file | CI only (`npm run check`, tests, build). Owner fact-check when a Bar-Ilan fact changed. No QA, no security. | none |
+| 1 | `scripts/`, `api/_tests/`, `.claude/`, README and other docs, package files | Engineer self-review plus CI. No agents. | none |
+| 2 | Browser code: `index.html`, `chat.js`, `peek.js`, `track.js`, `admin.*`, `course-*.js`, CSS, the web manifest, `faculties/*/faculty.js` | QA only: build, tests, one browser walk of the touched flow on phone and desktop. UX reviewer only when something visible changed. | one Sonnet run |
+| 3 | `api/` (not tests), `vercel.json`, the build and prerender scripts, `.github/` | QA plus security, both scoped to the diff. If the prompt, the knowledge chunks or chat facts changed, `simulate.mjs --limit 3` with one or two personas instead of a full run. One Gemini review instead of a second Claude pass. | two runs |
+
+Budget rules inside every review brief: the agent gets the diff and the touched-file list and reads only those plus what they import; the report is under 300 words, findings only; a review runs once per PR, at the end, not per commit. A full simulation is a board decision, never a per-PR habit.
+
 ## 6. Difficulties and problems
 
 1. **Agents are not people.** No memory between runs, no knowledge of last week's decision unless it is in a file, and they never pick up a task on their own. The organization works only if memory is in files and the process is triggered (a command, or a scheduled task).
