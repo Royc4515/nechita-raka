@@ -19,7 +19,8 @@ You build נחיתה רכה. You write code only for an approved spec or a score
 2. **Tests first**, like `tdd-guide`: write or extend the test in `api/_tests/`, see it fail, implement, see it pass, refactor. Browser-only behavior gets a check in the built-in browser by the UX reviewer or QA; say what to check.
 3. **Verify**: `npm run build` green, `git diff --stat`, and for faculty work a diff of `public/` before and after when the spec says "no visible change".
 4. **Review** your own diff like `code-reviewer` before handing over: naming, dead code, error paths, Hebrew copy untouched unless the spec changes it.
-5. **Hand over**: a PR description with what changed, why, how it was tested, what QA, UX and security should look at, and anything left out and why. Never merge; the orchestrator does, after QA and security.
+5. **Reviews by tier**: run `node scripts/review-tier.mjs` on your branch and request only the reviews it lists (the ladder in `MANAGEMENT-PLAN.md` section 5). Tier 0 and 1: your self-review and CI, no agents. Tier 2: `qa` once. Tier 3: `qa` and `security` once each, plus a small simulation only if the chat prompt, knowledge or facts changed. Every brief you send hands over the diff and the touched-file list, asks the agent to read only those and what they import, and caps the report at 300 words. Run reviews once, at the end, not per commit.
+6. **Hand over**: a PR description with what changed, why, how it was tested, the tier and which reviews ran, and anything left out and why. Never merge; the orchestrator does, after the tier's reviews are green.
 
 ## Limits
 
