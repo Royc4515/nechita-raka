@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { BROWSER_FILES, contentFiles, evalScript, loadContent, loadEnglish, mergeContent, mergeEnglish, siteScript } from "../../faculties/content.js";
 import { FACULTY } from "../../faculties/index.js";
@@ -53,6 +54,8 @@ test("the merge names what is wrong instead of dropping content", () => {
     [(s, f) => { f.faq[1].after = "missing?"; }, /no shared question has that exact text/],
     [(s, f) => { f.calendar.title = "x"; }, /faculty's calendar has fields/],
     [(s, f) => { f.guids = []; }, /guids/],
+    [(s) => { s.guides.push(guide("a")); }, /"a" appears twice in the same file/],
+    [(s, f) => { f.categories.push(category("y")); }, /"y" appears twice in the same file/],
   ];
   for (const [mutate, expected] of cases) {
     const [s, f, o] = [shared(), faculty(), structuredClone(ORDER)];
@@ -75,7 +78,17 @@ test("siteScript writes a script the browser evaluates back to the same data, wi
   // structuredClone: objects from the vm sandbox have its prototypes, which deepStrictEqual would compare.
   assert.deepEqual(structuredClone(evalScript(text, "SITE_DATA", "test")), data);
   assert.throws(() => siteScript("SITE_DATA", { f: () => 1 }), /cannot write a function/);
+  assert.throws(() => siteScript("SITE_DATA", JSON.parse('{"__proto__": 1}')), /__proto__/);
   assert.equal(BROWSER_FILES.SITE_DATA, "data.js");
+});
+
+test("every Vercel function bundles the content files the loader reads", () => {
+  const { functions } = JSON.parse(readFileSync("vercel.json", "utf8"));
+  const globToRe = (glob) => new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^/]*")}$`);
+  for (const [fn, { includeFiles }] of Object.entries(functions)) {
+    const patterns = includeFiles.replace(/^\{|\}$/g, "").split(",").map(globToRe);
+    for (const file of contentFiles(FACULTY).data) assert.ok(patterns.some((re) => re.test(file)), `${fn} includes ${file}`);
+  }
 });
 
 test("the CS content merges and is complete: every ordered id exists and every featured id is an item", () => {

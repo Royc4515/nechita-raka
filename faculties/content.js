@@ -55,8 +55,13 @@ function checkKeys(value, allowed, where) {
 /** The union of two entry lists by id, faculty entries replacing shared ones, in the order of `order`. */
 function mergeById(sharedList, facultyList, order, what) {
   const byId = new Map();
-  for (const entry of asList(sharedList)) byId.set(entry.id, entry);
-  for (const entry of asList(facultyList)) byId.set(entry.id, entry);
+  // Within one file a repeated id is a mistake (a pasted copy), never an override; only across files it is.
+  for (const list of [asList(sharedList), asList(facultyList)]) {
+    const ids = list.map((entry) => entry && entry.id);
+    const twice = ids.find((id, i) => ids.indexOf(id) !== i);
+    if (twice !== undefined) fail(`${what}: the id "${twice}" appears twice in the same file`);
+    for (const entry of list) byId.set(entry.id, entry);
+  }
   if (!Array.isArray(order) || !order.length) fail(`the manifest's content.order.${what} is missing`);
   const seen = new Set();
   const merged = order.map((id) => {
@@ -148,6 +153,8 @@ function toJs(value, indent) {
   }
   if (value && typeof value === "object") {
     const fields = Object.entries(value).filter(([, v]) => v !== undefined);
+    // In a browser object literal `__proto__:` sets the prototype instead of a field; the content never needs it.
+    if (fields.some(([k]) => k === "__proto__")) fail("a field named __proto__ cannot be written to the browser's data file");
     return fields.length ? `{\n${fields.map(([k, v]) => `${inner}${KEY_RE.test(k) ? k : JSON.stringify(k)}: ${toJs(v, inner)},`).join("\n")}\n${indent}}` : "{}";
   }
   fail(`cannot write a ${typeof value} to the browser's data file`);

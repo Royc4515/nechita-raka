@@ -72,6 +72,11 @@ function loadFile(file, globalName) {
   for (const key of ["guides", "categories", "faq"]) {
     if (globalName === "SITE_DATA" && value[key] != null && !Array.isArray(value[key])) errors.push({ msg: `${key} צריך להיות רשימה בתוך [ ].`, file, line: locate(`${key}:`, false, [file]).line });
   }
+  // The same id twice in one file is a pasted copy, and the merge would keep only the last one.
+  for (const key of ["guides", "categories"]) {
+    const ids = Array.isArray(value[key]) ? value[key].map((entry) => entry && entry.id) : [];
+    for (const id of new Set(ids.filter((id, i) => id && ids.indexOf(id) !== i))) errors.push({ msg: `המזהה "${id}" מופיע פעמיים ב-${key} של הקובץ הזה. כל id חייב להיות ייחודי.`, file, line: locate(`id: \`${id}\``, true, [file]).line });
+  }
   return value;
 }
 

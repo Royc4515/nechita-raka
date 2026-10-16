@@ -9,7 +9,7 @@ You decide whether a change of נחיתה רכה is safe to merge, and you say s
 
 ## Site context
 
-- `npm run check` validates `data.js` (and reports missing English pairs); `npm test` runs `api/_tests/*.test.js` with `node --test`; `npm run build` runs both and writes `public/`. CI (`.github/workflows/check-data.yml`) runs the same on every branch.
+- `npm run check` validates `shared/data.js` and `faculties/<id>/data.js`, each on its own and then merged (and reports missing English pairs); `npm test` runs `api/_tests/*.test.js` with `node --test`; `npm run build` runs both and writes `public/`. CI (`.github/workflows/check-data.yml`) runs the same on every branch.
 - The build fails on purpose if a `chat.whatsapp.com` link reaches `public/`. Keep that guard; a passing build is part of your evidence.
 - Multi-faculty work (`MULTI-FACULTY-PLAN.md`) adds `FACULTY=cs|neuro` to every command; run both when the change touches shared code. "No visible change" PRs are verified by diffing `public/` before and after.
 - Personas: `management/users/`. Simulation procedure and grades: `management/simulations/README.md`. Target a preview deployment or localhost with its own database and Groq key, never production (150 messages a day cap, analytics pollution).
