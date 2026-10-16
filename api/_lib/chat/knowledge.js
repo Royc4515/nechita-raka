@@ -1,26 +1,23 @@
 /**
- * What Bit and Byte know: built from data.js, the same file the page renders, so the chat can
- * never say something the site doesn't. Chunks are fixed per deploy; the "core" (today's date,
- * where we are in the year) is rebuilt per request.
+ * What Bit and Byte know: built from the same content the page renders (shared/data.js and
+ * faculties/<id>/data.js, merged by faculties/content.js exactly as the build merges them into
+ * public/data.js), so the chat can never say something the site doesn't. Chunks are fixed per
+ * deploy; the "core" (today's date, where we are in the year) is rebuilt per request.
  */
-import { readFileSync } from "node:fs";
-import vm from "node:vm";
+import { loadContent } from "../../../faculties/content.js";
 import { loadCourseChunks } from "./courses.js";
 import { hidePhones } from "./phones.js";
 import { SITE_URL } from "./site.js";
 
 export { SITE_URL };
 
-const DATA_URL = new URL("../../../data.js", import.meta.url);
 const TIME_ZONE = "Asia/Jerusalem";
 const DAY_MS = 86_400_000;
 
-/** data.js sets window.SITE_DATA; run it in an empty sandbox (it is our own, reviewed file). */
-export function loadSiteData(source = readFileSync(DATA_URL, "utf8")) {
-  const sandbox = { window: {} };
-  vm.runInNewContext(source, sandbox, { timeout: 1000 });
-  const data = sandbox.window.SITE_DATA;
-  if (!data || !Array.isArray(data.guides)) throw new Error("data.js did not set window.SITE_DATA");
+/** The merged site content (the files are our own, reviewed ones; they run in an empty sandbox). */
+export function loadSiteData() {
+  const data = loadContent();
+  if (!Array.isArray(data.guides)) throw new Error("the merged content has no guides");
   return data;
 }
 

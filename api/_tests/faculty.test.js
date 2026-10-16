@@ -65,6 +65,10 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.mascots[0].hellos = []; }, /hellos/],
     [(f) => { f.labels.heroPath = ""; }, /labels\.heroPath/],
     [(f) => { f.id = "CS"; }, /id must be/],
+    [(f) => { delete f.content; }, /content\.order is missing/],
+    [(f) => { f.content.order.guides = []; }, /content\.order\.guides/],
+    [(f) => { f.content.order.categories.push("Bad Id"); }, /content\.order\.categories has an id/],
+    [(f) => { f.content.order.guides.push(f.content.order.guides[0]); }, /lists an id twice/],
   ];
   for (const [mutate, expected] of cases) {
     const broken = clone(cs);

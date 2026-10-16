@@ -18,6 +18,7 @@ const ID_RE = /^[a-z][a-z0-9-]*$/;
 const COLOR_RE = /^#[0-9a-f]{6}$/;
 const NAME_RE = /^[\w-]+$/;
 const IMAGE_RE = /^[\w-]+\.(webp|jpg|png)$/;
+const CONTENT_ID_RE = /^[a-z0-9-]+$/; // guide and category ids, as check-data.mjs requires them
 
 const fail = (id, what) => { throw new Error(`faculty "${id}": ${what}`); };
 const nonEmpty = (value) => typeof value === "string" && value.trim().length > 0;
@@ -45,6 +46,18 @@ function checkTheme(id, theme) {
   }
 }
 
+/** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
+function checkContentOrder(id, content) {
+  const order = (content || {}).order;
+  if (!order || typeof order !== "object") fail(id, "content.order is missing");
+  for (const key of ["guides", "categories"]) {
+    const list = order[key];
+    if (!Array.isArray(list) || !list.length) fail(id, `content.order.${key} must be a non-empty list of ids`);
+    for (const entry of list) if (!CONTENT_ID_RE.test(entry || "")) fail(id, `content.order.${key} has an id that is not lowercase English: ${JSON.stringify(entry)}`);
+    if (new Set(list).size !== list.length) fail(id, `content.order.${key} lists an id twice`);
+  }
+}
+
 /** Throws with the field's name when the manifest is not usable; returns it otherwise. */
 export function validateFaculty(faculty) {
   const id = faculty && faculty.id;
@@ -62,6 +75,7 @@ export function validateFaculty(faculty) {
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");
   checkTheme(id, faculty.theme);
   for (const key of ["chatPath", "heroPath"]) if (!nonEmpty((faculty.labels || {})[key])) fail(id, `labels.${key} is missing`);
+  checkContentOrder(id, faculty.content);
   if (!Array.isArray(faculty.mascots) || faculty.mascots.length !== 2) fail(id, "mascots must be a list of exactly two");
   faculty.mascots.forEach((m, i) => checkMascot(id, m, i));
   const genders = faculty.mascots.map((m) => m.gender).sort().join("");

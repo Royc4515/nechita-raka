@@ -54,6 +54,15 @@ export default {
     heroPath: `~/biu/cs/year-1`,
   },
 
+  // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/cs/data.js),
+  // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.
+  content: {
+    order: {
+      guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
+      categories: [`university`, `materials`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
+    },
+  },
+
   // הקמע שמציץ ראשון כשאין עדיין בחירה שמורה בדפדפן, ולמקרה שנשמר מזהה לא מוכר.
   defaultMascot: `bit`,
 

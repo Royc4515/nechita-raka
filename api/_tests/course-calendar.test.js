@@ -1,16 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import vm from "node:vm";
 import { buildIcs, eventType } from "../../course-calendar.js";
 import { applyCustom, createStore } from "../../course-store.js";
+import { loadContent } from "../../faculties/content.js";
 import { loadCourses } from "../_lib/courses/model.js";
 
 const { courses, scannedAt } = loadCourses();
 const byCode = new Map(courses.map((c) => [c.code, c]));
-const sandbox = { window: {} };
-vm.runInNewContext(readFileSync(new URL("../../data.js", import.meta.url), "utf8"), sandbox);
-const { terms, events } = sandbox.window.SITE_DATA.calendar;
+const { terms, events } = loadContent().calendar;
 const A = "סמסטר א'";
 const all = (list) => new Set(list);
 const options = (over = {}) => ({

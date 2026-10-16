@@ -1,6 +1,6 @@
 # The site lives on Vercel now (https://nechita-raka.vercel.app). GitHub Pages only serves
 # redirect/, a page that forwards old links (with their #guide-... and ?q=...) to the new
-# address, after data.js and the chat tests pass.
+# address, after the content check and the chat tests pass.
 # Requires Settings > Pages > Source: "GitHub Actions".
 name: Deploy site
 
