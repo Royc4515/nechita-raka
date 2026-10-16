@@ -1,7 +1,8 @@
 // What the build publishes for the selected faculty (MULTI-FACULTY-PLAN.md D4, D6, D7):
 // public/faculty.js for the browser, manifest.webmanifest, and the mascot and link-preview images
 // copied to the paths the site has always used.
-import { cpSync, existsSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import { MASCOT_POSES } from "../faculties/index.js";
 
 // Shared by every faculty; only the name, description and color come from the manifest (D6).
@@ -63,15 +64,22 @@ export function facultyImageFiles(faculty) {
   ];
 }
 
+/** Where each image of the faculty is published, relative to the output: the same addresses for every faculty. */
+export function facultyImageTargets(faculty) {
+  return Object.fromEntries(facultyImageFiles(faculty).map((file) => [file, file === faculty.site.ogImage.file ? faculty.site.ogImage.path : `assets/${file}`]));
+}
+
 /**
- * Copies the faculty's images into the output: the mascot folder to assets/mascot/ and the OG image
- * to the path the manifest names, so the addresses stay the same for every faculty.
+ * Copies only the images the manifest names (never the whole folder, so a stray file under
+ * faculties/<id>/ is not published): the mascot images to assets/mascot/ and the OG image to the
+ * path the manifest names. Throws when one is missing.
  */
-export function copyFacultyAssets(faculty, out) {
-  const dir = `faculties/${faculty.id}`;
-  const missing = facultyImageFiles(faculty).filter((file) => !existsSync(`${dir}/${file}`));
+export function copyFacultyAssets(faculty, out, dir = `faculties/${faculty.id}`) {
+  const targets = facultyImageTargets(faculty);
+  const missing = Object.keys(targets).filter((file) => !existsSync(`${dir}/${file}`));
   if (missing.length) throw new Error(`build-public: faculty "${faculty.id}" is missing ${missing.map((f) => `${dir}/${f}`).join(", ")}`);
-  mkdirSync(`${out}/assets`, { recursive: true });
-  cpSync(`${dir}/mascot`, `${out}/assets/mascot`, { recursive: true });
-  cpSync(`${dir}/${faculty.site.ogImage.file}`, `${out}/${faculty.site.ogImage.path}`);
+  for (const [file, target] of Object.entries(targets)) {
+    mkdirSync(dirname(`${out}/${target}`), { recursive: true });
+    copyFileSync(`${dir}/${file}`, `${out}/${target}`);
+  }
 }

@@ -281,7 +281,7 @@ function headHtml({ title, description, url, type, modified, graph }) {
     `<meta property="og:title" content="${esc(title)}">`,
     `<meta property="og:description" content="${esc(description)}">`,
     `<meta property="og:url" content="${esc(url)}">`,
-    `<meta property="og:image" content="${OG_IMAGE.url}">`,
+    `<meta property="og:image" content="${esc(OG_IMAGE.url)}">`,
     `<meta property="og:image:width" content="${OG_IMAGE.width}">`,
     `<meta property="og:image:height" content="${OG_IMAGE.height}">`,
     `<meta property="og:image:alt" content="${esc(OG_IMAGE.alt)}">`,

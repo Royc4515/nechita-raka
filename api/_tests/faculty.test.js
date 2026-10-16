@@ -2,7 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DEFAULT_FACULTY, FACULTIES, FACULTY, MASCOT_POSES, THEME_KEYS, facultyIdFrom, selectFaculty, validateFaculty } from "../../faculties/index.js";
-import { browserFaculty, facultyScript, webmanifest } from "../../scripts/faculty-public.mjs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, webmanifest } from "../../scripts/faculty-public.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -54,6 +57,10 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.site.url = "https://x.example/"; }, /site\.url/],
     [(f) => { f.site.ogImage.path = "../secret"; }, /ogImage\.path/],
     [(f) => { f.mascots[0].files.peek = "../x.webp"; }, /files\.peek/],
+    [(f) => { f.mascots[0].files.avatar = "faculty.js"; }, /files\.avatar/],
+    [(f) => { f.mascots[0].files.poses = "../mascot"; }, /files\.poses/],
+    [(f) => { f.site.ogImage.file = "faculty.js"; }, /ogImage\.file/],
+    [(f) => { f.site.url = "https://x\"><script>"; }, /site\.url/],
     [(f) => { delete f.mascots[0].poseWidths.laptop; }, /poseWidths\.laptop/],
     [(f) => { f.mascots[0].hellos = []; }, /hellos/],
     [(f) => { f.labels.heroPath = ""; }, /labels\.heroPath/],
@@ -113,4 +120,28 @@ test("the prerender writes the manifest's accent colors into the :root blocks an
   assert.equal(withHeroPath(template, cs.labels.heroPath), template);
   assert.equal(homeDescription("תשפ\"ז"), `${cs.site.description.replace("{year}", "תשפ\"ז")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
   assert.equal(homeDescription(""), `${cs.site.description.replace(" {year}", "")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
+});
+
+test("the build copies only the images the manifest names, to their fixed public paths", () => {
+  const files = facultyImageFiles(cs);
+  assert.equal(files.length, 1 + 2 * (2 + MASCOT_POSES.length));
+  const targets = facultyImageTargets(cs);
+  assert.equal(targets["og-image.jpg"], "assets/og-image-v2.jpg");
+  assert.equal(targets["mascot/peek-bit.webp"], "assets/mascot/peek-bit.webp");
+  const root = mkdtempSync(join(tmpdir(), "nr-faculty-"));
+  try {
+    const src = join(root, "src");
+    for (const file of files) { mkdirSync(join(src, dirname(file)), { recursive: true }); writeFileSync(join(src, file), file); }
+    writeFileSync(join(src, "mascot", "stray.txt"), "not published");
+    writeFileSync(join(src, "faculty.js"), "not published");
+    const out = join(root, "out");
+    copyFacultyAssets(cs, out, src);
+    for (const [file, target] of Object.entries(targets)) assert.equal(readFileSync(join(out, target), "utf8"), file);
+    assert.ok(!existsSync(join(out, "assets", "mascot", "stray.txt")), "a stray file in the mascot folder stays out");
+    assert.ok(!existsSync(join(out, "faculty.js")) && !existsSync(join(out, "assets", "faculty.js")), "the manifest is not copied as an asset");
+    rmSync(join(src, "mascot", "her-idea.webp"));
+    assert.throws(() => copyFacultyAssets(cs, join(root, "out2"), src), /missing .*her-idea\.webp/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
