@@ -85,14 +85,17 @@ FAQ (`/node/944`): "משרד המחלקה זמין ונגיש", no hours given. 
 
 Which building hosts the year 1 lectures (chemistry, calculus, physics, intro psychology) is not published.
 
-## 6. Open questions for Roy
+## 6. Open questions, with the answers of 18.10.2026
 
-1. Single major: one `single` track plus `single-comp`, or three specialization tracks (computational, biological, cognition)? Biological and cognition only split in year 2.
-2. Which track does the target student mostly come from? The persona is psychology combined; should it be the manifest default?
-3. Philosophy and psychology: Gonda says B.Sc, the Philosophy dept says "B.A." and the Psychology dept says "פסיכולוגיה- מדעי המוח (.B.A)". Which degree letter do we print? Needs the central ידיעון (blocked).
-4. CS double plan page is labeled תשפ"ו but links `חוקה תשפ"ז`. Open the PDF in a browser to confirm the year.
-5. Office room, hours and who sits in the secretariat: not published. Ask the office by email, or Roy confirms on site.
-6. Life Sciences lists "building 212, rooms 211A and 211C"; confirm in a browser before it goes into `data.js`.
-7. Please open `courses.biu.ac.il` in a browser and confirm 27, 60, 80, 86, 89 and that chemistry and math have no codes of their own; this is the catalog scan step.
-8. Open the `חוקה תשפ"ז` PDFs (they are the real year-by-year lists); I read only the HTML summaries. Linguistics and CS contacts are also unknown.
-9. Lecture buildings and lab locations for year 1: not published, so a short question to the office, or to students Roy knows.
+| # | Question | Answer | By |
+| --- | --- | --- | --- |
+| 1 | Single major: one track, two (`single`, `single-comp`) or three? | Open. Roy asked what it affects; explained (the track selector decides which year lists a student sees; computational differs from year 1, biological and cognition only from year 2). | Roy, pending |
+| 2 | Default track before the student picks one? | None: a one-time track picker on first visit; chat and courses show all tracks until chosen. | Roy |
+| 3 | Degree letters: Gonda says B.Sc, philosophy and psychology say B.A. | Print no degree letters anywhere on the neuro site. | Roy |
+| 4 | CS double plan page labeled תשפ"ו but links חוקה תשפ"ז. | Confirmed in the browser: the page's own "חוקה תשפ"ז" link points to a PDF in the תשפ"ז folder (`.../תוכניות לימודים תשפז/תוכנית-לימודים_מדעי-המוח-ומדעי-המחשב_מעודכן-תשפז.pdf`), next to the תשפ"ו and תשפ"ה ones. The תשפ"ו label is a stale caption. | Orchestrator |
+| 5 | Office room, hours, who sits in the secretariat: not published. | Roy asks students he knows; answers enter `data.js` with Roy as the source and a date. | Roy |
+| 6 | Life Sciences "building 212, rooms 211A and 211C". | Confirmed as published: the contact section of `life-sciences.biu.ac.il/tracks/10427` (last updated 15/06/2026) says `בנין 212, חדרים 211A ו 211C` for the admissions coordinators and `בנין 207` for the academic advisor. The page lists named people with phones; those stay out of the site, only the department email and the rooms go in. | Orchestrator |
+| 7 | Confirm catalog department codes 27, 60, 80, 86, 89 on courses.biu.ac.il. | Still open: `courses.biu.ac.il` answers a Radware CAPTCHA to the built-in browser and to fetchers; agents do not solve CAPTCHAs. Roy opens it once in his own browser and reads the department list, or the catalog scan session does it from a browser that passes. | Roy |
+| 8 | Read the חוקה תשפ"ז PDFs (the real year-by-year lists). | Partly: the CS double PDF exists and is תשפ"ז (Q4). Its text was not extracted: no PDF text tool on this machine (no poppler or pypdf) and the browser offers the PDF as a download. The neuro content session reads the seven PDFs with a PDF tool or after `pip install pypdf`, and records year-1 lists per track. | Orchestrator |
+| 9 | Year-1 lecture buildings and lab locations: not published. | Same as 5: Roy asks students he knows. | Roy |
+
