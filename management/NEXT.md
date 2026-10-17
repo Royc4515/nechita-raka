@@ -17,6 +17,7 @@ Everything below is merged into main and live, with no visible change on the CS 
 | Faculty PR 3 | #80 | Courses (catalog, yearbook, categories under `faculties/cs/courses/`), the hero, the search synonyms and the easter eggs from the manifest. Security notes fixed; the orchestrator did the browser walk on 18.10 (hero, synonyms, egg, course browser, catalog link) before merging. |
 
 | Faculty PR 4 | #83 | `FACULTY` env everywhere, CI matrix over cs and neuro, a build guard against another faculty's names, and a placeholder `faculties/neuro/` (CS content copied, violet accent, mascots נוי and רון with CS images). `FACULTY=neuro npm run build` produces a neuro site. |
+| Neuro courses | #87, #88 | Roy's catalog scan of department 27 (60 courses) is the neuro catalog; the Gonda study plans of three cohorts for all eight tracks were downloaded, parsed and turned into `plans.json` and a `track:year` yearbook (`management/neuro/plans.md` has the rule and the diffs). |
 | Neuro research | #82 | `management/neuro/programs.md`: seven brain sciences programs with sources, proposed track ids, study-plan pages, catalog codes, contacts, nine open questions. |
 
 The CS site works exactly as before. The code side of the faculty plan (PRs 1 to 4) is done; what remains is the neuro Vercel project (PR 5) and the neuro content (PR 6).
@@ -24,9 +25,9 @@ The CS site works exactly as before. The code side of the faculty plan (PRs 1 to
 ## Tomorrow, in this order
 
 1. **First board meeting.** Sunday's weekly report arrived by email on 18.10. Paste its text into the orchestrator session and run `/board`. Output: a one-page summary in `management/meetings/`, the backlog re-scored, questions for you. This also refreshes the backlog rows that are stale (PR 2 and the simulation items still say "in review").
-2. **Answer the nine neuro questions** at the end of `management/neuro/programs.md` (degree letters, the CS plan's year label, the PDFs and the catalog that need a browser). Each answer unblocks part of the neuro content.
+2. **Neuro questions**: nine of ten are answered in `management/neuro/programs.md`. Open: Q10, which of the two תשפ"ו plan PDFs binds students who started in תשפ"ו (the mapping assumes the "updated per תשפ"ז" one). Also the service-center hours, behind a bot check.
 3. **Vercel project for neuro** (faculty PR 5): manual work on your side, about an hour: a second Vercel project on the same GitHub repo with `FACULTY=neuro` in its env, a separate Neon database, a second Groq key, `CHAT_SALT`, `ADMIN_EMAILS`, `SITE_URL`, a Search Console property for the new address, the Google OAuth origin. The list is in `MULTI-FACULTY-PLAN.md` D10. Say "PR 5" and the orchestrator walks you through it step by step.
-4. **Neuro content** (faculty PR 6) starts after your answers: the neuro owner writes `faculties/neuro/data.js` from the study-plan pages and contacts it found, the designer briefs נוי and רון and the hero variant, the engineer adds the track selector. The placeholder content in `faculties/neuro/` is CS content and must not go live.
+4. **Neuro content** (faculty PR 6): the neuro owner writes `faculties/neuro/data.js` from the pages and contacts it found, the designer briefs נוי and רון and the hero variant, the engineer adds the track selector and teaches the course model the `track:year` category form (today a neuro course card shows no year). The owner also verifies the inferred years in `yearbook.json` against the PDFs. The placeholder content in `faculties/neuro/data.js` is still CS content and must not go live.
 
 ## Decisions waiting on you
 

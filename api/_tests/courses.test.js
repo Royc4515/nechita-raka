@@ -4,10 +4,11 @@ import { buildCourseChunks, courseUrl, loadCourseChunks } from "../_lib/chat/cou
 import { SITE_URL } from "../_lib/chat/knowledge.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
 import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE } from "../_lib/courses/model.js";
-import { FACULTIES, facultyFile } from "../../faculties/index.js";
+import { FACULTIES, FACULTY, facultyFile } from "../../faculties/index.js";
 
 /** The label of a yearbook category of the active faculty, as the chat cites it. */
-const label = (id) => CATEGORIES.find((c) => c.id === id).label;
+// Labels of the CS fixture's categories; CATEGORIES (the active faculty's) is what the chat chunks print.
+const label = (id) => FACULTIES.cs.courses.categories.find((c) => c.id === id).label;
 
 // These tests describe course logic against the CS catalog as a fixture, whatever FACULTY the build runs for.
 const csFile = (key) => facultyFile(FACULTIES.cs, FACULTIES.cs.courses[key]);
@@ -40,7 +41,7 @@ test("a course listed in several parts of the yearbook carries every one of them
   assert.deepEqual(byCode.get("896877").categories, ["complement", "ai"]); // דיפ לרנינג
   assert.deepEqual(byCode.get("89200").categories, ["complement"]); // לוגיקה מתמטית
   assert.deepEqual(byCode.get("892512").categories, ["ai"]); // AI track only
-  const known = new Set(CATEGORIES.map((c) => c.id));
+  const known = new Set(FACULTIES.cs.courses.categories.map((c) => c.id));
   for (const c of shaped.courses) for (const id of c.categories) assert.ok(known.has(id), `${c.code}: ${id}`);
 });
 
@@ -112,8 +113,14 @@ test("a question about a course finds it by name, with day, hours, room, teacher
   assert.match(top.text, /יום ב' 09:00 - 11:00/);
   assert.match(top.text, /מיקום: חדר מחלקה/);
   assert.match(top.text, /בן-ניסן/);
-  assert.ok(chunks.find((c) => c.id === "course:89110").text.includes(`ב${OFFICIAL_SOURCE}: ${label("1")}.`), "the year is cited from the manifest's source");
-  assert.ok(chunks.find((c) => c.id === "course:895656").text.includes(`${label("cluster2")}, ${label("ai")}`), "every category of the course, by its label");
+  if (FACULTY.id === "cs") {
+    assert.ok(chunks.find((c) => c.id === "course:89110").text.includes(`ב${OFFICIAL_SOURCE}: ${label("1")}.`), "the year is cited from the manifest's source");
+    assert.ok(chunks.find((c) => c.id === "course:895656").text.includes(`${label("cluster2")}, ${label("ai")}`), "every category of the course, by its label");
+  } else {
+    // Another faculty's chunks print only the category ids its own manifest knows; CS ids are not among them.
+    assert.ok(!CATEGORIES.some((c) => c.id === "cluster2"), "this run is not CS");
+    assert.ok(!chunks.find((c) => c.id === "course:895656").text.includes(`ב${OFFICIAL_SOURCE}:`), "no category line for ids this faculty does not define");
+  }
 });
 
 test("exam dates are listed when the catalog has them", () => {
