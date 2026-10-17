@@ -4,7 +4,7 @@ Source: the חוקה PDFs linked from each track's study-plan page on gondabrain
 
 ## The rule
 
-A student follows the plan of the year they started. So the תשפ"ז site maps year 1 from the תשפ"ז plan, year 2 from the תשפ"ו plan and year 3 from the תשפ"ה plan. Each track has two תשפ"ו PDFs: the original ("סופי" or "מעודכן") and one named "מעודכן לפי תוכנית לימודים תשפ"ז", which the Gonda pages list first; the mapping uses the updated one. Which of the two binds תשפ"ו students is a question for Roy or the office (Q10 in programs.md).
+A student follows the plan of the year they started. So the תשפ"ז site maps year 1 from the תשפ"ז plan, year 2 from the תשפ"ו plan and year 3 from the תשפ"ה plan. Each track has two תשפ"ו PDFs: the original ("סופי" or "מעודכן") and one named "מעודכן לפי תוכנית לימודים תשפ"ז", which the Gonda pages list first; the mapping uses the updated one, which Roy confirmed on 18.10.2026 is the plan that binds תשפ"ו students (Q10 in programs.md).
 
 ## Caveats
 
