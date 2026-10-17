@@ -330,6 +330,24 @@ test("the faculty guard passes a clean bundle and fails one that carries another
     clean();
     write("index.html", `<h1>${OTHER.pwa.name}</h1>`);
     assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: pwa\\.name`, "m"));
+    // The HTML writer escapes quotes (מדמ"ח -> מדמ&quot;ח) and JSON-LD prints them as \": both forms still count.
+    clean();
+    write("index.html", `<title>${OTHER.site.title.replace(/'/g, "&#39;").replace(/"/g, "&quot;")}</title>`);
+    assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: site\\.title`, "m"));
+    clean();
+    write("index.html", `<script type="application/ld+json">${JSON.stringify({ name: OTHER.pwa.name })}</script>`);
+    assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: pwa\\.name`, "m"));
+    // robots.txt and llms.txt are written from the manifest too.
+    clean();
+    write("robots.txt", `Sitemap: ${OTHER.site.url}/sitemap.xml`);
+    assert.match(markers(), new RegExp(`^robots\\.txt: ${OTHER.id}: site\\.url`, "m"));
+    clean();
+    write("llms.txt", `[x](${OTHER.site.url}/#faq)`);
+    assert.match(markers(), new RegExp(`^llms\\.txt: ${OTHER.id}: site\\.url`, "m"));
+    // A Hebrew name with a one-letter prefix is still the name.
+    clean();
+    write("manifest.webmanifest", `{"description":"שאלו את ${FACULTY.mascots[0].name} ו${OTHER.mascots[0].name}"}`);
+    assert.match(markers(), new RegExp(`^manifest\\.webmanifest: ${OTHER.id}: mascot name "${OTHER.mascots[0].name}"`, "m"));
     clean();
     write("sitemap.xml", `<loc>${OTHER.site.url}/</loc>`);
     assert.match(markers(), new RegExp(`^sitemap\\.xml: ${OTHER.id}: site\\.url`, "m"));

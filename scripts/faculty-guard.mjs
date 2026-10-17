@@ -6,24 +6,28 @@
 // Two scopes, because the content files may legitimately quote a name or an address in prose (the shared guides
 // are written for every faculty, and scripts/check-data.mjs warns when they name one):
 // - everywhere: the other faculty's folder path, image file names, page title, app name and accent colors.
-// - the files written from the manifest alone (faculty.js, manifest.webmanifest, sitemap.xml): also its site
-//   address, its mascot ids and its mascot names. public/faculty.js is parsed too: it must be the active faculty's.
+// - the files written from the manifest alone (faculty.js, manifest.webmanifest, sitemap.xml, robots.txt, llms.txt):
+//   also its site address, its mascot ids and its mascot names. public/faculty.js is parsed too: it must be the active faculty's.
+// A text marker is matched as the HTML and JSON writers print it too (escaped quotes), and a Hebrew name with a
+// "and" prefix (ובייט) still counts as the name; other prefixes would match words such as בנוי.
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import { evalScript } from "../faculties/content.js";
 import { FACULTIES, FACULTY, MASCOT_POSES } from "../faculties/index.js";
-import { accentLine } from "./prerender.mjs";
+import { accentLine, esc } from "./prerender.mjs";
 
 /** The published files whose text is scanned (the same set as the WhatsApp guard). */
 export const TEXT_FILE_RE = /\.(html|js|txt|xml|json|webmanifest|ics|css)$/;
 /** The files the build writes from the manifest alone; a foreign name or address there means the wrong manifest was used. */
-export const MANIFEST_FILES = Object.freeze(new Set(["faculty.js", "manifest.webmanifest", "sitemap.xml"]));
+export const MANIFEST_FILES = Object.freeze(new Set(["faculty.js", "manifest.webmanifest", "sitemap.xml", "robots.txt", "llms.txt"]));
 
 const HEBREW = "\\u0590-\\u05ff";
 const escapeRe = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-/** A name as a whole word: a Hebrew name is bounded by non-Hebrew letters (Hebrew has no \b), an English one by \b. */
-const wordRe = (name) => (/[֐-׿]/.test(name) ? new RegExp(`(?<![${HEBREW}])${escapeRe(name)}(?![${HEBREW}])`) : new RegExp(`\\b${escapeRe(name)}\\b`));
-const literalRe = (text) => new RegExp(escapeRe(text));
+/** The forms a text takes in the published files: as is, as the HTML writer escapes it, and as JSON prints it. */
+const forms = (text) => [...new Set([text, esc(text), JSON.stringify(text).slice(1, -1)])];
+/** A name as a whole word: a Hebrew name may carry the "and" prefix (ו, as in ובייט) and is otherwise bounded by non-Hebrew letters (Hebrew has no \b); an English one is bounded by \b. */
+const wordRe = (name) => (/[֐-׿]/.test(name) ? new RegExp(`(?<![${HEBREW}])ו?${escapeRe(name)}(?![${HEBREW}])`) : new RegExp(`\\b${escapeRe(name)}\\b`));
+const literalRe = (text) => new RegExp(forms(text).map(escapeRe).join("|"));
 
 /** Every image file name a faculty's manifest publishes under assets/mascot/ (the OG image keeps a fixed path and is not a marker). */
 export const mascotImageNames = (faculty) => faculty.mascots.flatMap((m) => [m.files.avatar, m.files.peek, ...MASCOT_POSES.map((pose) => `${m.files.poses}-${pose}.webp`)]);

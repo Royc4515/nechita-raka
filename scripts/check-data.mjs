@@ -210,7 +210,8 @@ for (const f of data.faq) {
 
 // ---------- 3b. Shared content is for every faculty (a warning: the other faculty's site shows it as is) ----------
 const SHARED_FILE = FILES.data[0];
-const hebrewWord = (name) => new RegExp(`(?<![\\u0590-\\u05ff])${name}(?![\\u0590-\\u05ff])`);
+// The name as a whole word, with an optional "and" prefix (ובייט; other prefixes would match words such as בנוי); escaped, the manifest is hand-edited.
+const hebrewWord = (name) => new RegExp(`(?<![\\u0590-\\u05ff])ו?${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\u0590-\\u05ff])`);
 const sharedTexts = [];
 const collect = (value) => { if (typeof value === "string") sharedTexts.push(value); else if (Array.isArray(value)) value.forEach(collect); else if (value && typeof value === "object") Object.values(value).forEach(collect); };
 collect(sharedData);
