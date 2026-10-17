@@ -6,7 +6,7 @@ import { loadContent } from "../../faculties/content.js";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, webmanifest } from "../../scripts/faculty-public.mjs";
+import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -81,6 +81,9 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.eggs[0].words = []; }, /eggs\[0\]\.words/],
     [(f) => { f.eggs[0].toast = ""; }, /eggs\[0\]\.toast/],
     [(f) => { f.eggs[0].effect = "drift"; }, /eggs\[0\]\.effect/],
+    [(f) => { f.eggs[0].effect.type = "blink"; }, /eggs\[0\]\.effect\.type/],
+    [(f) => { f.eggs[0].effect.colors = ["red;background:url(https://x.example/p)"]; }, /eggs\[0\]\.effect\.colors/],
+    [(f) => { f.eggs[0].effect.glyphs = []; }, /eggs\[0\]\.effect\.glyphs/],
     [(f) => { f.id = "CS"; }, /id must be/],
     [(f) => { delete f.content; }, /content\.order is missing/],
     [(f) => { f.content.order.guides = []; }, /content\.order\.guides/],
@@ -205,4 +208,14 @@ test("the hero is a known variant with a path and typed lines; the search and th
   }
   assert.ok(cs.search.synonyms.some((group) => group.includes("מדעי המחשב")));
   assert.ok(cs.eggs.some((egg) => egg.toast.includes("Hello, CS!")));
+});
+
+test("the published catalog takes a name of its own: never one the build writes, and a guide cannot take its name either", () => {
+  assert.equal(nameStem("courses-cs-2027.json"), "courses-cs-2027");
+  const reserved = new Set(["index", "course-list", "data"]);
+  const withDownload = reserveDownload(reserved, cs.courses.download);
+  assert.ok(withDownload.has(nameStem(cs.courses.download)), "the download's name is reserved for guide ids");
+  assert.equal(reserved.size, 3, "the input set is not changed");
+  assert.throws(() => reserveDownload(reserved, "course-list.json"), /courses\.download "course-list\.json" is taken/);
+  assert.throws(() => reserveDownload(reserved, "data.js"), /is taken/);
 });

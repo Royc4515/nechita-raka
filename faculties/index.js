@@ -17,6 +17,8 @@ export const THEME_KEYS = Object.freeze(["accent", "accentHover", "accentInk", "
 export const HERO_VARIANTS = Object.freeze(["terminal"]);
 /** The colored pieces a terminal line may hold (the .t-* classes in index.html). */
 export const TERMINAL_TOKEN_KINDS = Object.freeze(["prompt", "kw", "str", "out", "dim"]);
+/** The effects index.html's playEffect() knows; anything else there falls back to confetti. */
+export const EFFECT_TYPES = Object.freeze(["drift", "embers", "confetti"]);
 
 const ROOT = new URL("../", import.meta.url);
 /** A file of the faculty's folder, repo-relative ("faculties/cs/courses/catalog.json"). */
@@ -115,6 +117,15 @@ function checkSearch(id, search) {
   });
 }
 
+/** An egg's effect: a known type, and colors that are plain #rrggbb values, because the page writes them into a style attribute. */
+function checkEffect(id, effect, where) {
+  if (!effect || typeof effect !== "object") fail(id, `${where} must be an object`);
+  if (!EFFECT_TYPES.includes(effect.type)) fail(id, `${where}.type must be one of ${EFFECT_TYPES.join(", ")}`);
+  if (effect.colors !== undefined && (!Array.isArray(effect.colors) || !effect.colors.length || !effect.colors.every((c) => COLOR_RE.test(c)))) fail(id, `${where}.colors must be a list of #rrggbb colors`);
+  if (effect.glyphs !== undefined && (!Array.isArray(effect.glyphs) || !effect.glyphs.length || !effect.glyphs.every(nonEmpty))) fail(id, `${where}.glyphs must be a non-empty list of texts`);
+  if (effect.code !== undefined && typeof effect.code !== "boolean") fail(id, `${where}.code must be true or false`);
+}
+
 /** eggs: the words that trigger each one, its toast and an optional effect for index.html's playEffect(). */
 function checkEggs(id, eggs) {
   if (!Array.isArray(eggs)) fail(id, "eggs must be a list");
@@ -123,7 +134,7 @@ function checkEggs(id, eggs) {
     if (!egg || typeof egg !== "object") fail(id, `${where} is not an object`);
     if (!Array.isArray(egg.words) || !egg.words.length || !egg.words.every(nonEmpty)) fail(id, `${where}.words must be a non-empty list of texts`);
     if (!nonEmpty(egg.toast)) fail(id, `${where}.toast is missing`);
-    if (egg.effect !== undefined && (!egg.effect || typeof egg.effect !== "object" || !nonEmpty(egg.effect.type))) fail(id, `${where}.effect must be an object with a type`);
+    if (egg.effect !== undefined) checkEffect(id, egg.effect, `${where}.effect`);
   });
 }
 

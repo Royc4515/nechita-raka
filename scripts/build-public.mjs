@@ -9,7 +9,7 @@ import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync,
 import { CATALOG_FILE, loadCourses } from "../api/_lib/courses/model.js";
 import { BROWSER_FILES, loadEnglish, siteScript } from "../faculties/content.js";
 import { FACULTY } from "../faculties/index.js";
-import { copyFacultyAssets, facultyScript, webmanifest } from "./faculty-public.mjs";
+import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
 import { guidePage, homePage, lastUpdated, llmsTxt, loadData, sitemapXml } from "./prerender.mjs";
 
 const OUT = "public";
@@ -38,11 +38,11 @@ const FILES = [
 ];
 // Written by the build for the selected faculty (FACULTY env var, default cs; see faculties/index.js):
 // the content and its English merged from shared/ and faculties/<id>/ (faculties/content.js), the
-// browser's copy of the manifest, the "add to home screen" descriptor, and the faculty's catalog scan
-// under the name the content links to (courses.download in the manifest).
-const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest", FACULTY.courses.download];
-// Names a guide's address must not take: they are files the site already serves, or generated ones.
-const RESERVED = new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map((f) => f.replace(/\..*$/, ""))]);
+// browser's copy of the manifest and the "add to home screen" descriptor.
+const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest"];
+// Names a guide's address must not take: they are files the site already serves, or generated ones. The
+// faculty's catalog scan, published under courses.download, joins them and must not take one of them itself.
+const RESERVED = reserveDownload(new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map(nameStem)]), FACULTY.courses.download);
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT);
