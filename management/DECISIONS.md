@@ -36,4 +36,5 @@ Append only. Newest at the bottom. Format: date, decision, who, why. Roy's decis
 | 18.10.2026 | Unpublished neuro facts (office room and hours, year-1 lecture and lab buildings) come from students Roy asks; they enter data.js with Roy as the source and a date, never from a guess. | Roy | Nothing official states them. |
 | 18.10.2026 | The CS double-major study plan for תשפ"ז is the PDF the Gonda page links as חוקה תשפ"ז; the page caption saying תשפ"ו is stale. Life Sciences rooms 211A and 211C in building 212 are as published. | Orchestrator, checked in the browser | |
 
-Open, waiting for Roy: the single-major track split (one, two or three tracks); the catalog department codes on courses.biu.ac.il (CAPTCHA); the service-center hours (bot check).
+| 18.10.2026 | Neuro tracks: eight. The single major is two tracks, `single` (biological and cognition specializations, identical in year 1) and `single-comp` (computational, chosen at registration); plus the six double majors `cs`, `psychology`, `biology`, `philosophy`, `linguistics`, `physics`. The placeholder manifest's three track ids are replaced in the neuro content PR. | Roy | Matches how students register; avoids two identical year-1 lists. |
+Open, waiting for Roy: the catalog department codes on courses.biu.ac.il (CAPTCHA); the service-center hours (bot check).
