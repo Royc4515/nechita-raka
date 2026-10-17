@@ -8,17 +8,17 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | in review | Course files under `faculties/cs/courses/`, catalog, yearbook, categories and source line from the `courses` block; `hero` (terminal variant), `search.synonyms` and `eggs` from the manifest. No visible change. |
+| Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | done 18.10.2026, #80 | Course files under `faculties/cs/courses/`, catalog, yearbook, categories and source line from the `courses` block; `hero` (terminal variant), `search.synonyms` and `eggs` from the manifest. No visible change. |
 | Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | planned | `FACULTY` env, tests parametrized, placeholder `faculties/neuro/`. |
-| Simulation script | 3 | 2 | 2 | 3.0 | in review | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
-| Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | in review | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
+| Simulation script | 3 | 2 | 2 | 3.0 | done 16.10.2026 | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
+| Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | done 16.10.2026 | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
 | Weekly report also written to a file the board can read | 2 | 1 | 2 | 1.0 | idea | Today it is only an email; the board needs Roy to paste it. |
-| Chat: PII hook garbles sentences when it redacts a phone number copied from the facts | 4 | 2 | 1 | 8.0 | in review | Baseline 15.10.2026 (troll 8, neuro 2): "הטלפון של המזכירות הוא קבוצת הוואטסאפ של נחיתה רכה". Fix: the numbers (long and `*9392`) are hidden from the chat facts in `knowledge.js`, replaced by "(מספר הטלפון מופיע באתר)"; the hook stays as a backstop for invented numbers. |
+| Chat: PII hook garbles sentences when it redacts a phone number copied from the facts | 4 | 2 | 1 | 8.0 | done 16.10.2026 | Baseline 15.10.2026 (troll 8, neuro 2): "הטלפון של המזכירות הוא קבוצת הוואטסאפ של נחיתה רכה". Fix: the numbers (long and `*9392`) are hidden from the chat facts in `knowledge.js`, replaced by "(מספר הטלפון מופיע באתר)"; the hook stays as a backstop for invented numbers. |
 | Chat: greeting-prefixed and follow-up messages answer "לא הבנתי" | 4 | 3 | 2 | 6.0 | open | Baseline 15.10.2026, `security-extras.md`: three probes. Check which model answered (`chat: "ok", model` log). |
 | Chat: invented Inbar menu paths and buildings when no fact matches | 5 | 3 | 2 | 7.5 | open | Baseline 15.10.2026: 11 of 50 invented-fact. Facts per Inbar screen, a buildings fact, stronger "not sure" rule. |
 | Chat: gender slashes ("את/ה", "קח/י") where the prompt says plural | 3 | 2 | 1 | 6.0 | open | Baseline 15.10.2026: seven answers. Prompt line or style-hook check. |
-| Simulations README: env change needs a redeploy; default delay too fast for Groq | 1 | 2 | 1 | 2.0 | in review | Baseline attempt 1 failed on both. Fix: README says an env change needs a redeploy and explains the pacing; the script's default is now `--delay-ms 20000` and a `busy` answer is retried twice, a minute apart. |
-| Simulation transcripts: WhatsApp group links written raw | 1 | 2 | 1 | 2.0 | in review | Baseline 15.10.2026 had to be redacted by hand. Fix: `scripts/simulate/transcript.mjs` writes every group link as `https://chat.whatsapp.com/[redacted]`. |
+| Simulations README: env change needs a redeploy; default delay too fast for Groq | 1 | 2 | 1 | 2.0 | done 16.10.2026 | Baseline attempt 1 failed on both. Fix: README says an env change needs a redeploy and explains the pacing; the script's default is now `--delay-ms 20000` and a `busy` answer is retried twice, a minute apart. |
+| Simulation transcripts: WhatsApp group links written raw | 1 | 2 | 1 | 2.0 | done 16.10.2026 | Baseline 15.10.2026 had to be redacted by hand. Fix: `scripts/simulate/transcript.mjs` writes every group link as `https://chat.whatsapp.com/[redacted]`. |
 
 ## CS
 
