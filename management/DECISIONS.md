@@ -31,4 +31,9 @@ Append only. Newest at the bottom. Format: date, decision, who, why. Roy's decis
 | 16.10.2026 | PR #74 (chat facts from the baseline) merged after the CS owner's fact check; unsourced claims (Inbar arrows icon, free-place rule) were removed rather than kept. Open question for Roy: does the arrows icon work for every multi-group course, and is "free place, no overlap" the actual rule? | Orchestrator, under the content-merge rule | Facts without an official source do not reach the site. |
 
 | 16.10.2026 | The Inbar group-change mechanics are confirmed: the arrows icon next to a course changes its group for any multi-group course, and a move is allowed only to a group with a free place that does not overlap another course. The two sentences return to the registration FAQ (PR #76). | Roy (checked in Inbar) | A maintainer's own check in the system counts as a source when no page states it; noted in a comment in data.js. |
-Open, waiting for Roy: the service-center hours (the official page sits behind a bot check).
+| 18.10.2026 | Neuro site: no default track; a one-time track picker on first visit, and until chosen the chat and the courses page show all tracks and name the track of each fact. | Roy | No program is clearly the biggest; a wrong default misleads. |
+| 18.10.2026 | Neuro site prints no degree letters (B.Sc / B.A.); program names only. | Roy | Gonda and the second departments disagree. |
+| 18.10.2026 | Unpublished neuro facts (office room and hours, year-1 lecture and lab buildings) come from students Roy asks; they enter data.js with Roy as the source and a date, never from a guess. | Roy | Nothing official states them. |
+| 18.10.2026 | The CS double-major study plan for תשפ"ז is the PDF the Gonda page links as חוקה תשפ"ז; the page caption saying תשפ"ו is stale. Life Sciences rooms 211A and 211C in building 212 are as published. | Orchestrator, checked in the browser | |
+
+Open, waiting for Roy: the single-major track split (one, two or three tracks); the catalog department codes on courses.biu.ac.il (CAPTCHA); the service-center hours (bot check).
