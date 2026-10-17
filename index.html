@@ -1099,11 +1099,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     ["סיסמה", "סיסמא", "password"],
     ["חנייה", "חניה", "חניון", "parking"],
     ["מילואים", "מילואימניק", "מילואימניקים"],
-    ["מדמח", "מדעי המחשב", "computer science"],
     ["מזכירות", "מזכירה"],
     ["יום הולדת", "יומולדת", "יומהולדת", "birthday"],
     ["wifi", "וויפי", "ויפי", "אינטרנט"],
     ["אינפי", "חדוא", "חשבון אינפיניטסימלי", "calculus"],
+    // The faculty's own groups (search.synonyms in faculties/<id>/faculty.js, via faculty.js).
+    ...window.FACULTY.search.synonyms,
   ];
   const SYNONYMS = new Map();
   for (const group of SYNONYM_GROUPS) {
@@ -2177,10 +2178,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     content.classList.add("egg-roll");
     content.addEventListener("animationend", () => content.classList.remove("egg-roll"), { once: true });
   }
+  // A faculty egg (eggs in faculties/<id>/faculty.js, via faculty.js): a toast and, when it has one, an effect.
+  const facultyEgg = ({ words, toast, effect }) => ({ words: words.map(normalize), run: () => { if (effect) playEffect(effect); eggToast(toast); } });
   const EASTER_EGGS = [
+    ...window.FACULTY.eggs.map(facultyEgg),
     { words: ["do a barrel roll", "barrel roll", "סלטה", "תעשה סלטה"], run: rollContent },
     { words: ["askew", "tilt", "עקומ", "עקמומי"], hold: "egg-askew" },
-    { words: ["hello world", "print hello world", "שלומ עולמ"], run: () => { playEffect({ type: "drift", code: true, glyphs: ["{ }", ";", "</>", "0", "1", "λ", "()", "=>"] }); eggToast("Hello, CS! 👋"); } },
     { words: ["sudo", "sudo su", "sudo rm rf"], run: () => eggToast(tr("sudo: אינך בקובץ ה-sudoers. האירוע ידווח לרועי 😉")) },
     { words: ["42"], run: () => eggToast(tr("42: התשובה לשאלה הגדולה של החיים, היקום וכל השאר. לשאר השאלות יש את האתר הזה 🙂")) },
   ];

@@ -5,11 +5,11 @@
 // The pages themselves are generated (scripts/prerender.mjs): index.html with the content already in
 // the HTML, one page per guide (public/<id>.html, served at /<id> thanks to cleanUrls in vercel.json),
 // sitemap.xml and llms.txt. robots.txt is copied as is.
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { loadCourses } from "../api/_lib/courses/model.js";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { CATALOG_FILE, loadCourses } from "../api/_lib/courses/model.js";
 import { BROWSER_FILES, loadEnglish, siteScript } from "../faculties/content.js";
 import { FACULTY } from "../faculties/index.js";
-import { copyFacultyAssets, facultyScript, webmanifest } from "./faculty-public.mjs";
+import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
 import { guidePage, homePage, lastUpdated, llmsTxt, loadData, sitemapXml } from "./prerender.mjs";
 
 const OUT = "public";
@@ -22,7 +22,6 @@ const FILES = [
   "admin.js",
   "robots.txt",
   "biu-5787.ics",
-  "courses-cs-2027.json",
   "course-browser.js",
   "course-ai.js",
   "course-ai-dialog.js",
@@ -41,8 +40,9 @@ const FILES = [
 // the content and its English merged from shared/ and faculties/<id>/ (faculties/content.js), the
 // browser's copy of the manifest and the "add to home screen" descriptor.
 const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest"];
-// Names a guide's address must not take: they are files the site already serves, or generated ones.
-const RESERVED = new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map((f) => f.replace(/\..*$/, ""))]);
+// Names a guide's address must not take: they are files the site already serves, or generated ones. The
+// faculty's catalog scan, published under courses.download, joins them and must not take one of them itself.
+const RESERVED = reserveDownload(new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map(nameStem)]), FACULTY.courses.download);
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT);
@@ -72,7 +72,9 @@ const hideWhatsAppInHtml = (html) => html.replaceAll(/href="https:\/\/chat\.what
 const dataJs = readFileSync(`${OUT}/data.js`, "utf8");
 writeFileSync(`${OUT}/data.js`, `var __wa = ["https:", "", ["chat", "whatsapp", "com"].join("."), ""].join("/");\n${dataJs.replaceAll("`" + WA, "`${__wa}")}`);
 
-// The courses page and the site search read this smaller, shaped copy of the catalog scan (api/_lib/courses/model.js).
+// The catalog scan itself, for students who upload it to an AI to build a schedule (the "courses-file" item in
+// the content links to it), and the smaller, shaped copy the courses page and the site search read (api/_lib/courses/model.js).
+copyFileSync(CATALOG_FILE, `${OUT}/${FACULTY.courses.download}`);
 const courses = loadCourses();
 writeFileSync(`${OUT}/course-list.json`, JSON.stringify(courses));
 const template = readFileSync("index.html", "utf8");

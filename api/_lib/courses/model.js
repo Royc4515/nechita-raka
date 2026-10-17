@@ -1,27 +1,23 @@
 /**
- * The CS courses, shaped once for every reader: the chat (api/_lib/chat/courses.js), the courses page
- * (course-browser.js reads public/course-list.json, written by scripts/build-public.mjs) and their tests.
- * Two inputs: the catalog scan (courses-cs-2027.json, unofficial) and the department yearbook
- * (courses-yearbook.json, from the CS yearbook), which says which categories each course belongs to.
+ * The faculty's courses, shaped once for every reader: the chat (api/_lib/chat/courses.js), the courses
+ * page (course-browser.js reads public/course-list.json, written by scripts/build-public.mjs) and their
+ * tests. Two inputs, named by the manifest's courses block (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md
+ * D9): the catalog scan (unofficial) and the department yearbook, which says which categories each
+ * course belongs to.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { FACULTY, facultyFile } from "../../../faculties/index.js";
 
-export const CATALOG_FILE = new URL("../../../courses-cs-2027.json", import.meta.url);
-export const YEARBOOK_FILE = new URL("../../../courses-yearbook.json", import.meta.url);
+export const CATALOG_FILE = facultyFile(FACULTY, FACULTY.courses.catalog);
+export const YEARBOOK_FILE = facultyFile(FACULTY, FACULTY.courses.yearbook);
 
 /**
  * The yearbook's categories, in the order the page shows them. A course can be in several (a course in
  * the general cluster is also in the AI track's list), and then it shows under each of them.
  */
-export const CATEGORIES = [
-  { id: "1", label: "שנה א'" },
-  { id: "2", label: "שנה ב'" },
-  { id: "3", label: "שנה ג'" },
-  { id: "cluster1", label: "אשכול 1: תכנות מתקדם" },
-  { id: "cluster2", label: "אשכול 2: כללי" },
-  { id: "complement", label: "אשכול השלמה" },
-  { id: "ai", label: "מגמת AI ומצוינות" },
-];
+export const CATEGORIES = FACULTY.courses.categories;
+/** The official source of the categories, as the chat cites it ("בידיעון מדעי המחשב: שנה א'"). */
+export const OFFICIAL_SOURCE = FACULTY.courses.officialSource;
 
 const clean = (s) => String(s ?? "").replace(/\s*\n\s*/g, ", ").trim();
 /** "סמסטר א'סמסטר ב'" and "סמסטר א'\nסמסטר ב'" both mean a year-long group. */

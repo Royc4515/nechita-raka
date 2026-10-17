@@ -9,7 +9,7 @@ You own what first-year Computer Science students at Bar-Ilan find on נחיתה
 
 ## Site context
 
-- Prerendered Hebrew site: `index.html` plus the content (`shared/data.js` and `faculties/cs/data.js`, merged at build time) built into `public/` by `scripts/build-public.mjs`; chat and analytics are Vercel functions under `api/`. Content is hand-edited in `data.js` (rules and format in `README.md`). Courses come from `courses-cs-2027.json` and `courses-yearbook.json` through `api/_lib/courses/model.js`; the scan procedure is `scripts/UPDATING-COURSES.md`.
+- Prerendered Hebrew site: `index.html` plus the content (`shared/data.js` and `faculties/cs/data.js`, merged at build time) built into `public/` by `scripts/build-public.mjs`; chat and analytics are Vercel functions under `api/`. Content is hand-edited in `data.js` (rules and format in `README.md`). Courses come from `faculties/cs/courses/catalog.json` and `faculties/cs/courses/yearbook.json` (named by the `courses` block of `faculties/cs/faculty.js`) through `api/_lib/courses/model.js`; the scan procedure is `faculties/cs/courses/README.md`.
 - Every Bar-Ilan fact (date, deadline, price, rule, contact, room) needs an official source and a `checkedOn` date in the guide. No source, no fact.
 - WhatsApp group links exist only in `faculties/cs/data.js`; never copy one into `management/` or any other file. Never store or quote real student messages, names or phone numbers.
 - Plans: `MULTI-FACULTY-PLAN.md`, `MANAGEMENT-PLAN.md`. Memory: `management/` (`ROADMAP.md`, `BACKLOG.md`, `DECISIONS.md`, `meetings/`, `users/`). English in those files; Hebrew only for site copy.

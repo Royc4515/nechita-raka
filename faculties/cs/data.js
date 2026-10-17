@@ -38,7 +38,7 @@ window.SITE_DATA = {
       id: `courses`,
       title: `כל הקורסים: שעות, חדרים ומרצים`,
       summary: `כל קורסי מדמ"ח בשנת תשפ"ז במקום אחד: קבוצות, ימים, שעות, חדרים, מרצים ומועדי בחינות.`,
-      // courses: true מציג כאן את רשימת הקורסים (course-browser.js), מקובץ הסריקה courses-cs-2027.json ומהידיעון courses-yearbook.json.
+      // courses: true מציג כאן את רשימת הקורסים (course-browser.js), מקובץ הסריקה courses/catalog.json ומהידיעון courses/yearbook.json (ההוראות ב-courses/README.md).
       courses: true,
       steps: [
         `בוחרים סמסטר, ומחפשים קורס לפי שם, מספר או מרצה. אפשר לסנן לפי שנה, סמינרים או ימים שנוחים לכם.`,

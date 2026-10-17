@@ -26,6 +26,9 @@ export function browserFaculty(faculty) {
     site: { url: faculty.site.url },
     theme: faculty.theme,
     labels: faculty.labels,
+    // The search's faculty synonyms and the faculty's easter eggs, merged by index.html into its shared lists.
+    search: faculty.search,
+    eggs: faculty.eggs,
     defaultMascot: faculty.defaultMascot,
     mascots: faculty.mascots.map(browserMascot),
   };
@@ -54,6 +57,19 @@ export function webmanifest(faculty) {
   };
   const icons = WEBMANIFEST_ICONS.map((icon) => `    { ${Object.entries(icon).map(jsonField).join(", ")} }`);
   return `{\n${Object.entries(fields).map((f) => `  ${jsonField(f)},`).join("\n")}\n  "icons": [\n${icons.join(",\n")}\n  ]\n}\n`;
+}
+
+/** The name a published file takes as an address ("courses-cs-2027.json" -> "courses-cs-2027", served at /courses-cs-2027 too). */
+export const nameStem = (file) => file.replace(/\..*$/, "");
+
+/**
+ * The reserved names with the faculty's catalog download (courses.download) added. Throws when the download
+ * would take the name of a file the build writes itself (course-list.json, data.js...), because the copy
+ * would then be overwritten in silence and the "courses file" link would serve the wrong file.
+ */
+export function reserveDownload(reserved, download) {
+  if (reserved.has(nameStem(download))) throw new Error(`build-public: courses.download "${download}" is taken by a file the build writes; pick another name`);
+  return new Set([...reserved, nameStem(download)]);
 }
 
 /** Every image file the manifest points to, relative to faculties/<id>/. */

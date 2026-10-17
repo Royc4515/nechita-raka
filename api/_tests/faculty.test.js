@@ -1,11 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
-import { DEFAULT_FACULTY, FACULTIES, FACULTY, MASCOT_POSES, THEME_KEYS, facultyIdFrom, selectFaculty, validateFaculty } from "../../faculties/index.js";
+import { DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
+import { loadContent } from "../../faculties/content.js";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, webmanifest } from "../../scripts/faculty-public.mjs";
+import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -63,7 +64,26 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.site.url = "https://x\"><script>"; }, /site\.url/],
     [(f) => { delete f.mascots[0].poseWidths.laptop; }, /poseWidths\.laptop/],
     [(f) => { f.mascots[0].hellos = []; }, /hellos/],
-    [(f) => { f.labels.heroPath = ""; }, /labels\.heroPath/],
+    [(f) => { f.labels.chatPath = ""; }, /labels\.chatPath/],
+    [(f) => { f.hero.variant = "eeg"; }, /hero\.variant/],
+    [(f) => { f.hero.path = ""; }, /hero\.path/],
+    [(f) => { f.hero.lines = []; }, /hero\.lines/],
+    [(f) => { f.hero.lines[0].tokens = [["blink", "x"]]; }, /hero\.lines\[0\]/],
+    [(f) => { f.hero.lines[0].steps = 0; }, /hero\.lines\[0\]\.steps/],
+    [(f) => { f.courses.catalog = "../secret.json"; }, /courses\.catalog/],
+    [(f) => { f.courses.yearbook = "yearbook.js"; }, /courses\.yearbook/],
+    [(f) => { f.courses.download = "courses/x.json"; }, /courses\.download/],
+    [(f) => { f.courses.categories = []; }, /courses\.categories/],
+    [(f) => { f.courses.categories.push({ id: "1", label: "שוב" }); }, /courses\.categories.*twice/],
+    [(f) => { f.courses.categories[0].label = ""; }, /courses\.categories\[0\]\.label/],
+    [(f) => { f.courses.officialSource = ""; }, /courses\.officialSource/],
+    [(f) => { f.search.synonyms = [["only one"]]; }, /search\.synonyms\[0\]/],
+    [(f) => { f.eggs[0].words = []; }, /eggs\[0\]\.words/],
+    [(f) => { f.eggs[0].toast = ""; }, /eggs\[0\]\.toast/],
+    [(f) => { f.eggs[0].effect = "drift"; }, /eggs\[0\]\.effect/],
+    [(f) => { f.eggs[0].effect.type = "blink"; }, /eggs\[0\]\.effect\.type/],
+    [(f) => { f.eggs[0].effect.colors = ["red;background:url(https://x.example/p)"]; }, /eggs\[0\]\.effect\.colors/],
+    [(f) => { f.eggs[0].effect.glyphs = []; }, /eggs\[0\]\.effect\.glyphs/],
     [(f) => { f.id = "CS"; }, /id must be/],
     [(f) => { delete f.content; }, /content\.order is missing/],
     [(f) => { f.content.order.guides = []; }, /content\.order\.guides/],
@@ -83,6 +103,10 @@ test("the browser subset keeps names, lines, theme and labels but not the model 
   assert.deepEqual(subset.name, cs.name);
   assert.deepEqual(subset.theme, cs.theme);
   assert.deepEqual(subset.labels, cs.labels);
+  assert.deepEqual(subset.search, cs.search);
+  assert.deepEqual(subset.eggs, cs.eggs);
+  assert.equal(subset.hero, undefined, "the hero is written by the prerender, the page does not need it");
+  assert.equal(subset.courses, undefined, "the course files are read on the server and by the build");
   assert.equal(subset.site.url, cs.site.url);
   assert.equal(subset.defaultMascot, "bit");
   assert.equal(subset.mascots.length, 2);
@@ -110,7 +134,7 @@ test("the web app manifest carries the faculty's name, description and color", (
 });
 
 test("the prerender writes the manifest's accent colors into the :root blocks and leaves the memorial override alone", async () => {
-  const { accentLine, withTheme, withHeroPath, homeDescription } = await import("../../scripts/prerender.mjs");
+  const { accentLine, withTheme, withHero, homeDescription } = await import("../../scripts/prerender.mjs");
   const template = readFileSync("index.html", "utf8");
   const theme = { light: { ...cs.theme.light, accent: "#111111" }, dark: { ...cs.theme.dark, accent: "#222222" } };
   const out = withTheme(template, theme);
@@ -119,9 +143,16 @@ test("the prerender writes the manifest's accent colors into the :root blocks an
   assert.ok(out.includes(`:root[data-day="memorial"] { --accent: #4b5563;`), "memorial override untouched");
   assert.equal(withTheme(template, cs.theme), template, "the CS values give the template back unchanged");
   assert.throws(() => withTheme(template.replace(DARK_SPLIT_TEXT, "@media (x)"), cs.theme), /dark-mode/);
-  assert.ok(withHeroPath(template, "~/biu/x/year-1").includes(`<span>~/biu/x/year-1</span></div>`));
-  assert.ok(withHeroPath(template, "a<b").includes(`<span>a&lt;b</span></div>`), "escaped");
-  assert.equal(withHeroPath(template, cs.labels.heroPath), template);
+  assert.ok(withHero(template, { ...cs.hero, path: "~/biu/x/year-1" }).includes(`<span>~/biu/x/year-1</span></div>`));
+  assert.ok(withHero(template, { ...cs.hero, path: "a<b" }).includes(`<span>a&lt;b</span></div>`), "escaped");
+  assert.equal(withHero(template, cs.hero), template, "the CS hero gives the template back unchanged");
+  const lines = [{ steps: 3, start: 0.5, tokens: [["prompt", ">"], " a<b"] }, { steps: 4, start: 1, duration: 0.3, tokens: [["out", "\"ok\""]] }];
+  const typed = withHero(template, { ...cs.hero, lines });
+  assert.ok(typed.includes(`<pre class="term-body"><span class="ln" style="--n:3;--at:.5s"><span class="t-prompt">&gt;</span> a&lt;b</span><span class="ln" style="--n:4;--at:1s;--d:.3s"><span class="t-out">"ok"</span><span class="t-caret"></span></span></pre>`), typed.slice(typed.indexOf("term-body"), typed.indexOf("term-body") + 300));
+  assert.throws(() => withHero(template, { ...cs.hero, variant: "eeg" }), /hero variant/);
+  assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: 3, start: 0.5, tokens: [["onclick", "x"]] }] }), /token kind/);
+  assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: "3;color:red", start: 0.5, tokens: ["x"] }] }), /whole steps/);
+  assert.throws(() => withHero(template.replace('<pre class="term-body">', "<pre>"), cs.hero), /hero/);
   assert.equal(homeDescription("תשפ\"ז"), `${cs.site.description.replace("{year}", "תשפ\"ז")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
   assert.equal(homeDescription(""), `${cs.site.description.replace(" {year}", "")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
 });
@@ -148,4 +179,43 @@ test("the build copies only the images the manifest names, to their fixed public
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("the courses block names files that exist, categories with unique ids, and the download the content links to", () => {
+  assert.ok(existsSync(facultyPath(cs, cs.courses.catalog)), "the catalog scan");
+  assert.ok(existsSync(facultyPath(cs, cs.courses.yearbook)), "the yearbook mapping");
+  assert.equal(facultyPath(cs, cs.courses.catalog), "faculties/cs/courses/catalog.json");
+  assert.ok(existsSync(facultyFile(cs, cs.courses.catalog)), "the same file as a URL, for the server");
+  assert.ok(cs.courses.categories.length > 0);
+  const ids = cs.courses.categories.map((c) => c.id);
+  assert.equal(new Set(ids).size, ids.length, "category ids are unique");
+  for (const c of cs.courses.categories) assert.ok(c.label.trim(), `${c.id} has a label`);
+  assert.deepEqual(ids, ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"], "the CS list, in display order");
+  assert.match(cs.courses.officialSource, /ידיעון/);
+  const item = loadContent(cs).categories.flatMap((c) => c.items).find((i) => i.id === "courses-file");
+  assert.ok(item, "the content has the course-file item");
+  assert.ok(item.url.endsWith(`/${cs.courses.download}`), `${item.url} points at the file the build publishes (${cs.courses.download})`);
+});
+
+test("the hero is a known variant with a path and typed lines; the search and the eggs are lists the page can merge", () => {
+  assert.deepEqual(HERO_VARIANTS, ["terminal"]);
+  assert.equal(cs.hero.variant, "terminal");
+  assert.equal(cs.hero.path, "~/biu/cs/year-1");
+  assert.ok(cs.hero.lines.length >= 1);
+  for (const line of cs.hero.lines) {
+    assert.ok(Number.isInteger(line.steps) && line.steps > 0);
+    assert.ok(line.tokens.length >= 1);
+  }
+  assert.ok(cs.search.synonyms.some((group) => group.includes("מדעי המחשב")));
+  assert.ok(cs.eggs.some((egg) => egg.toast.includes("Hello, CS!")));
+});
+
+test("the published catalog takes a name of its own: never one the build writes, and a guide cannot take its name either", () => {
+  assert.equal(nameStem("courses-cs-2027.json"), "courses-cs-2027");
+  const reserved = new Set(["index", "course-list", "data"]);
+  const withDownload = reserveDownload(reserved, cs.courses.download);
+  assert.ok(withDownload.has(nameStem(cs.courses.download)), "the download's name is reserved for guide ids");
+  assert.equal(reserved.size, 3, "the input set is not changed");
+  assert.throws(() => reserveDownload(reserved, "course-list.json"), /courses\.download "course-list\.json" is taken/);
+  assert.throws(() => reserveDownload(reserved, "data.js"), /is taken/);
 });

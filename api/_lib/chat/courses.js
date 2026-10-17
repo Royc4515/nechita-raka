@@ -3,7 +3,7 @@
  * teachers and exam dates (from api/_lib/courses/model.js). Unofficial, so every chunk carries the
  * scan date and says where the official answer is. Its link opens the course's card on /courses.
  */
-import { buildCourses, CATEGORIES, loadCourses } from "../courses/model.js";
+import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE } from "../courses/model.js";
 import { SITE_URL } from "./site.js";
 
 const MAX_GROUP_LINES = 24;
@@ -34,7 +34,7 @@ export function courseChunks({ scannedAt, courses }) {
     const categories = (c.categories || []).map((id) => CATEGORY_LABEL[id]).filter(Boolean).join(", ");
     const text = [
       `קורס ${c.code} ${c.name}${c.nameEn ? ` (${c.nameEn})` : ""}${c.points.length === 1 ? `, ${c.points[0]} נ"ז` : ""}.`,
-      categories ? `בידיעון מדעי המחשב: ${categories}.` : "",
+      categories ? `ב${OFFICIAL_SOURCE}: ${categories}.` : "",
       c.exams.length ? `מועדי בחינה: ${c.exams.map((e) => `${e.type} ${dmy(e.date)} ${e.hour}`).join("; ")}.` : "",
       ...shown.map((l) => `- ${l}`),
       lines.length > shown.length ? `- ועוד ${lines.length - shown.length} קבוצות בקטלוג.` : "",
