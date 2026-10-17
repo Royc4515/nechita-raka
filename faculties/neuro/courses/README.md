@@ -1,4 +1,4 @@
-> **Neuro scan status (18.10.2026):** `catalog.json` is the real scan of the brain sciences department (catalog department id 96, course code prefix 27, 121 rows, 60 courses, complete, scraped 14.10.2026 by Roy). `yearbook.json` is still a placeholder with no categories; the neuro content PR builds it from the track study-plan pages listed in `management/neuro/programs.md`. The rest of this file is the CS procedure and applies to neuro with department 96 instead of 84.
+> **Neuro status (18.10.2026):** `catalog.json` is the real scan of the brain sciences department (catalog department id 96, course code prefix 27, 121 rows, 60 courses, complete, scraped 14.10.2026 by Roy). `yearbook.json` maps codes to `<track>:<year>` from the Gonda study plans (`plans.json` holds every cohort, `tools/` rebuilds both); years are inferred, not read from headings, so the owner verifies them against the PDFs before launch. The rest of this file is the CS procedure and applies to neuro with department 96 instead of 84.
 
 # Course files of the brain sciences faculty (placeholder)
 

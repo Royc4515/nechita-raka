@@ -35,7 +35,7 @@ Columns: S = students, U = urgency, E = effort.
 | Department contacts, office, hours | 4 | 2 | 1 | 8.0 | partly | Email and pages in `neuro/programs.md`; room and hours are not published. |
 | Buildings and study spaces neuro students use | 3 | 2 | 1 | 6.0 | partly | Gonda building 901 is already in the CS campus guide. |
 | WhatsApp groups per track and year | 4 | 2 | 1 | 8.0 | open | Links never enter this folder; they go straight to `faculties/neuro/data.js`. |
-| Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | partly | Department 27 (brain sciences) scanned 14.10.2026 and in `faculties/neuro/courses/catalog.json`. Second departments of the double majors (60, 80, 86, 89, 31, 37) not yet; the yearbook mapping per track is PR 6. |
+| Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | partly | Department 27 scanned 14.10.2026 (`catalog.json`); the yearbook per track and cohort is built from the Gonda plans (18.10.2026, `plans.json`, `tools/`). Second departments (60, 80, 86, 89, 31, 37) not scanned yet. |
 | נוי ורון character briefs | 3 | 1 | 2 | 1.5 | open | Ron masculine, Noi feminine. Contrast like Bit and Byte. |
 | Violet palette, light and dark, contrast-checked | 3 | 1 | 1 | 3.0 | open | designer |
 | Hero variant for neuro | 2 | 1 | 2 | 1.0 | open | CSS-only, same size as the terminal. |

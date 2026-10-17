@@ -1,7 +1,622 @@
 {
-  "source": "PLACEHOLDER: no mapping yet. The neuro content PR builds it from the eight track study-plan pages (management/neuro/programs.md section 2); until then every course shows under 'all' with no year or track.",
-  "track": "מדעי המוח, כל המסלולים (single, single-comp, cs, psychology, biology, philosophy, linguistics, physics)",
-  "notes": "Observed in the 14.10.2026 scan, to be confirmed against the study plans: codes 272xx are year 1 (27223 is 'שעת מחלקה שנה א'), 273xx year 2 (27360 'שעות מחלקה שנה ב'), 274xx year 3 (27410 'שעות מחלקה שנה ג'), 275xxx graduate-level seminars open to the excellence program.",
-  "categories": {},
+  "source": "תוכניות הלימודים (חוקה) של המרכז לחקר המוח ע\"ש גונדה לכל מסלול, לפי שנת תחילת התואר: שנה א' מחוקה תשפ\"ז, שנה ב' מחוקה תשפ\"ו (הגרסה המעודכנת), שנה ג' מחוקה תשפ\"ה. נקראו מ-gondabrain.biu.ac.il ב-18.10.2026.",
+  "track": "מדעי המוח, כל המסלולים; קטגוריה = <מסלול>:<שנה>. קורסים של המחלקה השנייה (89, 60, 80, 86, 31, 37) מופיעים במיפוי אך אינם בקטלוג של מחלקה 27, ולכן לא מוצגים עד שהקטלוג שלהם ייסרק.",
+  "notes": "single-comp: Gonda publishes no separate PDF (its תשפ\"ז link is the single-major file); its year-1 differences are on the HTML page /computaional_track and still need to be read. Years were inferred (27-2xx year 1, 27-3xx year 2, 27-4xx year 3; partner blocks inherit the adjacent brain-sciences block), not read from headings; the owner verifies against the PDFs before launch.",
+  "categories": {
+    "27202": [
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27205": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27207": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27208": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27209": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27212": [
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27213": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27214": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27215": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27219": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27230": [
+      "single:1",
+      "single-comp:1"
+    ],
+    "27231": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "27232": [
+      "single:1",
+      "single-comp:1"
+    ],
+    "27302": [
+      "biology:2",
+      "linguistics:2",
+      "philosophy:2",
+      "single:2"
+    ],
+    "27305": [
+      "biology:2",
+      "cs:2",
+      "linguistics:3",
+      "philosophy:3",
+      "physics:2",
+      "psychology:2",
+      "single:2"
+    ],
+    "27312": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "linguistics:3",
+      "philosophy:2",
+      "philosophy:3",
+      "physics:2",
+      "psychology:2",
+      "single:2"
+    ],
+    "27324": [
+      "single:2"
+    ],
+    "27345": [
+      "single:2"
+    ],
+    "27346": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "philosophy:2",
+      "physics:2",
+      "single:2"
+    ],
+    "27350": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "linguistics:3",
+      "philosophy:2",
+      "philosophy:3",
+      "physics:2",
+      "psychology:2",
+      "single:2"
+    ],
+    "27354": [
+      "single:2"
+    ],
+    "27361": [
+      "biology:2",
+      "linguistics:2",
+      "philosophy:2",
+      "single:2"
+    ],
+    "27362": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "philosophy:2",
+      "physics:2",
+      "psychology:2",
+      "single:2"
+    ],
+    "27402": [
+      "biology:3",
+      "single:3"
+    ],
+    "27405": [
+      "cs:3"
+    ],
+    "27425": [
+      "biology:2",
+      "biology:3",
+      "cs:3",
+      "philosophy:2",
+      "philosophy:3",
+      "physics:2",
+      "physics:3",
+      "psychology:2",
+      "psychology:3",
+      "single:3"
+    ],
+    "27427": [
+      "physics:3",
+      "single:3"
+    ],
+    "27428": [
+      "single:3"
+    ],
+    "27430": [
+      "single:3"
+    ],
+    "27431": [
+      "biology:3",
+      "cs:3",
+      "linguistics:3",
+      "philosophy:3",
+      "physics:3",
+      "psychology:3",
+      "single:3"
+    ],
+    "27432": [
+      "biology:2",
+      "biology:3",
+      "linguistics:2",
+      "linguistics:3",
+      "philosophy:2",
+      "philosophy:3",
+      "physics:2",
+      "physics:3",
+      "single:3"
+    ],
+    "27434": [
+      "biology:3",
+      "cs:3",
+      "linguistics:3",
+      "philosophy:3",
+      "physics:3",
+      "psychology:3",
+      "single:3"
+    ],
+    "27436": [
+      "biology:3",
+      "psychology:3",
+      "single:3"
+    ],
+    "27437": [
+      "physics:3"
+    ],
+    "27468": [
+      "cs:1",
+      "physics:1"
+    ],
+    "31102": [
+      "philosophy:1"
+    ],
+    "31105": [
+      "philosophy:1"
+    ],
+    "31202": [
+      "philosophy:2"
+    ],
+    "31208": [
+      "philosophy:2"
+    ],
+    "31487": [
+      "philosophy:2"
+    ],
+    "37108": [
+      "linguistics:2"
+    ],
+    "37184": [
+      "linguistics:1"
+    ],
+    "37286": [
+      "linguistics:1"
+    ],
+    "37500": [
+      "linguistics:3"
+    ],
+    "37511": [
+      "linguistics:3"
+    ],
+    "37522": [
+      "linguistics:2"
+    ],
+    "37584": [
+      "linguistics:3"
+    ],
+    "37587": [
+      "linguistics:1",
+      "linguistics:2"
+    ],
+    "37857": [
+      "linguistics:3"
+    ],
+    "37987": [
+      "linguistics:1"
+    ],
+    "37992": [
+      "linguistics:3"
+    ],
+    "60101": [
+      "psychology:1"
+    ],
+    "60105": [
+      "psychology:1"
+    ],
+    "60106": [
+      "psychology:1"
+    ],
+    "60107": [
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "60108": [
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "60190": [
+      "psychology:2"
+    ],
+    "60209": [
+      "psychology:2",
+      "single:1",
+      "single-comp:1"
+    ],
+    "60210": [
+      "psychology:2",
+      "single:1",
+      "single-comp:1"
+    ],
+    "60212": [
+      "psychology:2"
+    ],
+    "60213": [
+      "psychology:2"
+    ],
+    "60215": [
+      "psychology:2"
+    ],
+    "60217": [
+      "psychology:2"
+    ],
+    "60218": [
+      "psychology:2"
+    ],
+    "60305": [
+      "psychology:3",
+      "single:1",
+      "single-comp:1"
+    ],
+    "60306": [
+      "psychology:3",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80101": [
+      "biology:1"
+    ],
+    "80102": [
+      "biology:1"
+    ],
+    "80103": [
+      "biology:1"
+    ],
+    "80201": [
+      "biology:2"
+    ],
+    "80202": [
+      "biology:2"
+    ],
+    "80203": [
+      "biology:3",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80208": [
+      "biology:3",
+      "cs:3",
+      "physics:2",
+      "psychology:3",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80210": [
+      "biology:2",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80214": [
+      "biology:3"
+    ],
+    "80231": [
+      "biology:2"
+    ],
+    "80232": [
+      "biology:2"
+    ],
+    "80242": [
+      "biology:2",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80338": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "philosophy:2",
+      "physics:2",
+      "psychology:2",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80377": [
+      "biology:3",
+      "single:1",
+      "single-comp:1"
+    ],
+    "80411": [
+      "biology:3"
+    ],
+    "80548": [
+      "biology:3"
+    ],
+    "86115": [
+      "physics:1"
+    ],
+    "86120": [
+      "physics:1"
+    ],
+    "86147": [
+      "cs:1",
+      "physics:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "86148": [
+      "cs:1",
+      "physics:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "86153": [
+      "physics:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "86154": [
+      "physics:1"
+    ],
+    "86156": [
+      "physics:1"
+    ],
+    "86164": [
+      "physics:2"
+    ],
+    "86170": [
+      "physics:1"
+    ],
+    "86207": [
+      "physics:2"
+    ],
+    "86208": [
+      "physics:2"
+    ],
+    "86209": [
+      "physics:2"
+    ],
+    "86210": [
+      "physics:2"
+    ],
+    "86215": [
+      "physics:2"
+    ],
+    "86216": [
+      "physics:3"
+    ],
+    "86232": [
+      "physics:3"
+    ],
+    "86234": [
+      "physics:3"
+    ],
+    "86246": [
+      "physics:3"
+    ],
+    "86248": [
+      "physics:3"
+    ],
+    "86302": [
+      "physics:3"
+    ],
+    "86311": [
+      "physics:2"
+    ],
+    "86312": [
+      "physics:3"
+    ],
+    "86431": [
+      "physics:3"
+    ],
+    "86432": [
+      "physics:3"
+    ],
+    "89110": [
+      "cs:1"
+    ],
+    "89112": [
+      "cs:1"
+    ],
+    "89113": [
+      "cs:2"
+    ],
+    "89213": [
+      "cs:2"
+    ],
+    "89220": [
+      "cs:2"
+    ],
+    "89230": [
+      "cs:2"
+    ],
+    "89263": [
+      "cs:2"
+    ],
+    "89560": [
+      "cs:3"
+    ],
+    "89674": [
+      "cs:3"
+    ],
+    "89680": [
+      "cs:3"
+    ],
+    "89685": [
+      "cs:3"
+    ],
+    "272000": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "272011": [
+      "biology:1",
+      "cs:1",
+      "linguistics:1",
+      "philosophy:1",
+      "physics:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "272012": [
+      "biology:1",
+      "linguistics:1",
+      "philosophy:1",
+      "psychology:1",
+      "single:1",
+      "single-comp:1"
+    ],
+    "273003": [
+      "biology:2",
+      "cs:2",
+      "linguistics:2",
+      "philosophy:2",
+      "psychology:2",
+      "single:2"
+    ],
+    "273218": [
+      "single:2"
+    ],
+    "274470": [
+      "psychology:3"
+    ],
+    "274490": [
+      "single:3"
+    ],
+    "375910": [
+      "linguistics:3"
+    ],
+    "801231": [
+      "biology:3"
+    ],
+    "891111": [
+      "cs:1"
+    ],
+    "891195": [
+      "cs:1"
+    ],
+    "891200": [
+      "cs:1"
+    ],
+    "891262": [
+      "cs:1"
+    ],
+    "892226": [
+      "cs:3"
+    ],
+    "892322": [
+      "cs:3"
+    ],
+    "892511": [
+      "cs:3"
+    ],
+    "893210": [
+      "cs:3"
+    ],
+    "893311": [
+      "cs:3"
+    ],
+    "893312": [
+      "cs:3"
+    ],
+    "895570": [
+      "cs:3"
+    ],
+    "895581": [
+      "cs:3"
+    ]
+  },
   "semesters": {}
 }

@@ -19,10 +19,14 @@ const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 // The facts of each faculty that the active run asserts (MULTI-FACULTY-PLAN.md D13): keyed by id, so the
 // same tests run for whichever FACULTY the env names. A new faculty adds a row here.
 const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
+const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "philosophy", "linguistics", "physics"];
+// <track>:<year> from the Gonda study plans; the computational track started in 5787, so it has year 1 only.
+const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] : [1, 2, 3]).map((y) => `${t}:${y}`));
 const EXPECTED = {
   cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json" },
-  // The placeholder (faculty PR 4): neuro identity, CS courses, egg and download until PR 6 brings its content.
-  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", synonym: "מדעי המוח", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: ["single", "cs", "psychology"], download: "courses-cs-2027.json" },
+  // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026) are real; egg, download and
+  // the content are still the CS placeholders until PR 6.
+  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", synonym: "מדעי המוח", egg: "Hello, CS!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-cs-2027.json" },
 };
 const expected = EXPECTED[FACULTY.id];
 
@@ -265,7 +269,7 @@ test("the courses block names files that exist, categories with unique ids, and 
   assert.equal(new Set(ids).size, ids.length, "category ids are unique");
   for (const c of FACULTY.courses.categories) assert.ok(c.label.trim(), `${c.id} has a label`);
   assert.deepEqual(ids, expected.categories, "the faculty's list, in display order");
-  assert.match(FACULTY.courses.officialSource, /ידיעון/);
+  assert.match(FACULTY.courses.officialSource, /ידיעון|תוכניות הלימודים/);
   const item = loadContent(FACULTY).categories.flatMap((c) => c.items).find((i) => i.id === "courses-file");
   assert.ok(item, "the content has the course-file item");
   assert.ok(item.url.endsWith(`/${FACULTY.courses.download}`), `${item.url} points at the file the build publishes (${FACULTY.courses.download})`);

@@ -78,7 +78,7 @@ export default {
     ],
   },
 
-  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories are still PLACEHOLDERS: a copy of the CS
+  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories come from the Gonda study plans (18.10.2026, courses/tools/). PLACEHOLDER still: the
   // categories; download keeps the CS name because the "courses-file" item in shared/data.js links to it. catalog: קובץ הסריקה של הקטלוג,
   // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
@@ -89,15 +89,30 @@ export default {
     yearbook: `courses/yearbook.json`,
     download: `courses-cs-2027.json`,
     categories: [
-      { id: `1`, label: `שנה א'` },
-      { id: `2`, label: `שנה ב'` },
-      { id: `3`, label: `שנה ג'` },
-      { id: `cluster1`, label: `אשכול 1: תכנות מתקדם` },
-      { id: `cluster2`, label: `אשכול 2: כללי` },
-      { id: `complement`, label: `אשכול השלמה` },
-      { id: `ai`, label: `מגמת AI ומצוינות` },
+      { id: `single:1`, label: `מדעי המוח חד-חוגי: שנה א'` },
+      { id: `single:2`, label: `מדעי המוח חד-חוגי: שנה ב'` },
+      { id: `single:3`, label: `מדעי המוח חד-חוגי: שנה ג'` },
+      { id: `single-comp:1`, label: `מדעי המוח חד-חוגי, מגמה חישובית: שנה א'` },
+      { id: `cs:1`, label: `מדעי המוח ומדעי המחשב: שנה א'` },
+      { id: `cs:2`, label: `מדעי המוח ומדעי המחשב: שנה ב'` },
+      { id: `cs:3`, label: `מדעי המוח ומדעי המחשב: שנה ג'` },
+      { id: `psychology:1`, label: `מדעי המוח ופסיכולוגיה: שנה א'` },
+      { id: `psychology:2`, label: `מדעי המוח ופסיכולוגיה: שנה ב'` },
+      { id: `psychology:3`, label: `מדעי המוח ופסיכולוגיה: שנה ג'` },
+      { id: `biology:1`, label: `מדעי המוח ומדעי החיים: שנה א'` },
+      { id: `biology:2`, label: `מדעי המוח ומדעי החיים: שנה ב'` },
+      { id: `biology:3`, label: `מדעי המוח ומדעי החיים: שנה ג'` },
+      { id: `philosophy:1`, label: `מדעי המוח ופילוסופיה: שנה א'` },
+      { id: `philosophy:2`, label: `מדעי המוח ופילוסופיה: שנה ב'` },
+      { id: `philosophy:3`, label: `מדעי המוח ופילוסופיה: שנה ג'` },
+      { id: `linguistics:1`, label: `מדעי המוח ובלשנות: שנה א'` },
+      { id: `linguistics:2`, label: `מדעי המוח ובלשנות: שנה ב'` },
+      { id: `linguistics:3`, label: `מדעי המוח ובלשנות: שנה ג'` },
+      { id: `physics:1`, label: `מדעי המוח ופיזיקה: שנה א'` },
+      { id: `physics:2`, label: `מדעי המוח ופיזיקה: שנה ב'` },
+      { id: `physics:3`, label: `מדעי המוח ופיזיקה: שנה ג'` },
     ],
-    officialSource: `ידיעון מדעי המחשב`,
+    officialSource: `תוכניות הלימודים של המרכז לחקר המוח ע"ש גונדה`,
   },
 
   // החיפוש באתר: קבוצות של מילים נרדפות של הפקולטה, נוספות לקבוצות המשותפות שב-index.html.
@@ -117,9 +132,15 @@ export default {
   // מסלולי הלימוד של הפקולטה (placeholder: nothing reads this list yet; a track selector is a later PR).
   // id באנגלית קטנה, label בעברית. single: חד-חוגי, cs: משולב עם מדעי המחשב, psychology: משולב עם פסיכולוגיה.
   tracks: [
+    // המסלולים לפי ההחלטה מ-18.10.2026 (management/DECISIONS.md): חד-חוגי (ביולוגי וקוגניציה, זהים בשנה א'), חד-חוגי חישובי (חדש בתשפ"ז), ושישה דו-חוגיים.
     { id: `single`, label: `חד-חוגי` },
+    { id: `single-comp`, label: `חד-חוגי, מגמה חישובית` },
     { id: `cs`, label: `משולב עם מדעי המחשב` },
     { id: `psychology`, label: `משולב עם פסיכולוגיה` },
+    { id: `biology`, label: `משולב עם מדעי החיים` },
+    { id: `philosophy`, label: `משולב עם פילוסופיה` },
+    { id: `linguistics`, label: `משולב עם בלשנות` },
+    { id: `physics`, label: `משולב עם פיזיקה` },
   ],
 
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/neuro/data.js),
