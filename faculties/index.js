@@ -5,8 +5,9 @@
 // command and the existing Vercel project behave as before. The manifests are imported statically so
 // Vercel's function bundler sees them; adding a faculty is one line in FACULTIES.
 import cs from "./cs/faculty.js";
+import neuro from "./neuro/faculty.js";
 
-export const FACULTIES = Object.freeze({ cs });
+export const FACULTIES = Object.freeze({ cs, neuro });
 export const DEFAULT_FACULTY = "cs";
 
 /** The seven poses every mascot has as images, used by index.html's mascot slots. */
@@ -138,6 +139,19 @@ function checkEggs(id, eggs) {
   });
 }
 
+/** tracks (optional): the faculty's study tracks, unique ids and Hebrew labels. Nothing reads them yet (PR 4); the shape is fixed now so the data can be collected. */
+function checkTracks(id, tracks) {
+  if (tracks === undefined) return;
+  if (!Array.isArray(tracks) || !tracks.length) fail(id, "tracks must be a non-empty list when present");
+  tracks.forEach((track, i) => {
+    if (!track || typeof track !== "object") fail(id, `tracks[${i}] is not an object`);
+    if (!ID_RE.test(track.id || "")) fail(id, `tracks[${i}].id must be lowercase English letters`);
+    if (!nonEmpty(track.label)) fail(id, `tracks[${i}].label is missing`);
+  });
+  const ids = tracks.map((track) => track.id);
+  if (new Set(ids).size !== ids.length) fail(id, "tracks lists an id twice");
+}
+
 /** Throws with the field's name when the manifest is not usable; returns it otherwise. */
 export function validateFaculty(faculty) {
   const id = faculty && faculty.id;
@@ -146,6 +160,8 @@ export function validateFaculty(faculty) {
   const site = faculty.site || {};
   if (!/^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(site.url || "")) fail(id, "site.url must be an https origin (host only, no trailing slash)");
   for (const key of ["brand", "name", "title", "description"]) if (!nonEmpty(site[key])) fail(id, `site.${key} is missing`);
+  const department = faculty.department || {};
+  if (!nonEmpty(department.name) || !/^https:\/\/[^\s"'<>]+$/.test(department.url || "")) fail(id, "department needs a name and an https url");
   const og = site.ogImage || {};
   if (!IMAGE_RE.test(og.file || "")) fail(id, "site.ogImage.file must be a plain image file name");
   if (!/^[\w-]+(\/[\w-]+)*\.(webp|jpg|png)$/.test(og.path || "")) fail(id, "site.ogImage.path must be a relative image path inside public/");
@@ -160,6 +176,7 @@ export function validateFaculty(faculty) {
   checkSearch(id, faculty.search);
   checkEggs(id, faculty.eggs);
   checkContentOrder(id, faculty.content);
+  checkTracks(id, faculty.tracks);
   if (!Array.isArray(faculty.mascots) || faculty.mascots.length !== 2) fail(id, "mascots must be a list of exactly two");
   faculty.mascots.forEach((m, i) => checkMascot(id, m, i));
   const genders = faculty.mascots.map((m) => m.gender).sort().join("");

@@ -3,7 +3,10 @@ import { test } from "node:test";
 import { buildCourseChunks, courseUrl, loadCourseChunks } from "../_lib/chat/courses.js";
 import { SITE_URL } from "../_lib/chat/knowledge.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
-import { buildCourses, CATEGORIES, loadCourses } from "../_lib/courses/model.js";
+import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE } from "../_lib/courses/model.js";
+
+/** The label of a yearbook category of the active faculty, as the chat cites it. */
+const label = (id) => CATEGORIES.find((c) => c.id === id).label;
 
 const shaped = loadCourses();
 const byCode = new Map(shaped.courses.map((c) => [c.code, c]));
@@ -106,8 +109,8 @@ test("a question about a course finds it by name, with day, hours, room, teacher
   assert.match(top.text, /יום ב' 09:00 - 11:00/);
   assert.match(top.text, /מיקום: חדר מחלקה/);
   assert.match(top.text, /בן-ניסן/);
-  assert.match(chunks.find((c) => c.id === "course:89110").text, /בידיעון מדעי המחשב: שנה א'./);
-  assert.match(chunks.find((c) => c.id === "course:895656").text, /אשכול 2: כללי, מגמת AI ומצוינות/);
+  assert.ok(chunks.find((c) => c.id === "course:89110").text.includes(`ב${OFFICIAL_SOURCE}: ${label("1")}.`), "the year is cited from the manifest's source");
+  assert.ok(chunks.find((c) => c.id === "course:895656").text.includes(`${label("cluster2")}, ${label("ai")}`), "every category of the course, by its label");
 });
 
 test("exam dates are listed when the catalog has them", () => {

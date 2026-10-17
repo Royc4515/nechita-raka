@@ -1,50 +1,93 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
-import { loadContent } from "../../faculties/content.js";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
+import { loadContent, loadEnglish } from "../../faculties/content.js";
 import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
+import { foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
+import { accentLine, homeDescription, robotsTxt, withHero, withSiteName, withTheme } from "../../scripts/prerender.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
+// index.html is written with the CS values (it opens locally without a build), so the template tests name CS.
 const cs = FACULTIES.cs;
+const ALL = Object.values(FACULTIES);
+const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 
-test("the default faculty is cs and FACULTY picks a known one", () => {
+// The facts of each faculty that the active run asserts (MULTI-FACULTY-PLAN.md D13): keyed by id, so the
+// same tests run for whichever FACULTY the env names. A new faculty adds a row here.
+const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
+const EXPECTED = {
+  cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json" },
+  // The placeholder (faculty PR 4): neuro identity, CS courses, egg and download until PR 6 brings its content.
+  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", synonym: "מדעי המוח", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: ["single", "cs", "psychology"], download: "courses-cs-2027.json" },
+};
+const expected = EXPECTED[FACULTY.id];
+
+test("the default faculty is cs, FACULTY picks a known one, and an unknown id fails fast with the known list", () => {
   assert.equal(DEFAULT_FACULTY, "cs");
   assert.equal(facultyIdFrom({}), "cs");
   assert.equal(facultyIdFrom({ FACULTY: " cs " }), "cs");
   assert.equal(facultyIdFrom({ FACULTY: "" }), "cs");
-  assert.throws(() => facultyIdFrom({ FACULTY: "neuro" }), /not a known faculty/);
+  assert.equal(facultyIdFrom({ FACULTY: "neuro" }), "neuro");
+  assert.throws(() => facultyIdFrom({ FACULTY: "law" }), /FACULTY="law" is not a known faculty \(known: cs, neuro\)/);
   assert.throws(() => facultyIdFrom({ FACULTY: "__proto__" }), /not a known faculty/);
+  assert.throws(() => facultyIdFrom({ FACULTY: "CS" }), /not a known faculty/);
   assert.equal(selectFaculty({}).id, "cs");
-  assert.equal(FACULTY.id, "cs");
+  assert.equal(selectFaculty({ FACULTY: "neuro" }).id, "neuro");
+  assert.ok(Object.hasOwn(FACULTIES, FACULTY.id), "the process runs for a known faculty");
+  assert.ok(expected, `this test file knows the facts of "${FACULTY.id}"`);
 });
 
-test("the CS manifest has the shape every faculty needs", () => {
-  assert.equal(validateFaculty(cs), cs);
-  assert.equal(cs.mascots.length, 2);
-  assert.deepEqual(cs.mascots.map((m) => m.gender).sort(), ["f", "m"]);
-  assert.deepEqual(cs.mascots.map((m) => m.id), ["bit", "byte"]);
-  assert.equal(cs.defaultMascot, "bit");
-  for (const mode of ["light", "dark"]) {
-    assert.deepEqual(Object.keys(cs.theme[mode]).sort(), [...THEME_KEYS].sort(), `theme.${mode} has the six accent values`);
-    for (const key of THEME_KEYS) assert.match(cs.theme[mode][key], /^#[0-9a-f]{6}$/);
+test("every folder under faculties/ is a known faculty, and every manifest has the shape the site needs", () => {
+  const folders = readdirSync("faculties", { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  assert.deepEqual(folders, Object.keys(FACULTIES).sort(), "faculties/index.js lists every folder and nothing else");
+  assert.ok(ALL.length >= 2, "at least two faculties, so the per-faculty machinery is exercised");
+  for (const f of ALL) {
+    const dir = `faculties/${f.id}`;
+    assert.equal(validateFaculty(f), f, `${f.id}: validates`);
+    assert.equal(f.mascots.length, 2, `${f.id}: two mascots`);
+    assert.deepEqual(f.mascots.map((m) => m.gender).sort(), ["f", "m"], `${f.id}: one masculine and one feminine`);
+    assert.equal(new Set(f.mascots.map((m) => m.id)).size, 2, `${f.id}: distinct mascot ids`);
+    assert.ok(f.mascots.some((m) => m.id === f.defaultMascot), `${f.id}: defaultMascot is one of the two`);
+    for (const mode of ["light", "dark"]) {
+      assert.deepEqual(Object.keys(f.theme[mode]).sort(), [...THEME_KEYS].sort(), `${f.id}: theme.${mode} has the six accent values`);
+      for (const key of THEME_KEYS) assert.match(f.theme[mode][key], /^#[0-9a-f]{6}$/, `${f.id}: theme.${mode}.${key}`);
+    }
+    assert.equal(f.pwa.themeColor, f.theme.light.accent, `${f.id}: the app color is the light accent`);
+    assert.ok(existsSync(`${dir}/${f.site.ogImage.file}`), `${f.id}: the OG image`);
+    for (const m of f.mascots) {
+      assert.ok(existsSync(`${dir}/mascot/${m.files.avatar}`), `${f.id}/${m.id}: avatar`);
+      assert.ok(existsSync(`${dir}/mascot/${m.files.peek}`), `${f.id}/${m.id}: peek image`);
+      for (const pose of MASCOT_POSES) assert.ok(existsSync(`${dir}/mascot/${m.files.poses}-${pose}.webp`), `${f.id}/${m.id}: ${pose}`);
+    }
+    for (const key of ["catalog", "yearbook"]) assert.ok(existsSync(facultyPath(f, f.courses[key])), `${f.id}: courses.${key}`);
+    assert.ok(existsSync(`${dir}/data.js`) && existsSync(`${dir}/data.en.js`), `${f.id}: content files`);
+    // loadContent throws when content.order names an id neither file has, or misses one they have.
+    const data = loadContent(f);
+    assert.deepEqual(data.guides.map((g) => g.id), f.content.order.guides, `${f.id}: every ordered guide exists`);
+    assert.deepEqual(data.categories.map((c) => c.id), f.content.order.categories, `${f.id}: every ordered category exists`);
+    const english = loadEnglish(f);
+    assert.ok(english.ui.length > 100 && english.content.length > 100, `${f.id}: English pairs`);
+    if (f.tracks !== undefined) {
+      const ids = f.tracks.map((t) => t.id);
+      assert.equal(new Set(ids).size, ids.length, `${f.id}: track ids are unique`);
+      for (const t of f.tracks) assert.ok(/[֐-׿]/.test(t.label), `${f.id}: track "${t.id}" has a Hebrew label`);
+    }
+    assert.ok(f.site.url.startsWith("https://") && !f.site.url.endsWith("/"), `${f.id}: site.url is an origin`);
   }
-  assert.equal(cs.site.url, "https://nechita-raka.vercel.app");
-  assert.equal(cs.pwa.themeColor, cs.theme.light.accent);
+  assert.equal(new Set(ALL.map((f) => f.site.url)).size, ALL.length, "every faculty has its own address");
 });
 
-test("every file the CS manifest points to exists", () => {
-  const dir = `faculties/${cs.id}`;
-  assert.ok(existsSync(`${dir}/${cs.site.ogImage.file}`), "the OG image");
-  for (const m of cs.mascots) {
-    assert.ok(existsSync(`${dir}/mascot/${m.files.avatar}`), `${m.id}: avatar`);
-    assert.ok(existsSync(`${dir}/mascot/${m.files.peek}`), `${m.id}: peek image`);
-    for (const pose of MASCOT_POSES) assert.ok(existsSync(`${dir}/mascot/${m.files.poses}-${pose}.webp`), `${m.id}: ${pose}`);
-  }
+test("the active faculty's manifest holds the facts its tests and content rely on", () => {
+  assert.deepEqual(FACULTY.mascots.map((m) => m.id), expected.mascots);
+  assert.equal(FACULTY.defaultMascot, expected.defaultMascot);
+  assert.equal(FACULTY.site.url, expected.url);
+  assert.equal(FACULTY.hero.path, expected.heroPath);
+  assert.deepEqual(FACULTY.tracks && FACULTY.tracks.map((t) => t.id), expected.tracks);
+  assert.equal(FACULTY.courses.download, expected.download);
 });
 
 test("validateFaculty names the broken field", () => {
@@ -89,30 +132,41 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.content.order.guides = []; }, /content\.order\.guides/],
     [(f) => { f.content.order.categories.push("Bad Id"); }, /content\.order\.categories has an id/],
     [(f) => { f.content.order.guides.push(f.content.order.guides[0]); }, /lists an id twice/],
+    [(f) => { f.tracks = []; }, /tracks must be a non-empty list/],
+    [(f) => { f.tracks = [{ id: "a", label: "א" }, { id: "a", label: "ב" }]; }, /tracks lists an id twice/],
+    [(f) => { f.tracks = [{ id: "Single", label: "א" }]; }, /tracks\[0\]\.id/],
+    [(f) => { f.tracks = [{ id: "single", label: "" }]; }, /tracks\[0\]\.label/],
+    [(f) => { f.department.url = "http://cs.biu.ac.il/"; }, /department/],
+    [(f) => { delete f.department; }, /department/],
   ];
-  for (const [mutate, expected] of cases) {
+  for (const [mutate, expectedError] of cases) {
     const broken = clone(cs);
     mutate(broken);
-    assert.throws(() => validateFaculty(broken), expected);
+    assert.throws(() => validateFaculty(broken), expectedError);
   }
+  const withTracks = clone(cs);
+  withTracks.tracks = [{ id: "single", label: "חד-חוגי" }, { id: "cs", label: "משולב" }];
+  assert.equal(validateFaculty(withTracks), withTracks, "a well-formed tracks list is accepted");
 });
 
 test("the browser subset keeps names, lines, theme and labels but not the model prompts", () => {
-  const subset = browserFaculty(cs);
-  assert.equal(subset.id, "cs");
-  assert.deepEqual(subset.name, cs.name);
-  assert.deepEqual(subset.theme, cs.theme);
-  assert.deepEqual(subset.labels, cs.labels);
-  assert.deepEqual(subset.search, cs.search);
-  assert.deepEqual(subset.eggs, cs.eggs);
+  const subset = browserFaculty(FACULTY);
+  assert.equal(subset.id, FACULTY.id);
+  assert.deepEqual(subset.name, FACULTY.name);
+  assert.deepEqual(subset.theme, FACULTY.theme);
+  assert.deepEqual(subset.labels, FACULTY.labels);
+  assert.deepEqual(subset.search, FACULTY.search);
+  assert.deepEqual(subset.eggs, FACULTY.eggs);
   assert.equal(subset.hero, undefined, "the hero is written by the prerender, the page does not need it");
   assert.equal(subset.courses, undefined, "the course files are read on the server and by the build");
-  assert.equal(subset.site.url, cs.site.url);
-  assert.equal(subset.defaultMascot, "bit");
+  assert.equal(subset.tracks, undefined, "nothing reads the tracks yet, so they are not published");
+  assert.equal(subset.department, undefined, "the department link is written into llms.txt by the build");
+  assert.equal(subset.site.url, FACULTY.site.url);
+  assert.equal(subset.defaultMascot, FACULTY.defaultMascot);
   assert.equal(subset.mascots.length, 2);
-  const text = facultyScript(cs);
+  const text = facultyScript(FACULTY);
   assert.match(text, /^window\.FACULTY = \{/);
-  for (const m of cs.mascots) {
+  for (const m of FACULTY.mascots) {
     const out = subset.mascots.find((s) => s.id === m.id);
     assert.deepEqual(out, { id: m.id, name: m.name, nameEn: m.nameEn, gender: m.gender, files: m.files, poseWidths: m.poseWidths, hellos: m.hellos, timely: m.timely, joined: m.joined, thinking: m.thinking, peekLines: m.peekLines });
     assert.ok(!text.includes(m.character.slice(0, 40)), `${m.id}: the character prompt stays on the server`);
@@ -122,19 +176,18 @@ test("the browser subset keeps names, lines, theme and labels but not the model 
 });
 
 test("the web app manifest carries the faculty's name, description and color", () => {
-  const parsed = JSON.parse(webmanifest(cs));
-  assert.equal(parsed.name, cs.pwa.name);
-  assert.equal(parsed.short_name, cs.pwa.shortName);
-  assert.equal(parsed.description, cs.pwa.description);
-  assert.equal(parsed.theme_color, cs.pwa.themeColor);
+  const parsed = JSON.parse(webmanifest(FACULTY));
+  assert.equal(parsed.name, FACULTY.pwa.name);
+  assert.equal(parsed.short_name, FACULTY.pwa.shortName);
+  assert.equal(parsed.description, FACULTY.pwa.description);
+  assert.equal(parsed.theme_color, FACULTY.pwa.themeColor);
   assert.equal(parsed.lang, "he");
   assert.equal(parsed.dir, "rtl");
   assert.equal(parsed.icons.length, 4);
   for (const icon of parsed.icons) assert.ok(existsSync(icon.src.replace(/^\.\//, "")), icon.src);
 });
 
-test("the prerender writes the manifest's accent colors into the :root blocks and leaves the memorial override alone", async () => {
-  const { accentLine, withTheme, withHero, homeDescription } = await import("../../scripts/prerender.mjs");
+test("the prerender writes the manifest's accent colors into the :root blocks and leaves the memorial override alone", () => {
   const template = readFileSync("index.html", "utf8");
   const theme = { light: { ...cs.theme.light, accent: "#111111" }, dark: { ...cs.theme.dark, accent: "#222222" } };
   const out = withTheme(template, theme);
@@ -143,6 +196,14 @@ test("the prerender writes the manifest's accent colors into the :root blocks an
   assert.ok(out.includes(`:root[data-day="memorial"] { --accent: #4b5563;`), "memorial override untouched");
   assert.equal(withTheme(template, cs.theme), template, "the CS values give the template back unchanged");
   assert.throws(() => withTheme(template.replace(DARK_SPLIT_TEXT, "@media (x)"), cs.theme), /dark-mode/);
+  // admin.html has the same three accent lines, so the build themes it the same way.
+  const admin = readFileSync("admin.html", "utf8");
+  assert.equal(withTheme(admin, cs.theme), admin, "the CS values give the admin page back unchanged");
+  assert.equal(withTheme(admin, theme).split(accentLine(theme.dark)).length - 1, 2, "the admin page takes the dark lines too");
+});
+
+test("the prerender writes the manifest's hero, site name and sitemap address; the CS values give the template back unchanged", () => {
+  const template = readFileSync("index.html", "utf8");
   assert.ok(withHero(template, { ...cs.hero, path: "~/biu/x/year-1" }).includes(`<span>~/biu/x/year-1</span></div>`));
   assert.ok(withHero(template, { ...cs.hero, path: "a<b" }).includes(`<span>a&lt;b</span></div>`), "escaped");
   assert.equal(withHero(template, cs.hero), template, "the CS hero gives the template back unchanged");
@@ -153,16 +214,29 @@ test("the prerender writes the manifest's accent colors into the :root blocks an
   assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: 3, start: 0.5, tokens: [["onclick", "x"]] }] }), /token kind/);
   assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: "3;color:red", start: 0.5, tokens: ["x"] }] }), /whole steps/);
   assert.throws(() => withHero(template.replace('<pre class="term-body">', "<pre>"), cs.hero), /hero/);
-  assert.equal(homeDescription("תשפ\"ז"), `${cs.site.description.replace("{year}", "תשפ\"ז")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
-  assert.equal(homeDescription(""), `${cs.site.description.replace(" {year}", "")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
+  // The H1 of the brand block: the site's name from the manifest.
+  assert.equal(withSiteName(template, cs.site.name), template, "the CS name gives the template back unchanged");
+  assert.ok(withSiteName(template, OTHER.site.name).includes(`<h1>${OTHER.site.name}</h1>`));
+  assert.ok(withSiteName(template, "a<b").includes(`<h1>a&lt;b</h1>`), "escaped");
+  assert.throws(() => withSiteName(template.replace('<div class="brand">', '<div class="brandx">'), cs.site.name), /brand block/);
+  // robots.txt: its Sitemap line points at the faculty's address.
+  const robots = readFileSync("robots.txt", "utf8");
+  const out = robotsTxt(robots);
+  assert.ok(out.includes(`Sitemap: ${FACULTY.site.url}/sitemap.xml`));
+  assert.equal((out.match(/^Sitemap:/gm) || []).length, 1);
+  assert.equal(out.replace(/^Sitemap: .*$/m, "Sitemap: X"), robots.replace(/^Sitemap: .*$/m, "Sitemap: X"), "nothing else changes");
+  assert.throws(() => robotsTxt(robots.replace(/^Sitemap: .*$/m, "")), /Sitemap line/);
+  assert.equal(homeDescription("תשפ\"ז"), `${FACULTY.site.description.replace("{year}", "תשפ\"ז")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
+  assert.equal(homeDescription(""), `${FACULTY.site.description.replace(" {year}", "")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
 });
 
 test("the build copies only the images the manifest names, to their fixed public paths", () => {
-  const files = facultyImageFiles(cs);
+  const [first, second] = FACULTY.mascots;
+  const files = facultyImageFiles(FACULTY);
   assert.equal(files.length, 1 + 2 * (2 + MASCOT_POSES.length));
-  const targets = facultyImageTargets(cs);
-  assert.equal(targets["og-image.jpg"], "assets/og-image-v2.jpg");
-  assert.equal(targets["mascot/peek-bit.webp"], "assets/mascot/peek-bit.webp");
+  const targets = facultyImageTargets(FACULTY);
+  assert.equal(targets[FACULTY.site.ogImage.file], FACULTY.site.ogImage.path);
+  assert.equal(targets[`mascot/${first.files.peek}`], `assets/mascot/${first.files.peek}`);
   const root = mkdtempSync(join(tmpdir(), "nr-faculty-"));
   try {
     const src = join(root, "src");
@@ -170,52 +244,107 @@ test("the build copies only the images the manifest names, to their fixed public
     writeFileSync(join(src, "mascot", "stray.txt"), "not published");
     writeFileSync(join(src, "faculty.js"), "not published");
     const out = join(root, "out");
-    copyFacultyAssets(cs, out, src);
+    copyFacultyAssets(FACULTY, out, src);
     for (const [file, target] of Object.entries(targets)) assert.equal(readFileSync(join(out, target), "utf8"), file);
     assert.ok(!existsSync(join(out, "assets", "mascot", "stray.txt")), "a stray file in the mascot folder stays out");
     assert.ok(!existsSync(join(out, "faculty.js")) && !existsSync(join(out, "assets", "faculty.js")), "the manifest is not copied as an asset");
-    rmSync(join(src, "mascot", "her-idea.webp"));
-    assert.throws(() => copyFacultyAssets(cs, join(root, "out2"), src), /missing .*her-idea\.webp/);
+    rmSync(join(src, "mascot", `${second.files.poses}-idea.webp`));
+    assert.throws(() => copyFacultyAssets(FACULTY, join(root, "out2"), src), new RegExp(`missing .*${second.files.poses}-idea\\.webp`));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
 
 test("the courses block names files that exist, categories with unique ids, and the download the content links to", () => {
-  assert.ok(existsSync(facultyPath(cs, cs.courses.catalog)), "the catalog scan");
-  assert.ok(existsSync(facultyPath(cs, cs.courses.yearbook)), "the yearbook mapping");
-  assert.equal(facultyPath(cs, cs.courses.catalog), "faculties/cs/courses/catalog.json");
-  assert.ok(existsSync(facultyFile(cs, cs.courses.catalog)), "the same file as a URL, for the server");
-  assert.ok(cs.courses.categories.length > 0);
-  const ids = cs.courses.categories.map((c) => c.id);
+  assert.ok(existsSync(facultyPath(FACULTY, FACULTY.courses.catalog)), "the catalog scan");
+  assert.ok(existsSync(facultyPath(FACULTY, FACULTY.courses.yearbook)), "the yearbook mapping");
+  assert.equal(facultyPath(FACULTY, FACULTY.courses.catalog), `faculties/${FACULTY.id}/${FACULTY.courses.catalog}`);
+  assert.ok(existsSync(facultyFile(FACULTY, FACULTY.courses.catalog)), "the same file as a URL, for the server");
+  assert.ok(FACULTY.courses.categories.length > 0);
+  const ids = FACULTY.courses.categories.map((c) => c.id);
   assert.equal(new Set(ids).size, ids.length, "category ids are unique");
-  for (const c of cs.courses.categories) assert.ok(c.label.trim(), `${c.id} has a label`);
-  assert.deepEqual(ids, ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"], "the CS list, in display order");
-  assert.match(cs.courses.officialSource, /ידיעון/);
-  const item = loadContent(cs).categories.flatMap((c) => c.items).find((i) => i.id === "courses-file");
+  for (const c of FACULTY.courses.categories) assert.ok(c.label.trim(), `${c.id} has a label`);
+  assert.deepEqual(ids, expected.categories, "the faculty's list, in display order");
+  assert.match(FACULTY.courses.officialSource, /ידיעון/);
+  const item = loadContent(FACULTY).categories.flatMap((c) => c.items).find((i) => i.id === "courses-file");
   assert.ok(item, "the content has the course-file item");
-  assert.ok(item.url.endsWith(`/${cs.courses.download}`), `${item.url} points at the file the build publishes (${cs.courses.download})`);
+  assert.ok(item.url.endsWith(`/${FACULTY.courses.download}`), `${item.url} points at the file the build publishes (${FACULTY.courses.download})`);
 });
 
 test("the hero is a known variant with a path and typed lines; the search and the eggs are lists the page can merge", () => {
   assert.deepEqual(HERO_VARIANTS, ["terminal"]);
-  assert.equal(cs.hero.variant, "terminal");
-  assert.equal(cs.hero.path, "~/biu/cs/year-1");
-  assert.ok(cs.hero.lines.length >= 1);
-  for (const line of cs.hero.lines) {
+  assert.equal(FACULTY.hero.variant, "terminal");
+  assert.ok(FACULTY.hero.lines.length >= 1);
+  for (const line of FACULTY.hero.lines) {
     assert.ok(Number.isInteger(line.steps) && line.steps > 0);
     assert.ok(line.tokens.length >= 1);
   }
-  assert.ok(cs.search.synonyms.some((group) => group.includes("מדעי המחשב")));
-  assert.ok(cs.eggs.some((egg) => egg.toast.includes("Hello, CS!")));
+  assert.ok(FACULTY.search.synonyms.some((group) => group.includes(expected.synonym)));
+  assert.ok(FACULTY.eggs.some((egg) => egg.toast.includes(expected.egg)));
 });
 
 test("the published catalog takes a name of its own: never one the build writes, and a guide cannot take its name either", () => {
   assert.equal(nameStem("courses-cs-2027.json"), "courses-cs-2027");
   const reserved = new Set(["index", "course-list", "data"]);
-  const withDownload = reserveDownload(reserved, cs.courses.download);
-  assert.ok(withDownload.has(nameStem(cs.courses.download)), "the download's name is reserved for guide ids");
+  const withDownload = reserveDownload(reserved, FACULTY.courses.download);
+  assert.ok(withDownload.has(nameStem(FACULTY.courses.download)), "the download's name is reserved for guide ids");
   assert.equal(reserved.size, 3, "the input set is not changed");
   assert.throws(() => reserveDownload(reserved, "course-list.json"), /courses\.download "course-list\.json" is taken/);
   assert.throws(() => reserveDownload(reserved, "data.js"), /is taken/);
+});
+
+test("the faculty guard passes a clean bundle and fails one that carries another faculty's manifest, images, names, address or colors", () => {
+  assert.ok(OTHER, "a second faculty to leak from");
+  assert.equal(mascotImageNames(FACULTY).length, 2 * (2 + MASCOT_POSES.length));
+  const root = mkdtempSync(join(tmpdir(), "nr-guard-"));
+  const write = (file, text) => { mkdirSync(dirname(join(root, file)), { recursive: true }); writeFileSync(join(root, file), text); };
+  const clean = () => {
+    rmSync(root, { recursive: true, force: true });
+    write("faculty.js", facultyScript(FACULTY));
+    write("manifest.webmanifest", webmanifest(FACULTY));
+    write("index.html", `<title>${FACULTY.site.title}</title>${accentLine(FACULTY.theme.light)}<h1>${FACULTY.site.name}</h1>`);
+    write("sitemap.xml", `<loc>${FACULTY.site.url}/</loc>`);
+    write(`assets/mascot/${FACULTY.mascots[0].files.avatar}`, "img");
+  };
+  const leaks = () => foreignFacultyLeaks(root, FACULTY);
+  const markers = () => leaks().map((l) => `${l.file}: ${l.faculty}: ${l.marker}`).join("\n");
+  try {
+    clean();
+    assert.deepEqual(leaks(), [], "a clean bundle");
+    // A planted foreign mascot name in the browser manifest.
+    write("faculty.js", facultyScript(FACULTY).replace(`"name":"${FACULTY.mascots[0].name}"`, `"name":"${OTHER.mascots[0].name}"`));
+    assert.match(markers(), new RegExp(`faculty\\.js: ${OTHER.id}: mascot name "${OTHER.mascots[0].name}"`));
+    assert.match(markers(), /faculty\.js: .*mascots .* instead of /, "the parsed manifest is not the active faculty's");
+    // The other faculty's manifest altogether.
+    clean();
+    write("faculty.js", facultyScript(OTHER));
+    assert.match(markers(), new RegExp(`faculty\\.js: ${OTHER.id}: id "${OTHER.id}" instead of "${FACULTY.id}"`));
+    // One of the other faculty's image files, and a page that references one.
+    clean();
+    write(`assets/mascot/${OTHER.mascots[1].files.peek}`, "img");
+    assert.match(markers(), new RegExp(`^assets/mascot/${OTHER.mascots[1].files.peek}: ${OTHER.id}: image file`, "m"));
+    clean();
+    write("exams.html", `<img src="./assets/mascot/${OTHER.mascots[0].files.avatar}">`);
+    assert.match(markers(), new RegExp(`^exams\\.html: ${OTHER.id}: image ${OTHER.mascots[0].files.avatar}$`, "m"));
+    // The other faculty's name in a heading, address in the sitemap, colors in a page.
+    clean();
+    write("index.html", `<h1>${OTHER.pwa.name}</h1>`);
+    assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: pwa\\.name`, "m"));
+    clean();
+    write("sitemap.xml", `<loc>${OTHER.site.url}/</loc>`);
+    assert.match(markers(), new RegExp(`^sitemap\\.xml: ${OTHER.id}: site\\.url`, "m"));
+    clean();
+    write("index.html", `<style>${accentLine(OTHER.theme.dark)}</style>`);
+    assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: theme\\.dark$`, "m"));
+    // Prose may name the other faculty's mascots or address (shared content does; check-data warns about it).
+    clean();
+    write("registration.html", `<p>${OTHER.mascots[0].name} ${OTHER.mascots[1].nameEn} ${OTHER.site.url}</p>`);
+    assert.deepEqual(leaks(), []);
+    // A file that is not text is only checked by its name.
+    clean();
+    write("assets/photo.webp", OTHER.site.title);
+    assert.deepEqual(leaks(), []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

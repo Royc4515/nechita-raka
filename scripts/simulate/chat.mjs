@@ -3,8 +3,10 @@
 // askWithBackoff retries only a 503 `busy` (the model provider's per-minute token budget), which
 // refills within about a minute; everything else is recorded as it came.
 
-/** Hosts the script refuses: production is capped and its dashboard would count the run. */
-export const PRODUCTION_HOSTS = new Set(["nechita-raka.vercel.app"]);
+import { FACULTIES } from "../../faculties/index.js";
+
+/** Hosts the script refuses: every faculty's production site is capped and its dashboard would count the run. */
+export const PRODUCTION_HOSTS = new Set(Object.values(FACULTIES).map((f) => new URL(f.site.url).hostname));
 export const MIN_DELAY_MS = 1000;
 /**
  * Pause between questions. The prompt is about 8,000 characters of Hebrew per message; at one

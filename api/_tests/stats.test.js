@@ -9,8 +9,9 @@ import { allowlists, buildChunks, buildCore, loadSiteData } from "../_lib/chat/k
 import { buildCatalog, deviceOf, HOME_LABEL, normalizeUrl, searchKey } from "../_lib/stats/catalog.js";
 import { MAX_FREE_KEYS_PER_DAY, PgStatsStore } from "../_lib/stats/store.js";
 import { BurstLimiter, handleTrack, visitorHash } from "../_lib/stats/track.js";
+import { FACULTY } from "../../faculties/index.js";
 
-const SITE = "https://nechita-raka.vercel.app";
+const SITE = FACULTY.site.url;
 const data = loadSiteData();
 const chunks = buildChunks(data);
 const { urls, emails } = allowlists(data);

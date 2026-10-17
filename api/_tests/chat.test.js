@@ -10,6 +10,11 @@ import { clientIp, limiterFor, PgChatLimiter, GLOBAL_DAILY, PER_VISITOR_DAILY } 
 import { FallbackChain, OpenAICompatibleProvider } from "../_lib/chat/llm.js";
 import { buildRequest, canaryFor, parseDraft, systemPrompt } from "../_lib/chat/prompt.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
+import { FACULTY } from "../../faculties/index.js";
+
+// The two mascots of the active faculty, by grammar: the tests assert on forms, not on names.
+const M = FACULTY.mascots.find((m) => m.gender === "m");
+const F = FACULTY.mascots.find((m) => m.gender === "f");
 
 const data = loadSiteData();
 const chunks = buildChunks(data);
@@ -63,14 +68,14 @@ test("retrieval looks at the last two questions", () => {
 
 test("each persona gets its own name and grammar, and the canary is in the prompt", () => {
   const canary = canaryFor(SALT);
-  assert.match(systemPrompt("bit", "core", canary), /ביט.*masculine/s);
-  assert.match(systemPrompt("byte", "core", canary), /בייט.*feminine/s);
-  assert.ok(systemPrompt("bit", "core", canary).includes(canary));
-  const req = buildRequest({ personaId: "byte", core: "core", facts: [chunks[0]], history: [{ role: "user", content: "שאלה" }], canary });
+  assert.match(systemPrompt(M.id, "core", canary), new RegExp(`${M.name}.*masculine`, "s"));
+  assert.match(systemPrompt(F.id, "core", canary), new RegExp(`${F.name}.*feminine`, "s"));
+  assert.ok(systemPrompt(M.id, "core", canary).includes(canary));
+  const req = buildRequest({ personaId: F.id, core: "core", facts: [chunks[0]], history: [{ role: "user", content: "שאלה" }], canary });
   assert.equal(req.messages[0].role, "system");
   assert.ok(req.messages[0].content.includes(`[${chunks[0].id}]`));
   assert.doesNotMatch(req.messages[0].content, /REPLY LANGUAGE/);
-  const en = buildRequest({ personaId: "bit", core: "core", facts: [], history: [{ role: "user", content: "question" }], canary, english: true });
+  const en = buildRequest({ personaId: M.id, core: "core", facts: [], history: [{ role: "user", content: "question" }], canary, english: true });
   assert.match(en.messages[0].content, /REPLY LANGUAGE[\s\S]*natural English/);
 });
 
@@ -110,7 +115,7 @@ test("hidePhones keeps the sentence readable and collapses alternatives", () => 
 });
 
 test("the prompt tells the model what the phone note means", () => {
-  assert.match(systemPrompt("bit", "core", canaryFor(SALT)), /מספר הטלפון מופיע באתר/);
+  assert.match(systemPrompt(M.id, "core", canaryFor(SALT)), /מספר הטלפון מופיע באתר/);
 });
 
 // ---------- output hooks ----------
@@ -168,7 +173,7 @@ test("hooks keep data.js links, cut others, and fix style", () => {
 });
 
 test("personas mirror the student's gender when it shows, and fall back to the plural", () => {
-  for (const persona of ["bit", "byte"]) {
+  for (const persona of [M.id, F.id]) {
     const prompt = systemPrompt(persona, "core", canaryFor(SALT));
     assert.match(prompt, /never guess: use second person plural/);
     assert.match(prompt, /קחי נשימה, תיכנסי/);
@@ -178,13 +183,13 @@ test("personas mirror the student's gender when it shows, and fall back to the p
   }
   // Canned replies never know who they're talking to, so they stay plural.
   for (const reason of ["injection", "empty"]) {
-    for (const persona of ["bit", "byte"]) assert.doesNotMatch(cannedReply(reason, true, persona), /(?:^|\s)(?:אותך|לך|אתה|תגיש|תשאל)(?=[\s?.!,]|$)/);
+    for (const persona of [M.id, F.id]) assert.doesNotMatch(cannedReply(reason, true, persona), /(?:^|\s)(?:אותך|לך|אתה|תגיש|תשאל)(?=[\s?.!,]|$)/);
   }
 });
 
 test("canned replies follow the language", () => {
-  assert.match(cannedReply("injection", true, "bit"), /נשאר אני/);
-  assert.match(cannedReply("injection", true, "byte"), /נשארת אני/);
+  assert.match(cannedReply("injection", true, M.id), /נשאר אני/);
+  assert.match(cannedReply("injection", true, F.id), /נשארת אני/);
   assert.match(cannedReply("empty", false), /WhatsApp/);
 });
 
@@ -234,7 +239,7 @@ test("a body over the limit is refused even without Content-Length", async () =>
     },
   });
   const res = await handleChat(
-    new Request("https://nechita-raka.vercel.app/api/chat", { method: "POST", headers: { "content-type": "application/json", origin: "https://nechita-raka.vercel.app" }, body: big, duplex: "half" }),
+    new Request(`${FACULTY.site.url}/api/chat`, { method: "POST", headers: { "content-type": "application/json", origin: FACULTY.site.url }, body: big, duplex: "half" }),
     fakeDeps(),
   );
   assert.equal(res.status, 400);
@@ -303,8 +308,8 @@ const fakeDeps = (overrides = {}) => ({
   ...overrides,
 });
 
-const post = (body, origin = "https://nechita-raka.vercel.app") =>
-  new Request("https://nechita-raka.vercel.app/api/chat", {
+const post = (body, origin = FACULTY.site.url) =>
+  new Request(`${FACULTY.site.url}/api/chat`, {
     method: "POST",
     headers: { "content-type": "application/json", origin },
     body: JSON.stringify(body),
@@ -313,7 +318,7 @@ const post = (body, origin = "https://nechita-raka.vercel.app") =>
 test("a reserve-duty answer without Roy is flagged for his line, others aren't", async () => {
   const ask = async (question, answer, sources = []) => {
     const deps = fakeDeps({ chain: () => ({ run: async () => ({ ok: true, value: draft(answer, sources), completion: { model: "m1", promptTokens: 1, cachedTokens: 0 } }) }) });
-    return (await handleChat(post({ persona: "bit", messages: [{ role: "user", content: question }] }), deps)).json();
+    return (await handleChat(post({ persona: M.id, messages: [{ role: "user", content: question }] }), deps)).json();
   };
   assert.equal((await ask("אני במילואים, מה עם המבחנים?", "תודה על השירות! מגיע לך מועד נוסף.")).roy, true);
   assert.equal((await ask("מה מגיע לי?", "מועד נוסף.", ["guide:reserves"])).roy, true);
@@ -322,7 +327,7 @@ test("a reserve-duty answer without Roy is flagged for his line, others aren't",
 });
 
 test("handler answers with the reply and its sources", async () => {
-  const res = await handleChat(post({ persona: "byte", messages: [{ role: "user", content: "איך משנים קורס?" }] }), fakeDeps());
+  const res = await handleChat(post({ persona: F.id, messages: [{ role: "user", content: "איך משנים קורס?" }] }), fakeDeps());
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.equal(body.reply, "בתקופת השינויים באינ-בר.");

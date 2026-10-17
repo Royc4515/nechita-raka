@@ -137,7 +137,7 @@ class ChatPanel {
       el("header", { class: "chat-head" }, this.avatar, el("div", { class: "chat-who" }, this.title, el("p", { class: "chat-sub", text: tr("קמע AI של נחיתה רכה") })), this.switchBtn),
       this.list,
       form,
-      el("p", { class: "chat-note", text: tr("ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.") }));
+      el("p", { class: "chat-note", text: tr(`${FACULTY.mascots.map((m) => m.name).join(" ו")} הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.`) }));
     this.root.addEventListener("keydown", (e) => { if (e.key === "Escape") this.close(); });
     document.body.append(this.root);
   }

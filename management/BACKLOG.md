@@ -9,7 +9,7 @@ Columns: S = students, U = urgency, E = effort.
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | done 18.10.2026, #80 | Course files under `faculties/cs/courses/`, catalog, yearbook, categories and source line from the `courses` block; `hero` (terminal variant), `search.synonyms` and `eggs` from the manifest. No visible change. |
-| Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | planned | `FACULTY` env, tests parametrized, placeholder `faculties/neuro/`. |
+| Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | in review | `FACULTY` resolved through `faculties/index.js` everywhere, tests parametrized by the active faculty plus a shape test over every manifest, CI matrix over cs and neuro, the faculty guard in the build, placeholder `faculties/neuro/` (violet, נוי ורון, tracks list). |
 | Simulation script | 3 | 2 | 2 | 3.0 | done 16.10.2026 | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
 | Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | done 16.10.2026 | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
 | Weekly report also written to a file the board can read | 2 | 1 | 2 | 1.0 | idea | Today it is only an email; the board needs Roy to paste it. |

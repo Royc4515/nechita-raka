@@ -1,11 +1,14 @@
 // Reads the simulated-student personas in management/users/<id>.md for scripts/simulate.mjs.
-// A persona file declares `Mascot: bit|byte` and `Language: ...`, and lists its seed questions as
+// A persona file declares `Mascot: <mascot id>` (MASCOT_IDS) and `Language: ...`, and lists its seed questions as
 // a numbered list under "## Seed questions". A question may start with a "(note)" for the runner;
 // the note is kept in the transcript and is not sent.
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { FACULTIES } from "../../faculties/index.js";
 
 export const USERS_DIR = "management/users";
+/** Every mascot id of every faculty: a persona names the one it picked, and the target site decides what to do with an id it does not have. */
+export const MASCOT_IDS = Object.freeze(Object.values(FACULTIES).flatMap((f) => f.mascots.map((m) => m.id)));
 const PERSONA_ID = /^[a-z0-9-]{1,60}$/;
 const SEED_HEADING = /^## Seed questions[ \t]*\r?$/m;
 const NEXT_HEADING = /^## /m;
@@ -14,8 +17,8 @@ const LEADING_NOTE = /^\((.+?)\)\s+(.+)$/;
 
 /** { id, mascot, language, questions: [{ n, text, note? }] } or throws with the file's problem. */
 export function parsePersona(id, markdown) {
-  const mascot = markdown.match(/^Mascot:\s*(bit|byte)\b/m)?.[1];
-  if (!mascot) throw new Error(`${id}: no "Mascot: bit" or "Mascot: byte" line`);
+  const mascot = markdown.match(/^Mascot:\s*([a-z]+)\b/m)?.[1];
+  if (!mascot || !MASCOT_IDS.includes(mascot)) throw new Error(`${id}: no "Mascot: <id>" line naming one of ${MASCOT_IDS.join(", ")}`);
   const language = markdown.match(/\bLanguage:\s*([A-Za-z]+)/)?.[1]?.toLowerCase() ?? "hebrew";
   const [, after] = markdown.split(SEED_HEADING);
   if (after === undefined) throw new Error(`${id}: no "## Seed questions" section`);

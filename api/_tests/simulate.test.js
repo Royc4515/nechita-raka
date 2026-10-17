@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { BUSY_RETRIES, BUSY_WAIT_MS, DEFAULT_DELAY_MS, askOnce, askWithBackoff, assertNotProduction, buildChatRequest, classifyResponse } from "../../scripts/simulate/chat.mjs";
-import { listPersonaIds, loadPersona, parsePersona } from "../../scripts/simulate/personas.mjs";
+import { listPersonaIds, loadPersona, MASCOT_IDS, parsePersona } from "../../scripts/simulate/personas.mjs";
 import { gradeRows, gradesHeader, redactGroupLinks, renderTranscript } from "../../scripts/simulate/transcript.mjs";
 
 const DOC = `# Persona: sample
@@ -36,6 +36,8 @@ test("the parser reads the mascot, the language and the numbered seed questions 
 
 test("the parser refuses a file without a mascot or without seed questions", () => {
   assert.throws(() => parsePersona("x", DOC.replace("Mascot: byte.", "")), /Mascot/);
+  assert.throws(() => parsePersona("x", DOC.replace("Mascot: byte.", "Mascot: zed.")), /naming one of/);
+  assert.ok(MASCOT_IDS.includes("bit") && MASCOT_IDS.includes("byte"), "the CS mascots the persona files name");
   assert.throws(() => parsePersona("x", DOC.replace("## Seed questions", "## Questions")), /Seed questions/);
   assert.throws(() => parsePersona("x", DOC.replace(/^\d\. .*$/gm, "")), /numbered/);
   assert.throws(() => loadPersona("../etc/passwd"), /persona id/);
@@ -47,7 +49,7 @@ test("every persona in management/users parses with ten questions and a mascot",
   assert.ok(!ids.includes("README"));
   for (const id of ids) {
     const persona = loadPersona(id);
-    assert.ok(["bit", "byte"].includes(persona.mascot), id);
+    assert.ok(MASCOT_IDS.includes(persona.mascot), id);
     assert.equal(persona.questions.length, 10, id);
     assert.deepEqual(persona.questions.map((q) => q.n), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], id);
   }
@@ -61,6 +63,7 @@ test("the guard refuses production in any spelling and accepts previews and loca
   for (const url of ["https://nechita-raka.vercel.app", "https://NECHITA-RAKA.vercel.app/api/chat", "http://nechita-raka.vercel.app:80/", "https://nechita-raka.vercel.app./", "https://nechita-raka.vercel.app%2e/"]) {
     assert.throws(() => assertNotProduction(url), /production/, url);
   }
+  assert.throws(() => assertNotProduction("https://nechita-raka-neuro.vercel.app/api/chat"), /production/, "the other faculty's site is production too");
   assert.equal(assertNotProduction("http://localhost:3000").hostname, "localhost");
   assert.equal(assertNotProduction("https://nechita-raka-git-feature-royc4515.vercel.app/").hostname, "nechita-raka-git-feature-royc4515.vercel.app");
   // "localhost:3000" parses as a URL with the scheme "localhost:", so it fails the scheme check.
