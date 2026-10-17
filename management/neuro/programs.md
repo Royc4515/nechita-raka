@@ -89,7 +89,7 @@ Which building hosts the year 1 lectures (chemistry, calculus, physics, intro ps
 
 | # | Question | Answer | By |
 | --- | --- | --- | --- |
-| 1 | Single major: one track, two (`single`, `single-comp`) or three? | Open. Roy asked what it affects; explained (the track selector decides which year lists a student sees; computational differs from year 1, biological and cognition only from year 2). | Roy, pending |
+| 1 | Single major: one track, two (`single`, `single-comp`) or three? | Two tracks: `single` (biological and cognition, which share year 1 and split in year 2) and `single-comp` (computational, chosen at registration). Final track list for the manifest: `single`, `single-comp`, `cs`, `psychology`, `biology`, `philosophy`, `linguistics`, `physics`. | Roy |
 | 2 | Default track before the student picks one? | None: a one-time track picker on first visit; chat and courses show all tracks until chosen. | Roy |
 | 3 | Degree letters: Gonda says B.Sc, philosophy and psychology say B.A. | Print no degree letters anywhere on the neuro site. | Roy |
 | 4 | CS double plan page labeled תשפ"ו but links חוקה תשפ"ז. | Confirmed in the browser: the page's own "חוקה תשפ"ז" link points to a PDF in the תשפ"ז folder (`.../תוכניות לימודים תשפז/תוכנית-לימודים_מדעי-המוח-ומדעי-המחשב_מעודכן-תשפז.pdf`), next to the תשפ"ו and תשפ"ה ones. The תשפ"ו label is a stale caption. | Orchestrator |
