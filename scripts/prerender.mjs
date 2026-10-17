@@ -19,6 +19,7 @@ export const SITE_URL = FACULTY.site.url;
 const OG_IMAGE = { ...FACULTY.site.ogImage, url: `${SITE_URL}/${FACULTY.site.ogImage.path}` };
 const BRAND = FACULTY.site.brand;
 const SITE_NAME = FACULTY.site.name;
+const FACULTY_HE = FACULTY.name.he; // "מדעי המחשב": the faculty in the descriptions and the structured data
 const HOME_TITLE = FACULTY.site.title;
 const NOT_OFFICIAL = "יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.";
 const BIU = { "@type": "CollegeOrUniversity", "@id": `${SITE_URL}/#biu`, name: "אוניברסיטת בר-אילן", alternateName: "Bar-Ilan University", url: "https://www.biu.ac.il/" };
@@ -298,7 +299,7 @@ function personNode(site) {
     "@id": `${SITE_URL}/#author`,
     name: site.author || "רועי כרמלי",
     alternateName: "Roy Carmelli",
-    description: "מי שבנה את נחיתה רכה, האתר לסטודנטים בשנה א' במדעי המחשב בבר אילן.",
+    description: `מי שבנה את ${BRAND}, האתר לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן.`,
     ...(sameAs.length ? { url: sameAs[0], sameAs } : {}),
   };
 }
@@ -331,7 +332,7 @@ function eventNodes(data) {
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "אוניברסיטת בר-אילן" },
       organizer: { "@id": BIU["@id"] },
-      description: `מתוך לוח השנה של שנה א' במדעי המחשב בבר אילן, ${data.calendar.title || ""}. הלוח הרשמי של האוניברסיטה קובע.`,
+      description: `מתוך לוח השנה של שנה א' ב${FACULTY_HE} בבר אילן, ${data.calendar.title || ""}. הלוח הרשמי של האוניברסיטה קובע.`,
       url: `${SITE_URL}/#calendar`,
     }));
 }
@@ -368,7 +369,7 @@ function homeHead(data, updated) {
       "@type": "FAQPage",
       "@id": `${SITE_URL}/#faq`,
       url: `${SITE_URL}/#faq`,
-      name: "שאלות נפוצות של סטודנטים בשנה א' במדעי המחשב בבר אילן",
+      name: `שאלות נפוצות של סטודנטים בשנה א' ב${FACULTY_HE} בבר אילן`,
       inLanguage: "he",
       isPartOf: { "@id": `${SITE_URL}/#webpage` },
       dateModified: updated,
@@ -381,7 +382,7 @@ function homeHead(data, updated) {
     {
       "@type": "ItemList",
       "@id": `${SITE_URL}/#guides`,
-      name: "מדריכים לשנה א' במדעי המחשב בבר אילן",
+      name: `מדריכים לשנה א' ב${FACULTY_HE} בבר אילן`,
       itemListElement: data.guides.map((g, i) => ({ "@type": "ListItem", position: i + 1, name: g.title, url: guideUrl(g.id) })),
     },
     ...eventNodes(data),
@@ -395,11 +396,11 @@ export const guidePageTitle = (guide) => `${guide.title} - בר אילן | ${BRA
 function guideHead(data, guide, updated) {
   const url = guideUrl(guide.id);
   const modified = isoFromDmy(guide.checkedOn) || updated;
-  const description = `${guide.summary || guide.title} מדריך צעד אחר צעד לסטודנטים בשנה א' במדעי המחשב בבר אילן, מתוך האתרים הרשמיים. ${NOT_OFFICIAL}`;
+  const description = `${guide.summary || guide.title} מדריך צעד אחר צעד לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן, מתוך האתרים הרשמיים. ${NOT_OFFICIAL}`;
   const title = guidePageTitle(guide);
   const sources = (guide.sources || []).filter((s) => s && isSafeUrl(s.url));
   const graph = [
-    websiteNode(`מרכז מידע לסטודנטים בשנה א' במדעי המחשב בבר אילן. ${NOT_OFFICIAL}`),
+    websiteNode(`מרכז מידע לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן. ${NOT_OFFICIAL}`),
     personNode(data.site),
     BIU,
     {
@@ -519,9 +520,19 @@ export function withHero(html, hero) {
   return html.replace(HERO_BLOCK_RE, (block) => render(block, hero));
 }
 
+// The brand block of index.html: the site's name in its H1 (the template keeps the CS one so the file opens locally).
+const BRAND_H1_RE = /(<div class="brand">[\s\S]*?<h1>)[^<]*(<\/h1>)/g;
+
+/** The site name of the manifest written into the H1 of the brand block. */
+export function withSiteName(html, name) {
+  if ((html.match(BRAND_H1_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one <h1> in the brand block");
+  return html.replace(BRAND_H1_RE, (m, open, close) => `${open}${escText(name)}${close}`);
+}
+
 function common(html, data, updated) {
   html = withTheme(html, FACULTY.theme);
   html = withHero(html, FACULTY.hero);
+  html = withSiteName(html, SITE_NAME);
   html = fill(html, "pre:credit", creditHtml(data.site || {}));
   return fill(html, "pre:updated", updatedHtml(updated, data.site.academicYear));
 }
@@ -555,6 +566,14 @@ export function guidePage(template, data, guide, updated, courses = null) {
   return common(html, data, updated);
 }
 
+const SITEMAP_LINE_RE = /^Sitemap: https:\/\/\S+$/gm;
+
+/** robots.txt with its Sitemap line pointing at this faculty's address (the file in the repo names the CS one). */
+export function robotsTxt(text) {
+  if ((text.match(SITEMAP_LINE_RE) || []).length !== 1) throw new Error("prerender: robots.txt should have exactly one Sitemap line");
+  return text.replace(SITEMAP_LINE_RE, `Sitemap: ${SITE_URL}/sitemap.xml`);
+}
+
 export function sitemapXml(data, updated) {
   const urls = [{ loc: `${SITE_URL}/`, lastmod: updated }, ...data.guides.map((g) => ({ loc: guideUrl(g.id), lastmod: isoFromDmy(g.checkedOn) || updated }))];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u.loc)}</loc><lastmod>${u.lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
@@ -566,7 +585,7 @@ export function llmsTxt(data, updated) {
   const lines = [
     `# ${SITE_NAME}`,
     "",
-    `> מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
+    `> מרכז מידע לסטודנטים בשנה א' ב${FACULTY_HE} באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
     "",
     `עודכן לאחרונה: ${updated}`,
     "",
@@ -584,7 +603,7 @@ export function llmsTxt(data, updated) {
     "",
     ...(isSafeUrl(data.calendar.sourceUrl) ? [`- [לוח הזמנים האקדמי הרשמי](${data.calendar.sourceUrl})`] : []),
     "- [אתר אוניברסיטת בר-אילן](https://www.biu.ac.il/)",
-    "- [המחלקה למדעי המחשב](https://cs.biu.ac.il/)",
+    `- [${FACULTY.department.name}](${FACULTY.department.url})`,
     "",
   ];
   return lines.join("\n");

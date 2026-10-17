@@ -7,8 +7,9 @@ import { calendarEvents, change, insights, previousRange } from "../_lib/admin/i
 import { buildReport } from "../_lib/admin/report.js";
 import { buildWeeklyEmail, handleWeekly, lastWeek, readWeeklyConfig } from "../_lib/admin/weekly.js";
 import { buildCatalog } from "../_lib/stats/catalog.js";
+import { FACULTY } from "../../faculties/index.js";
 
-const SITE = "https://nechita-raka.vercel.app";
+const SITE = FACULTY.site.url;
 const data = loadSiteData();
 const catalog = buildCatalog(data, buildChunks(data), allowlists(data).urls);
 const ENV = { GOOGLE_CLIENT_ID: "c.apps.googleusercontent.com", ADMIN_EMAILS: "roy@example.com", CHAT_SALT: "s".repeat(64), DATABASE_URL: "postgres://x" };

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { BROWSER_FILES, contentFiles, evalScript, loadContent, loadEnglish, mergeContent, mergeEnglish, siteScript } from "../../faculties/content.js";
-import { FACULTY, facultyPath } from "../../faculties/index.js";
+import { FACULTIES, FACULTY, facultyPath } from "../../faculties/index.js";
 
 const guide = (id, extra = {}) => ({ id, title: `t-${id}`, steps: [`s`], ...extra });
 const category = (id) => ({ id, title: `c-${id}`, items: [] });
@@ -82,17 +82,18 @@ test("siteScript writes a script the browser evaluates back to the same data, wi
   assert.equal(BROWSER_FILES.SITE_DATA, "data.js");
 });
 
-test("every Vercel function bundles the content files the loader reads and the course files the model reads", () => {
+test("every Vercel function bundles the content files the loader reads and the course files the model reads, for every faculty", () => {
   const { functions } = JSON.parse(readFileSync("vercel.json", "utf8"));
   const globToRe = (glob) => new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^/]*")}$`);
-  const needed = [...contentFiles(FACULTY).data, facultyPath(FACULTY, FACULTY.courses.catalog), facultyPath(FACULTY, FACULTY.courses.yearbook)];
+  // The env picks the faculty at runtime (one Vercel project per faculty), so the bundle must hold every faculty's files.
+  const needed = Object.values(FACULTIES).flatMap((f) => [...contentFiles(f).data, facultyPath(f, f.courses.catalog), facultyPath(f, f.courses.yearbook)]);
   for (const [fn, { includeFiles }] of Object.entries(functions)) {
     const patterns = includeFiles.replace(/^\{|\}$/g, "").split(",").map(globToRe);
     for (const file of needed) assert.ok(patterns.some((re) => re.test(file)), `${fn} includes ${file}`);
   }
 });
 
-test("the CS content merges and is complete: every ordered id exists and every featured id is an item", () => {
+test("the active faculty's content merges and is complete: every ordered id exists and every featured id is an item", () => {
   const data = loadContent(FACULTY);
   assert.deepEqual(data.guides.map((g) => g.id), FACULTY.content.order.guides);
   assert.deepEqual(data.categories.map((c) => c.id), FACULTY.content.order.categories);
@@ -100,7 +101,7 @@ test("the CS content merges and is complete: every ordered id exists and every f
   for (const id of data.featured) assert.ok(items.has(id), `featured "${id}" is an item`);
   assert.ok(data.site.academicYear, "the site block comes from the faculty");
   assert.ok(data.faq.length >= 40 && data.faq.every((f) => !("after" in f)));
-  assert.deepEqual(contentFiles(FACULTY).data, ["shared/data.js", "faculties/cs/data.js"]);
+  assert.deepEqual(contentFiles(FACULTY).data, ["shared/data.js", `faculties/${FACULTY.id}/data.js`]);
   const english = loadEnglish(FACULTY);
   assert.ok(english.ui.length > 100 && english.content.length > 100);
 });

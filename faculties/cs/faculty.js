@@ -33,6 +33,9 @@ export default {
     ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 600, height: 600, alt: `נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים` },
   },
 
+  // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
+  department: { name: `המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/` },
+
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
     name: `נחיתה רכה - מדמ"ח בר אילן`,

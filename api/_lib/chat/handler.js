@@ -30,7 +30,7 @@ export function defaultChatDeps() {
 }
 
 /**
- * POST /api/chat   { persona: "bit" | "byte", lang?: "en", messages: [{ role, content }] }
+ * POST /api/chat   { persona: <a mascot id of the faculty, "bit" | "byte" for CS>, lang?: "en", messages: [{ role, content }] }
  *   -> { reply, sources: [{ title, url }] }
  *
  * validate -> rate-limit -> injection guard -> retrieve -> model chain -> output hooks.

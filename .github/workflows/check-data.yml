@@ -1,14 +1,16 @@
-# Checks the content (shared/ and faculties/) on every change outside main (main is checked by deploy.yml,
-# which only publishes when the check passes). A failed run shows a red X on the
-# commit and GitHub emails the person who pushed it, with the problem and its line.
+# Checks the content (shared/ and faculties/), runs the server tests and builds the site, once per faculty
+# (FACULTY=cs and FACULTY=neuro, MULTI-FACULTY-PLAN.md D10), on every change outside main. main is checked
+# by deploy.yml, which only publishes the redirect page when the CS check passes; the sites themselves are
+# built by Vercel, one project per faculty. A failed run shows a red X on the commit and GitHub emails the
+# person who pushed it, with the problem and its line.
 name: Check the content and the chat
 
 on:
   push:
     branches-ignore: [main]
-    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/check-data.mjs", "api/**", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
+    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/**", "api/**", "index.html", "admin.html", "*.js", "*.css", "robots.txt", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   pull_request:
-    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/check-data.mjs", "api/**", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
+    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/**", "api/**", "index.html", "admin.html", "*.js", "*.css", "robots.txt", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   workflow_dispatch:
 
 permissions:
@@ -16,12 +18,21 @@ permissions:
 
 jobs:
   check:
+    name: ${{ matrix.faculty }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        faculty: [cs, neuro]
+    env:
+      FACULTY: ${{ matrix.faculty }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # The content check first, so a content mistake is reported before anything is installed.
       - run: node scripts/check-data.mjs
       - run: npm ci --no-audit --no-fund
-      - run: npm test
+      # check, tests and the build of public/ for this faculty, with the faculty guard at the end.
+      - run: npm run build

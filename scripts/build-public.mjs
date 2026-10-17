@@ -4,13 +4,14 @@
 //
 // The pages themselves are generated (scripts/prerender.mjs): index.html with the content already in
 // the HTML, one page per guide (public/<id>.html, served at /<id> thanks to cleanUrls in vercel.json),
-// sitemap.xml and llms.txt. robots.txt is copied as is.
+// sitemap.xml and llms.txt. robots.txt gets the faculty's sitemap address; admin.html its accent colors.
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { CATALOG_FILE, loadCourses } from "../api/_lib/courses/model.js";
 import { BROWSER_FILES, loadEnglish, siteScript } from "../faculties/content.js";
 import { FACULTY } from "../faculties/index.js";
+import { foreignFacultyLeaks } from "./faculty-guard.mjs";
 import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
-import { guidePage, homePage, lastUpdated, llmsTxt, loadData, sitemapXml } from "./prerender.mjs";
+import { guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withTheme } from "./prerender.mjs";
 
 const OUT = "public";
 const FILES = [
@@ -50,6 +51,9 @@ for (const file of [...FILES, "index.html"]) {
   if (!existsSync(file)) throw new Error(`build-public: ${file} is missing`);
 }
 for (const file of FILES) cpSync(file, `${OUT}/${file}`, { recursive: true });
+// The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way.
+writeFileSync(`${OUT}/admin.html`, withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme));
+writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync("robots.txt", "utf8")));
 
 // The faculty: the browser's copy of the manifest (names, lines, theme; never the model prompts),
 // the "add to home screen" descriptor, and the mascot and link-preview images at their usual addresses.
@@ -91,4 +95,8 @@ writeFileSync(`${OUT}/llms.txt`, llmsTxt(data, updated));
 const walk = (dir) => readdirSync(dir).flatMap((name) => (statSync(`${dir}/${name}`).isDirectory() ? walk(`${dir}/${name}`) : [`${dir}/${name}`]));
 const leaks = walk(OUT).filter((file) => /\.(html|js|txt|xml|json|webmanifest|ics|css)$/.test(file) && readFileSync(file, "utf8").includes("chat.whatsapp.com"));
 if (leaks.length) throw new Error(`build-public: WhatsApp links are exposed in ${leaks.join(", ")}`);
+// The faculty guard: a bundle built for one faculty never carries another faculty's manifest, images,
+// names or addresses (scripts/faculty-guard.mjs), so a wrong FACULTY on a Vercel project cannot ship them.
+const foreign = foreignFacultyLeaks(OUT, FACULTY);
+if (foreign.length) throw new Error(`build-public: public/ holds another faculty's data: ${foreign.map((l) => `${l.file} (${l.faculty}: ${l.marker})`).join(", ")}`);
 console.log(`build-public: faculty "${FACULTY.id}"; copied ${FILES.length} entries and wrote data.js, data.en.js, faculty.js, manifest.webmanifest, index.html, ${data.guides.length} guide pages, sitemap.xml and llms.txt to ${OUT}/ (last updated ${updated}), and ${courses.courses.length} courses to course-list.json`);

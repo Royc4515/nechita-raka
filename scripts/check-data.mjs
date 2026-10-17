@@ -8,7 +8,7 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { contentFiles, mergeContent, mergeEnglish } from "../faculties/content.js";
-import { FACULTY } from "../faculties/index.js";
+import { FACULTIES, FACULTY } from "../faculties/index.js";
 
 const FILES = contentFiles(FACULTY);
 const ICS_FILE = "biu-5787.ics";
@@ -206,6 +206,22 @@ for (const f of data.faq) {
   for (const src of isList(f.sources) ? f.sources : []) if (!isHttps(src.url) || !isText(src.label)) error(`בשאלה "${f.q}" יש מקור בלי label או עם כתובת שלא מתחילה ב-https://.`, f.q);
   // Search engines and AI answers quote the question as-is, so it should read like one.
   if (isText(f.q) && !/\?$/.test(f.q.trim())) warn(`השאלה "${f.q}" לא מסתיימת בסימן שאלה.`, f.q);
+}
+
+// ---------- 3b. Shared content is for every faculty (a warning: the other faculty's site shows it as is) ----------
+const SHARED_FILE = FILES.data[0];
+// The name as a whole word, with an optional "and" prefix (ובייט; other prefixes would match words such as בנוי); escaped, the manifest is hand-edited.
+const hebrewWord = (name) => new RegExp(`(?<![\\u0590-\\u05ff])ו?${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\u0590-\\u05ff])`);
+const sharedTexts = [];
+const collect = (value) => { if (typeof value === "string") sharedTexts.push(value); else if (Array.isArray(value)) value.forEach(collect); else if (value && typeof value === "object") Object.values(value).forEach(collect); };
+collect(sharedData);
+for (const faculty of Object.values(FACULTIES)) {
+  const needles = [...faculty.mascots.map((m) => [hebrewWord(m.name), `הקמע "${m.name}" של ${faculty.name.he}`]), [new RegExp(faculty.site.url.replace(/[.]/g, "\\$&")), `הכתובת ${faculty.site.url} של ${faculty.name.he}`]];
+  for (const [re, what] of needles) {
+    if (!sharedTexts.some((text) => re.test(text))) continue;
+    const line = sources[SHARED_FILE].findIndex((l) => !l.trim().startsWith("//") && re.test(l)) + 1;
+    warnings.push({ msg: `${SHARED_FILE} מזכיר את ${what}. התוכן המשותף מוצג גם באתר של פקולטה אחרת, לכן כדאי להעביר את הפריט לקובץ של הפקולטה או לנסח בלי השם.`, file: SHARED_FILE, line });
+  }
 }
 
 // ---------- 4. Calendar file drift (a warning: the .ics is edited separately) ----------
