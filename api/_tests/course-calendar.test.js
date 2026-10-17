@@ -4,8 +4,11 @@ import { buildIcs, eventType } from "../../course-calendar.js";
 import { applyCustom, createStore } from "../../course-store.js";
 import { loadContent } from "../../faculties/content.js";
 import { loadCourses } from "../_lib/courses/model.js";
+import { FACULTIES, facultyFile } from "../../faculties/index.js";
 
-const { courses, scannedAt } = loadCourses();
+// These tests describe course logic against the CS catalog as a fixture, whatever FACULTY the build runs for.
+const csFile = (key) => facultyFile(FACULTIES.cs, FACULTIES.cs.courses[key]);
+const { courses, scannedAt } = loadCourses(csFile("catalog"), csFile("yearbook"));
 const byCode = new Map(courses.map((c) => [c.code, c]));
 const { terms, events } = loadContent().calendar;
 const A = "סמסטר א'";
