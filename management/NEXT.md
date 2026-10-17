@@ -1,6 +1,6 @@
 # Read this first
 
-Written 18.10.2026 by the orchestrator for Roy. Kept current: the newest "Where things stand" replaces the old one. To continue, open the orchestrator session and say "continue from management/NEXT.md".
+Written 18.10.2026 by the orchestrator for Roy, updated the same evening after PR 4. Kept current: the newest "Where things stand" replaces the old one. To continue, open the orchestrator session and say "continue from management/NEXT.md".
 
 ## Where things stand (18.10.2026)
 
@@ -16,15 +16,17 @@ Everything below is merged into main and live, with no visible change on the CS 
 | Faculty PR 2 | #79 | Content split: `shared/data.js` (all of Bar-Ilan) and `faculties/cs/data.js` (CS), merged at build, proven identical. |
 | Faculty PR 3 | #80 | Courses (catalog, yearbook, categories under `faculties/cs/courses/`), the hero, the search synonyms and the easter eggs from the manifest. Security notes fixed; the orchestrator did the browser walk on 18.10 (hero, synonyms, egg, course browser, catalog link) before merging. |
 
-The CS site works exactly as before. The repo is now one `FACULTY=cs` build away from a second faculty, once PR 4 adds the per-faculty build.
+| Faculty PR 4 | #83 | `FACULTY` env everywhere, CI matrix over cs and neuro, a build guard against another faculty's names, and a placeholder `faculties/neuro/` (CS content copied, violet accent, mascots נוי and רון with CS images). `FACULTY=neuro npm run build` produces a neuro site. |
+| Neuro research | #82 | `management/neuro/programs.md`: seven brain sciences programs with sources, proposed track ids, study-plan pages, catalog codes, contacts, nine open questions. |
+
+The CS site works exactly as before. The code side of the faculty plan (PRs 1 to 4) is done; what remains is the neuro Vercel project (PR 5) and the neuro content (PR 6).
 
 ## Tomorrow, in this order
 
 1. **First board meeting.** Sunday's weekly report arrived by email on 18.10. Paste its text into the orchestrator session and run `/board`. Output: a one-page summary in `management/meetings/`, the backlog re-scored, questions for you. This also refreshes the backlog rows that are stale (PR 2 and the simulation items still say "in review").
-2. **Faculty PR 3** is merged; nothing to do.
-3. **Faculty PR 4**: per-faculty build and CI (`FACULTY` env everywhere, tests parametrized, CI matrix, a placeholder `faculties/neuro/` copied from CS). Say "start PR 4" and a session is briefed from `MULTI-FACULTY-PLAN.md` section 3. After it, `FACULTY=neuro npm run build` produces a site.
-4. **Neuro content, in parallel.** No code needed. Say "run the neuro owner" and it brings the list of brain sciences programs and tracks with their yearbooks, department contacts, buildings and the first course mapping, each with a source, into `management/BACKLOG.md`. This is the longest item on the path to neuro, so it should start before PR 4 finishes.
-5. **Vercel project for neuro** (faculty PR 5) happens only after PR 4, and it is manual work on your side: a second Vercel project on the same repo with `FACULTY=neuro`, its own Neon database, a second Groq key, a Search Console property. The exact env list is in `MULTI-FACULTY-PLAN.md` D10.
+2. **Answer the nine neuro questions** at the end of `management/neuro/programs.md` (degree letters, the CS plan's year label, the PDFs and the catalog that need a browser). Each answer unblocks part of the neuro content.
+3. **Vercel project for neuro** (faculty PR 5): manual work on your side, about an hour: a second Vercel project on the same GitHub repo with `FACULTY=neuro` in its env, a separate Neon database, a second Groq key, `CHAT_SALT`, `ADMIN_EMAILS`, `SITE_URL`, a Search Console property for the new address, the Google OAuth origin. The list is in `MULTI-FACULTY-PLAN.md` D10. Say "PR 5" and the orchestrator walks you through it step by step.
+4. **Neuro content** (faculty PR 6) starts after your answers: the neuro owner writes `faculties/neuro/data.js` from the study-plan pages and contacts it found, the designer briefs נוי and רון and the hero variant, the engineer adds the track selector. The placeholder content in `faculties/neuro/` is CS content and must not go live.
 
 ## Decisions waiting on you
 

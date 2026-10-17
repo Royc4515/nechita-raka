@@ -9,7 +9,7 @@ Columns: S = students, U = urgency, E = effort.
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Courses and flavor from the manifest (PR 3) | 5 | 2 | 3 | 3.3 | done 18.10.2026, #80 | Course files under `faculties/cs/courses/`, catalog, yearbook, categories and source line from the `courses` block; `hero` (terminal variant), `search.synonyms` and `eggs` from the manifest. No visible change. |
-| Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | in review | `FACULTY` resolved through `faculties/index.js` everywhere, tests parametrized by the active faculty plus a shape test over every manifest, CI matrix over cs and neuro, the faculty guard in the build, placeholder `faculties/neuro/` (violet, נוי ורון, tracks list). |
+| Per-faculty build and CI (PR 4) | 5 | 2 | 2 | 5.0 | done 18.10.2026, #83 | `FACULTY` resolved through `faculties/index.js` everywhere, tests parametrized by the active faculty plus a shape test over every manifest, CI matrix over cs and neuro, the faculty guard in the build, placeholder `faculties/neuro/` (violet, נוי ורון, tracks list). |
 | Simulation script | 3 | 2 | 2 | 3.0 | done 16.10.2026 | `scripts/simulate.mjs` takes a target URL; preview env with its own DB and key. The local server is documented in `simulations/README.md` instead of a launch config (gitignored). |
 | Chat daily caps as env overrides for previews | 2 | 2 | 1 | 4.0 | done 16.10.2026 | `CHAT_GLOBAL_DAILY` and `CHAT_PER_VISITOR_DAILY`, read in `api/_lib/chat/config.js`. |
 | Weekly report also written to a file the board can read | 2 | 1 | 2 | 1.0 | idea | Today it is only an email; the board needs Roy to paste it. |
@@ -31,9 +31,9 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| List the brain sciences programs and tracks with their yearbooks | 5 | 3 | 2 | 7.5 | open | Single major, combined with CS, with psychology, others. Source links per track. |
-| Department contacts, office, hours | 4 | 2 | 1 | 8.0 | open | Official site only. |
-| Buildings and study spaces neuro students use | 3 | 2 | 1 | 6.0 | open | Gonda building 901 is already in the CS campus guide. |
+| List the brain sciences programs and tracks with their yearbooks | 5 | 3 | 2 | 7.5 | done 18.10.2026, #82 | Single major, combined with CS, with psychology, others. Source links per track. |
+| Department contacts, office, hours | 4 | 2 | 1 | 8.0 | partly | Email and pages in `neuro/programs.md`; room and hours are not published. |
+| Buildings and study spaces neuro students use | 3 | 2 | 1 | 6.0 | partly | Gonda building 901 is already in the CS campus guide. |
 | WhatsApp groups per track and year | 4 | 2 | 1 | 8.0 | open | Links never enter this folder; they go straight to `faculties/neuro/data.js`. |
 | Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | open | Follows the rules in `faculties/cs/courses/README.md`. |
 | נוי ורון character briefs | 3 | 1 | 2 | 1.5 | open | Ron masculine, Noi feminine. Contrast like Bit and Byte. |
