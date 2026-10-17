@@ -4,13 +4,16 @@ import { buildCourseChunks, courseUrl, loadCourseChunks } from "../_lib/chat/cou
 import { SITE_URL } from "../_lib/chat/knowledge.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
 import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE } from "../_lib/courses/model.js";
+import { FACULTIES, facultyFile } from "../../faculties/index.js";
 
 /** The label of a yearbook category of the active faculty, as the chat cites it. */
 const label = (id) => CATEGORIES.find((c) => c.id === id).label;
 
-const shaped = loadCourses();
+// These tests describe course logic against the CS catalog as a fixture, whatever FACULTY the build runs for.
+const csFile = (key) => facultyFile(FACULTIES.cs, FACULTIES.cs.courses[key]);
+const shaped = loadCourses(csFile("catalog"), csFile("yearbook"));
 const byCode = new Map(shaped.courses.map((c) => [c.code, c]));
-const chunks = loadCourseChunks();
+const chunks = loadCourseChunks(csFile("catalog"), csFile("yearbook"));
 
 // ---------- the shared model ----------
 

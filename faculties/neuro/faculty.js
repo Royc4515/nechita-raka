@@ -78,7 +78,7 @@ export default {
     ],
   },
 
-  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). PLACEHOLDER: a copy of the CS files and
+  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories are still PLACEHOLDERS: a copy of the CS
   // categories; download keeps the CS name because the "courses-file" item in shared/data.js links to it. catalog: קובץ הסריקה של הקטלוג,
   // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).

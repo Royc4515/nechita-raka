@@ -3,8 +3,11 @@ import { test } from "node:test";
 import { aiLink, buildPrompt, courseDataText, exportSchedule, FORMAT, parseSchedule } from "../../course-ai.js";
 import { createStore } from "../../course-store.js";
 import { loadCourses } from "../_lib/courses/model.js";
+import { FACULTIES, facultyFile } from "../../faculties/index.js";
 
-const { courses, scannedAt } = loadCourses();
+// These tests describe course logic against the CS catalog as a fixture, whatever FACULTY the build runs for.
+const csFile = (key) => facultyFile(FACULTIES.cs, FACULTIES.cs.courses[key]);
+const { courses, scannedAt } = loadCourses(csFile("catalog"), csFile("yearbook"));
 const byCode = new Map(courses.map((c) => [c.code, c]));
 const A = "סמסטר א'";
 const prefs = { semester: A, blockedDays: ["ה'"], earliest: "10:00", latest: "", shape: "compact", gaps: "none", notes: "", keep: [] };
