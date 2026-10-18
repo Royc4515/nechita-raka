@@ -127,7 +127,7 @@ function checkShabbat(id, shabbat) {
 function checkCalendar(id, calendar) {
   if (!calendar || typeof calendar !== "object") fail(id, "calendar is missing");
   if (!/^[\w-]+\.ics$/.test(calendar.file || "")) fail(id, "calendar.file must be a plain .ics file name");
-  if (!/^[\w ./-]+$/.test(calendar.prodId || "")) fail(id, "calendar.prodId must be plain letters, digits and spaces (it sits between // in the PRODID line)");
+  if (!/^[\w ./-]+$/.test(calendar.prodId || "")) fail(id, "calendar.prodId must be letters, digits, spaces, dots, slashes or dashes (it sits between // in the PRODID line)");
   if (!nonEmpty(calendar.name) || /[\r\n]/.test(calendar.name)) fail(id, "calendar.name is missing or has a line break");
   if (!/^[\w-]+$/.test(calendar.uidDomain || "")) fail(id, "calendar.uidDomain must be letters, digits and dashes");
 }

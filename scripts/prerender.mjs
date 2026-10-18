@@ -298,7 +298,7 @@ function headHtml({ title, description, url, type, modified, graph }) {
     `<meta property="og:image:alt" content="${esc(OG_IMAGE.alt)}">`,
     `<meta property="og:locale" content="he_IL">`,
     type === "article" ? `<meta property="article:modified_time" content="${modified}">` : "",
-    `<meta name="twitter:card" content="summary">`,
+    `<meta name="twitter:card" content="${OG_IMAGE.width === OG_IMAGE.height ? "summary" : "summary_large_image"}">`,
     jsonLd(graph),
   ].filter(Boolean).join("\n");
 }
