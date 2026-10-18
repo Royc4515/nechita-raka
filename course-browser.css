@@ -142,6 +142,14 @@
 
 /* ---------- controls ---------- */
 .cb-controls { display: grid; gap: var(--s3); }
+/* The track picker (faculties with tracks, course-track.js): a select; on the first visit a small prompt around it. */
+.cb-track-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.cb-track-row[hidden] { display: none; }
+.cb-track-label { font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.cb-track { flex: 1; min-inline-size: 12rem; max-inline-size: 100%; min-block-size: 44px; padding-inline: var(--s3); border: 1px solid var(--border-strong); border-radius: var(--r); background: var(--surface); color: var(--text); font: inherit; font-size: var(--fs-meta); }
+.cb-track-row.is-prompt { padding: var(--s3) var(--s4); border-radius: var(--r-lg); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); }
+.cb-track-row.is-prompt .cb-track-label { color: var(--accent-text); font-size: var(--fs-meta); }
+.cb-track-hint { flex-basis: 100%; margin: 0; font-size: var(--fs-small); color: var(--muted); }
 .cb-search { position: relative; }
 .cb-q { inline-size: 100%; min-block-size: 48px; padding-block: var(--s2); padding-inline: 44px 44px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r); font-size: 1.0625rem; appearance: none; -webkit-appearance: none; }
 .cb-q::-webkit-search-cancel-button { display: none; }

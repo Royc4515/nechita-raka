@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { dailyCap, readChatConfig } from "../_lib/chat/config.js";
-import { handleChat } from "../_lib/chat/handler.js";
+import { handleChat, parseTrack, trackLine } from "../_lib/chat/handler.js";
 import { cannedReply, runOutputHooks } from "../_lib/chat/hooks.js";
 import { parseHistory, retrievalQuery } from "../_lib/chat/history.js";
 import { allowlists, buildChunks, buildCore, loadSiteData } from "../_lib/chat/knowledge.js";
@@ -10,7 +10,7 @@ import { clientIp, limiterFor, PgChatLimiter, GLOBAL_DAILY, PER_VISITOR_DAILY } 
 import { FallbackChain, OpenAICompatibleProvider } from "../_lib/chat/llm.js";
 import { buildRequest, canaryFor, parseDraft, systemPrompt } from "../_lib/chat/prompt.js";
 import { retrieve } from "../_lib/chat/retrieve.js";
-import { FACULTY } from "../../faculties/index.js";
+import { FACULTIES, FACULTY } from "../../faculties/index.js";
 
 // The two mascots of the active faculty, by grammar: the tests assert on forms, not on names.
 const M = FACULTY.mascots.find((m) => m.gender === "m");
@@ -128,10 +128,13 @@ test("hooks block a leaked canary", () => {
 });
 
 test("hooks remove phone numbers and unknown emails but keep emails from data.js", () => {
-  const out = runOutputHooks(draft("תתקשרו ל-054-1234567 או bsc@cs.biu.ac.il או evil@x.com"), hooksCtx);
+  // An email the active faculty's content names (the CS office, the Gonda office...), whatever FACULTY runs.
+  const known = emails.find((e) => e.endsWith("biu.ac.il"));
+  assert.ok(known, "the content names a university email");
+  const out = runOutputHooks(draft(`תתקשרו ל-054-1234567 או ${known} או evil@x.com`), hooksCtx);
   assert.ok(out.ok);
   assert.doesNotMatch(out.draft.answer, /054/);
-  assert.match(out.draft.answer, /bsc@cs\.biu\.ac\.il/);
+  assert.ok(out.draft.answer.includes(known), out.draft.answer);
   assert.doesNotMatch(out.draft.answer, /evil@x\.com/);
 });
 
@@ -333,6 +336,36 @@ test("handler answers with the reply and its sources", async () => {
   const body = await res.json();
   assert.equal(body.reply, "בתקופת השינויים באינ-בר.");
   assert.equal(body.sources[0].title, data.guides.find((g) => g.id === "registration").title);
+});
+
+test("the track field is accepted only as one of the faculty's track ids, like the persona", async () => {
+  const neuro = FACULTIES.neuro;
+  assert.equal(parseTrack("cs", neuro), "cs");
+  assert.equal(parseTrack("single-comp", neuro), "single-comp");
+  assert.equal(parseTrack("law", neuro), "", "an unknown id is ignored");
+  assert.equal(parseTrack("CS", neuro), "");
+  assert.equal(parseTrack(["cs"], neuro), "", "not a string");
+  assert.equal(parseTrack(undefined, neuro), "");
+  assert.equal(parseTrack("cs", FACULTIES.cs), "", "a faculty without tracks accepts none");
+  assert.equal(parseTrack("__proto__", neuro), "");
+  assert.match(trackLine("cs", neuro), /המסלול של הסטודנט: משולב עם מדעי המחשב\./);
+  assert.equal(trackLine("", neuro), "");
+  assert.equal(trackLine("cs", FACULTIES.cs), "");
+  // The request: a known track adds the line to SITE and the facts are retrieved for it; an unknown one changes nothing.
+  const seen = [];
+  const deps = fakeDeps({ chain: () => ({ run: async (request) => { seen.push(request.messages[0].content); return { ok: true, value: draft("תשובה", []), completion: { model: "m1", promptTokens: 1, cachedTokens: 0 } }; } }) });
+  const ask = (track) => handleChat(post({ persona: M.id, track, messages: [{ role: "user", content: "מה לומדים בשנה א?" }] }), deps);
+  assert.equal((await ask("nope")).status, 200);
+  assert.ok(!seen[0].includes("המסלול של הסטודנט"), "an unknown track is ignored");
+  assert.equal((await ask(undefined)).status, 200);
+  assert.ok(!seen[1].includes("המסלול של הסטודנט"), "no track: no line (the CS request as before)");
+  if (FACULTY.tracks) {
+    assert.equal((await ask(FACULTY.tracks[0].id)).status, 200);
+    assert.ok(seen[2].includes(`המסלול של הסטודנט: ${FACULTY.tracks[0].label}.`), "a known track names itself in SITE");
+  } else {
+    assert.equal((await ask("cs")).status, 200);
+    assert.ok(!seen[2].includes("המסלול של הסטודנט"), "a faculty without tracks ignores the field");
+  }
 });
 
 test("handler refuses other origins, bad bodies, missing config and spent limits", async () => {

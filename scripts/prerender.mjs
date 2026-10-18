@@ -201,7 +201,8 @@ function updatedHtml(iso, year) {
 }
 
 /** A guide as renderGuideView() in index.html draws it: steps, tips, links and sources. */
-const COURSE_CATEGORY = { 1: "שנה א'", 2: "שנה ב'", 3: "שנה ג'", cluster1: "אשכול 1", cluster2: "אשכול 2", complement: "אשכול השלמה", ai: "מגמת AI" };
+/** The short name of each course category (the manifest's `short`, else its label), as the course chips show it. */
+const COURSE_CATEGORY = Object.fromEntries(FACULTY.courses.categories.map((c) => [c.id, c.short || c.label]));
 
 /** The courses page before course-browser.js takes over: every course by name, for search engines and no-JS. */
 function coursesHtml(courses) {
@@ -479,9 +480,9 @@ export function withTheme(html, theme) {
   return light.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.light)) + dark.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.dark));
 }
 
-// The hero block of index.html: the switch point for the variants (D8). Today the only variant is the
-// terminal, so the block is the terminal's markup and the renderer fills its bar label and typed lines;
-// a new variant would render its own markup in place of the whole block.
+// The hero block of index.html: the switch point for the variants (D8). The template holds the CS terminal,
+// so the terminal renderer fills its bar label and typed lines; the EEG variant renders its own markup (the
+// same window, a trace that draws itself, then the typed lines) in place of the whole block.
 const HERO_BLOCK_RE = /<div class="term" dir="ltr" aria-hidden="true">[\s\S]*?<\/pre>\s*<\/div>/g;
 const TERM_BAR_RE = /(<div class="term-bar"><i><\/i><i><\/i><i><\/i><span>)[^<]*(<\/span><\/div>)/g;
 const TERM_BODY_RE = /<pre class="term-body">[\s\S]*?<\/pre>/g;
@@ -510,7 +511,23 @@ function terminalHero(block, hero) {
   return block.replace(TERM_BAR_RE, (m, open, close) => `${open}${esc(hero.path)}${close}`).replace(TERM_BODY_RE, `<pre class="term-body">${body}</pre>`);
 }
 
-const HERO_RENDERERS = { terminal: terminalHero };
+/**
+ * The EEG trace (index.html styles .term-eeg .eeg): a flat line with spikes across the window's width, drawn in
+ * the accent color by a stroke-dashoffset animation. pathLength fixes the dash length whatever the real length.
+ */
+const EEG_PATH = "M0 12 H58 L64 5 L70 19 L76 12 H140 L146 8 L150 16 L154 12 H224 L230 2 L236 22 L242 12 H318 L324 9 L328 15 L332 12 H398 L404 4 L410 20 L416 12 H480";
+
+function eegHero(block, hero) {
+  const body = hero.lines.map((line, i) => terminalLine(line, i === hero.lines.length - 1)).join("");
+  return [
+    `<div class="term term-eeg" dir="ltr" aria-hidden="true">`,
+    `<div class="term-bar"><i></i><i></i><i></i><span>${esc(hero.path)}</span></div>`,
+    `<pre class="term-body"><svg class="eeg" viewBox="0 0 480 24" preserveAspectRatio="none" focusable="false"><path d="${EEG_PATH}" pathLength="1000"/></svg>${body}</pre>`,
+    `</div>`,
+  ].join("");
+}
+
+const HERO_RENDERERS = { terminal: terminalHero, eeg: eegHero };
 
 /** The hero of the manifest written into index.html's hero block: the variant picks the renderer. */
 export function withHero(html, hero) {
@@ -529,9 +546,34 @@ export function withSiteName(html, name) {
   return html.replace(BRAND_H1_RE, (m, open, close) => `${open}${escText(name)}${close}`);
 }
 
+// The hero illustration (site.heroArt): the round avatar next to the brand on phones and the picture next to the
+// hero on wide screens. The template holds the CS files, which the build publishes under assets/ by their names.
+const BRAND_AVATAR_RE = /(<img class="brand-avatar" src=")[^"]*(")/g;
+const HERO_ART_RE = /(<div class="hero-art">\s*<img )src="[^"]*" alt="[^"]*" width="\d+" height="\d+"/g;
+
+/** The manifest's hero art written into the brand avatar and the hero picture. */
+export function withHeroArt(html, art) {
+  if (!Number.isInteger(art.width) || !Number.isInteger(art.height)) throw new Error("prerender: site.heroArt needs whole-number width and height");
+  if ((html.match(BRAND_AVATAR_RE) || []).length !== 1 || (html.match(HERO_ART_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one brand avatar and one hero picture");
+  return html
+    .replace(BRAND_AVATAR_RE, (m, open, close) => `${open}./assets/${esc(art.avatar)}${close}`)
+    .replace(HERO_ART_RE, (m, open) => `${open}src="./assets/${esc(art.file)}" alt="${esc(art.alt)}" width="${art.width}" height="${art.height}"`);
+}
+
+// The <html> tag: a flag the stylesheet reads (index.html) when the manifest asks for the dark-mode mascot shadow.
+const HTML_TAG = `<html lang="he" dir="rtl"`;
+
+/** The mascot-shadow flag of the manifest (theme.mascotShadow) as a data attribute on <html>, or the page as is. */
+export function withMascotShadow(html, on) {
+  if (html.split(HTML_TAG).length !== 2) throw new Error(`prerender: index.html should have exactly one ${HTML_TAG}`);
+  return on ? html.replace(HTML_TAG, () => `${HTML_TAG} data-mascot-shadow`) : html;
+}
+
 function common(html, data, updated) {
   html = withTheme(html, FACULTY.theme);
+  html = withMascotShadow(html, FACULTY.theme.mascotShadow === true);
   html = withHero(html, FACULTY.hero);
+  html = withHeroArt(html, FACULTY.site.heroArt);
   html = withSiteName(html, SITE_NAME);
   html = fill(html, "pre:credit", creditHtml(data.site || {}));
   return fill(html, "pre:updated", updatedHtml(updated, data.site.academicYear));

@@ -14,6 +14,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, relative } from "node:path";
 import { evalScript } from "../faculties/content.js";
 import { FACULTIES, FACULTY, MASCOT_POSES } from "../faculties/index.js";
+import { heroArtFiles } from "./faculty-public.mjs";
 import { accentLine, esc } from "./prerender.mjs";
 
 /** The published files whose text is scanned (the same set as the WhatsApp guard). */
@@ -31,6 +32,8 @@ const literalRe = (text) => new RegExp(forms(text).map(escapeRe).join("|"));
 
 /** Every image file name a faculty's manifest publishes under assets/mascot/ (the OG image keeps a fixed path and is not a marker). */
 export const mascotImageNames = (faculty) => faculty.mascots.flatMap((m) => [m.files.avatar, m.files.peek, ...MASCOT_POSES.map((pose) => `${m.files.poses}-${pose}.webp`)]);
+/** The image file names that identify a faculty's bundle: its mascot images and its hero illustration (published under assets/). */
+export const facultyImageNames = (faculty) => [...mascotImageNames(faculty), ...heroArtFiles(faculty)];
 
 /** The strings that identify a faculty's bundle, as [label, regexp] pairs: `everywhere` for every text file, `manifestOnly` for MANIFEST_FILES. */
 export function facultyMarkers(faculty) {
@@ -38,7 +41,7 @@ export function facultyMarkers(faculty) {
     [`faculties/${faculty.id}/`, literalRe(`faculties/${faculty.id}/`)],
     [`site.title "${faculty.site.title}"`, literalRe(faculty.site.title)],
     [`pwa.name "${faculty.pwa.name}"`, literalRe(faculty.pwa.name)],
-    ...mascotImageNames(faculty).map((name) => [`image ${name}`, literalRe(name)]),
+    ...facultyImageNames(faculty).map((name) => [`image ${name}`, literalRe(name)]),
     ...["light", "dark"].map((mode) => [`theme.${mode}`, literalRe(accentLine(faculty.theme[mode]))]),
   ];
   const manifestOnly = [
@@ -83,13 +86,13 @@ function browserManifestLeaks(dir, active) {
  */
 export function foreignFacultyLeaks(dir, active = FACULTY, faculties = FACULTIES) {
   const others = Object.values(faculties).filter((f) => f.id !== active.id);
-  const ownImages = new Set(mascotImageNames(active));
+  const ownImages = new Set(facultyImageNames(active));
   const leaks = [...browserManifestLeaks(dir, active)];
   for (const path of walk(dir)) {
     const file = relative(dir, path).replaceAll("\\", "/");
     const text = TEXT_FILE_RE.test(file) ? readFileSync(path, "utf8") : null;
     for (const other of others) {
-      if (mascotImageNames(other).includes(basename(file)) && !ownImages.has(basename(file))) leaks.push({ file, faculty: other.id, marker: `image file ${basename(file)}` });
+      if (facultyImageNames(other).includes(basename(file)) && !ownImages.has(basename(file))) leaks.push({ file, faculty: other.id, marker: `image file ${basename(file)}` });
       if (text === null) continue;
       const { everywhere, manifestOnly } = foreignMarkers(other, active);
       for (const [marker, re] of MANIFEST_FILES.has(file) ? [...everywhere, ...manifestOnly] : everywhere) {

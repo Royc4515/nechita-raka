@@ -273,6 +273,9 @@ main { padding-block: var(--s2) var(--s8); }
 .empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
 /* Mascot: decorative only (alt=""), sized in px so it stays small when the text is zoomed */
 .mascot { display: block; inline-size: auto; pointer-events: none; user-select: none; }
+/* A pale 1px edge on the mascot images in dark mode, only when the manifest asks (theme.mascotShadow, the build sets data-mascot-shadow). */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-mascot-shadow] :is(.mascot, .peek img, .chat-avatar) { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); } }
+:root[data-theme="dark"][data-mascot-shadow] :is(.mascot, .peek img, .chat-avatar) { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); }
 .empty-mascot { block-size: 120px; margin: 0 auto var(--s3); }
 /* A mascot at the end of a section heading, standing on the heading's baseline */
 .section > h2.has-mascot { display: flex; align-items: flex-end; }
@@ -512,6 +515,10 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .term-body .ln { display: block; }
 .t-prompt { color: #5cb8f0; } .t-kw { color: #c792ea; } .t-str { color: #a5e3a1; } .t-out { color: #ffd479; } .t-dim { color: #6b7c99; }
 .t-caret { display: inline-block; inline-size: .6em; block-size: 1.1em; vertical-align: -.2em; background: #5cb8f0; margin-inline-start: 2px; }
+/* The EEG hero variant (scripts/prerender.mjs, faculty.js hero.variant "eeg"): the same window, a trace one line tall
+   that draws itself in the accent (lightened, the window is always dark), then the typed lines. Four rows, like the terminal. */
+.term-eeg .eeg { display: block; inline-size: 100%; block-size: 1.7em; overflow: visible; }
+.term-eeg .eeg path { fill: none; stroke: color-mix(in srgb, var(--accent) 60%, #fff); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 /* Now panel as a terminal window */
 .now { padding: 0; overflow: hidden; }
 .now-chrome { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-block-end: 1px solid var(--border); background: color-mix(in srgb, var(--surface-2) 70%, transparent); font-family: var(--mono); font-size: .75rem; color: var(--faint); direction: ltr; }
@@ -571,6 +578,8 @@ footer { padding-block-end: 0; }
   @keyframes bob { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -12px; rotate: -1.5deg; } }
   .term-body .ln { clip-path: inset(0 100% 0 0); animation: type var(--d, .6s) steps(var(--n, 20)) forwards; animation-delay: var(--at, 0s); }
   @keyframes type { to { clip-path: inset(0 0 0 0); } }
+  .term-eeg .eeg path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: eeg-draw 2s ease-out .3s forwards; }
+  @keyframes eeg-draw { to { stroke-dashoffset: 0; } }
   .t-caret { animation: blink 1s steps(1) infinite; }
   h1::after { animation: blink 1.1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }

@@ -14,8 +14,11 @@ export const DEFAULT_FACULTY = "cs";
 export const MASCOT_POSES = Object.freeze(["wave", "think", "celebrate", "point", "calendar", "idea", "laptop"]);
 /** The accent set a theme mode holds (index.html :root). */
 export const THEME_KEYS = Object.freeze(["accent", "accentHover", "accentInk", "accentText", "accentSoft", "focus"]);
-/** The hero blocks the prerender can render (MULTI-FACULTY-PLAN.md D8); "terminal" is the typing terminal of index.html. */
-export const HERO_VARIANTS = Object.freeze(["terminal"]);
+/**
+ * The hero blocks the prerender can render (MULTI-FACULTY-PLAN.md D8): "terminal" is the typing terminal of index.html;
+ * "eeg" is the same window with a trace that draws itself above the typed lines (scripts/prerender.mjs).
+ */
+export const HERO_VARIANTS = Object.freeze(["terminal", "eeg"]);
 /** The colored pieces a terminal line may hold (the .t-* classes in index.html). */
 export const TERMINAL_TOKEN_KINDS = Object.freeze(["prompt", "kw", "str", "out", "dim"]);
 /** The effects index.html's playEffect() knows; anything else there falls back to confetti. */
@@ -31,6 +34,7 @@ const ID_RE = /^[a-z][a-z0-9-]*$/;
 const COLOR_RE = /^#[0-9a-f]{6}$/;
 const NAME_RE = /^[\w-]+$/;
 const IMAGE_RE = /^[\w-]+\.(webp|jpg|png)$/;
+const HERO_ART_RE = /^[\w-]+\.(webp|jpg|png|svg)$/; // the hero illustration may be a drawn placeholder
 const CONTENT_ID_RE = /^[a-z0-9-]+$/; // guide and category ids, as check-data.mjs requires them
 const JSON_PATH_RE = /^[\w-]+(\/[\w-]+)*\.json$/; // a data file inside faculties/<id>/, no ".." and no absolute path
 const JSON_NAME_RE = /^[\w-]+\.json$/;
@@ -59,6 +63,16 @@ function checkTheme(id, theme) {
     if (!set || typeof set !== "object") fail(id, `theme.${mode} is missing`);
     for (const key of THEME_KEYS) if (!COLOR_RE.test(set[key] || "")) fail(id, `theme.${mode}.${key} must be a #rrggbb color`);
   }
+  // Optional: a pale 1px edge on the mascot images in dark mode (index.html), for mascots drawn on a dark outline.
+  if (theme.mascotShadow !== undefined && typeof theme.mascotShadow !== "boolean") fail(id, "theme.mascotShadow must be true or false");
+}
+
+/** site.heroArt: the illustration next to the hero on wide screens and the small round avatar next to the brand on phones. */
+function checkHeroArt(id, art) {
+  if (!art || typeof art !== "object") fail(id, "site.heroArt is missing");
+  for (const key of ["file", "avatar"]) if (!HERO_ART_RE.test(art[key] || "")) fail(id, `site.heroArt.${key} must be a plain image file name`);
+  if (!nonEmpty(art.alt)) fail(id, "site.heroArt.alt is missing");
+  if (!Number.isInteger(art.width) || !Number.isInteger(art.height)) fail(id, "site.heroArt needs whole-number width and height");
 }
 
 /** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
@@ -93,16 +107,22 @@ function checkHero(id, hero) {
   });
 }
 
-/** courses: the files api/_lib/courses/model.js reads, the published name, the categories and the source line (D9). */
+/**
+ * courses: the files api/_lib/courses/model.js reads, the published name and how the content calls it ({coursesFile}
+ * in shared/data.js, faculties/content.js), the categories (an optional `short` for the chips of the courses page)
+ * and the source line (D9).
+ */
 function checkCourses(id, courses) {
   if (!courses || typeof courses !== "object") fail(id, "courses is missing");
   for (const key of ["catalog", "yearbook"]) if (!JSON_PATH_RE.test(courses[key] || "")) fail(id, `courses.${key} must be a relative .json path inside faculties/${id}/`);
   if (!JSON_NAME_RE.test(courses.download || "")) fail(id, "courses.download must be a plain .json file name");
+  for (const key of ["fileLabel", "fileLabelEn"]) if (!nonEmpty(courses[key])) fail(id, `courses.${key} is missing`);
   if (!Array.isArray(courses.categories) || !courses.categories.length) fail(id, "courses.categories must be a non-empty list");
   courses.categories.forEach((category, i) => {
     if (!category || typeof category !== "object") fail(id, `courses.categories[${i}] is not an object`);
     if (!nonEmpty(category.id)) fail(id, `courses.categories[${i}].id is missing`);
     if (!nonEmpty(category.label)) fail(id, `courses.categories[${i}].label is missing`);
+    if (category.short !== undefined && !nonEmpty(category.short)) fail(id, `courses.categories[${i}].short must be a text when present`);
   });
   const ids = courses.categories.map((c) => c.id);
   if (new Set(ids).size !== ids.length) fail(id, "courses.categories lists an id twice");
@@ -139,7 +159,11 @@ function checkEggs(id, eggs) {
   });
 }
 
-/** tracks (optional): the faculty's study tracks, unique ids and Hebrew labels. Nothing reads them yet (PR 4); the shape is fixed now so the data can be collected. */
+/**
+ * tracks (optional): the faculty's study tracks, unique ids, Hebrew labels and an optional `short` for the course cards.
+ * The courses page offers them as a picker and filters by "<track>:<year>" categories; the chat accepts the chosen
+ * one in the request (api/_lib/chat/handler.js). A faculty without tracks (CS) has none of that (D9).
+ */
 function checkTracks(id, tracks) {
   if (tracks === undefined) return;
   if (!Array.isArray(tracks) || !tracks.length) fail(id, "tracks must be a non-empty list when present");
@@ -147,6 +171,7 @@ function checkTracks(id, tracks) {
     if (!track || typeof track !== "object") fail(id, `tracks[${i}] is not an object`);
     if (!ID_RE.test(track.id || "")) fail(id, `tracks[${i}].id must be lowercase English letters`);
     if (!nonEmpty(track.label)) fail(id, `tracks[${i}].label is missing`);
+    if (track.short !== undefined && !nonEmpty(track.short)) fail(id, `tracks[${i}].short must be a text when present`);
   });
   const ids = tracks.map((track) => track.id);
   if (new Set(ids).size !== ids.length) fail(id, "tracks lists an id twice");
@@ -166,6 +191,7 @@ export function validateFaculty(faculty) {
   if (!IMAGE_RE.test(og.file || "")) fail(id, "site.ogImage.file must be a plain image file name");
   if (!/^[\w-]+(\/[\w-]+)*\.(webp|jpg|png)$/.test(og.path || "")) fail(id, "site.ogImage.path must be a relative image path inside public/");
   if (!Number.isInteger(og.width) || !Number.isInteger(og.height) || !nonEmpty(og.alt)) fail(id, "site.ogImage needs width, height and alt");
+  checkHeroArt(id, site.heroArt);
   const pwa = faculty.pwa || {};
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");
