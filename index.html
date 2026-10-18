@@ -562,6 +562,12 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)) { box-shadow: var(--card-lit, var(--shadow-1)); }
 :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):not(:hover) { border-color: var(--card-edge, var(--border)); }
 @media (hover: hover) { :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):hover { box-shadow: var(--card-lit, var(--shadow-2)); } }
+/* The code window in the faculty's own accent instead of the CS navy (the EEG variant is the non-CS one): dark inks mixed from --accent, so light and dark mode and any faculty follow the theme. */
+.term-eeg { background: color-mix(in srgb, var(--accent) 16%, #000); border-color: color-mix(in srgb, var(--accent) 28%, #000); box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--accent) 45%, #000); }
+.term-eeg .term-bar { background: color-mix(in srgb, var(--accent) 22%, #000); border-block-end-color: color-mix(in srgb, var(--accent) 28%, #000); color: color-mix(in srgb, var(--accent) 45%, #fff); }
+.term-eeg .term-body { color: color-mix(in srgb, var(--accent) 12%, #fff); }
+.term-eeg .t-prompt { color: color-mix(in srgb, var(--accent) 55%, #fff); }
+.term-eeg .t-caret { background: color-mix(in srgb, var(--accent) 55%, #fff); }
 /* decor:end */
 /* ---------- Navigation ---------- */
 .bar-row { display: flex; align-items: center; gap: var(--s3); }
