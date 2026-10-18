@@ -370,7 +370,7 @@ window.SITE_EN = {
     [`קבוצת המילואימניקים של המחזור. במחזורים הקודמים היא בתוך קהילת המחזור. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The cohort's reservists group. In the earlier cohorts it sits inside the cohort's community. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20למילואימניקים%20שנה%20א'.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20the%20first-year%20reservists%20group.%20Here%20it%20is%3A`],
     [`חונכים וחניכים מילואימניקים: הקישור חסר`, `reservist mentors and mentees: link missing`],
-    [`במדמ"ח יש קבוצה לחונכים ולחניכים מילואימניקים. אם יש כזאת גם במדעי המוח, היא עוד לא כאן. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `CS has a group for reservist mentors and mentees. If Brain Sciences has one too, it is not here yet. If you have the link: tap here and send it to Roy, the message is ready.`],
+    [`הקבוצה לחונכים ולחניכים מילואימניקים במדעי המוח: הקישור עוד לא כאן. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The group for reservist mentors and mentees in Brain Sciences: the link is not here yet. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20לחונכים%20וחניכים%20מילואימניקים.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20reservist%20mentors%20and%20mentees.%20Here%20it%20is%3A`],
     [`שנה ב' (מחזור תשפ"ו)`, `Second year (the 5786 cohort)`],
     [`קהילת מדעי המוח תשפ"ו`, `The Brain Sciences 5786 community`],

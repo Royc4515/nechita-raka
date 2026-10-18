@@ -200,6 +200,17 @@ export default {
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/neuro/data.js),
   // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.
   content: {
+    // הנוסח של התוכנית למשפטים שבתוכן המשותף (shared/data.js) שנכונים רק למחלקה אחת: {fx:שם}. he ו-en; טקסט ריק מותר.
+    // רק עובדות שיש להן מקור ב-management/neuro/programs.md ובמדריכים של התוכנית (מדריך בניין 901 ומדריך "למי פונים").
+    phrases: {
+      reservesGroups: { he: `יש קבוצות וואטסאפ למילואימניקים: של המחזור, של החונכים והחניכים המילואימניקים, ושל כל בר-אילן. חלק מהקישורים עדיין חסרים, והשאר למטה.`, en: `There are WhatsApp groups for reservists: one for your cohort, one for reservist mentors and mentees, and one for all of Bar-Ilan. Some links are still missing, and the rest are below.` },
+      attendance: { he: `כל קורס קובע אם בודקים בו נוכחות.`, en: `Each course decides whether it takes attendance.` },
+      buildingsMore: { he: `משרד התוכנית למדעי המוח נמצא בבניין 901, המרכז לחקר המוח ע"ש גונדה, בצפון הקמפוס. בנייני ההרצאות האחרים של שנה א' הם 905, 604 ו-1002.`, en: `The Brain Sciences program office is in building 901, the Gonda Brain Research Center, in the north of the campus. The other lecture buildings for first-year courses are 905, 604 and 1002.` },
+      buildingsKeyword: { he: `901`, en: `901` },
+      buildingsSourceLabel: { he: `מיקום ודרכי הגעה, אתר המרכז לחקר המוח`, en: `Location and directions, Brain Research Center site` },
+      buildingsSourceUrl: { he: `https://gondabrain.biu.ac.il/directions`, en: `https://gondabrain.biu.ac.il/directions` },
+      microwaves: { he: ``, en: `` },
+    },
     order: {
       guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
       categories: [`university`, `neuro-year1-courses`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],

@@ -149,6 +149,14 @@ function checkContentOrder(id, content) {
     for (const entry of list) if (!CONTENT_ID_RE.test(entry || "")) fail(id, `content.order.${key} has an id that is not lowercase English: ${JSON.stringify(entry)}`);
     if (new Set(list).size !== list.length) fail(id, `content.order.${key} lists an id twice`);
   }
+  // phrases: the faculty's own wording of {fx:name} in the shared content (faculties/content.js); an empty text is allowed.
+  const phrases = content.phrases;
+  if (phrases === undefined) return;
+  if (!phrases || typeof phrases !== "object" || Array.isArray(phrases)) fail(id, "content.phrases must be an object");
+  for (const [name, text] of Object.entries(phrases)) {
+    if (!/^[A-Za-z]+$/.test(name)) fail(id, `content.phrases.${name}: the name must be letters only`);
+    if (!text || typeof text.he !== "string" || typeof text.en !== "string") fail(id, `content.phrases.${name} needs he and en texts`);
+  }
 }
 
 const isPositiveNumber = (value) => typeof value === "number" && Number.isFinite(value) && value > 0;
