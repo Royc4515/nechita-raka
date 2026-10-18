@@ -18,7 +18,7 @@ import { applyCustom, createStore } from "./course-store.js";
 import { currentSemester, DAYS } from "./course-time.js";
 import { facultyTracks, readTrack, saveTrack, trackAsked, trackName } from "./course-track.js";
 import { NARROW } from "./course-week.js";
-import { inTrack, trackOf, yearOfId, yearsOf } from "./course-years.js";
+import { inTrack, trackOf, tracksOf, yearOfId, yearsOf } from "./course-years.js";
 
 const LIST_URL = "./course-list.json";
 const SEMESTERS = ["סמסטר א'", "סמסטר ב'"];
@@ -76,9 +76,11 @@ function matchesYear(course, chip, track = "") {
   if (chip === "other") return !inScope(course, track);
   return TRACKS.length ? yearsOf(categories, track).includes(Number(chip)) : categories.includes(chip);
 }
-const firstCategory = (course) => Math.min(9, ...categoriesOf(course).map((id) => CATEGORY_ORDER[id] ?? 9));
+/** The position of the course's first category in the manifest's order; courses outside the yearbook go last. */
+const LAST = CATEGORIES.length;
+const firstCategory = (course) => Math.min(LAST, ...categoriesOf(course).map((id) => CATEGORY_ORDER[id] ?? LAST));
 /** With tracks the list is ordered by first year, then by the manifest's order; without, by the manifest's order alone. */
-const listOrder = (course) => (TRACKS.length ? (yearsOf(categoriesOf(course))[0] || 9) * 100 : 0) + firstCategory(course);
+const listOrder = (course) => (TRACKS.length ? (yearsOf(categoriesOf(course))[0] || 9) * 1000 : 0) + firstCategory(course);
 const dmy = (iso) => {
   const [y, m, d] = String(iso || "").split("-");
   return y && m && d ? `${Number(d)}.${Number(m)}.${y}` : "";
@@ -258,7 +260,8 @@ export async function mountCourseBrowser(root, helpers) {
     const select = el("select", { class: "cb-track", id: "cb-track", "data-key": "track" },
       el("option", { value: "", text: tr("כל המסלולים"), selected: !state.track || undefined }),
       ...TRACKS.map((t) => el("option", { value: t.id, text: tr(t.label), selected: t.id === state.track || undefined })));
-    select.addEventListener("change", () => { saveTrack(select.value); set({ track: select.value, ...widen() }); });
+    // A new track folds the "more courses" list back, so the page opens on that track's own sections.
+    select.addEventListener("change", () => { saveTrack(select.value); set({ track: select.value, showOther: false, ...widen() }); });
     const label = el("label", { class: "cb-track-label", for: "cb-track", text: prompt ? tr("באיזה מסלול אתם לומדים?") : tr("המסלול שלי:") });
     let later = null;
     if (prompt) {
@@ -358,8 +361,8 @@ export async function mountCourseBrowser(root, helpers) {
     if (raw) {
       const matches = rank(entries, raw).list.map((e) => e.course).filter((c) => !state.days.size || hasVisible(c));
       const found = matches.filter((c) => matchesYear(c, state.year, state.track));
-      // The chosen track hides the other tracks' matches; say how many, so a missing course has a reason.
-      const elsewhere = state.track ? matches.filter((c) => matchesYear(c, state.year) && !found.includes(c)).length : 0;
+      // The chosen track hides the other tracks' matches; say how many (courses in no track at all don't count), so a missing course has a reason.
+      const elsewhere = state.track ? matches.filter((c) => matchesYear(c, state.year) && !found.includes(c) && tracksOf(categoriesOf(c)).length).length : 0;
       setStatus([found.length === 0 ? tr("לא נמצא קורס. נסו מילה אחרת או סננו פחות.") : found.length === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: found.length }), trackNote, elsewhere ? tr("ועוד {n} במסלולים אחרים", { n: elsewhere }) : ""].filter(Boolean).join(" · "));
       return [el("div", { class: "cb-list" }, ...found.map((c) => cardFor(c, { badge: true, open: found.length === 1 })))];
     }

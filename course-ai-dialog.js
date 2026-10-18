@@ -5,8 +5,9 @@
   On a phone the sheet rises from the bottom; on a wide screen it is a centered window.
 */
 import { courseName, el } from "./course-card.js";
-import { AIS, aiLink, buildPrompt, exportSchedule, NOTES_MAX, parseSchedule, slotText } from "./course-ai.js";
+import { AIS, aiLink, buildPrompt, exportSchedule, inYear, NOTES_MAX, parseSchedule, slotText } from "./course-ai.js";
 import { clash, inSemester, timedSlots } from "./course-time.js";
+import { readTrack } from "./course-track.js";
 
 const FILE_MAX = 200_000;
 const SVG = "http://www.w3.org/2000/svg";
@@ -209,7 +210,9 @@ export function openPlanner(ctx) {
   const state = ctx.store.get();
   const offered = (c) => c.groups.some((g) => inSemester(g, ctx.semester));
   const starred = ctx.list.courses.filter((c) => state.starred.includes(c.code) && offered(c));
-  const byYear = (y) => ctx.list.courses.filter((c) => c.year === y && offered(c));
+  // "Year N" reads the yearbook within the student's track when one is chosen (course-track.js); CS has no tracks.
+  const track = readTrack();
+  const byYear = (y) => ctx.list.courses.filter((c) => inYear(c, y, track) && offered(c));
   const sets = [
     { id: "starred", label: tr("הקורסים שסימנתי ({n})", { n: starred.length }), courses: starred },
     ...[1, 2, 3].map((y) => ({ id: `y${y}`, year: y, label: tr("הקורסים של שנה {y} לפי הידיעון", { y: ["א'", "ב'", "ג'"][y - 1] }), courses: byYear(y) })),
@@ -247,7 +250,7 @@ export function openPlanner(ctx) {
     const set = sets.find((s) => s.id === which.get()) || sets[0];
     const sem = semester.get();
     // A year's courses are the ones its yearbook puts in this semester (others also run now, for retakes).
-    const courses = (set.year ? ctx.list.courses.filter((c) => c.year === set.year) : set.courses)
+    const courses = (set.year ? ctx.list.courses.filter((c) => inYear(c, set.year, track)) : set.courses)
       .filter((c) => c.groups.some((g) => inSemester(g, sem)) && (!set.year || !(c.plannedIn || []).length || c.plannedIn.includes(sem)));
     const keepList = keep && keep.get() === "keep"
       ? ctx.list.courses.flatMap((course) => course.groups.filter((g) => ctx.store.isPicked(course.code, g.group) && inSemester(g, sem)).map((group) => ({ course, group })))

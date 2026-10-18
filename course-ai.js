@@ -9,6 +9,7 @@
   This module has no DOM (the tests import it); the dialogs are in course-ai-dialog.js.
 */
 import { inSemester, timedSlots } from "./course-time.js";
+import { yearsOf } from "./course-years.js";
 
 export const FORMAT = "nechita-raka-schedule";
 const VERSION = 1;
@@ -23,6 +24,8 @@ export const AIS = [
 ];
 
 export const slotText = (s) => `${s.day} ${s.start}-${s.end}`;
+/** true when the yearbook puts the course in `year`: within the chosen track when there is one, else in any track (CS: its plain year). */
+export const inYear = (course, year, track = "") => yearsOf(course.categories, track).includes(year);
 const placeOf = (g) => [...new Set(timedSlots(g).map((s) => [s.building, s.room && `חדר ${s.room}`].filter(Boolean).join(" ")).filter(Boolean))].join(" / ");
 const dmy = (iso) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}.${iso.slice(0, 4)}`;
 

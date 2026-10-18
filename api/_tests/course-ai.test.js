@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { aiLink, buildPrompt, courseDataText, exportSchedule, FORMAT, parseSchedule } from "../../course-ai.js";
+import { aiLink, buildPrompt, courseDataText, exportSchedule, FORMAT, inYear, parseSchedule } from "../../course-ai.js";
 import { createStore } from "../../course-store.js";
 import { loadCourses } from "../_lib/courses/model.js";
 import { FACULTIES, facultyFile } from "../../faculties/index.js";
@@ -122,6 +122,25 @@ test("a prompt with no preferences says so (no questions back), and optional gro
   assert.match(prompt, /אני לוקח\/ת את כולם/);
   assert.doesNotMatch(prompt, /- תגבור/); // 89110 has a reinforcement group
   assert.match(buildPrompt([byCode.get("89110")], { ...none, extras: true }), /- תגבור/);
+});
+
+test("the planner's year sets read the yearbook: a CS course by its plain year, a tracked course within the chosen track", () => {
+  assert.equal(inYear(byCode.get("89110"), 1), true);
+  assert.equal(inYear(byCode.get("89110"), 2), false);
+  assert.equal(inYear(byCode.get("89005"), 1), false, "not in the yearbook");
+  assert.equal(inYear(byCode.get("895656"), 1), false, "a pool is not a year");
+  // CS: the same set as the old `year === y` rule for every course.
+  for (const y of [1, 2, 3]) assert.deepEqual(courses.filter((c) => inYear(c, y)).map((c) => c.code), courses.filter((c) => c.year === y).map((c) => c.code));
+  const neuroFile = (key) => facultyFile(FACULTIES.neuro, FACULTIES.neuro.courses[key]);
+  const neuro = new Map(loadCourses(neuroFile("catalog"), neuroFile("yearbook")).courses.map((c) => [c.code, c]));
+  const spread = neuro.get("27305"); // year 2 in most tracks, year 3 in linguistics and philosophy: no single year
+  assert.equal(spread.year, null);
+  assert.equal(inYear(spread, 2), true, "no track chosen: any track's year counts");
+  assert.equal(inYear(spread, 3), true);
+  assert.equal(inYear(spread, 2, "cs"), true);
+  assert.equal(inYear(spread, 3, "cs"), false, "the chosen track's year only");
+  assert.equal(inYear(spread, 3, "linguistics"), true);
+  assert.equal(inYear(spread, 2, "single-comp"), false, "not in that track");
 });
 
 test("the yearbook says which semester each course is planned in", () => {
