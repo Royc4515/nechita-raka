@@ -19,6 +19,22 @@ export const THEME_KEYS = Object.freeze(["accent", "accentHover", "accentInk", "
  * "eeg" is the same window with a trace that draws itself above the typed lines (scripts/prerender.mjs).
  */
 export const HERO_VARIANTS = Object.freeze(["terminal", "eeg"]);
+/**
+ * The design elements a faculty may turn on (the optional `decor` block): each key is a place on the page, each value a
+ * style index.html draws when the build sets data-decor-<key>="<value>" on <html> (scripts/prerender.mjs withDecor),
+ * listed with the files under faculties/<id>/decor/ the style needs (published to assets/decor/, scripts/faculty-public.mjs).
+ * The styles are a shared vocabulary, like the hero variants: any faculty may use one. A faculty without decor (CS) has none.
+ */
+export const DECOR_STYLES = Object.freeze({
+  // A faint neural network behind the hero, in place of the dotted grid; it breathes slowly in dark mode.
+  background: Object.freeze({ synapses: Object.freeze(["synapses.svg"]) }),
+  // A small action-potential trace before the section titles, in place of "// "; no "_" after the title, no [ ] on counts.
+  headings: Object.freeze({ spike: Object.freeze(["spike.svg"]) }),
+  // A neuron drawing on the accent banner tile, in place of "{ }".
+  watermark: Object.freeze({ neuron: Object.freeze(["neuron.webp"]) }),
+  // A violet lift under the cards in light mode and a faint lit edge in dark mode.
+  cards: Object.freeze({ glow: Object.freeze([]) }),
+});
 /** The colored pieces a terminal line may hold (the .t-* classes in index.html). */
 export const TERMINAL_TOKEN_KINDS = Object.freeze(["prompt", "kw", "str", "out", "dim"]);
 /** The effects index.html's playEffect() knows; anything else there falls back to confetti. */
@@ -177,6 +193,18 @@ function checkTracks(id, tracks) {
   if (new Set(ids).size !== ids.length) fail(id, "tracks lists an id twice");
 }
 
+/** decor (optional): known places, each with a known style (DECOR_STYLES); the values land in an attribute of <html>. */
+function checkDecor(id, decor) {
+  if (decor === undefined) return;
+  if (!decor || typeof decor !== "object" || Array.isArray(decor)) fail(id, "decor must be an object when present");
+  const places = Object.keys(DECOR_STYLES);
+  for (const [place, style] of Object.entries(decor)) {
+    if (!Object.hasOwn(DECOR_STYLES, place)) fail(id, `decor.${place} is not a known place (known: ${places.join(", ")})`);
+    const styles = Object.keys(DECOR_STYLES[place]);
+    if (typeof style !== "string" || !Object.hasOwn(DECOR_STYLES[place], style)) fail(id, `decor.${place} must be one of ${styles.join(", ")}`);
+  }
+}
+
 /** Throws with the field's name when the manifest is not usable; returns it otherwise. */
 export function validateFaculty(faculty) {
   const id = faculty && faculty.id;
@@ -203,6 +231,7 @@ export function validateFaculty(faculty) {
   checkEggs(id, faculty.eggs);
   checkContentOrder(id, faculty.content);
   checkTracks(id, faculty.tracks);
+  checkDecor(id, faculty.decor);
   if (!Array.isArray(faculty.mascots) || faculty.mascots.length !== 2) fail(id, "mascots must be a list of exactly two");
   faculty.mascots.forEach((m, i) => checkMascot(id, m, i));
   const genders = faculty.mascots.map((m) => m.gender).sort().join("");

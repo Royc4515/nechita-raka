@@ -60,6 +60,14 @@ export default {
     mascotShadow: true,
   },
 
+  // אלמנטים של מדעי המוח בעיצוב (לא חובה; בלעדיהם האתר נראה כמו של מדעי המחשב). כל מפתח הוא מקום בדף וכל ערך סגנון
+  // מהרשימה ב-faculties/index.js (DECOR_STYLES); הקבצים בתיקייה decor/ שכאן. ההסבר המלא ב-management/neuro/decor-brief.md.
+  //   background: `synapses` רשת נוירונים עדינה ברקע מאחורי הכותרת, במקום רשת הנקודות.
+  //   headings: `spike` קו קטן של פוטנציאל פעולה לפני כותרות הסעיפים, במקום "// ".
+  //   watermark: `neuron` ציור של נוירון על האריח הסגול הגדול, במקום "{ }".
+  //   cards: `glow` הילה סגולה עדינה לכרטיסים.
+  decor: { background: `synapses`, headings: `spike`, watermark: `neuron`, cards: `glow` },
+
   // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit").
   labels: {
     chatPath: `~/year-1`,

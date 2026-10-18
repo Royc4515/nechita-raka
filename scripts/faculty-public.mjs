@@ -3,7 +3,7 @@
 // copied to the paths the site has always used.
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { MASCOT_POSES } from "../faculties/index.js";
+import { DECOR_STYLES, MASCOT_POSES } from "../faculties/index.js";
 
 // Shared by every faculty; only the name, description and color come from the manifest (D6).
 const WEBMANIFEST_ICONS = [
@@ -83,16 +83,20 @@ export function reserveDownload(reserved, download) {
 /** The hero illustration and its small avatar (site.heroArt), relative to faculties/<id>/; one file when they are the same. */
 export const heroArtFiles = (faculty) => [...new Set([faculty.site.heroArt.file, faculty.site.heroArt.avatar])];
 
+/** The files the faculty's design elements need (decor, DECOR_STYLES), relative to faculties/<id>/: published under assets/decor/. */
+export const decorFiles = (faculty) => Object.entries(faculty.decor || {}).flatMap(([place, style]) => DECOR_STYLES[place][style].map((file) => `decor/${file}`));
+
 /** Every image file the manifest points to, relative to faculties/<id>/. */
 export function facultyImageFiles(faculty) {
   return [
     faculty.site.ogImage.file,
     ...heroArtFiles(faculty),
+    ...decorFiles(faculty),
     ...faculty.mascots.flatMap((m) => [`mascot/${m.files.avatar}`, `mascot/${m.files.peek}`, ...MASCOT_POSES.map((pose) => `mascot/${m.files.poses}-${pose}.webp`)]),
   ];
 }
 
-/** Where each image of the faculty is published, relative to the output: the same addresses for every faculty (the hero art under assets/ by its own name). */
+/** Where each image of the faculty is published, relative to the output: the same addresses for every faculty (the hero art under assets/ by its own name, decor under assets/decor/). */
 export function facultyImageTargets(faculty) {
   return Object.fromEntries(facultyImageFiles(faculty).map((file) => [file, file === faculty.site.ogImage.file ? faculty.site.ogImage.path : `assets/${file}`]));
 }
