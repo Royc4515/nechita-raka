@@ -91,7 +91,8 @@ test("the model never sees phone numbers: the facts say where to find them inste
   const facts = chunks.map((c) => c.text).join("\n");
   const raw = JSON.stringify(data);
   assert.match(raw, /\*9392/, "data.js still has the number the site shows");
-  assert.match(raw, /03-5318866/);
+  // The shared service-center number: every faculty's content has it (the CS office number is CS-only).
+  assert.match(raw, /03-5317000/);
   assert.doesNotMatch(facts, /\*\s?\d{3,5}(?!\d)|9392|5317000|5318866|6171988/);
   assert.match(facts, new RegExp(PHONE_NOTE.replace(/[()]/g, "\$&")));
   // Dates stay, and so do long numbers inside links.
