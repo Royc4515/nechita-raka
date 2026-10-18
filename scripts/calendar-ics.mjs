@@ -72,6 +72,9 @@ export function mergeBlocks(shared, own) {
   return [...merged.flatMap(({ block, extras }) => [block, ...extras]), ...tail];
 }
 
+/** A TEXT value as RFC 5545 writes it: backslash, semicolon and comma are escaped. */
+export const escapeText = (text) => text.replace(/[\\;,]/g, (c) => `\\${c}`);
+
 /** The text of the .ics: the header for `calendar` (the manifest's calendar block), then the merged blocks. */
 export function buildIcs(calendar, sharedText, ownText = "") {
   const blocks = mergeBlocks(parseFragment(sharedText, "shared/calendar.ics"), parseFragment(ownText, "the faculty's calendar.ics"));
@@ -81,7 +84,7 @@ export function buildIcs(calendar, sharedText, ownText = "") {
     `PRODID:-//${calendar.prodId}//Academic Calendar 5787//HE`,
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    foldLine(`X-WR-CALNAME:${calendar.name}`),
+    foldLine(`X-WR-CALNAME:${escapeText(calendar.name)}`),
     "X-WR-TIMEZONE:Asia/Jerusalem",
   ];
   const body = blocks.flatMap((block) => block.lines.map((line) => line.replaceAll("{uidDomain}", calendar.uidDomain)));

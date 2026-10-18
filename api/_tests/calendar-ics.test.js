@@ -26,7 +26,7 @@ test("the CS calendar file is byte-identical to the hand-written file it replace
 test("the neuro calendar file has its own name and producer, the university's dates and nothing of CS", () => {
   const ics = loadIcs(neuro);
   assert.match(ics, /PRODID:-\/\/BIU Brain Sciences\/\//);
-  assert.match(ics, /X-WR-CALNAME:בר אילן - לוח אקדמי תשפ"ז, מדעי המוח/);
+  assert.match(ics, /X-WR-CALNAME:בר אילן - לוח אקדמי תשפ"ז\\, מדעי המוח/);
   assert.equal(events(ics), 26, "the 26 university-wide events, none of CS's 17");
   assert.ok(!/BIU CS|biu-cs|exam-|cs-year-opening|בחינה:|למדעי המחשב|503|forms\.gle/.test(ics), "no CS wording in the neuro file");
   assert.ok(ics.includes("@biu-neuro-5787"), "UIDs carry the faculty's own suffix");
