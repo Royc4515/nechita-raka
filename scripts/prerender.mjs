@@ -577,7 +577,7 @@ export function withDecor(html, decor = {}) {
   if (html.split(HTML_TAG).length !== 2) throw new Error(`prerender: index.html should have exactly one ${HTML_TAG}`);
   const attrs = Object.keys(DECOR_STYLES).filter((place) => decor[place] !== undefined).map((place) => {
     // Validated with the manifest, checked again because the value lands in an attribute.
-    if (!Object.hasOwn(DECOR_STYLES[place], decor[place])) throw new Error(`prerender: unknown decor ${place} "${decor[place]}"`);
+    if (typeof decor[place] !== "string" || !Object.hasOwn(DECOR_STYLES[place], decor[place])) throw new Error(`prerender: unknown decor ${place} "${decor[place]}"`);
     return ` data-decor-${place}="${decor[place]}"`;
   });
   return attrs.length ? html.replace(HTML_TAG, () => `${HTML_TAG}${attrs.join("")}`) : html;

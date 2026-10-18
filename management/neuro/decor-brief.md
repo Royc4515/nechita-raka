@@ -105,3 +105,10 @@ Two new places in the vocabulary:
 - `footer: "bench"`: the notebook, the brain and the microscope standing on the footer's top line at the page column's inline end, 72 px tall on phones and 96 px from 640 px.
 
 Added weight for the neuro edition: about 130 KB of images, all decorative CSS backgrounds (no layout shift).
+
+## Third round: both styles together (Roy, 18.10.2026)
+
+Roy: combine both kinds as needed and for beauty. The ink drawings stay where a faint, accent-colored texture fits (masks follow light and dark), the colored ones where an object stands beside content:
+
+- `backdrop: "brain"`: the Flow ink brain (`brain-ink.webp`, alpha thresholded, lossless, 400 x 356, 5.5 KB) behind the round hero illustration from 768 px, inset -12% / -15%, accent at 12% (light) and 22% (dark). No text sits there; on phones the illustration is hidden and so is the brain.
+- The neuron watermark was re-encoded the same way (lossless, hard alpha edge): 24 KB down to 3 KB.

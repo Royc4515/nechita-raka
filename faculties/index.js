@@ -28,6 +28,8 @@ export const HERO_VARIANTS = Object.freeze(["terminal", "eeg"]);
 export const DECOR_STYLES = Object.freeze({
   // A faint neural network behind the hero, in place of the dotted grid; it breathes slowly in dark mode.
   background: Object.freeze({ synapses: Object.freeze(["synapses.svg"]) }),
+  // An ink brain in the accent behind the hero illustration, from tablet width (the illustration is hidden on phones).
+  backdrop: Object.freeze({ brain: Object.freeze(["brain-ink.webp"]) }),
   // A small action-potential trace before the section titles, in place of "// "; no "_" after the title, no [ ] on counts.
   headings: Object.freeze({ spike: Object.freeze(["spike.svg"]) }),
   // A neuron drawing on the accent banner tile, in place of "{ }".

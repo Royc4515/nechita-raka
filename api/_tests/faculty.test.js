@@ -21,7 +21,7 @@ const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
 const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "philosophy", "linguistics", "physics"];
 // The brain-science design elements of the neuro edition (faculty PR 6e, management/neuro/decor-brief.md); CS has none.
-const NEURO_DECOR = { background: "synapses", headings: "spike", watermark: "neuron", cards: "glow", sections: "lab", footer: "bench" };
+const NEURO_DECOR = { background: "synapses", backdrop: "brain", headings: "spike", watermark: "neuron", cards: "glow", sections: "lab", footer: "bench" };
 // <track>:<year> from the Gonda study plans; the computational track started in 5787, so it has year 1 only.
 const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] : [1, 2, 3]).map((y) => `${t}:${y}`));
 const EXPECTED = {
@@ -302,6 +302,7 @@ test("the prerender turns decor into data-decor attributes on <html>, in a fixed
   assert.ok(withDecor(template.replace(`${tag}>`, `${tag} data-home-title="x">`), { background: "synapses" }).includes(`${tag} data-decor-background="synapses" data-home-title="x">`), "works on a guide page too");
   assert.throws(() => withDecor(template, { background: 'synapses" onload="x' }), /unknown decor background/);
   assert.throws(() => withDecor(template, { background: "__proto__" }), /unknown decor/);
+  assert.throws(() => withDecor(template, { background: ["synapses"] }), /unknown decor/, "a list is not coerced to its one style");
   assert.throws(() => withDecor(template.replace(`${tag}>`, `<html lang="he">`), { background: "synapses" }), /<html/);
   // Every style the vocabulary names is drawn by index.html: a selector keyed on its attribute exists in the stylesheet.
   for (const place of places) for (const style of Object.keys(DECOR_STYLES[place])) assert.ok(template.includes(`[data-decor-${place}="${style}"]`), `index.html styles decor ${place} "${style}"`);

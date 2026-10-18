@@ -63,12 +63,13 @@ export default {
   // אלמנטים של מדעי המוח בעיצוב (לא חובה; בלעדיהם האתר נראה כמו של מדעי המחשב). כל מפתח הוא מקום בדף וכל ערך סגנון
   // מהרשימה ב-faculties/index.js (DECOR_STYLES); הקבצים בתיקייה decor/ שכאן. ההסבר המלא ב-management/neuro/decor-brief.md.
   //   background: `synapses` רשת נוירונים עדינה ברקע מאחורי הכותרת, במקום רשת הנקודות.
+  //   backdrop: `brain` ציור דיו של מוח בצבע ההדגשה מאחורי האיור שליד הכותרת (במסך רחב).
   //   headings: `spike` קו קטן של פוטנציאל פעולה לפני כותרות הסעיפים, במקום "// ".
   //   watermark: `neuron` ציור של נוירון על האריח הסגול הגדול, במקום "{ }".
   //   cards: `glow` הילה סגולה עדינה לכרטיסים.
   //   sections: `lab` איורים צבעוניים של מעבדה ליד הכותרות של המדריכים והקישורים.
   //   footer: `bench` מחברת מעבדה, מוח ומיקרוסקופ שעומדים על הקו העליון של התחתית.
-  decor: { background: `synapses`, headings: `spike`, watermark: `neuron`, cards: `glow`, sections: `lab`, footer: `bench` },
+  decor: { background: `synapses`, backdrop: `brain`, headings: `spike`, watermark: `neuron`, cards: `glow`, sections: `lab`, footer: `bench` },
 
   // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit").
   labels: {
