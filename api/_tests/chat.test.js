@@ -49,6 +49,23 @@ test("the core has today's date and the current term", () => {
   assert.match(core, /סמסטר א'/);
 });
 
+test("SITE and the prompt name the faculty's site and audience from the manifest, never the CS ones on another faculty", () => {
+  const core = buildCore(data, "2026-10-20");
+  const first = core.split("\n")[0];
+  const site = FACULTY.site;
+  assert.ok(first.startsWith(`האתר "${site.name}" (`), first);
+  assert.ok(first.includes(`) הוא מרכז מידע ל${site.audience.he} באוניברסיטת בר אילן, שנת הלימודים ${data.site.academicYear}.`), first);
+  const prompt = systemPrompt(M.id, "core", canaryFor(SALT));
+  assert.ok(prompt.includes(`You chat with ${site.audience.en} at Bar-Ilan University.`));
+  if (FACULTY.id === "cs") {
+    assert.equal(first, `האתר "נחיתה רכה - מדמ"ח בר אילן" (${site.url}) הוא מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר אילן, שנת הלימודים תשפ"ז.`, "the CS line as before");
+    assert.ok(prompt.includes("You chat with first-year Computer Science students at Bar-Ilan University."));
+  } else {
+    assert.ok(first.includes("מדעי המוח") && !/מדעי המחשב|מדמ"ח|שנה א'/.test(first), first);
+    assert.ok(prompt.includes("Brain Sciences") && !/Computer Science|with first-year /.test(prompt.split("WHO YOU ARE")[0]), "the neuro prompt never says CS or first-year only");
+  }
+});
+
 // ---------- history ----------
 
 test("history rejects system turns, empty or too-long messages, and a non-user last turn", () => {

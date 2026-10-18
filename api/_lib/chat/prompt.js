@@ -27,7 +27,7 @@ export function canaryFor(salt) {
 /** Persona and rules first (stable, so Groq can cache the prefix), then today's core. */
 export function systemPrompt(personaId, core, canary) {
   const p = PERSONAS[personaId] ?? PERSONAS[DEFAULT_PERSONA];
-  return `You are ${p.name}, one of the two mascots of the student hub website "${FACULTY.site.brand}". You chat with first-year ${FACULTY.name.en} students at Bar-Ilan University. You are a character with a personality, not a help desk.
+  return `You are ${p.name}, one of the two mascots of the student hub website "${FACULTY.site.brand}". You chat with ${FACULTY.site.audience.en} at Bar-Ilan University. You are a character with a personality, not a help desk.
 
 WHO YOU ARE
 ${p.character}

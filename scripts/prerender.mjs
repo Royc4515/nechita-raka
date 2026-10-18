@@ -19,8 +19,18 @@ export const SITE_URL = FACULTY.site.url;
 const OG_IMAGE = { ...FACULTY.site.ogImage, url: `${SITE_URL}/${FACULTY.site.ogImage.path}` };
 const BRAND = FACULTY.site.brand;
 const SITE_NAME = FACULTY.site.name;
-const FACULTY_HE = FACULTY.name.he; // "מדעי המחשב": the faculty in the descriptions and the structured data
 const HOME_TITLE = FACULTY.site.title;
+
+/**
+ * Who the site is for, as the sentences below embed it (site.audience, faculties/index.js): `people` and `en` as the
+ * manifest says them; `scope` is what the site covers after "של" or "ל" ("שנה א' במדעי המחשב", or the faculty itself
+ * when no year narrows it), and `scopeShort` the same where the faculty is already implied ("שנה א'").
+ */
+export function audienceOf(faculty) {
+  const { he, en, year } = faculty.site.audience;
+  return { people: he, en, scope: year ? `${year} ב${faculty.name.he}` : faculty.name.he, scopeShort: year || faculty.name.he };
+}
+const AUDIENCE = audienceOf(FACULTY);
 const NOT_OFFICIAL = "יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.";
 const BIU = { "@type": "CollegeOrUniversity", "@id": `${SITE_URL}/#biu`, name: "אוניברסיטת בר-אילן", alternateName: "Bar-Ilan University", url: "https://www.biu.ac.il/" };
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -300,7 +310,7 @@ function personNode(site) {
     "@id": `${SITE_URL}/#author`,
     name: site.author || "רועי כרמלי",
     alternateName: "Roy Carmelli",
-    description: `מי שבנה את ${BRAND}, האתר לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן.`,
+    description: `מי שבנה את ${BRAND}, האתר ל${AUDIENCE.people} בבר אילן.`,
     ...(sameAs.length ? { url: sameAs[0], sameAs } : {}),
   };
 }
@@ -333,7 +343,7 @@ function eventNodes(data) {
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "אוניברסיטת בר-אילן" },
       organizer: { "@id": BIU["@id"] },
-      description: `מתוך לוח השנה של שנה א' ב${FACULTY_HE} בבר אילן, ${data.calendar.title || ""}. הלוח הרשמי של האוניברסיטה קובע.`,
+      description: `מתוך לוח השנה של ${AUDIENCE.scope} בבר אילן, ${data.calendar.title || ""}. הלוח הרשמי של האוניברסיטה קובע.`,
       url: `${SITE_URL}/#calendar`,
     }));
 }
@@ -370,7 +380,7 @@ function homeHead(data, updated) {
       "@type": "FAQPage",
       "@id": `${SITE_URL}/#faq`,
       url: `${SITE_URL}/#faq`,
-      name: `שאלות נפוצות של סטודנטים בשנה א' ב${FACULTY_HE} בבר אילן`,
+      name: `שאלות נפוצות של ${AUDIENCE.people} בבר אילן`,
       inLanguage: "he",
       isPartOf: { "@id": `${SITE_URL}/#webpage` },
       dateModified: updated,
@@ -383,7 +393,7 @@ function homeHead(data, updated) {
     {
       "@type": "ItemList",
       "@id": `${SITE_URL}/#guides`,
-      name: `מדריכים לשנה א' ב${FACULTY_HE} בבר אילן`,
+      name: `מדריכים ל${AUDIENCE.scope} בבר אילן`,
       itemListElement: data.guides.map((g, i) => ({ "@type": "ListItem", position: i + 1, name: g.title, url: guideUrl(g.id) })),
     },
     ...eventNodes(data),
@@ -397,11 +407,11 @@ export const guidePageTitle = (guide) => `${guide.title} - בר אילן | ${BRA
 function guideHead(data, guide, updated) {
   const url = guideUrl(guide.id);
   const modified = isoFromDmy(guide.checkedOn) || updated;
-  const description = `${guide.summary || guide.title} מדריך צעד אחר צעד לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן, מתוך האתרים הרשמיים. ${NOT_OFFICIAL}`;
+  const description = `${guide.summary || guide.title} מדריך צעד אחר צעד ל${AUDIENCE.people} בבר אילן, מתוך האתרים הרשמיים. ${NOT_OFFICIAL}`;
   const title = guidePageTitle(guide);
   const sources = (guide.sources || []).filter((s) => s && isSafeUrl(s.url));
   const graph = [
-    websiteNode(`מרכז מידע לסטודנטים בשנה א' ב${FACULTY_HE} בבר אילן. ${NOT_OFFICIAL}`),
+    websiteNode(`מרכז מידע ל${AUDIENCE.people} בבר אילן. ${NOT_OFFICIAL}`),
     personNode(data.site),
     BIU,
     {
@@ -546,6 +556,26 @@ export function withSiteName(html, name) {
   return html.replace(BRAND_H1_RE, (m, open, close) => `${open}${escText(name)}${close}`);
 }
 
+// The tagline under the brand (site.tagline), before the "add to home screen" button; the template keeps the CS one.
+const TAGLINE_RE = /(<p class="tagline">)[^<]*( <button class="install-btn")/g;
+
+/** The manifest's tagline written under the brand. */
+export function withTagline(html, tagline) {
+  if ((html.match(TAGLINE_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one tagline before the install button");
+  return html.replace(TAGLINE_RE, (m, open, close) => `${open}${escText(tagline)}${close}`);
+}
+
+// The status label of the "now" box, written by the page script in the chat path's style ("~/year-1 › status").
+const STATUS_LABEL_RE = /(el\("span", \{ text: )"~\/year-1 › status"( \}\))/g;
+// A JS string literal inside the page script: JSON escaping plus "<" as \u003c, so no value can close the script.
+const jsString = (text) => JSON.stringify(text).replace(/</g, "\\u003c");
+
+/** The chat path of the manifest (labels.chatPath) written into the status label of the "now" box. */
+export function withStatusPath(html, chatPath) {
+  if ((html.match(STATUS_LABEL_RE) || []).length !== 1) throw new Error("prerender: index.html should have exactly one status label in the page script");
+  return html.replace(STATUS_LABEL_RE, (m, open, close) => `${open}${jsString(`${chatPath} › status`)}${close}`);
+}
+
 // The hero illustration (site.heroArt): the round avatar next to the brand on phones and the picture next to the
 // hero on wide screens. The template holds the CS files, which the build publishes under assets/ by their names.
 const BRAND_AVATAR_RE = /(<img class="brand-avatar" src=")[^"]*(")/g;
@@ -590,6 +620,8 @@ function common(html, data, updated) {
   html = withHero(html, FACULTY.hero);
   html = withHeroArt(html, FACULTY.site.heroArt);
   html = withSiteName(html, SITE_NAME);
+  html = withTagline(html, FACULTY.site.tagline);
+  html = withStatusPath(html, FACULTY.labels.chatPath);
   html = fill(html, "pre:credit", creditHtml(data.site || {}));
   return fill(html, "pre:updated", updatedHtml(updated, data.site.academicYear));
 }
@@ -642,7 +674,7 @@ export function llmsTxt(data, updated) {
   const lines = [
     `# ${SITE_NAME}`,
     "",
-    `> מרכז מידע לסטודנטים בשנה א' ב${FACULTY_HE} באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
+    `> מרכז מידע ל${AUDIENCE.people} באוניברסיטת בר-אילן${year ? `, שנת הלימודים ${year}` : ""}. ${NOT_OFFICIAL} נבנה על ידי ${data.site.author || "רועי כרמלי"}. כל מדריך מבוסס על דפי האוניברסיטה הרשמיים ומקשר אליהם, ואם משהו השתנה, המקור הרשמי קובע.`,
     "",
     `עודכן לאחרונה: ${updated}`,
     "",
@@ -652,9 +684,9 @@ export function llmsTxt(data, updated) {
     "",
     "## בעמוד הבית",
     "",
-    `- [${data.calendar.title || "לוח השנה האקדמי"}](${SITE_URL}/#calendar): סמסטרים, חופשות, מועדי תשלום ותאריכי הבחינות של שנה א'.`,
+    `- [${data.calendar.title || "לוח השנה האקדמי"}](${SITE_URL}/#calendar): סמסטרים, חופשות, מועדי תשלום ותאריכי הבחינות של ${AUDIENCE.scopeShort}.`,
     `- [שאלות נפוצות](${SITE_URL}/#faq): ${(data.faq || []).length} שאלות עם תשובות קצרות ומקורות.`,
-    `- [קישורים](${SITE_URL}/#categories): אתרי האוניברסיטה, חומרי לימוד וקבוצות הוואטסאפ של שנה א'.`,
+    `- [קישורים](${SITE_URL}/#categories): אתרי האוניברסיטה, חומרי לימוד וקבוצות הוואטסאפ של ${AUDIENCE.scopeShort}.`,
     "",
     "## מקורות רשמיים",
     "",
