@@ -28,7 +28,7 @@ export function browserFaculty(faculty) {
   return {
     id: faculty.id,
     name: faculty.name,
-    site: { url: faculty.site.url },
+    site: { url: faculty.site.url, shabbat: { title: faculty.site.shabbat.title, lines: faculty.site.shabbat.lines, footer: faculty.site.shabbat.footer } },
     theme: faculty.theme,
     labels: faculty.labels,
     // The search's faculty synonyms and the faculty's easter eggs, merged by index.html into its shared lists.

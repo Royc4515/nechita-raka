@@ -1,0 +1,93 @@
+/*
+  The closed page of the Shabbat rest (shabbat.js). Loaded only while the site is closed, and it blocks the first
+  paint then, so the content never shows. A poster: a framed card with a hard offset shadow, a stamped headline, a
+  sleeping moon with a "closed" sign, the two mascots as stickers and a ticket with the reopening time. Every color
+  but the moon's own comes from the page's variables (the faculty's accent, the light and dark sets); the decor
+  styles (data-decor-*) are the same ones the page draws.
+*/
+html[data-shabbat] { overflow: hidden; block-size: 100%; }
+/* The page behind stays laid out (it is simply not shown), so reopening needs no rebuild. */
+html[data-shabbat] body { visibility: hidden; overflow: hidden; block-size: 100svh; }
+
+.shb { position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; overflow-y: auto; overscroll-behavior: contain; padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); background: var(--bg); color: var(--text); font-family: var(--font); font-size: var(--fs-body); line-height: 1.6; visibility: visible; outline: none; }
+.shb *, .shb *::before, .shb *::after { box-sizing: border-box; }
+
+/* Behind the card: dots in the page's own grid, and a glow of the accent. */
+.shb-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 50% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+    radial-gradient(color-mix(in srgb, var(--text) 14%, transparent) 1.2px, transparent 1.6px) 0 0 / 22px 22px; }
+:root[data-decor-background="synapses"] .shb-bg::after { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--accent) 10%, transparent); -webkit-mask: url(./assets/decor/synapses.svg) 0 0 / 180px repeat; mask: url(./assets/decor/synapses.svg) 0 0 / 180px repeat; }
+
+.shb-frame { inline-size: min(100%, 68rem); margin-block: auto; background: var(--surface); border: 2px solid var(--text); box-shadow: 8px 8px 0 var(--accent); border-radius: 6px; overflow: hidden; }
+.shb-bar { display: flex; justify-content: space-between; gap: var(--s3); align-items: center; padding: 10px var(--s4); background: var(--accent); color: var(--accent-ink); border-block-end: 2px solid var(--text); font: 700 .8125rem/1.2 var(--mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace); letter-spacing: .14em; direction: ltr; }
+.shb-bar b { font-weight: 800; letter-spacing: .06em; font-size: 1rem; }
+
+.shb-body { display: grid; }
+.shb-copy { display: flex; flex-direction: column; gap: var(--s4); padding: var(--s6) var(--s5) var(--s6); }
+.shb-title { font-size: clamp(2.5rem, 12vw, 4.75rem); line-height: 1.02; font-weight: 900; letter-spacing: -.02em; color: var(--text); text-shadow: 3px 3px 0 var(--accent); text-wrap: balance; }
+.shb-lines { display: grid; gap: var(--s3); max-inline-size: 34rem; }
+.shb-lines p { text-wrap: pretty; }
+.shb-title::after { content: none; }
+.shb-lines p:first-child { font-size: 1.0625rem; font-weight: 600; }
+
+/* The ticket: when the site opens again. */
+.shb-ticket { display: grid; grid-template-columns: 1fr auto; border: 2px solid var(--text); border-radius: 6px; background: var(--accent-soft); box-shadow: 4px 4px 0 var(--text); max-inline-size: 34rem; }
+.shb-ticket-main { display: grid; gap: 2px; padding: var(--s3) var(--s4); }
+.shb-reopen-label { color: var(--muted); font-size: var(--fs-meta); font-weight: 600; }
+.shb-left { color: var(--accent-text); font-size: clamp(1.5rem, 6.4vw, 2.125rem); line-height: 1.15; font-weight: 900; font-variant-numeric: tabular-nums; }
+.shb-at { color: var(--muted); font-size: var(--fs-small); }
+.shb-stub { display: grid; place-items: center; inline-size: 64px; border-inline-start: 2px dashed var(--text); }
+.shb-stub svg { inline-size: 26px; fill: var(--accent); stroke: var(--text); stroke-width: 1.4; }
+.shb-footer { font-size: 1.5rem; font-weight: 900; color: var(--accent-text); }
+
+/* The illustration: the moon asleep with its sign, the mascots waving goodbye in front. */
+.shb-art { position: relative; order: -1; min-block-size: 270px; display: grid; place-items: center; overflow: hidden; background: var(--surface-2); border-block-end: 2px solid var(--text); }
+.shb-art::before { content: ""; position: absolute; inset: 0; background: radial-gradient(color-mix(in srgb, var(--accent) 28%, transparent) 1.3px, transparent 1.8px) 0 0 / 14px 14px; }
+.shb-halftone { position: absolute; inset-block-start: 14%; inset-inline-end: 14%; inline-size: 38%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(var(--accent) 22%, transparent 24%) 0 0 / 9px 9px; opacity: .5; -webkit-mask: radial-gradient(circle, #000 60%, transparent 62%); mask: radial-gradient(circle, #000 60%, transparent 62%); }
+.shb-moonbox { position: relative; inline-size: min(52%, 230px); aspect-ratio: 1; margin-block-end: 18px; }
+.shb-moon { display: block; inline-size: 100%; block-size: 100%; }
+.shb-sign { position: absolute; left: 50%; translate: -50% 0; inset-block-end: 2%; white-space: nowrap; display: grid; justify-items: center; padding: 6px 12px 5px; background: #ff7a3d; color: #15151f; border: 2px solid #15151f; border-radius: 4px; box-shadow: 3px 3px 0 #15151f; rotate: -6deg; line-height: 1.15; }
+.shb-sign b { font-size: clamp(1rem, 4.4vw, 1.375rem); font-weight: 900; }
+.shb-sign small { font: 700 .625rem/1.2 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .16em; direction: ltr; }
+.shb-z { position: absolute; inset-block-start: 8%; inset-inline-start: 56%; font: 900 2.25rem/1 var(--font); color: var(--accent-text); direction: ltr; }
+.shb-z2 { inset-inline-start: 66%; inset-block-start: 3%; font-size: 1.75rem; }
+.shb-z3 { inset-inline-start: 75%; inset-block-start: 0; font-size: 1.25rem; }
+.shb-sp { position: absolute; inline-size: 20px; }
+.shb-sp svg { inline-size: 100%; fill: var(--accent); }
+.shb-sp1 { inset-block-start: 22%; inset-inline-start: 12%; }
+.shb-sp2 { inset-block-end: 24%; inset-inline-start: 6%; inline-size: 14px; }
+.shb-sp3 { inset-block-start: 40%; inset-inline-end: 6%; inline-size: 16px; }
+.shb-mascot { position: absolute; inset-block-end: -4px; inline-size: auto; block-size: clamp(120px, 24svh, 190px); max-inline-size: 27%; object-fit: contain; filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(4px 5px 0 rgb(0 0 0 / .28)); }
+.shb-mascot-0 { inset-inline-start: 5%; rotate: -3deg; }
+.shb-mascot-1 { inset-inline-end: 5%; rotate: 3deg; }
+
+@media (min-width: 880px) {
+  .shb-body { grid-template-columns: 1.15fr 1fr; }
+  .shb-copy { padding: var(--s8) var(--s8); gap: var(--s5); justify-content: center; }
+  .shb-art { order: 0; min-block-size: 480px; border-block-end: 0; border-inline-start: 2px solid var(--text); }
+  .shb-moonbox { inline-size: min(60%, 290px); }
+  .shb-mascot { block-size: clamp(150px, 26svh, 230px); }
+  .shb-lines { font-size: 1.125rem; }
+  .shb-lines p:first-child { font-size: 1.25rem; }
+}
+@media (max-width: 879px) and (max-height: 760px) { .shb-art { min-block-size: 230px; } .shb-mascot { block-size: 112px; } .shb-copy { gap: var(--s3); padding-block: var(--s5); } .shb-lines { font-size: .9375rem; line-height: 1.5; } .shb-title { font-size: clamp(2.25rem, 11vw, 3rem); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .shb-moonbox { animation: shb-bob 6s ease-in-out infinite; }
+  .shb-z { animation: shb-z 3.6s ease-in-out infinite; }
+  .shb-z2 { animation-delay: -1.2s; }
+  .shb-z3 { animation-delay: -2.4s; }
+  .shb-sp { animation: shb-twinkle 3s ease-in-out infinite; }
+  .shb-sp2 { animation-delay: -1s; }
+  .shb-sp3 { animation-delay: -2s; }
+  .shb-mascot-0 { animation: shb-wave0 5s ease-in-out infinite; }
+  .shb-mascot-1 { animation: shb-wave1 5s ease-in-out infinite -2.5s; }
+  .shb-frame { animation: shb-in .6s cubic-bezier(.2, .8, .2, 1) both; }
+  @keyframes shb-bob { 50% { transform: translateY(-8px) rotate(2deg); } }
+  @keyframes shb-z { 0% { opacity: 0; transform: translateY(8px); } 40%, 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes shb-twinkle { 50% { transform: scale(.6) rotate(25deg); opacity: .5; } }
+  @keyframes shb-wave0 { 50% { transform: translateY(-5px) rotate(-2deg); } }
+  @keyframes shb-wave1 { 50% { transform: translateY(-5px) rotate(2deg); } }
+  @keyframes shb-in { from { opacity: 0; transform: translate(10px, 14px); } }
+}

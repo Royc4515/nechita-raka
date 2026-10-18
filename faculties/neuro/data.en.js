@@ -10,6 +10,11 @@ window.SITE_EN = {
   // ui: the English of the mascots' lines and the site name from faculties/neuro/faculty.js.
   // Pairs of [Hebrew exactly as in faculty.js, English].
   ui: [
+    // The Shabbat rest's closed page (site.shabbat).
+    [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
+    [`בשבת גם נוי ורון מכבים את המסכים, והאתר נח איתם. הסינפסות שלהם נחות, ושל האתר גם.`, `On Shabbat Noi and Ron switch off their screens too, and the site rests with them. Their synapses are resting, and so are the site's.`],
+    [`כדאי לכם לעשות אותו דבר: צום דיגיטלי קטן, טלפון במגירה ושעות עם אנשים אמיתיים. המוח לומד הכי טוב אחרי שהוא נח, וזה מדע, לא המצאה שלנו.`, `You should do the same: a small digital fast, the phone in a drawer and some hours with real people. The brain learns best after it rests, and that's science, not our invention.`],
+    [`המבחנים לא בורחים, והאתר חוזר לעבוד מיד במוצאי שבת.`, `The exams aren't going anywhere, and the site is back as soon as Shabbat ends.`],
     // The study tracks of faculty.js (the picker on the courses page and the short form on the course cards).
     [`חד-חוגי`, `Single major`],
     [`חד-חוגי, מגמה חישובית`, `Single major, computational track`],

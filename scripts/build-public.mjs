@@ -36,6 +36,9 @@ const FILES = [
   "course-week.js",
   "course-years.js",
   "course-browser.css",
+  "shabbat.js",
+  "shabbat.css",
+  "shabbat-times.js",
   "assets",
   "icons",
 ];

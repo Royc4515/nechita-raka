@@ -7,6 +7,7 @@ import { clientIp, limiterFor } from "./limiter.js";
 import { FallbackChain, OpenAICompatibleProvider } from "./llm.js";
 import { DEFAULT_PERSONA, PERSONAS, buildRequest, canaryFor, parseDraft } from "./prompt.js";
 import { retrieve, TOP_K } from "./retrieve.js";
+import { shabbatReply, shabbatState } from "./shabbat.js";
 import { errors, isSameOriginWrite, json, readJsonObject } from "../http.js";
 import { statsStoreFor } from "../stats/store.js";
 import { FACULTY } from "../../../faculties/index.js";
@@ -48,6 +49,7 @@ export function trackLine(track, faculty = FACULTY) {
  * validate -> rate-limit -> injection guard -> retrieve -> model chain -> output hooks.
  * Nothing about the conversation is stored; only a hashed per-visitor counter for one day, and
  * for the admin dashboard a daily count of how answers ended and which data.js sources they used.
+ * On Shabbat (shabbat-times.js) it answers {reply, sources: [], shabbat: true} before the limiter and the model.
  * Errors: 400, 403, 429 rate_limited/daily_cap, 503 not_configured/busy/chat_unavailable.
  */
 export async function handleChat(request, deps) {
@@ -65,6 +67,10 @@ export async function handleChat(request, deps) {
   // English when the student writes in English, or writes no words at all on the English site (lang: "en").
   const hebrew = isHebrew(latest) || (!/[a-z]/i.test(latest) && body.lang !== "en");
   const blocked = (reason) => json({ reply: cannedReply(reason, hebrew, personaId), sources: [], blocked: true });
+
+  // Shabbat: the site is closed (shabbat.js in the page), so the chat rests too. No limiter, no model, nothing counted.
+  const shabbat = shabbatState(deps.now().getTime());
+  if (shabbat.closed) return json({ reply: shabbatReply(personaId, hebrew, shabbat.havdalah), sources: [], shabbat: true });
 
   const today = israelToday(deps.now());
   const record = (outcome, sources = []) => recordStats(deps, config, today, outcome, sources);
