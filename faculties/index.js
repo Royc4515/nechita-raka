@@ -89,6 +89,17 @@ function checkTheme(id, theme) {
   if (theme.mascotShadow !== undefined && typeof theme.mascotShadow !== "boolean") fail(id, "theme.mascotShadow must be true or false");
 }
 
+/**
+ * site.audience: who the site is for, as the prerender and the chat prompt embed it in sentences (scripts/prerender.mjs
+ * audienceOf): `he` the people ("סטודנטים בשנה א' במדעי המחשב"), `en` the same for the model's instructions, and an optional
+ * `year` when the site is for one study year only ("שנה א'"); without it the site addresses the whole department.
+ */
+function checkAudience(id, audience) {
+  if (!audience || typeof audience !== "object") fail(id, "site.audience.he is missing");
+  for (const key of ["he", "en"]) if (!nonEmpty(audience[key])) fail(id, `site.audience.${key} is missing`);
+  if (audience.year !== undefined && !nonEmpty(audience.year)) fail(id, "site.audience.year must be a text when present");
+}
+
 /** site.heroArt: the illustration next to the hero on wide screens and the small round avatar next to the brand on phones. */
 function checkHeroArt(id, art) {
   if (!art || typeof art !== "object") fail(id, "site.heroArt is missing");
@@ -218,7 +229,8 @@ export function validateFaculty(faculty) {
   for (const key of ["he", "en"]) if (!nonEmpty((faculty.name || {})[key])) fail(id, `name.${key} is missing`);
   const site = faculty.site || {};
   if (!/^https:\/\/[a-z0-9.-]+(:\d+)?$/.test(site.url || "")) fail(id, "site.url must be an https origin (host only, no trailing slash)");
-  for (const key of ["brand", "name", "title", "description"]) if (!nonEmpty(site[key])) fail(id, `site.${key} is missing`);
+  for (const key of ["brand", "name", "title", "description", "tagline"]) if (!nonEmpty(site[key])) fail(id, `site.${key} is missing`);
+  checkAudience(id, site.audience);
   const department = faculty.department || {};
   if (!nonEmpty(department.name) || !/^https:\/\/[^\s"'<>]+$/.test(department.url || "")) fail(id, "department needs a name and an https url");
   const og = site.ogImage || {};

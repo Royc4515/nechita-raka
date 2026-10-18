@@ -285,11 +285,13 @@ function checkEnglish(sharedEn, facultyEn) {
   if (unused.length) warnEn(`${unused.length} תרגומים שהטקסט העברי שלהם כבר לא קיים (כנראה שונה): ${sample(unused)}`);
   if (twice.length) warnEn(`${twice.length} טקסטים עם שני תרגומים (האחרון קובע): ${sample(twice)}`, `\`${twice[0]}\``);
   // The page's own text: every tr("...") in the page, the chat and the launcher, plus the mascots' lines
-  // that the chat and the launcher take from the faculty manifest (faculties/<id>/faculty.js).
+  // that the chat and the launcher take from the faculty manifest (faculties/<id>/faculty.js). The manifest also
+  // supplies the title and the tagline the build writes into the page, so they need an English pair too.
   const keys = new Set(ui.map(([he]) => he));
   const used = ["index.html", "chat.js", "peek.js"].flatMap((f) => [...readFileSync(f, "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)));
   const mascotLines = FACULTY.mascots.flatMap((m) => [m.joined, m.thinking, ...m.hellos, ...Object.values(m.timely), ...m.peekLines]);
-  const missingUi = [...new Set([...used, ...mascotLines])].filter((s) => !keys.has(s));
+  const manifestLines = [FACULTY.site.title, FACULTY.site.tagline];
+  const missingUi = [...new Set([...used, ...mascotLines, ...manifestLines])].filter((s) => !keys.has(s));
   if (missingUi.length) warnEn(`${missingUi.length} טקסטים של הדף בלי תרגום (ui): ${sample(missingUi)}`);
 }
 

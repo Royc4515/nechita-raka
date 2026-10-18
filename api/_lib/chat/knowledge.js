@@ -5,6 +5,7 @@
  * deploy; the "core" (today's date, where we are in the year) is rebuilt per request.
  */
 import { loadContent } from "../../../faculties/content.js";
+import { FACULTY } from "../../../faculties/index.js";
 import { loadCourseChunks } from "./courses.js";
 import { hidePhones } from "./phones.js";
 import { SITE_URL } from "./site.js";
@@ -104,7 +105,7 @@ export function buildCore(data, today) {
       ? `עכשיו לא סמסטר. הבא: ${nextTerm.label}, מ-${dmy(nextTerm.from)}.`
       : "";
   return [
-    `האתר "נחיתה רכה - מדמ"ח בר אילן" (${SITE_URL}) הוא מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר אילן, שנת הלימודים תשפ"ז.`,
+    `האתר "${FACULTY.site.name}" (${SITE_URL}) הוא מרכז מידע ל${FACULTY.site.audience.he} באוניברסיטת בר אילן${data.site.academicYear ? `, שנת הלימודים ${data.site.academicYear}` : ""}.`,
     `בנה אותו ${data.site.author}. זה אתר עצמאי, לא אתר רשמי של האוניברסיטה.`,
     "מי שלא מצא תשובה יכול לכתוב לרועי בקבוצת הוואטסאפ של נחיתה רכה.",
     `היום ${dmy(today)}. ${where}`,

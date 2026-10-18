@@ -7,7 +7,7 @@ import { DECOR_STYLES, DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCO
 import { loadContent, loadEnglish } from "../../faculties/content.js";
 import { browserFaculty, copyFacultyAssets, decorFiles, facultyImageFiles, facultyImageTargets, facultyScript, heroArtFiles, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
 import { facultyImageNames, foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
-import { accentLine, homeDescription, robotsTxt, withDecor, withHero, withHeroArt, withMascotShadow, withSiteName, withTheme } from "../../scripts/prerender.mjs";
+import { accentLine, audienceOf, esc, guidePage, homeDescription, homePage, llmsTxt, loadData, robotsTxt, withDecor, withHero, withHeroArt, withMascotShadow, withSiteName, withStatusPath, withTagline, withTheme } from "../../scripts/prerender.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -28,7 +28,7 @@ const EXPECTED = {
   cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", heroVariant: "terminal", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json", mascotShadow: undefined, decor: undefined },
   // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026), the EEG hero, the egg and the
   // file name are its own (PR 6d); the hero illustration and the design elements since PR 6e.
-  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true, decor: NEURO_DECOR },
+  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true, decor: NEURO_DECOR },
 };
 const expected = EXPECTED[FACULTY.id];
 
@@ -167,6 +167,12 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.decor = { background: ["synapses"] }; }, /decor\.background must be one of/],
     [(f) => { f.decor = { background: 'synapses" onload="x' }; }, /decor\.background must be one of/],
     [(f) => { delete f.department; }, /department/],
+    [(f) => { delete f.site.audience; }, /site\.audience\.he is missing/],
+    [(f) => { f.site.audience.he = " "; }, /site\.audience\.he is missing/],
+    [(f) => { delete f.site.audience.en; }, /site\.audience\.en is missing/],
+    [(f) => { f.site.audience.year = ""; }, /site\.audience\.year must be a text when present/],
+    [(f) => { f.site.audience.year = ["שנה א'"]; }, /site\.audience\.year must be a text when present/],
+    [(f) => { delete f.site.tagline; }, /site\.tagline is missing/],
   ];
   for (const [mutate, expectedError] of cases) {
     const broken = clone(cs);
@@ -183,6 +189,20 @@ test("validateFaculty names the broken field", () => {
   const someDecor = clone(cs);
   someDecor.decor = {};
   assert.equal(validateFaculty(someDecor), someDecor, "an empty decor block is accepted (nothing drawn)");
+  const wholeDepartment = clone(cs);
+  delete wholeDepartment.site.audience.year;
+  assert.equal(validateFaculty(wholeDepartment), wholeDepartment, "an audience without a year (the whole department) is accepted");
+});
+
+test("the audience phrases: the people, the English line, and the scope that a year narrows or the whole faculty fills", () => {
+  // CS: the people are first-years, so the scope is "year 1 in CS" and its short form "year 1" (today's strings).
+  assert.deepEqual(audienceOf(cs), { people: "סטודנטים בשנה א' במדעי המחשב", en: "first-year Computer Science students", scope: "שנה א' במדעי המחשב", scopeShort: "שנה א'" });
+  // Without a year the scope is the faculty itself, in both forms.
+  const whole = clone(cs);
+  whole.site.audience = { he: "סטודנטים למדעי המחשב", en: "Computer Science students" };
+  assert.deepEqual(audienceOf(whole), { people: "סטודנטים למדעי המחשב", en: "Computer Science students", scope: "מדעי המחשב", scopeShort: "מדעי המחשב" });
+  assert.equal(audienceOf(FACULTIES.neuro).scope, "מדעי המוח", "the neuro site addresses the whole department (DECISIONS.md 18.10.2026)");
+  assert.ok(!FACULTIES.neuro.site.title.includes("שנה א'") && !FACULTIES.neuro.site.description.includes("שנה א' ב"), "the neuro title and description no longer say first year only");
 });
 
 test("the browser subset keeps names, lines, theme and labels but not the model prompts", () => {
@@ -278,6 +298,15 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
   assert.ok(withSiteName(template, OTHER.site.name).includes(`<h1>${OTHER.site.name}</h1>`));
   assert.ok(withSiteName(template, "a<b").includes(`<h1>a&lt;b</h1>`), "escaped");
   assert.throws(() => withSiteName(template.replace('<div class="brand">', '<div class="brandx">'), cs.site.name), /brand block/);
+  // The tagline under the brand and the status label of the "now" box: manifest values; the CS ones give the template back.
+  assert.equal(withTagline(template, cs.site.tagline), template, "the CS tagline gives the template back unchanged");
+  assert.ok(withTagline(template, OTHER.site.tagline).includes(`<p class="tagline">${OTHER.site.tagline} <button class="install-btn"`));
+  assert.ok(withTagline(template, "a<b").includes(`<p class="tagline">a&lt;b <button`), "escaped");
+  assert.throws(() => withTagline(template.replace('<p class="tagline">', '<p class="slogan">'), cs.site.tagline), /tagline/);
+  assert.equal(withStatusPath(template, cs.labels.chatPath), template, "the CS chat path gives the template back unchanged");
+  assert.ok(withStatusPath(template, "~/neuro").includes(`el("span", { text: "~/neuro › status" })`));
+  assert.ok(withStatusPath(template, `x"</script>`).includes(`el("span", { text: "x\\"\\u003c/script> › status" })`), "a JS string, with no way out of the script");
+  assert.throws(() => withStatusPath(template.replace("~/year-1 › status", "~/year-1 > status"), cs.labels.chatPath), /status label/);
   // robots.txt: its Sitemap line points at the faculty's address.
   const robots = readFileSync("robots.txt", "utf8");
   const out = robotsTxt(robots);
@@ -310,6 +339,43 @@ test("the prerender turns decor into data-decor attributes on <html>, in a fixed
   for (const place of places) for (const style of Object.keys(DECOR_STYLES[place])) for (const file of DECOR_STYLES[place][style]) assert.ok(template.includes(`./assets/decor/${file}`), `index.html reads assets/decor/${file}`);
   assert.deepEqual(decorFiles({ decor: { background: "synapses" } }), DECOR_STYLES.background.synapses.map((file) => `decor/${file}`));
   assert.deepEqual(decorFiles({}), [], "no decor, no files");
+});
+
+test("the pages, the structured data and llms.txt describe the manifest's audience; the CS build says first-year CS as before", () => {
+  const template = readFileSync("index.html", "utf8");
+  const data = loadData();
+  const { people, scope, scopeShort } = audienceOf(FACULTY);
+  const home = homePage(template, data, "2026-10-18");
+  assert.ok(home.includes(`<title>${esc(FACULTY.site.title)}</title>`));
+  assert.ok(home.includes(`<p class="tagline">${FACULTY.site.tagline} <button`));
+  assert.ok(home.includes(`el("span", { text: "${FACULTY.labels.chatPath} › status" })`));
+  assert.ok(home.includes(`האתר ל${people} בבר אילן.`), "the author node");
+  assert.ok(home.includes(`שאלות נפוצות של ${people} בבר אילן`), "the FAQ name");
+  assert.ok(home.includes(`מדריכים ל${scope} בבר אילן`), "the guides list");
+  assert.ok(home.includes(`מתוך לוח השנה של ${scope} בבר אילן`), "the events");
+  const guide = guidePage(template, data, data.guides[0], "2026-10-18");
+  assert.ok(guide.includes(`מדריך צעד אחר צעד ל${people} בבר אילן, מתוך האתרים הרשמיים.`), "the guide description");
+  assert.ok(guide.includes(`מרכז מידע ל${people} בבר אילן.`), "the guide's website node");
+  const llms = llmsTxt(data, "2026-10-18");
+  assert.ok(llms.includes(`> מרכז מידע ל${people} באוניברסיטת בר-אילן`));
+  assert.ok(llms.includes(`תאריכי הבחינות של ${scopeShort}.`));
+  assert.ok(llms.includes(`קבוצות הוואטסאפ של ${scopeShort}.`));
+  if (FACULTY.id === "cs") {
+    assert.ok(home.includes("שאלות נפוצות של סטודנטים בשנה א' במדעי המחשב בבר אילן"));
+    assert.ok(llms.includes("> מרכז מידע לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר-אילן") && llms.includes("תאריכי הבחינות של שנה א'."));
+  } else {
+    // The neuro site addresses the whole department: the strings that frame the site (not the FAQ's own questions,
+    // which may ask about year 1 or the CS double major) say brain sciences, never CS, and never year 1 only.
+    const description = home.match(/<meta name="description" content="[^"]*"/)[0];
+    assert.ok(description.includes("מדעי המוח") && !/מדעי המחשב|שנה א&#39; ב/.test(description), description);
+    const framing = [
+      home.match(/<title>[^<]*<\/title>/)[0],
+      ...home.match(/"(?:name|description)":"(?:שאלות נפוצות|מדריכים ל|מי שבנה|מתוך לוח השנה|מרכז מידע)[^"]*"/g),
+      ...llms.split("\n").filter((line) => line.startsWith("> ") || line.includes("/#calendar)") || line.includes("/#categories)")),
+    ];
+    assert.ok(framing.length >= 6, framing.join("\n"));
+    for (const text of framing) assert.ok(!/שנה א(?:'|&#39;)|מדעי המחשב|מדמ"ח/.test(text), text);
+  }
 });
 
 test("the build copies only the images the manifest names, to their fixed public paths", () => {
