@@ -249,8 +249,8 @@ window.SITE_EN = {
 
     // Category: university and program sites (the neuro override; the shared items keep their shared pairs).
     [`אתרי האוניברסיטה והתוכנית`, `University and program sites`],
-    [`ההנחיות של התוכנית לרישום באינ-בר: אשכול החובה, שעות המחלקה, המגמה החישובית, כימיה ב' והמעבר לשנה ב'`, `The program's instructions for registering in Inbar: the required cluster, department hours, the computational specialization, Chemistry B and moving to year 2`],
-    [`הנחיות מחלקתיות לרישום לקורסים תשפ"ז`, `Departmental course registration instructions 5787`],
+    [`אשכול החובה, שעות מחלקה וכימיה ב'`, `The required cluster, department hours and Chemistry B`],
+    [`הנחיות רישום תשפ"ז`, `Registration instructions 5787`],
     [`תוכנית הלימודים (החוקה) של כל מסלול, לפי שנת ההתחלה: אילו קורסים לומדים בכל שנה`, `The study plan of every track, by starting year: which courses you take each year`],
     [`פירוט הקורסים לפי מסלול לימודים`, `Courses by track`],
     [`דף התואר הראשון באתר המרכז: החד-חוגי ומגמותיו, ששת הדו-חוגיים, תוכנית המצוינות V1 והמסלול הישיר למאסטר`, `The undergraduate page on the center's site: the single major and its specializations, the six double majors, the V1 excellence program and the direct master's track`],
@@ -368,8 +368,8 @@ window.SITE_EN = {
     [`קהילת הוואטסאפ של המחזור, 20 קבוצות: הקבוצה הראשית של שנה ג' (90 חברים), קבוצות הקורסים והסמינרים (מעבדה בנוירוביולוגיה, מודלים חישוביים, למידה וזיכרון, גנטיקה ועוד) והמילואימניקים. מצטרפים לקבוצות מבפנים. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The cohort's WhatsApp community, 20 groups: the main third-year group (90 members), the course and seminar groups (neurobiology lab, computational models, learning and memory, genetics and more) and the reservists. You join the groups from within. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20לקהילת%20מדעי%20המוח%20Since%202025.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20the%20Brain%20Sciences%20Since%202025%20community.%20Here%20it%20is%3A`],
     [`קהילת BrainStorm: כל השנים`, `The BrainStorm community: all years`],
-    [`BrainstormBIU: מדעי המוח, כל השנים`, `BrainstormBIU: Brain Sciences, all years`],
-    [`הקבוצה של כל תלמידי התואר הראשון במדעי המוח, 120+ חברים: שאלות, עזרה בין השנים ועדכונים. ההצטרפות באישור מנהל.`, `The group of all Brain Sciences undergraduates, 120+ members: questions, help across the years and updates. Joining needs an admin's approval.`],
+    [`Brainstorm כל השנים`, `Brainstorm: all years`],
+    [`כל תלמידי התואר הראשון, 120+ חברים. הצטרפות באישור מנהל`, `All undergraduates, 120+ members. Joining needs an admin's approval`],
     [`Brainstorm BIU: עדכונים בלבד`, `Brainstorm BIU: updates only`],
     [`הקבוצה השקטה של BrainstormBIU, 500+ חברים: רק הודעות ועדכונים, בלי דיונים. ההצטרפות באישור מנהל.`, `The quiet BrainstormBIU group, 500+ members: announcements and updates only, no discussions. Joining needs an admin's approval.`],
     [`BrainstormBIU: תארים מתקדמים`, `BrainstormBIU: graduate degrees`],
