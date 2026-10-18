@@ -47,7 +47,7 @@ window.addEventListener("nr-chat-persona", (e) => {
 let lineIndex = Math.floor(Math.random() * LINES[persona].length);
 
 function showBubble() {
-  if (document.documentElement.dataset.day === "memorial" || document.body.classList.contains("chat-open")) return;
+  if (document.documentElement.dataset.day === "memorial" || document.documentElement.dataset.shabbat === "closed" || document.body.classList.contains("chat-open")) return;
   bubble.querySelector(".peek-who").textContent = NAMES[persona];
   bubble.querySelector(".peek-text").textContent = location.hash.startsWith("#guide-") ? GUIDE_LINE : LINES[persona][lineIndex++ % LINES[persona].length];
   bubble.hidden = false;
@@ -64,6 +64,7 @@ let loading = null;
 
 launcher.addEventListener("click", async () => {
   hideBubble();
+  if (document.documentElement.dataset.shabbat === "closed") return; // the Shabbat rest: no chat
   loading ??= Promise.all([
     import("./chat.js"),
     new Promise((resolve) => {

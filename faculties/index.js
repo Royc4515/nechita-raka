@@ -108,6 +108,18 @@ function checkHeroArt(id, art) {
   if (!Number.isInteger(art.width) || !Number.isInteger(art.height)) fail(id, "site.heroArt needs whole-number width and height");
 }
 
+/**
+ * site.shabbat: the closed page of the Shabbat rest (shabbat.js): a title, two or three short lines and the closing
+ * greeting, in the faculty's voice. Browser text, so each string needs an English pair in the faculty's data.en.js (ui).
+ * The house style has no em dashes; one here would break the page's tone, so it fails the build.
+ */
+function checkShabbat(id, shabbat) {
+  if (!shabbat || typeof shabbat !== "object") fail(id, "site.shabbat is missing");
+  for (const key of ["title", "footer"]) if (!nonEmpty(shabbat[key])) fail(id, `site.shabbat.${key} is missing`);
+  if (!Array.isArray(shabbat.lines) || shabbat.lines.length < 2 || shabbat.lines.length > 3 || !shabbat.lines.every(nonEmpty)) fail(id, "site.shabbat.lines must be a list of two or three texts");
+  for (const text of [shabbat.title, shabbat.footer, ...shabbat.lines]) if (/[—–]/.test(text)) fail(id, "site.shabbat has a long dash; write a comma or a period instead");
+}
+
 /** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
 function checkContentOrder(id, content) {
   const order = (content || {}).order;
@@ -238,6 +250,7 @@ export function validateFaculty(faculty) {
   if (!/^[\w-]+(\/[\w-]+)*\.(webp|jpg|png)$/.test(og.path || "")) fail(id, "site.ogImage.path must be a relative image path inside public/");
   if (!Number.isInteger(og.width) || !Number.isInteger(og.height) || !nonEmpty(og.alt)) fail(id, "site.ogImage needs width, height and alt");
   checkHeroArt(id, site.heroArt);
+  checkShabbat(id, site.shabbat);
   const pwa = faculty.pwa || {};
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");

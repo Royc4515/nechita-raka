@@ -12,6 +12,10 @@
 */
 window.SITE_EN = {
   ui: [
+    // The Shabbat rest's closed page (shabbat.js); its title and lines are in each faculty's data.en.js.
+    [`סגור לשבת`, `Closed for Shabbat`],
+    [`האתר נפתח שוב בעוד`, `The site reopens in`],
+    [`במוצאי שבת, אחרי {time} (שעון ישראל)`, `When Shabbat ends, after {time} (Israel time)`],
     [`{title} - בר אילן | נחיתה רכה`, `{title} - Bar-Ilan | Soft Landing`],
     [`ציונים`, `grades`],
     [`מבחנים`, `exams`],

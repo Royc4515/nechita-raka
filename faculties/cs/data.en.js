@@ -11,6 +11,11 @@ window.SITE_EN = {
   // greetings, time-of-day lines, "joined the chat", "thinking" and the bubble lines). Pairs of [Hebrew exactly
   // as in faculty.js, English]. The rest of the page's text is in shared/data.en.js.
   ui: [
+    // The Shabbat rest's closed page (site.shabbat).
+    [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
+    [`בשבת גם ביט ובייט מכבים את המסכים, והאתר נח איתם. בלי באגים, בלי דדליינים, בלי "עוד רגע אני מסיים".`, `On Shabbat Bit and Byte switch off their screens too, and the site rests with them. No bugs, no deadlines, no "just one more minute".`],
+    [`כדאי לכם לעשות אותו דבר: צום דיגיטלי קטן, טלפון במגירה ושעות עם אנשים אמיתיים. לא חייבים להתקמפל, אפשר פשוט להיות.`, `You should do the same: a small digital fast, the phone in a drawer and some hours with real people. You don't have to compile, you can just be.`],
+    [`המבחנים לא בורחים, והאתר חוזר לעבוד מיד במוצאי שבת.`, `The exams aren't going anywhere, and the site is back as soon as Shabbat ends.`],
     [`מדעי המחשב בבר אילן, שנה א' - קישורים, מדריכים ולוח שנה | נחיתה רכה`, `Computer Science at Bar-Ilan, first year - links, guides and calendar | Soft Landing`],
     [`ביט`, `Bit`],
     [`ביט הצטרף לשיחה`, `Bit joined the chat`],
