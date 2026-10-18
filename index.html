@@ -527,6 +527,40 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .now-inner { padding: var(--s4) var(--s5); }
 /* Bento code watermark */
 .tile.hero-tile::before { content: "{ }"; position: absolute; inset-block-start: auto; inset-block-end: -18px; inset-inline-start: 14px; inset-inline-end: auto; inline-size: auto; aspect-ratio: auto; border-radius: 0; background: none; font-family: var(--mono); font-size: 5.5rem; font-weight: 700; line-height: 1; color: var(--accent-ink); opacity: .1; direction: ltr; }
+/* Faculty decor (manifest decor; the build sets data-decor-<place> on <html>, the shapes are assets/decor/ files used as masks and painted with the accent). Spec: management/neuro/decor-brief.md; the ink caps keep the faint text at 4.5:1. */
+:root[data-decor-background="synapses"] body { background-image: none; }
+:root[data-decor-background="synapses"] { --synapse-ink: 6%; --synapse-alpha: 1; --synapse-pulse: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-background="synapses"] { --synapse-ink: 14%; --synapse-alpha: .85; --synapse-pulse: synapse-breathe; } }
+:root[data-theme="dark"][data-decor-background="synapses"] { --synapse-ink: 14%; --synapse-alpha: .85; --synapse-pulse: synapse-breathe; }
+:root[data-decor-background="synapses"] .aurora::after { content: ""; position: absolute; inset: 0; opacity: var(--synapse-alpha); background: color-mix(in srgb, var(--accent) var(--synapse-ink), transparent); -webkit-mask: url(./assets/decor/synapses.svg) 0 0 / 180px repeat; mask: url(./assets/decor/synapses.svg) 0 0 / 180px repeat; }
+@media (min-width: 640px) { :root[data-decor-background="synapses"] .aurora::after { -webkit-mask-size: 240px; mask-size: 240px; } }
+@media (prefers-reduced-motion: no-preference) { :root[data-decor-background="synapses"] .aurora::after { animation: var(--synapse-pulse) 14s ease-in-out infinite alternate; } @keyframes synapse-breathe { from { opacity: .6; } to { opacity: 1; } } }
+:root[data-decor-headings="spike"] :is(.section, .cat, #featured, #saved) > h2::before { content: ""; display: inline-block; flex: none; inline-size: 28px; block-size: 14px; margin-inline-end: 8px; vertical-align: -1px; background: var(--accent-text); -webkit-mask: url(./assets/decor/spike.svg) center / contain no-repeat; mask: url(./assets/decor/spike.svg) center / contain no-repeat; }
+:root[data-decor-headings="spike"] h2.has-mascot::before { margin-block-end: .4em; }
+:root[data-decor-headings="spike"] h1::after, :root[data-decor-headings="spike"] .count::before, :root[data-decor-headings="spike"] .count::after { content: none; }
+:root[data-decor-headings="spike"] .count { margin-inline-start: .4em; }
+:root[data-decor-watermark="neuron"] .tile.hero-tile::before { content: ""; direction: inherit; inset-block: auto -12px; inset-inline-start: auto; inset-inline-end: -8px; inline-size: 120px; block-size: 120px; opacity: 1; background: color-mix(in srgb, var(--accent-ink) 20%, transparent); -webkit-mask: url(./assets/decor/neuron.webp) center / contain no-repeat; mask: url(./assets/decor/neuron.webp) center / contain no-repeat; }
+@media (min-width: 640px) { :root[data-decor-watermark="neuron"] .tile.hero-tile::before { inset-block: 0; margin-block: auto; inline-size: 160px; block-size: 160px; background: color-mix(in srgb, var(--accent-ink) 14%, transparent); } }
+@media (min-width: 768px) { :root[data-decor-backdrop="brain"] .hero-art { position: relative; } :root[data-decor-backdrop="brain"] .hero-art::before { content: ""; position: absolute; z-index: -1; inset: -12% -15%; background: color-mix(in srgb, var(--accent) var(--brain-ink, 12%), transparent); -webkit-mask: url(./assets/decor/brain-ink.webp) center / contain no-repeat; mask: url(./assets/decor/brain-ink.webp) center / contain no-repeat; pointer-events: none; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-backdrop="brain"] { --brain-ink: 22%; } }
+:root[data-theme="dark"][data-decor-backdrop="brain"] { --brain-ink: 22%; }
+:root[data-decor-sections="lab"] :is(#guides, #categories) { position: relative; }
+:root[data-decor-sections="lab"] :is(#guides, #categories)::after { content: ""; position: absolute; inset-block-start: -36px; inset-inline-end: 0; inline-size: 64px; block-size: 64px; background: center bottom / contain no-repeat; pointer-events: none; }
+:root[data-decor-sections="lab"] #guides::after { background-image: url(./assets/decor/lab-flasks.webp); }
+:root[data-decor-sections="lab"] #categories::after { background-image: url(./assets/decor/lab-tubes.webp); }
+@media (max-width: 639px) { :root[data-decor-sections="lab"] #categories::after { content: none; } }
+@media (min-width: 640px) { :root[data-decor-sections="lab"] :is(#guides, #categories)::after { inset-block-start: -76px; inline-size: 96px; block-size: 96px; } }
+:root[data-decor-footer="bench"] footer { position: relative; }
+:root[data-decor-footer="bench"] footer::before { content: ""; position: absolute; inset-block-start: 1px; inset-inline-end: max(var(--gutter), (100% - 1120px) / 2 + var(--gutter)); translate: 0 -100%; inline-size: 220px; block-size: 72px; background: url(./assets/decor/lab-notebook.webp) left bottom / auto 44px no-repeat, url(./assets/decor/brain.webp) 62px bottom / auto 72px no-repeat, url(./assets/decor/lab-microscope.webp) right bottom / auto 60px no-repeat; pointer-events: none; }
+@media (min-width: 640px) { :root[data-decor-footer="bench"] footer::before { inline-size: 290px; block-size: 96px; background-position: left bottom, 82px bottom, right bottom; background-size: auto 58px, auto 96px, auto 80px; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-sections="lab"] :is(#guides, #categories)::after, :root:not([data-theme="light"])[data-decor-footer="bench"] footer::before { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); } }
+:root[data-theme="dark"][data-decor-sections="lab"] :is(#guides, #categories)::after, :root[data-theme="dark"][data-decor-footer="bench"] footer::before { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); }
+:root[data-decor-cards="glow"] { --shadow-2: 0 1px 2px rgb(15 27 45 / 5%), 0 14px 32px -16px color-mix(in srgb, var(--accent) 38%, transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-cards="glow"] { --shadow-2: none; --card-lit: inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent); --card-edge: color-mix(in srgb, var(--accent) 10%, var(--border)); } }
+:root[data-theme="dark"][data-decor-cards="glow"] { --shadow-2: none; --card-lit: inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent); --card-edge: color-mix(in srgb, var(--accent) 10%, var(--border)); }
+:root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)) { box-shadow: var(--card-lit, var(--shadow-1)); }
+:root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):not(:hover) { border-color: var(--card-edge, var(--border)); }
+@media (hover: hover) { :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):hover { box-shadow: var(--card-lit, var(--shadow-2)); } }
 /* ---------- Navigation ---------- */
 .bar-row { display: flex; align-items: center; gap: var(--s3); }
 .bar-row .search { flex: 1; }

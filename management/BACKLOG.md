@@ -40,8 +40,8 @@ Columns: S = students, U = urgency, E = effort.
 | Catalog scan over the departments that teach into the tracks | 5 | 2 | 4 | 2.5 | partly | Department 27 scanned 14.10.2026 (`catalog.json`); the yearbook per track and cohort is built from the Gonda plans (18.10.2026, `plans.json`, `tools/`). Second departments (60, 80, 86, 89, 31, 37) not scanned yet. |
 | נוי ורון character briefs | 3 | 1 | 2 | 1.5 | open | Ron masculine, Noi feminine. Contrast like Bit and Byte. |
 | Violet palette, light and dark, contrast-checked | 3 | 1 | 1 | 3.0 | open | designer |
-| Hero variant for neuro | 2 | 1 | 2 | 1.0 | done 18.10.2026, PR 6d | `hero.variant: eeg`: the terminal window with a trace that draws itself in the accent, then three typed lines; CSS-only, four rows like the terminal. The hero illustration (`site.heroArt`) is a drawn placeholder (`faculties/neuro/hero-art.svg`) until a designer image replaces it. |
-| Neuro hero illustration | 2 | 1 | 1 | 2.0 | open | designer: a picture for `site.heroArt` in `faculties/neuro/` (640x640, shown round) and its small avatar, replacing the drawn EEG disc. |
+| Hero variant for neuro | 2 | 1 | 2 | 1.0 | done 18.10.2026, PR 6d | `hero.variant: eeg`: the terminal window with a trace that draws itself in the accent, then three typed lines; CSS-only, four rows like the terminal. The hero illustration (`site.heroArt`) was a drawn placeholder until PR 6e. |
+| Neuro hero illustration | 2 | 1 | 1 | 2.0 | done 18.10.2026, PR 6e (a Flow brain on a violet disc, `faculties/neuro/hero-brain.webp`) | designer: a picture for `site.heroArt` in `faculties/neuro/` (640x640, shown round) and its small avatar, replacing the drawn EEG disc. |
 | Track selector, years from track:year ids, chat track field (PR 6d) | 5 | 4 | 3 | 6.7 | done 18.10.2026 | Courses page picker (select, remembered as `nr-track`, offered once), year chips and sections per track or per year, cards name tracks and years; `course-years.js` shared by the page and the model; the chat request carries `track` (validated), retrieval demotes other tracks' course facts, SITE names the student's track. CS output unchanged. |
 
 ## Done

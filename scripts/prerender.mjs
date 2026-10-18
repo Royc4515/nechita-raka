@@ -12,7 +12,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { contentFiles, loadContent } from "../faculties/content.js";
-import { FACULTY, HERO_VARIANTS, TERMINAL_TOKEN_KINDS, THEME_KEYS } from "../faculties/index.js";
+import { DECOR_STYLES, FACULTY, HERO_VARIANTS, TERMINAL_TOKEN_KINDS, THEME_KEYS } from "../faculties/index.js";
 
 // The page identity comes from the faculty manifest (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md D4).
 export const SITE_URL = FACULTY.site.url;
@@ -569,9 +569,24 @@ export function withMascotShadow(html, on) {
   return on ? html.replace(HTML_TAG, () => `${HTML_TAG} data-mascot-shadow`) : html;
 }
 
+/**
+ * The manifest's design elements (decor, faculties/index.js DECOR_STYLES) as data-decor-<place>="<style>" attributes on
+ * <html>, in the vocabulary's order; index.html's stylesheet draws each one. No decor gives the page back as is.
+ */
+export function withDecor(html, decor = {}) {
+  if (html.split(HTML_TAG).length !== 2) throw new Error(`prerender: index.html should have exactly one ${HTML_TAG}`);
+  const attrs = Object.keys(DECOR_STYLES).filter((place) => decor[place] !== undefined).map((place) => {
+    // Validated with the manifest, checked again because the value lands in an attribute.
+    if (typeof decor[place] !== "string" || !Object.hasOwn(DECOR_STYLES[place], decor[place])) throw new Error(`prerender: unknown decor ${place} "${decor[place]}"`);
+    return ` data-decor-${place}="${decor[place]}"`;
+  });
+  return attrs.length ? html.replace(HTML_TAG, () => `${HTML_TAG}${attrs.join("")}`) : html;
+}
+
 function common(html, data, updated) {
   html = withTheme(html, FACULTY.theme);
   html = withMascotShadow(html, FACULTY.theme.mascotShadow === true);
+  html = withDecor(html, FACULTY.decor);
   html = withHero(html, FACULTY.hero);
   html = withHeroArt(html, FACULTY.site.heroArt);
   html = withSiteName(html, SITE_NAME);

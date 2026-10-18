@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
+import { DECOR_STYLES, DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
 import { loadContent, loadEnglish } from "../../faculties/content.js";
-import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, heroArtFiles, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
+import { browserFaculty, copyFacultyAssets, decorFiles, facultyImageFiles, facultyImageTargets, facultyScript, heroArtFiles, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
 import { facultyImageNames, foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
-import { accentLine, homeDescription, robotsTxt, withHero, withHeroArt, withMascotShadow, withSiteName, withTheme } from "../../scripts/prerender.mjs";
+import { accentLine, homeDescription, robotsTxt, withDecor, withHero, withHeroArt, withMascotShadow, withSiteName, withTheme } from "../../scripts/prerender.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -20,13 +20,15 @@ const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 // same tests run for whichever FACULTY the env names. A new faculty adds a row here.
 const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
 const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "philosophy", "linguistics", "physics"];
+// The brain-science design elements of the neuro edition (faculty PR 6e, management/neuro/decor-brief.md); CS has none.
+const NEURO_DECOR = { background: "synapses", backdrop: "brain", headings: "spike", watermark: "neuron", cards: "glow", sections: "lab", footer: "bench" };
 // <track>:<year> from the Gonda study plans; the computational track started in 5787, so it has year 1 only.
 const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] : [1, 2, 3]).map((y) => `${t}:${y}`));
 const EXPECTED = {
-  cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", heroVariant: "terminal", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json", mascotShadow: undefined },
+  cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", heroVariant: "terminal", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json", mascotShadow: undefined, decor: undefined },
   // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026), the EEG hero, the egg and the
-  // file name are its own (PR 6d); only the hero illustration is a drawn placeholder.
-  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true },
+  // file name are its own (PR 6d); the hero illustration and the design elements since PR 6e.
+  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true, decor: NEURO_DECOR },
 };
 const expected = EXPECTED[FACULTY.id];
 
@@ -63,6 +65,7 @@ test("every folder under faculties/ is a known faculty, and every manifest has t
     assert.equal(f.pwa.themeColor, f.theme.light.accent, `${f.id}: the app color is the light accent`);
     assert.ok(existsSync(`${dir}/${f.site.ogImage.file}`), `${f.id}: the OG image`);
     for (const file of heroArtFiles(f)) assert.ok(existsSync(`${dir}/${file}`), `${f.id}: the hero art ${file}`);
+    for (const file of decorFiles(f)) assert.ok(existsSync(`${dir}/${file}`), `${f.id}: the decor file ${file}`);
     for (const m of f.mascots) {
       assert.ok(existsSync(`${dir}/mascot/${m.files.avatar}`), `${f.id}/${m.id}: avatar`);
       assert.ok(existsSync(`${dir}/mascot/${m.files.peek}`), `${f.id}/${m.id}: peek image`);
@@ -95,6 +98,7 @@ test("the active faculty's manifest holds the facts its tests and content rely o
   assert.equal(FACULTY.courses.download, expected.download);
   assert.equal(FACULTY.hero.variant, expected.heroVariant);
   assert.equal(FACULTY.theme.mascotShadow, expected.mascotShadow);
+  assert.deepEqual(FACULTY.decor, expected.decor);
 });
 
 test("validateFaculty names the broken field", () => {
@@ -154,6 +158,14 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.tracks = [{ id: "single", label: "" }]; }, /tracks\[0\]\.label/],
     [(f) => { f.tracks = [{ id: "single", label: "א", short: "" }]; }, /tracks\[0\]\.short/],
     [(f) => { f.department.url = "http://cs.biu.ac.il/"; }, /department/],
+    [(f) => { f.decor = "synapses"; }, /decor must be an object/],
+    [(f) => { f.decor = ["synapses"]; }, /decor must be an object/],
+    [(f) => { f.decor = null; }, /decor must be an object/],
+    [(f) => { f.decor = { wallpaper: "synapses" }; }, /decor\.wallpaper is not a known place/],
+    [(f) => { f.decor = { background: "aurora" }; }, /decor\.background must be one of/],
+    [(f) => { f.decor = { background: "__proto__" }; }, /decor\.background must be one of/],
+    [(f) => { f.decor = { background: ["synapses"] }; }, /decor\.background must be one of/],
+    [(f) => { f.decor = { background: 'synapses" onload="x' }; }, /decor\.background must be one of/],
     [(f) => { delete f.department; }, /department/],
   ];
   for (const [mutate, expectedError] of cases) {
@@ -166,7 +178,11 @@ test("validateFaculty names the broken field", () => {
   withTracks.theme.mascotShadow = true;
   withTracks.hero.variant = "eeg";
   withTracks.site.heroArt.file = "drawn.svg";
-  assert.equal(validateFaculty(withTracks), withTracks, "tracks with a short form, the shadow flag, the EEG hero and a drawn hero art are accepted");
+  withTracks.decor = { ...NEURO_DECOR };
+  assert.equal(validateFaculty(withTracks), withTracks, "tracks with a short form, the shadow flag, the EEG hero, a drawn hero art and decor are accepted");
+  const someDecor = clone(cs);
+  someDecor.decor = {};
+  assert.equal(validateFaculty(someDecor), someDecor, "an empty decor block is accepted (nothing drawn)");
 });
 
 test("the browser subset keeps names, lines, theme and labels but not the model prompts", () => {
@@ -273,10 +289,34 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
   assert.equal(homeDescription(""), `${FACULTY.site.description.replace(" {year}", "")} יוזמה של סטודנט, לא אתר רשמי של האוניברסיטה.`);
 });
 
+test("the prerender turns decor into data-decor attributes on <html>, in a fixed order; no decor gives the page back", () => {
+  const template = readFileSync("index.html", "utf8");
+  const tag = `<html lang="he" dir="rtl"`;
+  assert.equal(withDecor(template, undefined), template, "CS has no decor: the template comes back unchanged");
+  assert.equal(withDecor(template, {}), template);
+  const places = Object.keys(DECOR_STYLES);
+  const all = Object.fromEntries(places.map((place) => [place, Object.keys(DECOR_STYLES[place])[0]]));
+  const reversed = Object.fromEntries(Object.entries(all).reverse());
+  const attrs = places.map((place) => ` data-decor-${place}="${all[place]}"`).join("");
+  assert.ok(withDecor(template, reversed).includes(`${tag}${attrs}>`), "the attributes follow DECOR_STYLES' order, whatever the manifest's");
+  assert.ok(withDecor(template.replace(`${tag}>`, `${tag} data-home-title="x">`), { background: "synapses" }).includes(`${tag} data-decor-background="synapses" data-home-title="x">`), "works on a guide page too");
+  assert.throws(() => withDecor(template, { background: 'synapses" onload="x' }), /unknown decor background/);
+  assert.throws(() => withDecor(template, { background: "__proto__" }), /unknown decor/);
+  assert.throws(() => withDecor(template, { background: ["synapses"] }), /unknown decor/, "a list is not coerced to its one style");
+  assert.throws(() => withDecor(template.replace(`${tag}>`, `<html lang="he">`), { background: "synapses" }), /<html/);
+  // Every style the vocabulary names is drawn by index.html: a selector keyed on its attribute exists in the stylesheet.
+  for (const place of places) for (const style of Object.keys(DECOR_STYLES[place])) assert.ok(template.includes(`[data-decor-${place}="${style}"]`), `index.html styles decor ${place} "${style}"`);
+  // And the files a style needs are published by the build under assets/decor/ by their names, which the stylesheet reads.
+  for (const place of places) for (const style of Object.keys(DECOR_STYLES[place])) for (const file of DECOR_STYLES[place][style]) assert.ok(template.includes(`./assets/decor/${file}`), `index.html reads assets/decor/${file}`);
+  assert.deepEqual(decorFiles({ decor: { background: "synapses" } }), DECOR_STYLES.background.synapses.map((file) => `decor/${file}`));
+  assert.deepEqual(decorFiles({}), [], "no decor, no files");
+});
+
 test("the build copies only the images the manifest names, to their fixed public paths", () => {
   const [first, second] = FACULTY.mascots;
   const files = facultyImageFiles(FACULTY);
-  assert.equal(files.length, 1 + heroArtFiles(FACULTY).length + 2 * (2 + MASCOT_POSES.length));
+  assert.equal(files.length, 1 + heroArtFiles(FACULTY).length + decorFiles(FACULTY).length + 2 * (2 + MASCOT_POSES.length));
+  for (const file of decorFiles(FACULTY)) assert.equal(facultyImageTargets(FACULTY)[file], `assets/${file}`, "decor is published under assets/decor/");
   const targets = facultyImageTargets(FACULTY);
   assert.equal(targets[FACULTY.site.ogImage.file], FACULTY.site.ogImage.path);
   assert.equal(targets[FACULTY.site.heroArt.file], `assets/${FACULTY.site.heroArt.file}`, "the hero art is published under assets/ by its name");
