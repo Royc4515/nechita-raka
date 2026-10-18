@@ -120,6 +120,18 @@ function checkShabbat(id, shabbat) {
   for (const text of [shabbat.title, shabbat.footer, ...shabbat.lines]) if (/[—–]/.test(text)) fail(id, "site.shabbat has a long dash; write a comma or a period instead");
 }
 
+/**
+ * calendar: the faculty's calendar file (scripts/calendar-ics.mjs): the public file name, the PRODID producer, the
+ * calendar's name in the student's calendar app and the UID suffix of its events. All four appear in the file itself.
+ */
+function checkCalendar(id, calendar) {
+  if (!calendar || typeof calendar !== "object") fail(id, "calendar is missing");
+  if (!/^[\w-]+\.ics$/.test(calendar.file || "")) fail(id, "calendar.file must be a plain .ics file name");
+  if (!/^[\w ./-]+$/.test(calendar.prodId || "")) fail(id, "calendar.prodId must be plain letters, digits and spaces (it sits between // in the PRODID line)");
+  if (!nonEmpty(calendar.name) || /[\r\n]/.test(calendar.name)) fail(id, "calendar.name is missing or has a line break");
+  if (!/^[\w-]+$/.test(calendar.uidDomain || "")) fail(id, "calendar.uidDomain must be letters, digits and dashes");
+}
+
 /** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
 function checkContentOrder(id, content) {
   const order = (content || {}).order;
@@ -251,6 +263,7 @@ export function validateFaculty(faculty) {
   if (!Number.isInteger(og.width) || !Number.isInteger(og.height) || !nonEmpty(og.alt)) fail(id, "site.ogImage needs width, height and alt");
   checkHeroArt(id, site.heroArt);
   checkShabbat(id, site.shabbat);
+  checkCalendar(id, faculty.calendar);
   const pwa = faculty.pwa || {};
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");

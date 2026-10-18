@@ -159,7 +159,9 @@ export function mergeEnglish(shared, faculty, placeholders = null) {
 /** The site's content for a faculty, merged from its two files, placeholders filled. */
 export function loadContent(faculty = FACULTY) {
   const [shared, own] = contentFiles(faculty).data.map((file) => readScript(file, "SITE_DATA"));
-  return mergeContent(shared, own, faculty.content && faculty.content.order, contentPlaceholders(faculty));
+  const merged = mergeContent(shared, own, faculty.content && faculty.content.order, contentPlaceholders(faculty));
+  // The calendar file's address is the manifest's (calendar.file), so the page links to the file this faculty's build writes.
+  return { ...merged, calendar: { ...merged.calendar, file: `./${faculty.calendar.file}` } };
 }
 
 /** The site's English pairs for a faculty, merged from its two files, placeholders filled. */

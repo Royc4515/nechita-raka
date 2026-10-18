@@ -8,6 +8,7 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { CATALOG_FILE, loadCourses } from "../api/_lib/courses/model.js";
 import { BROWSER_FILES, loadEnglish, siteScript } from "../faculties/content.js";
+import { loadIcs } from "./calendar-ics.mjs";
 import { FACULTY } from "../faculties/index.js";
 import { foreignFacultyLeaks } from "./faculty-guard.mjs";
 import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
@@ -22,7 +23,6 @@ const FILES = [
   "admin.html",
   "admin.js",
   "robots.txt",
-  "biu-5787.ics",
   "course-browser.js",
   "course-ai.js",
   "course-ai-dialog.js",
@@ -45,7 +45,7 @@ const FILES = [
 // Written by the build for the selected faculty (FACULTY env var, default cs; see faculties/index.js):
 // the content and its English merged from shared/ and faculties/<id>/ (faculties/content.js), the
 // browser's copy of the manifest and the "add to home screen" descriptor.
-const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest"];
+const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest", FACULTY.calendar.file];
 // Names a guide's address must not take: they are files the site already serves, or generated ones. The
 // faculty's catalog scan, published under courses.download, joins them and must not take one of them itself.
 const RESERVED = reserveDownload(new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map(nameStem)]), FACULTY.courses.download);
@@ -64,6 +64,8 @@ writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync("robots.txt", "utf8"))
 // the "add to home screen" descriptor, and the mascot and link-preview images at their usual addresses.
 writeFileSync(`${OUT}/faculty.js`, facultyScript(FACULTY));
 writeFileSync(`${OUT}/manifest.webmanifest`, webmanifest(FACULTY));
+// The calendar file for the "add all dates to my calendar" button: the university's dates plus the faculty's own (scripts/calendar-ics.mjs).
+writeFileSync(`${OUT}/${FACULTY.calendar.file}`, loadIcs(FACULTY));
 copyFacultyAssets(FACULTY, OUT);
 
 // The content the browser reads: shared/data.js and faculties/<id>/data.js merged into one data.js,

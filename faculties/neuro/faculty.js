@@ -59,6 +59,15 @@ export default {
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
   department: { name: `המרכז הרב תחומי לחקר המוח ע"ש גונדה, התוכנית לתואר ראשון במדעי המוח`, url: `https://gondabrain.biu.ac.il/` },
 
+  // קובץ היומן שמורידים מהאתר (scripts/calendar-ics.mjs): הוא מורכב מ-shared/calendar.ics, ומ-faculties/neuro/calendar.ics כשיש אירועים של התוכנית.
+  // file: השם בכתובת האתר. prodId: מזהה היוצר בכותרת הקובץ. name: שם היומן אצל מי שמוסיף אותו. uidDomain: סוף המזהים (UID) של האירועים.
+  calendar: {
+    file: `biu-5787.ics`,
+    prodId: `BIU Brain Sciences`,
+    name: `בר אילן - לוח אקדמי תשפ"ז, מדעי המוח`,
+    uidDomain: `biu-neuro-5787`,
+  },
+
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
     name: `נחיתה רכה - מדעי המוח בר אילן`,

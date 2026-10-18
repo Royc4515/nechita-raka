@@ -613,7 +613,13 @@ export function withDecor(html, decor = {}) {
   return attrs.length ? html.replace(HTML_TAG, () => `${HTML_TAG}${attrs.join("")}`) : html;
 }
 
+/** index.html names the calendar file "biu-5787.ics" (the link and the download name); the manifest's calendar.file is the faculty's. */
+export function withCalendarFile(html, file) {
+  return file === "biu-5787.ics" ? html : html.replaceAll("biu-5787.ics", file);
+}
+
 function common(html, data, updated) {
+  html = withCalendarFile(html, FACULTY.calendar.file);
   html = withTheme(html, FACULTY.theme);
   html = withMascotShadow(html, FACULTY.theme.mascotShadow === true);
   html = withDecor(html, FACULTY.decor);

@@ -9,9 +9,10 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { contentFiles, contentPlaceholders, mergeContent, mergeEnglish } from "../faculties/content.js";
 import { FACULTIES, FACULTY } from "../faculties/index.js";
+import { loadIcs } from "./calendar-ics.mjs";
 
 const FILES = contentFiles(FACULTY);
-const ICS_FILE = "biu-5787.ics";
+const ICS_FILE = FACULTY.calendar.file;
 const errors = [];
 const warnings = [];
 
@@ -226,7 +227,7 @@ for (const faculty of Object.values(FACULTIES)) {
 
 // ---------- 4. Calendar file drift (a warning: the .ics is edited separately) ----------
 try {
-  const ics = readFileSync(ICS_FILE, "utf8").replace(/\r\n /g, "");
+  const ics = loadIcs(FACULTY).replace(/\r\n /g, "");
   const icsRanges = new Set([...ics.matchAll(/DTSTART;VALUE=DATE:(\d{8})\r?\nDTEND;VALUE=DATE:(\d{8})/g)].map((m) => `${m[1]}-${m[2]}`));
   const icsStarts = new Set([...ics.matchAll(/DTSTART(?:;[^:]*)?:(\d{8})/g)].map((m) => m[1]));
   const compact = (iso) => iso.replaceAll("-", "");

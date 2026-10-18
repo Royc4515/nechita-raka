@@ -55,6 +55,15 @@ export default {
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
   department: { name: `המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/` },
 
+  // קובץ היומן שמורידים מהאתר (scripts/calendar-ics.mjs): הוא מורכב מ-shared/calendar.ics ומ-faculties/cs/calendar.ics.
+  // file: השם בכתובת האתר. prodId: מזהה היוצר בכותרת הקובץ. name: שם היומן אצל מי שמוסיף אותו. uidDomain: סוף המזהים (UID) של האירועים.
+  calendar: {
+    file: `biu-5787.ics`,
+    prodId: `BIU CS Year 1`,
+    name: `בר אילן - לוח אקדמי תשפ"ז`,
+    uidDomain: `biu-cs-5787`,
+  },
+
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
     name: `נחיתה רכה - מדמ"ח בר אילן`,
