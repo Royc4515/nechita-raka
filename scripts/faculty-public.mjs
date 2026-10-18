@@ -20,6 +20,8 @@ const browserMascot = ({ id, name, nameEn, gender, files, poseWidths, hellos, ti
 
 /** A course category as the courses page shows it: the id of the yearbook mapping, its label and the short chip text. */
 const browserCategory = ({ id, label, short }) => ({ id, label, ...(short === undefined ? {} : { short }) });
+/** A track as the picker shows it; only the named fields, so a note added to the manifest later never reaches the browser. */
+const browserTrack = ({ id, label, short }) => ({ id, label, ...(short === undefined ? {} : { short }) });
 
 /** The browser-safe subset of a manifest: what chat.js, peek.js, index.html and course-browser.js read from window.FACULTY. */
 export function browserFaculty(faculty) {
@@ -34,7 +36,7 @@ export function browserFaculty(faculty) {
     eggs: faculty.eggs,
     // The courses page: the categories (chips, section titles) and, for a faculty that has them, the tracks of its picker.
     courses: { categories: faculty.courses.categories.map(browserCategory) },
-    ...(faculty.tracks === undefined ? {} : { tracks: faculty.tracks }),
+    ...(faculty.tracks === undefined ? {} : { tracks: faculty.tracks.map(browserTrack) }),
     defaultMascot: faculty.defaultMascot,
     mascots: faculty.mascots.map(browserMascot),
   };
