@@ -46,7 +46,10 @@ test("faculty FAQ entries go after (or before) the shared question they name, in
 
 test("{mascots} and {coursesFile} are filled from the manifest, in each language, and other braces are left alone", () => {
   const values = contentPlaceholders(FACULTIES.cs);
-  assert.deepEqual(values, { he: { mascots: "ביט ובייט", coursesFile: FACULTIES.cs.courses.fileLabel }, en: { mascots: "Bit and Byte", coursesFile: FACULTIES.cs.courses.fileLabelEn } });
+  assert.equal(values.he.mascots, "ביט ובייט");
+  assert.equal(values.he.coursesFile, FACULTIES.cs.courses.fileLabel);
+  assert.equal(values.en.mascots, "Bit and Byte");
+  assert.equal(values.en.coursesFile, FACULTIES.cs.courses.fileLabelEn);
   assert.equal(contentPlaceholders(FACULTIES.neuro).he.mascots, "נוי ורון");
   assert.equal(fillText("שואלים את {mascots} על {coursesFile}, {n} פעמים", values.he), `שואלים את ביט ובייט על ${FACULTIES.cs.courses.fileLabel}, {n} פעמים`);
   assert.equal(fillText("x {mascots}", null), "x {mascots}", "no values: nothing changes");

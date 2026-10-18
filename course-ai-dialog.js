@@ -260,7 +260,7 @@ export function openPlanner(ctx) {
     const prompt = buildPrompt(withKept, {
       semester: sem, blockedDays: blocked.get(), earliest: earliest.get(), latest: latest.get(),
       shape: shape.get(), gaps: gaps.get(), notes: notes.value.trim().slice(0, NOTES_MAX), keep: keepList, extras: extras.get() === "yes",
-    }, { scannedAt: ctx.list.scannedAt, en });
+    }, { scannedAt: ctx.list.scannedAt, en, faculty: window.FACULTY.name });
     ready(prompt, withKept);
   }
 

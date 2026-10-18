@@ -40,7 +40,7 @@ export default {
     // en אותו דבר באנגלית. בלי year: האתר מיועד לכל המחלקה, לא לשנה אחת, ולכן המשפטים אומרים "של מדעי המוח" ולא "של שנה א'".
     audience: { he: `סטודנטים למדעי המוח`, en: `Brain Sciences students of every year (first-years above all)` },
     // תמונת השיתוף (וואטסאפ, לינקדאין): הקובץ בתיקייה הזאת, הכתובת שבה היא מתפרסמת, ותיאור לקוראי מסך.
-    ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 600, height: 600, alt: `נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים` },
+    ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 1200, height: 630, alt: `נחיתה רכה, מדעי המוח בבר אילן: מוח סגול על רקע סגול` },
     // האיור שליד הכותרת: file מוצג במסך רחב, avatar הוא העיגול הקטן ליד השם בטלפון. מוח סגול על עיגול סגול (נוצר ב-Flow,
     // management/neuro/decor-brief.md). מחליפים בתמונה בתיקייה הזאת (webp, jpg, png או svg) ומעדכנים כאן את השם, הגודל והתיאור.
     // דף השבת (shabbat.js): מסך סגור מכניסת שבת עד צאתה. כותרת, שתיים-שלוש שורות קצרות וברכת סיום, בקול של הקמעים. צריך תרגום ב-data.en.js (ui). בלי מקף ארוך.
@@ -58,6 +58,15 @@ export default {
 
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
   department: { name: `המרכז הרב תחומי לחקר המוח ע"ש גונדה, התוכנית לתואר ראשון במדעי המוח`, url: `https://gondabrain.biu.ac.il/` },
+
+  // קובץ היומן שמורידים מהאתר (scripts/calendar-ics.mjs): הוא מורכב מ-shared/calendar.ics, ומ-faculties/neuro/calendar.ics כשיש אירועים של התוכנית.
+  // file: השם בכתובת האתר. prodId: מזהה היוצר בכותרת הקובץ. name: שם היומן אצל מי שמוסיף אותו. uidDomain: סוף המזהים (UID) של האירועים.
+  calendar: {
+    file: `biu-5787.ics`,
+    prodId: `BIU Brain Sciences`,
+    name: `בר אילן - לוח אקדמי תשפ"ז, מדעי המוח`,
+    uidDomain: `biu-neuro-5787`,
+  },
 
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
@@ -90,6 +99,17 @@ export default {
   // התווית בסגנון טרמינל בראש הצ'אט ("~/neuro › ask noi") ובראש תיבת "עכשיו" ("~/neuro › status").
   labels: {
     chatPath: `~/neuro`,
+  },
+
+  // הצ'אט. suggestions: השאלות המוצעות בלחיצה בפתיחת החלון (chat.js), לפי הסדר. השלוש הראשונות מוצעות גם בדף של מדריך, אחרי "מה הכי חשוב לדעת על ...". כל אחת צריכה תרגום ב-data.en.js (ui).
+  chat: {
+    suggestions: [
+      `איך בוחרים מסלול במדעי המוח?`,
+      `איך נרשמים לקורסים באינ-בר?`,
+      `איפה נמצא בניין 901?`,
+      `איך נרשמים לקורסים של המחלקה השנייה?`,
+      `למי כותבים כשיש שאלה על התוכנית?`,
+    ],
   },
 
   // החלון המונפש שבראש הדף. variant: `eeg`, אותו חלון כמו הטרמינל של מדעי המחשב, ובו גל EEG שמצייר את עצמו
@@ -180,6 +200,17 @@ export default {
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/neuro/data.js),
   // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.
   content: {
+    // הנוסח של התוכנית למשפטים שבתוכן המשותף (shared/data.js) שנכונים רק למחלקה אחת: {fx:שם}. he ו-en; טקסט ריק מותר.
+    // רק עובדות שיש להן מקור ב-management/neuro/programs.md ובמדריכים של התוכנית (מדריך בניין 901 ומדריך "למי פונים").
+    phrases: {
+      reservesGroups: { he: `יש קבוצות וואטסאפ למילואימניקים: של המחזור, של החונכים והחניכים המילואימניקים, ושל כל בר-אילן. חלק מהקישורים עדיין חסרים, והשאר למטה.`, en: `There are WhatsApp groups for reservists: one for your cohort, one for reservist mentors and mentees, and one for all of Bar-Ilan. Some links are still missing, and the rest are below.` },
+      attendance: { he: `כל קורס קובע אם בודקים בו נוכחות.`, en: `Each course decides whether it takes attendance.` },
+      buildingsMore: { he: `משרד התוכנית למדעי המוח נמצא בבניין 901, המרכז לחקר המוח ע"ש גונדה, בצפון הקמפוס. בנייני ההרצאות האחרים של שנה א' הם 905, 604 ו-1002.`, en: `The Brain Sciences program office is in building 901, the Gonda Brain Research Center, in the north of the campus. The other lecture buildings for first-year courses are 905, 604 and 1002.` },
+      buildingsKeyword: { he: `901`, en: `901` },
+      buildingsSourceLabel: { he: `מיקום ודרכי הגעה, אתר המרכז לחקר המוח`, en: `Location and directions, Brain Research Center site` },
+      buildingsSourceUrl: { he: `https://gondabrain.biu.ac.il/directions`, en: `https://gondabrain.biu.ac.il/directions` },
+      microwaves: { he: ``, en: `` },
+    },
     order: {
       guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
       categories: [`university`, `neuro-year1-courses`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],

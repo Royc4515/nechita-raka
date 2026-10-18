@@ -9,9 +9,10 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { contentFiles, contentPlaceholders, mergeContent, mergeEnglish } from "../faculties/content.js";
 import { FACULTIES, FACULTY } from "../faculties/index.js";
+import { loadIcs } from "./calendar-ics.mjs";
 
 const FILES = contentFiles(FACULTY);
-const ICS_FILE = "biu-5787.ics";
+const ICS_FILE = FACULTY.calendar.file;
 const errors = [];
 const warnings = [];
 
@@ -226,7 +227,7 @@ for (const faculty of Object.values(FACULTIES)) {
 
 // ---------- 4. Calendar file drift (a warning: the .ics is edited separately) ----------
 try {
-  const ics = readFileSync(ICS_FILE, "utf8").replace(/\r\n /g, "");
+  const ics = loadIcs(FACULTY).replace(/\r\n /g, "");
   const icsRanges = new Set([...ics.matchAll(/DTSTART;VALUE=DATE:(\d{8})\r?\nDTEND;VALUE=DATE:(\d{8})/g)].map((m) => `${m[1]}-${m[2]}`));
   const icsStarts = new Set([...ics.matchAll(/DTSTART(?:;[^:]*)?:(\d{8})/g)].map((m) => m[1]));
   const compact = (iso) => iso.replaceAll("-", "");
@@ -290,7 +291,7 @@ function checkEnglish(sharedEn, facultyEn) {
   const keys = new Set(ui.map(([he]) => he));
   const used = ["index.html", "chat.js", "peek.js", "shabbat.js"].flatMap((f) => [...readFileSync(f, "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)));
   const mascotLines = FACULTY.mascots.flatMap((m) => [m.joined, m.thinking, ...m.hellos, ...Object.values(m.timely), ...m.peekLines]);
-  const manifestLines = [FACULTY.site.title, FACULTY.site.tagline, FACULTY.site.shabbat.title, ...FACULTY.site.shabbat.lines, FACULTY.site.shabbat.footer];
+  const manifestLines = [...FACULTY.chat.suggestions, FACULTY.site.title, FACULTY.site.tagline, FACULTY.site.shabbat.title, ...FACULTY.site.shabbat.lines, FACULTY.site.shabbat.footer];
   const missingUi = [...new Set([...used, ...mascotLines, ...manifestLines])].filter((s) => !keys.has(s));
   if (missingUi.length) warnEn(`${missingUi.length} טקסטים של הדף בלי תרגום (ui): ${sample(missingUi)}`);
 }

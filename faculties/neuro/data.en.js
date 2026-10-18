@@ -10,6 +10,12 @@ window.SITE_EN = {
   // ui: the English of the mascots' lines and the site name from faculties/neuro/faculty.js.
   // Pairs of [Hebrew exactly as in faculty.js, English].
   ui: [
+    // The chat's suggestion buttons (chat.suggestions); the other three are shared.
+    [`איך בוחרים מסלול במדעי המוח?`, `How do I choose a track in Brain Sciences?`],
+    [`איך נרשמים לקורסים באינ-בר?`, `How do I register for courses in Inbar?`],
+    [`איפה נמצא בניין 901?`, `Where is building 901?`],
+    [`איך נרשמים לקורסים של המחלקה השנייה?`, `How do I register for the second department's courses?`],
+    [`למי כותבים כשיש שאלה על התוכנית?`, `Who do I write to with a question about the program?`],
     // The Shabbat rest's closed page (site.shabbat).
     [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
     [`בשבת גם נוי ורון מכבים את המסכים, והאתר נח איתם. הסינפסות שלהם נחות, ושל האתר גם.`, `On Shabbat Noi and Ron switch off their screens too, and the site rests with them. Their synapses are resting, and so are the site's.`],
@@ -364,7 +370,7 @@ window.SITE_EN = {
     [`קבוצת המילואימניקים של המחזור. במחזורים הקודמים היא בתוך קהילת המחזור. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The cohort's reservists group. In the earlier cohorts it sits inside the cohort's community. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20למילואימניקים%20שנה%20א'.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20the%20first-year%20reservists%20group.%20Here%20it%20is%3A`],
     [`חונכים וחניכים מילואימניקים: הקישור חסר`, `reservist mentors and mentees: link missing`],
-    [`במדמ"ח יש קבוצה לחונכים ולחניכים מילואימניקים. אם יש כזאת גם במדעי המוח, היא עוד לא כאן. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `CS has a group for reservist mentors and mentees. If Brain Sciences has one too, it is not here yet. If you have the link: tap here and send it to Roy, the message is ready.`],
+    [`הקבוצה לחונכים ולחניכים מילואימניקים במדעי המוח: הקישור עוד לא כאן. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The group for reservist mentors and mentees in Brain Sciences: the link is not here yet. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20לחונכים%20וחניכים%20מילואימניקים.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20reservist%20mentors%20and%20mentees.%20Here%20it%20is%3A`],
     [`שנה ב' (מחזור תשפ"ו)`, `Second year (the 5786 cohort)`],
     [`קהילת מדעי המוח תשפ"ו`, `The Brain Sciences 5786 community`],
@@ -384,7 +390,6 @@ window.SITE_EN = {
     [`קהילת חקר המוח - חיבור אקדמיה ותעשייה: הקישור חסר`, `the Brain Research community (academia and industry): link missing`],
     [`קהילת הוואטסאפ של מרכז גונדה לסטודנטים, בוגרים ותעשייה, 9 קבוצות: חדשות, משרות, המוח הקוגניטיבי, הביולוגי והחישובי, דוקטורנטים ופוסטדוקים. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `The Gonda center's WhatsApp community for students, alumni and industry, 9 groups: news, jobs, the cognitive, biological and computational brain, doctoral students and postdocs. If you have the link: tap here and send it to Roy, the message is ready.`],
     [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20לקהילת%20חקר%20המוח%20-%20חיבור%20אקדמיה%20ותעשייה.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20the%20Brain%20Research%20community%20(academia%20and%20industry).%20Here%20it%20is%3A`],
-    [`Gonda neuroscience news`, `Gonda neuroscience news`],
     [`עדכון שבועי על מחקרים וחדשות מעולם מדעי המוח, 111 חברים, בקהילת חקר המוח של מרכז גונדה.`, `A weekly update on new research and news from neuroscience, 111 members, in the Gonda center's Brain Research community.`],
     [`מודעות שוות בין בוגרי גונדה`, `Gonda alumni job postings`],
     [`משרות ומודעות לסטודנטים ולבוגרים של גונדה, בקהילת חקר המוח של מרכז גונדה.`, `Jobs and postings for Gonda students and alumni, in the Gonda center's Brain Research community.`],

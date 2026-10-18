@@ -13,7 +13,9 @@
 //   `after` names, before the one its `before` names, or at the end when it has neither. Neither is published.
 // - placeholders: shared text may say {mascots} (the faculty's two names, "ביט ובייט") and {coursesFile}
 //   (how the faculty calls its courses file, courses.fileLabel); loadContent and loadEnglish fill them from
-//   the manifest, in Hebrew and in English, so the shared files never name one faculty.
+//   the manifest, in Hebrew and in English, so the shared files never name one faculty. {fx:name} is a phrase the
+//   faculty words itself (content.phrases.<name> in the manifest, { he, en }), for a sentence that is true of one
+//   department only (its building, its WhatsApp groups); a name the manifest lacks fails the build.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
@@ -107,18 +109,22 @@ function mergeFaq(shared, faculty) {
 
 // ---------- Placeholders: what shared text may say about the faculty without naming it ----------
 
-const PLACEHOLDER_RE = /\{(mascots|coursesFile)\}/g;
+const PLACEHOLDER_RE = /\{(mascots|coursesFile|fx:[A-Za-z]+)\}/g;
 
-/** The values of {mascots} and {coursesFile} for a faculty, in Hebrew (he) and English (en). */
+/** The values of {mascots}, {coursesFile} and the {fx:name} phrases for a faculty, in Hebrew (he) and English (en). */
 export function contentPlaceholders(faculty = FACULTY) {
+  const phrases = Object.entries((faculty.content && faculty.content.phrases) || {});
+  const fx = (lang) => Object.fromEntries(phrases.map(([name, text]) => [`fx:${name}`, text[lang]]));
   return {
-    he: { mascots: faculty.mascots.map((m) => m.name).join(" ו"), coursesFile: faculty.courses.fileLabel },
-    en: { mascots: faculty.mascots.map((m) => m.nameEn).join(" and "), coursesFile: faculty.courses.fileLabelEn },
+    he: { mascots: faculty.mascots.map((m) => m.name).join(" ו"), coursesFile: faculty.courses.fileLabel, ...fx("he") },
+    en: { mascots: faculty.mascots.map((m) => m.nameEn).join(" and "), coursesFile: faculty.courses.fileLabelEn, ...fx("en") },
   };
 }
 
 /** A text with the known placeholders filled; anything else in braces ({n}, {name}) is left for the page. */
-export const fillText = (text, values) => (values ? text.replace(PLACEHOLDER_RE, (m, key) => values[key]) : text);
+export const fillText = (text, values) => (values
+  ? text.replace(PLACEHOLDER_RE, (m, key) => (key in values ? values[key] : fail(`the text says {${key}}, but the manifest's content.phrases has no "${key.slice(3)}"`)))
+  : text);
 
 /** The same value with every string filled, as a new object (lists and objects are copied, never changed in place). */
 export function fillPlaceholders(value, values) {
@@ -159,7 +165,9 @@ export function mergeEnglish(shared, faculty, placeholders = null) {
 /** The site's content for a faculty, merged from its two files, placeholders filled. */
 export function loadContent(faculty = FACULTY) {
   const [shared, own] = contentFiles(faculty).data.map((file) => readScript(file, "SITE_DATA"));
-  return mergeContent(shared, own, faculty.content && faculty.content.order, contentPlaceholders(faculty));
+  const merged = mergeContent(shared, own, faculty.content && faculty.content.order, contentPlaceholders(faculty));
+  // The calendar file's address is the manifest's (calendar.file), so the page links to the file this faculty's build writes.
+  return { ...merged, calendar: { ...merged.calendar, file: `./${faculty.calendar.file}` } };
 }
 
 /** The site's English pairs for a faculty, merged from its two files, placeholders filled. */

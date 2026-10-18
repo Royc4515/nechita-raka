@@ -298,7 +298,7 @@ function headHtml({ title, description, url, type, modified, graph }) {
     `<meta property="og:image:alt" content="${esc(OG_IMAGE.alt)}">`,
     `<meta property="og:locale" content="he_IL">`,
     type === "article" ? `<meta property="article:modified_time" content="${modified}">` : "",
-    `<meta name="twitter:card" content="summary">`,
+    `<meta name="twitter:card" content="${OG_IMAGE.width === OG_IMAGE.height ? "summary" : "summary_large_image"}">`,
     jsonLd(graph),
   ].filter(Boolean).join("\n");
 }
@@ -490,6 +490,20 @@ export function withTheme(html, theme) {
   return light.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.light)) + dark.replace(ACCENT_LINE_RE, (m, indent) => indent + accentLine(theme.dark));
 }
 
+const ADMIN_NAME_RE = /(<h1>לוח בקרה<small>)[^<]*(<\/small><\/h1>)/;
+const ADMIN_SHARE_RE = /(<code class="ltr" id="share-link">)[^<]*(<\/code>)/;
+
+/**
+ * The dashboard's faculty line under its title ("נחיתה רכה · מדמ"ח בר אילן", the site name with a dot for the dash) and the
+ * link it tells the admin to share (the faculty's own site with ?src=wa, which the stats read as a WhatsApp visit).
+ */
+export function withAdminIdentity(html, site) {
+  if (!ADMIN_NAME_RE.test(html) || !ADMIN_SHARE_RE.test(html)) throw new Error("prerender: admin.html is missing its title line or its share link");
+  return html
+    .replace(ADMIN_NAME_RE, (m, open, close) => open + escText(site.name.replace(" - ", " · ")) + close)
+    .replace(ADMIN_SHARE_RE, (m, open, close) => open + escText(site.url) + "/?src=wa" + close);
+}
+
 // The hero block of index.html: the switch point for the variants (D8). The template holds the CS terminal,
 // so the terminal renderer fills its bar label and typed lines; the EEG variant renders its own markup (the
 // same window, a trace that draws itself, then the typed lines) in place of the whole block.
@@ -613,7 +627,25 @@ export function withDecor(html, decor = {}) {
   return attrs.length ? html.replace(HTML_TAG, () => `${HTML_TAG}${attrs.join("")}`) : html;
 }
 
+/** index.html names the calendar file "biu-5787.ics" (the link and the download name); the manifest's calendar.file is the faculty's. */
+export function withCalendarFile(html, file) {
+  return file === "biu-5787.ics" ? html : html.replaceAll("biu-5787.ics", file);
+}
+
+const DECOR_CSS_RE = /\/\* decor:start \*\/\r?\n([\s\S]*?)\/\* decor:end \*\/\r?\n/;
+
+/**
+ * index.html's decor rules sit between `decor:start` and `decor:end` comments. A faculty with decor keeps them (the
+ * comment lines go); one without (CS) gets a page without any of them, since nothing would draw them.
+ */
+export function withDecorCss(html, decor = {}) {
+  if (html.split("/* decor:start */").length !== 2 || !DECOR_CSS_RE.test(html)) throw new Error("prerender: index.html should have exactly one decor:start ... decor:end block");
+  return html.replace(DECOR_CSS_RE, (m, rules) => (Object.keys(decor).length ? rules : ""));
+}
+
 function common(html, data, updated) {
+  html = withCalendarFile(html, FACULTY.calendar.file);
+  html = withDecorCss(html, FACULTY.decor);
   html = withTheme(html, FACULTY.theme);
   html = withMascotShadow(html, FACULTY.theme.mascotShadow === true);
   html = withDecor(html, FACULTY.decor);

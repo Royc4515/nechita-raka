@@ -55,6 +55,15 @@ export default {
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
   department: { name: `המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/` },
 
+  // קובץ היומן שמורידים מהאתר (scripts/calendar-ics.mjs): הוא מורכב מ-shared/calendar.ics ומ-faculties/cs/calendar.ics.
+  // file: השם בכתובת האתר. prodId: מזהה היוצר בכותרת הקובץ. name: שם היומן אצל מי שמוסיף אותו. uidDomain: סוף המזהים (UID) של האירועים.
+  calendar: {
+    file: `biu-5787.ics`,
+    prodId: `BIU CS Year 1`,
+    name: `בר אילן - לוח אקדמי תשפ"ז`,
+    uidDomain: `biu-cs-5787`,
+  },
+
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
     name: `נחיתה רכה - מדמ"ח בר אילן`,
@@ -73,6 +82,17 @@ export default {
   // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit") ובראש תיבת "עכשיו" ("~/year-1 › status").
   labels: {
     chatPath: `~/year-1`,
+  },
+
+  // הצ'אט. suggestions: השאלות המוצעות בלחיצה בפתיחת החלון (chat.js), לפי הסדר. השלוש הראשונות מוצעות גם בדף של מדריך, אחרי "מה הכי חשוב לדעת על ...". כל אחת צריכה תרגום ב-data.en.js (ui).
+  chat: {
+    suggestions: [
+      `מתי מתחילות הבחינות?`,
+      `איך משנים קורס באינ-בר?`,
+      `שכחתי סיסמה ללמדה`,
+      `מה עושים עם מבחן במילואים?`,
+      `באיזה חדר ההרצאה בהכנה למדעי המחשב?`,
+    ],
   },
 
   // החלון המונפש שבראש הדף. variant: הסוג (כרגע יש רק `terminal`, חלון טרמינל שמקליד קוד).
@@ -132,6 +152,17 @@ export default {
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/cs/data.js),
   // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.
   content: {
+    // הנוסח של המחלקה למשפטים שבתוכן המשותף (shared/data.js) שנכונים רק לה: {fx:שם}. he ו-en; טקסט ריק מותר.
+    // הרווח שבין המשפט למה שאחריו נמצא בתוכן המשותף או בסוף הטקסט כאן, לפי המקום (microwaves מסתיים ברווח).
+    phrases: {
+      reservesGroups: { he: `יש קבוצות וואטסאפ למילואימניקים: של מדמ"ח, של החונכים והחניכים המילואימניקים במחלקה, ושל כל בר-אילן. הקישורים למטה.`, en: `There are WhatsApp groups for reservists: one for CS, one for reservist mentors and mentees in the department, and one for all of Bar-Ilan. Links below.` },
+      attendance: { he: `במדעי המחשב בדרך כלל לא בודקים נוכחות.`, en: `CS courses usually don't take attendance.` },
+      buildingsMore: { he: `המזכירות של המחלקה למדעי המחשב בבניין 503, קומה 1. בניינים שסטודנטים במדמ"ח פוגשים הכי הרבה: 216, 304, 401 (הספרייה המרכזית), 604 ו-605.`, en: `The Computer Science department office is in building 503, floor 1. The buildings CS students use most: 216, 304, 401 (the central library), 604 and 605.` },
+      buildingsKeyword: { he: `503`, en: `503` },
+      buildingsSourceLabel: { he: `מיקום ויצירת קשר, המחלקה למדעי המחשב`, en: `Location and contact, Department of Computer Science` },
+      buildingsSourceUrl: { he: `https://cs.biu.ac.il/he/node/3`, en: `https://cs.biu.ac.il/he/node/3` },
+      microwaves: { he: `לסטודנטים במדמ"ח הכי קרוב בדרך כלל המיקרוגל בבניין 216, ומי שיש לו גישה למרחב הלמידה של מדמ"ח (503) יכול לחמם במטבחון שם, עם מיקרוגלים נפרדים לבשרי ולחלבי. `, en: `For CS students, the closest microwave is usually in building 216, and anyone with access to the CS learning space (503) can heat food in its kitchenette, which has separate microwaves for meat and dairy. ` },
+    },
     order: {
       guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
       categories: [`university`, `materials`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],

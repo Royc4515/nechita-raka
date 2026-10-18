@@ -120,6 +120,25 @@ function checkShabbat(id, shabbat) {
   for (const text of [shabbat.title, shabbat.footer, ...shabbat.lines]) if (/[—–]/.test(text)) fail(id, "site.shabbat has a long dash; write a comma or a period instead");
 }
 
+/**
+ * calendar: the faculty's calendar file (scripts/calendar-ics.mjs): the public file name, the PRODID producer, the
+ * calendar's name in the student's calendar app and the UID suffix of its events. All four appear in the file itself.
+ */
+function checkCalendar(id, calendar) {
+  if (!calendar || typeof calendar !== "object") fail(id, "calendar is missing");
+  if (!/^[\w-]+\.ics$/.test(calendar.file || "")) fail(id, "calendar.file must be a plain .ics file name");
+  if (!/^[\w ./-]+$/.test(calendar.prodId || "")) fail(id, "calendar.prodId must be letters, digits, spaces, dots, slashes or dashes (it sits between // in the PRODID line)");
+  if (!nonEmpty(calendar.name) || /[\r\n]/.test(calendar.name)) fail(id, "calendar.name is missing or has a line break");
+  if (!/^[\w-]+$/.test(calendar.uidDomain || "")) fail(id, "calendar.uidDomain must be letters, digits and dashes");
+}
+
+/** chat.suggestions: the questions offered as buttons when the chat opens (chat.js); the first three also follow a guide's own question. */
+function checkChat(id, chat) {
+  const list = (chat || {}).suggestions;
+  if (!Array.isArray(list) || list.length < 3 || list.length > 8 || !list.every(nonEmpty)) fail(id, "chat.suggestions must be a list of three to eight texts");
+  if (new Set(list).size !== list.length) fail(id, "chat.suggestions lists a question twice");
+}
+
 /** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
 function checkContentOrder(id, content) {
   const order = (content || {}).order;
@@ -129,6 +148,14 @@ function checkContentOrder(id, content) {
     if (!Array.isArray(list) || !list.length) fail(id, `content.order.${key} must be a non-empty list of ids`);
     for (const entry of list) if (!CONTENT_ID_RE.test(entry || "")) fail(id, `content.order.${key} has an id that is not lowercase English: ${JSON.stringify(entry)}`);
     if (new Set(list).size !== list.length) fail(id, `content.order.${key} lists an id twice`);
+  }
+  // phrases: the faculty's own wording of {fx:name} in the shared content (faculties/content.js); an empty text is allowed.
+  const phrases = content.phrases;
+  if (phrases === undefined) return;
+  if (!phrases || typeof phrases !== "object" || Array.isArray(phrases)) fail(id, "content.phrases must be an object");
+  for (const [name, text] of Object.entries(phrases)) {
+    if (!/^[A-Za-z]+$/.test(name)) fail(id, `content.phrases.${name}: the name must be letters only`);
+    if (!text || typeof text.he !== "string" || typeof text.en !== "string") fail(id, `content.phrases.${name} needs he and en texts`);
   }
 }
 
@@ -251,6 +278,8 @@ export function validateFaculty(faculty) {
   if (!Number.isInteger(og.width) || !Number.isInteger(og.height) || !nonEmpty(og.alt)) fail(id, "site.ogImage needs width, height and alt");
   checkHeroArt(id, site.heroArt);
   checkShabbat(id, site.shabbat);
+  checkCalendar(id, faculty.calendar);
+  checkChat(id, faculty.chat);
   const pwa = faculty.pwa || {};
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");

@@ -148,3 +148,16 @@ test("the yearbook says which semester each course is planned in", () => {
   assert.deepEqual(byCode.get("891200").plannedIn, ["סמסטר ב'"]); // Data Structures runs in A too, for retakes
   assert.deepEqual(byCode.get("89005").plannedIn, []);
 });
+
+test("the prompt says which faculty the student is in from the manifest's name, and none when it is not given", () => {
+  const [csName, neuroName] = [FACULTIES.cs.name, FACULTIES.neuro.name];
+  const one = [byCode.get("89110")];
+  assert.match(buildPrompt(one, prefs, { faculty: csName }), /אני סטודנט\/ית למדעי המחשב באוניברסיטת בר-אילן/);
+  assert.match(buildPrompt(one, prefs, { faculty: csName, en: true }), /I'm a Computer Science student at Bar-Ilan/);
+  const neuro = buildPrompt(one, prefs, { faculty: neuroName });
+  assert.match(neuro, /אני סטודנט\/ית למדעי המוח באוניברסיטת בר-אילן/);
+  assert.doesNotMatch(neuro, /למדעי המחשב באוניברסיטת/);
+  assert.match(buildPrompt(one, prefs, { faculty: neuroName, en: true }), /I'm a Brain Sciences student at Bar-Ilan/);
+  assert.match(buildPrompt(one, prefs), /אני סטודנט\/ית באוניברסיטת בר-אילן/);
+  assert.match(buildPrompt(one, prefs, { en: true }), /I'm a student at Bar-Ilan/);
+});
