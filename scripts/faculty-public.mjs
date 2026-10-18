@@ -1,7 +1,8 @@
 // What the build publishes for the selected faculty (MULTI-FACULTY-PLAN.md D4, D6, D7):
 // public/faculty.js for the browser, manifest.webmanifest, and the mascot and link-preview images
 // copied to the paths the site has always used.
-import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DECOR_STYLES, MASCOT_POSES } from "../faculties/index.js";
 
@@ -50,8 +51,28 @@ export function facultyScript(faculty) {
 
 const jsonField = ([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`;
 
-/** The text of manifest.webmanifest (the "add to home screen" descriptor), one icon per line. */
-export function webmanifest(faculty) {
+/**
+ * A short content hash per icon file of a faculty's own icons folder (faculties/<id>/icons/), {} for a faculty without one
+ * (CS keeps the shared set at its plain addresses). A text icon is hashed without carriage returns, so a Windows checkout and
+ * the Linux build agree on the version.
+ */
+export function iconVersions(dir) {
+  if (!existsSync(dir)) return {};
+  return Object.fromEntries(readdirSync(dir).sort().map((file) => {
+    const bytes = readFileSync(`${dir}/${file}`);
+    const content = file.endsWith(".svg") ? Buffer.from(bytes.toString("utf8").replaceAll(String.fromCharCode(13), "")) : bytes;
+    return [file, createHash("sha1").update(content).digest("hex").slice(0, 8)];
+  }));
+}
+
+/** "./icons/icon.svg" with ?v=<hash> when the file has a version: browsers keep a tab icon per address, so a new address is how a changed icon reaches returning visitors. */
+export const versionedIcon = (src, versions) => {
+  const version = versions[src.slice(src.lastIndexOf("/") + 1)];
+  return version ? `${src}?v=${version}` : src;
+};
+
+/** The text of manifest.webmanifest (the "add to home screen" descriptor), one icon per line; `versions` is iconVersions() of the faculty. */
+export function webmanifest(faculty, versions = {}) {
   const fields = {
     name: faculty.pwa.name,
     short_name: faculty.pwa.shortName,
@@ -64,7 +85,7 @@ export function webmanifest(faculty) {
     background_color: BACKGROUND_COLOR,
     theme_color: faculty.pwa.themeColor,
   };
-  const icons = WEBMANIFEST_ICONS.map((icon) => `    { ${Object.entries(icon).map(jsonField).join(", ")} }`);
+  const icons = WEBMANIFEST_ICONS.map((icon) => `    { ${Object.entries({ ...icon, src: versionedIcon(icon.src, versions) }).map(jsonField).join(", ")} }`);
   return `{\n${Object.entries(fields).map((f) => `  ${jsonField(f)},`).join("\n")}\n  "icons": [\n${icons.join(",\n")}\n  ]\n}\n`;
 }
 

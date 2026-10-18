@@ -11,6 +11,7 @@
 // and each guide answers a different search.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { iconVersions, versionedIcon } from "./faculty-public.mjs";
 import { contentFiles, loadContent } from "../faculties/content.js";
 import { DECOR_STYLES, FACULTY, HERO_VARIANTS, TERMINAL_TOKEN_KINDS, THEME_KEYS } from "../faculties/index.js";
 
@@ -20,6 +21,7 @@ const OG_IMAGE = { ...FACULTY.site.ogImage, url: `${SITE_URL}/${FACULTY.site.ogI
 const BRAND = FACULTY.site.brand;
 const SITE_NAME = FACULTY.site.name;
 const HOME_TITLE = FACULTY.site.title;
+const BRAND_MARK = FACULTY.site.brandMark === undefined ? undefined : readFileSync(`faculties/${FACULTY.id}/${FACULTY.site.brandMark}`, "utf8");
 
 /**
  * Who the site is for, as the sentences below embed it (site.audience, faculties/index.js): `people` and `en` as the
@@ -627,6 +629,36 @@ export function withDecor(html, decor = {}) {
   return attrs.length ? html.replace(HTML_TAG, () => `${HTML_TAG}${attrs.join("")}`) : html;
 }
 
+// The brand mark: the symbol #plane-icon at the end of index.html, which the header brand and the sticky mini brand both
+// draw. The template holds the CS parachute on the CS blue; a faculty with site.brandMark swaps the symbol's content for
+// its own file (faculties/<id>/<brandMark>), drawn on the manifest's accent (the file's TILE token).
+const BRAND_SYMBOL_RE = /(<symbol id="plane-icon" viewBox="0 0 512 512">)[\s\S]*?(<\/symbol>)/g;
+const BRAND_MARK_RE = /^(?:\s*<(?:rect|path|g|circle|ellipse)(?=[\s/>])[^<>]*(?:\/>|>[\s\S]*?<\/g>))+\s*$/;
+
+/** The symbol with the faculty's mark in it (`mark`: the shapes of a 512 square with TILE for the tile color, `tile`: #rrggbb), or the page as is when there is no mark. */
+export function withBrandMark(html, mark, tile) {
+  if (mark === undefined) return html;
+  if (!/^#[0-9a-f]{6}$/.test(tile)) throw new Error(`prerender: the brand mark tile must be a #rrggbb color, got ${JSON.stringify(tile)}`);
+  if (!BRAND_MARK_RE.test(mark) || /<script|\son\w+=/i.test(mark)) throw new Error("prerender: the brand mark file should hold only shapes (rect, path, g, circle, ellipse)");
+  if ((html.match(BRAND_SYMBOL_RE) || []).length !== 1) throw new Error('prerender: index.html should have exactly one <symbol id="plane-icon">');
+  return html.replace(BRAND_SYMBOL_RE, (m, open, close) => `${open}
+${mark.trim().replaceAll("TILE", tile).replace(/^/gm, "    ")}
+  ${close}`);
+}
+
+// The tab and home-screen icon links of index.html and admin.html. A faculty with its own icons folder gets each file's
+// content hash as ?v=, so a changed icon is a new address: browsers keep tab icons per address, far past the file's own caching.
+export const ICON_VERSIONS = iconVersions(`faculties/${FACULTY.id}/icons`);
+const ICON_LINK_RE = /(<link rel="(?:icon|apple-touch-icon)" href=")(\.\/icons\/[\w.-]+)(")/g;
+
+/** The icon links with their version query; `versions` {} (CS) gives the page back as is. */
+export function withIconLinks(html, versions) {
+  if (!Object.keys(versions).length) return html;
+  if (!ICON_LINK_RE.test(html)) throw new Error("prerender: the page has no icon link to version");
+  ICON_LINK_RE.lastIndex = 0;
+  return html.replace(ICON_LINK_RE, (m, open, src, close) => `${open}${versionedIcon(src, versions)}${close}`);
+}
+
 /** index.html names the calendar file "biu-5787.ics" (the link and the download name); the manifest's calendar.file is the faculty's. */
 export function withCalendarFile(html, file) {
   return file === "biu-5787.ics" ? html : html.replaceAll("biu-5787.ics", file);
@@ -647,6 +679,8 @@ function common(html, data, updated) {
   html = withCalendarFile(html, FACULTY.calendar.file);
   html = withDecorCss(html, FACULTY.decor);
   html = withTheme(html, FACULTY.theme);
+  html = withBrandMark(html, BRAND_MARK, FACULTY.theme.light.accent);
+  html = withIconLinks(html, ICON_VERSIONS);
   html = withMascotShadow(html, FACULTY.theme.mascotShadow === true);
   html = withDecor(html, FACULTY.decor);
   html = withHero(html, FACULTY.hero);
