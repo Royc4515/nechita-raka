@@ -1,7 +1,6 @@
 /*
-  PLACEHOLDER (faculty PR 4): a copy of faculties/cs/faculty.js with the neuro identity (id, name, site,
-  theme, mascot names and ids, tracks) and some parts still CS: the hero lines and the easter egg are CS
-  placeholders until PR 6 brings the neuro content. The mascots (נוי and רון: characters, lines and images)
+  The brain sciences manifest (faculty PR 4, content since PR 6a). Still CS placeholders: the hero lines and
+  the easter egg, until a designer pass brings neuro ones. The mascots (נוי and רון: characters, lines and images)
   are the neuro ones since PR 6c; their briefs are in management/neuro/mascots.md. Nothing reads `tracks` yet.
 
   הפקולטה: כל מה שמבדיל את האתר של מדעי המוח מאתר של פקולטה אחרת, במקום אחד.
@@ -39,8 +38,7 @@ export default {
   },
 
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
-  // PLACEHOLDER: the CS department until the neuro owner supplies the brain sciences one.
-  department: { name: `המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/` },
+  department: { name: `המרכז הרב תחומי לחקר המוח ע"ש גונדה, התוכנית לתואר ראשון במדעי המוח`, url: `https://gondabrain.biu.ac.il/` },
 
   // הוספה למסך הבית (manifest.webmanifest): השם המלא, השם הקצר מתחת לאייקון, התיאור וצבע הסרגל.
   pwa: {
@@ -78,8 +76,8 @@ export default {
     ],
   },
 
-  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories come from the Gonda study plans (18.10.2026, courses/tools/). PLACEHOLDER still: the
-  // categories; download keeps the CS name because the "courses-file" item in shared/data.js links to it. catalog: קובץ הסריקה של הקטלוג,
+  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories come from the Gonda study plans (18.10.2026, courses/tools/).
+  // download keeps the CS name: the tests and the "courses-file" item (now in faculties/neuro/data.js) point at it; renaming it is an engineering change. catalog: קובץ הסריקה של הקטלוג,
   // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
   // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג).
@@ -147,8 +145,8 @@ export default {
   // לפי הסדר שבו הם מופיעים באתר. מדריך או קטגוריה שלא ברשימה מכשילים את הבנייה, כדי שלא ייעלמו בשקט.
   content: {
     order: {
-      guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
-      categories: [`university`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
+      guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
+      categories: [`university`, `neuro-year1-courses`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
     },
   },
 
