@@ -31,6 +31,7 @@ export function browserFaculty(faculty) {
     site: { url: faculty.site.url, shabbat: { title: faculty.site.shabbat.title, lines: faculty.site.shabbat.lines, footer: faculty.site.shabbat.footer } },
     theme: faculty.theme,
     labels: faculty.labels,
+    chat: { suggestions: faculty.chat.suggestions },
     // The search's faculty synonyms and the faculty's easter eggs, merged by index.html into its shared lists.
     search: faculty.search,
     eggs: faculty.eggs,

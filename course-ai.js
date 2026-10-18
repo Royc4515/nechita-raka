@@ -54,9 +54,10 @@ const GAPS = {
 
 /**
  * The prompt. prefs: { semester, blockedDays: [], earliest, latest, shape, gaps, notes, keep: [{ course, group }] }.
- * Hebrew by default; `en` writes it in English (the course data stays as the catalog has it).
+ * Hebrew by default; `en` writes it in English (the course data stays as the catalog has it). `faculty` ({ he, en }, the
+ * manifest's name) says what the student studies ("מדעי המוח"); without it the prompt names no faculty.
  */
-export function buildPrompt(courses, prefs, { scannedAt = "", en = false } = {}) {
+export function buildPrompt(courses, prefs, { scannedAt = "", en = false, faculty = null } = {}) {
   const t = (he, enText) => (en ? enText : he);
   const wants = [
     prefs.blockedDays.length ? t(`אני לא יכול/ה להגיע בימים: ${prefs.blockedDays.join(", ")}.`, `I can't come on: ${prefs.blockedDays.join(", ")} (Hebrew weekday letters: א'=Sun ... ו'=Fri).`) : "",
@@ -72,8 +73,8 @@ export function buildPrompt(courses, prefs, { scannedAt = "", en = false } = {})
   // The example uses a code no course has, so pasting the prompt back can never import it as a schedule.
   const example = JSON.stringify({ format: FORMAT, version: VERSION, semester: prefs.semester, picks: { "00000": ["01", "03"] } });
   return [
-    t(`אני סטודנט/ית למדעי המחשב באוניברסיטת בר-אילן ובונה מערכת שעות ל${prefs.semester} בשנת תשפ"ז. תעזור לי לבחור קבוצות.`,
-      `I'm a Computer Science student at Bar-Ilan University building my timetable for ${prefs.semester === "סמסטר ב'" ? "semester B" : "semester A"} of 2026-27. Help me choose groups.`),
+    t(`אני סטודנט/ית ${faculty ? `ל${faculty.he} ` : ""}באוניברסיטת בר-אילן ובונה מערכת שעות ל${prefs.semester} בשנת תשפ"ז. תעזור לי לבחור קבוצות.`,
+      `I'm a ${faculty ? `${faculty.en} ` : ""}student at Bar-Ilan University building my timetable for ${prefs.semester === "סמסטר ב'" ? "semester B" : "semester A"} of 2026-27. Help me choose groups.`),
     "",
     t(`הקורסים: ${courses.map((c) => `${c.name} (${c.code})`).join(", ")}. אני לוקח/ת את כולם בסמסטר הזה, וצריך לשבץ את כולם.`,
       `The courses: ${courses.map((c) => `${c.name} (${c.code})`).join(", ")}. I'm taking all of them this semester, and all of them must be scheduled.`),

@@ -11,6 +11,8 @@ window.SITE_EN = {
   // greetings, time-of-day lines, "joined the chat", "thinking" and the bubble lines). Pairs of [Hebrew exactly
   // as in faculty.js, English]. The rest of the page's text is in shared/data.en.js.
   ui: [
+    // The chat's suggestion buttons that only CS has (chat.suggestions).
+    [`באיזה חדר ההרצאה בהכנה למדעי המחשב?`, `Which room is the Preparation for CS lecture in?`],
     // The Shabbat rest's closed page (site.shabbat).
     [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
     [`בשבת גם ביט ובייט מכבים את המסכים, והאתר נח איתם. בלי באגים, בלי דדליינים, בלי "עוד רגע אני מסיים".`, `On Shabbat Bit and Byte switch off their screens too, and the site rests with them. No bugs, no deadlines, no "just one more minute".`],
@@ -52,6 +54,29 @@ window.SITE_EN = {
     [`ביט ובייט הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.`, `Bit and Byte are AI: check dates and rules against the official source. Up to 15 questions a day, and the chat isn't saved on the server.`],
   ],
   content: [
+    // Moved from shared/data.en.js: the translations of texts only CS has (faculty PR 6g).
+    [`איך מוצאים בניין וכיתה, איפה המחלקה והמזכירות, ואיך מנווטים בקמפוס הגדול.`, `How to find a building and classroom, where the department and its office are, and how to navigate the big campus.`],
+    [`לאן פונים בשאלה אקדמית ולאן בבעיה טכנית.`, `Where to turn with an academic question and where with a technical problem.`],
+    [`אתרי האוניברסיטה`, `University sites`],
+    [`מפגש פתיחת שנה במחלקה למדעי המחשב ובינה מלאכותית`, `Year-opening event at the Department of Computer Science and AI`],
+    [`במרחב הלמידה, בניין 503. אוכל, אנשים, קהילה, ועוד כמה דברים ששווה להגיע בשבילם. צריך להירשם מראש.`, `In the learning space, building 503. Food, people, community, and a few more things worth showing up for. Registration required.`],
+    [`להרשמה למפגש`, `Register for the event`],
+    [`בחינה: מבוא למדעי המחשב, מועד א'`, `Exam: Intro to CS, Moed A`],
+    [`בחינה: מתמטיקה בדידה, מועד א'`, `Exam: Discrete Math, Moed A`],
+    [`בחינה: אלגברה לינארית 1, מועד א'`, `Exam: Linear Algebra 1, Moed A`],
+    [`בחינה: חשבון אינפיניטסימלי 1, מועד א'`, `Exam: Calculus 1, Moed A`],
+    [`בחינה: מבוא למדעי המחשב, מועד ב'`, `Exam: Intro to CS, Moed B`],
+    [`בחינה: מתמטיקה בדידה, מועד ב'`, `Exam: Discrete Math, Moed B`],
+    [`בחינה: אלגברה לינארית 1, מועד ב'`, `Exam: Linear Algebra 1, Moed B`],
+    [`בחינה: חשבון אינפיניטסימלי 1, מועד ב'`, `Exam: Calculus 1, Moed B`],
+    [`בחינה: מבנה מחשב, מועד א'`, `Exam: Computer Organization, Moed A`],
+    [`בחינה: אלגברה לינארית 2, מועד א'`, `Exam: Linear Algebra 2, Moed A`],
+    [`בחינה: חשבון אינפיניטסימלי 2, מועד א'`, `Exam: Calculus 2, Moed A`],
+    [`בחינה: הסתברות כללית למדעי המחשב, מועד א'`, `Exam: Probability for CS, Moed A`],
+    [`בחינה: מבנה מחשב, מועד ב'`, `Exam: Computer Organization, Moed B`],
+    [`בחינה: אלגברה לינארית 2, מועד ב'`, `Exam: Linear Algebra 2, Moed B`],
+    [`בחינה: חשבון אינפיניטסימלי 2, מועד ב'`, `Exam: Calculus 2, Moed B`],
+    [`בחינה: הסתברות כללית למדעי המחשב, מועד ב'`, `Exam: Probability for CS, Moed B`],
     // The university category items and the FAQ that name the department (moved from shared/data.en.js with the Hebrew).
     [`כל קורסי מדמ"ח לשנת תשפ"ז: קבוצות, ימים, שעות, חדרים, מרצים ומועדי בחינות. מעלים ל-AI כדי לבנות מערכת שעות`, `All CS courses for 5787: groups, days, hours, rooms, lecturers and exam dates. Upload it to an AI to build a timetable`],
     [`קובץ הקורסים של מדמ"ח (JSON)`, `CS courses file (JSON)`],

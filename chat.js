@@ -39,7 +39,8 @@ function pickGreeting(persona) {
 }
 // The switch button's target: the mascot that is not the current one.
 const OTHER = Object.fromEntries(FACULTY.mascots.map((m, i, all) => [m.id, all[(i + 1) % all.length].id]));
-const SUGGESTIONS = [tr("מתי מתחילות הבחינות?"), tr("איך משנים קורס באינ-בר?"), tr("שכחתי סיסמה ללמדה"), tr("מה עושים עם מבחן במילואים?"), tr("באיזה חדר ההרצאה בהכנה למדעי המחשב?")];
+// The faculty's suggestion buttons (faculty.js chat.suggestions), in the page language.
+const SUGGESTIONS = FACULTY.chat.suggestions.map((question) => tr(question));
 const ERRORS = {
   rate_limited: { code: "429 daily limit", text: tr("הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה."), retry: false },
   daily_cap: { code: "429 site limit", text: tr("הרבה סטודנטים שאלו היום והגענו למכסה היומית. נחזור מחר! בינתיים החיפוש באתר עובד מצוין."), retry: false },

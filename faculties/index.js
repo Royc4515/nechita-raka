@@ -132,6 +132,13 @@ function checkCalendar(id, calendar) {
   if (!/^[\w-]+$/.test(calendar.uidDomain || "")) fail(id, "calendar.uidDomain must be letters, digits and dashes");
 }
 
+/** chat.suggestions: the questions offered as buttons when the chat opens (chat.js); the first three also follow a guide's own question. */
+function checkChat(id, chat) {
+  const list = (chat || {}).suggestions;
+  if (!Array.isArray(list) || list.length < 3 || list.length > 8 || !list.every(nonEmpty)) fail(id, "chat.suggestions must be a list of three to eight texts");
+  if (new Set(list).size !== list.length) fail(id, "chat.suggestions lists a question twice");
+}
+
 /** content.order: the display order of guides and categories, ids from shared/data.js and the faculty's data.js (D5). */
 function checkContentOrder(id, content) {
   const order = (content || {}).order;
@@ -264,6 +271,7 @@ export function validateFaculty(faculty) {
   checkHeroArt(id, site.heroArt);
   checkShabbat(id, site.shabbat);
   checkCalendar(id, faculty.calendar);
+  checkChat(id, faculty.chat);
   const pwa = faculty.pwa || {};
   for (const key of ["name", "shortName", "description"]) if (!nonEmpty(pwa[key])) fail(id, `pwa.${key} is missing`);
   if (!COLOR_RE.test(pwa.themeColor || "")) fail(id, "pwa.themeColor must be a #rrggbb color");

@@ -291,7 +291,7 @@ function checkEnglish(sharedEn, facultyEn) {
   const keys = new Set(ui.map(([he]) => he));
   const used = ["index.html", "chat.js", "peek.js", "shabbat.js"].flatMap((f) => [...readFileSync(f, "utf8").matchAll(/\btr\("((?:[^"\\]|\\.)*)"/g)].map((m) => JSON.parse(`"${m[1]}"`)));
   const mascotLines = FACULTY.mascots.flatMap((m) => [m.joined, m.thinking, ...m.hellos, ...Object.values(m.timely), ...m.peekLines]);
-  const manifestLines = [FACULTY.site.title, FACULTY.site.tagline, FACULTY.site.shabbat.title, ...FACULTY.site.shabbat.lines, FACULTY.site.shabbat.footer];
+  const manifestLines = [...FACULTY.chat.suggestions, FACULTY.site.title, FACULTY.site.tagline, FACULTY.site.shabbat.title, ...FACULTY.site.shabbat.lines, FACULTY.site.shabbat.footer];
   const missingUi = [...new Set([...used, ...mascotLines, ...manifestLines])].filter((s) => !keys.has(s));
   if (missingUi.length) warnEn(`${missingUi.length} טקסטים של הדף בלי תרגום (ui): ${sample(missingUi)}`);
 }
