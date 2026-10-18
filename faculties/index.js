@@ -108,6 +108,11 @@ function checkHeroArt(id, art) {
   if (!Number.isInteger(art.width) || !Number.isInteger(art.height)) fail(id, "site.heroArt needs whole-number width and height");
 }
 
+/** site.brandMark (optional): the file in faculties/<id>/ holding the brand mark's shapes; without it the page keeps the CS parachute. */
+function checkBrandMark(id, file) {
+  if (file !== undefined && !/^[\w-]+\.svg$/.test(file)) fail(id, "site.brandMark must be a plain .svg file name when present");
+}
+
 /**
  * site.shabbat: the closed page of the Shabbat rest (shabbat.js): a title, two or three short lines and the closing
  * greeting, in the faculty's voice. Browser text, so each string needs an English pair in the faculty's data.en.js (ui).
@@ -277,6 +282,7 @@ export function validateFaculty(faculty) {
   if (!/^[\w-]+(\/[\w-]+)*\.(webp|jpg|png)$/.test(og.path || "")) fail(id, "site.ogImage.path must be a relative image path inside public/");
   if (!Number.isInteger(og.width) || !Number.isInteger(og.height) || !nonEmpty(og.alt)) fail(id, "site.ogImage needs width, height and alt");
   checkHeroArt(id, site.heroArt);
+  checkBrandMark(id, site.brandMark);
   checkShabbat(id, site.shabbat);
   checkCalendar(id, faculty.calendar);
   checkChat(id, faculty.chat);

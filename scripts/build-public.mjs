@@ -12,7 +12,7 @@ import { loadIcs } from "./calendar-ics.mjs";
 import { FACULTY } from "../faculties/index.js";
 import { foreignFacultyLeaks } from "./faculty-guard.mjs";
 import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
-import { guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withTheme } from "./prerender.mjs";
+import { ICON_VERSIONS, guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withIconLinks, withTheme } from "./prerender.mjs";
 
 const OUT = "public";
 const FILES = [
@@ -57,13 +57,13 @@ for (const file of [...FILES, "index.html"]) {
 }
 for (const file of FILES) cpSync(file, `${OUT}/${file}`, { recursive: true });
 // The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way, plus its name and share link.
-writeFileSync(`${OUT}/admin.html`, withAdminIdentity(withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme), FACULTY.site));
+writeFileSync(`${OUT}/admin.html`, withIconLinks(withAdminIdentity(withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme), FACULTY.site), ICON_VERSIONS));
 writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync("robots.txt", "utf8")));
 
 // The faculty: the browser's copy of the manifest (names, lines, theme; never the model prompts),
 // the "add to home screen" descriptor, and the mascot and link-preview images at their usual addresses.
 writeFileSync(`${OUT}/faculty.js`, facultyScript(FACULTY));
-writeFileSync(`${OUT}/manifest.webmanifest`, webmanifest(FACULTY));
+writeFileSync(`${OUT}/manifest.webmanifest`, webmanifest(FACULTY, ICON_VERSIONS));
 // The calendar file for the "add all dates to my calendar" button: the university's dates plus the faculty's own (scripts/calendar-ics.mjs).
 writeFileSync(`${OUT}/${FACULTY.calendar.file}`, loadIcs(FACULTY));
 copyFacultyAssets(FACULTY, OUT);
