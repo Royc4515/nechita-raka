@@ -105,7 +105,7 @@ export function buildCore(data, today) {
       ? `עכשיו לא סמסטר. הבא: ${nextTerm.label}, מ-${dmy(nextTerm.from)}.`
       : "";
   return [
-    `האתר "${FACULTY.site.name}" (${SITE_URL}) הוא מרכז מידע ל${FACULTY.site.audience.he} באוניברסיטת בר אילן, שנת הלימודים ${data.site.academicYear}.`,
+    `האתר "${FACULTY.site.name}" (${SITE_URL}) הוא מרכז מידע ל${FACULTY.site.audience.he} באוניברסיטת בר אילן${data.site.academicYear ? `, שנת הלימודים ${data.site.academicYear}` : ""}.`,
     `בנה אותו ${data.site.author}. זה אתר עצמאי, לא אתר רשמי של האוניברסיטה.`,
     "מי שלא מצא תשובה יכול לכתוב לרועי בקבוצת הוואטסאפ של נחיתה רכה.",
     `היום ${dmy(today)}. ${where}`,
