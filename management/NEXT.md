@@ -20,6 +20,9 @@ Everything below is merged into main and live, with no visible change on the CS 
 | Neuro courses | #87, #88 | Roy's catalog scan of department 27 (60 courses) is the neuro catalog; the Gonda study plans of three cohorts for all eight tracks were downloaded, parsed and turned into `plans.json` and a `track:year` yearbook (`management/neuro/plans.md` has the rule and the diffs). |
 | Neuro content | #91, #92, #93 | WhatsApp communities and resources from Roy's WhatsApp (missing links point at Roy), the mascots נוי and רון with 18 images, and the guides, categories and FAQ from the Gonda pages. The neuro site now has everything but the engineering of PR 6d. |
 | Neuro engineering and design | #95, #96 | Track selector with a one-time prompt, years from track:year ids, chat facts naming the track, the neuro file name, egg and EEG hero, the last CS leaks moved out of shared content, and seven manifest-driven decor elements with Flow images (synapse background, brain backdrop, spike headings, lab illustrations, bench footer) plus the colored brain as the hero illustration. CS output verified unchanged except decor-keyed CSS. |
+| Shabbat rest | #101 | Both sites close from candle lighting to havdalah (offline times equal to Hebcal on 127 of 127 Shabbatot, Ramat Gan), a poster-style rest page per faculty, the chat answers without the model. Holidays are not handled yet. |
+| Leak sweep | #102 | The QA review of 19.10 fixed: calendar events, per-faculty ICS, chat chips, shared tips, admin, icons and og image for neuro. Neuro build has no CS wording left except legitimate combined-track mentions. |
+| Simulation 2 | #100 | CS chat: invented facts 11 to 7, answered 24 to 30, no leaks from the troll. |
 | Neuro Vercel | #90 | The project nechita-raka-neuro runs with its own database, Groq key and salt, behind Vercel Authentication. |
 | Neuro research | #82 | `management/neuro/programs.md`: seven brain sciences programs with sources, proposed track ids, study-plan pages, catalog codes, contacts, nine open questions. |
 
@@ -45,3 +48,9 @@ The CS site works exactly as before. The code side of the faculty plan (PRs 1 to
 
 - Seven worktrees of finished sessions sit under `.claude/worktrees/` (amazing-galileo, dreamy-dirac, elated-bell, faculty-manifest, heuristic-lovelace, infallible-kare and the first baseline's). They are safe to remove once PR 3 is merged; the app's "clean up worktrees" does it.
 - The Preview environment on Vercel (separate database, Groq key, salt, raised caps, bypass secret) is set and recorded in the orchestrator's memory, so the next simulation needs no setup.
+
+## Ready to distribute when (checklist of 19.10.2026)
+
+1. Roy: the four missing WhatsApp links (year 1, year-1 reservists and mentors, the Since 2025 community, the Gonda community) or accept the "link missing" tiles.
+2. Roy: the secretariat room and hours (or keep "לפי הוותיקים, עוד לא אומת"), the inferred years in `yearbook.json`, a read of the two character prompts, one walk through the neuro preview.
+3. Orchestrator, after 1 and 2: Resend variables for the weekly mail, a Search Console property and Workload Identity binding for the neuro project, turn Vercel Authentication off on the neuro project, drop `noindex`, one neuro simulation run, then post the drafts in `management/social/2026-10-19-neuro-launch.md` (Roy posts).
