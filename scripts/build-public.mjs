@@ -12,7 +12,7 @@ import { loadIcs } from "./calendar-ics.mjs";
 import { FACULTY } from "../faculties/index.js";
 import { foreignFacultyLeaks } from "./faculty-guard.mjs";
 import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
-import { guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withTheme } from "./prerender.mjs";
+import { guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withTheme } from "./prerender.mjs";
 
 const OUT = "public";
 const FILES = [
@@ -56,8 +56,8 @@ for (const file of [...FILES, "index.html"]) {
   if (!existsSync(file)) throw new Error(`build-public: ${file} is missing`);
 }
 for (const file of FILES) cpSync(file, `${OUT}/${file}`, { recursive: true });
-// The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way.
-writeFileSync(`${OUT}/admin.html`, withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme));
+// The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way, plus its name and share link.
+writeFileSync(`${OUT}/admin.html`, withAdminIdentity(withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme), FACULTY.site));
 writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync("robots.txt", "utf8")));
 
 // The faculty: the browser's copy of the manifest (names, lines, theme; never the model prompts),

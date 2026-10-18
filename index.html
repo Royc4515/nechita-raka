@@ -527,6 +527,7 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 .now-inner { padding: var(--s4) var(--s5); }
 /* Bento code watermark */
 .tile.hero-tile::before { content: "{ }"; position: absolute; inset-block-start: auto; inset-block-end: -18px; inset-inline-start: 14px; inset-inline-end: auto; inline-size: auto; aspect-ratio: auto; border-radius: 0; background: none; font-family: var(--mono); font-size: 5.5rem; font-weight: 700; line-height: 1; color: var(--accent-ink); opacity: .1; direction: ltr; }
+/* decor:start */
 /* Faculty decor (manifest decor; the build sets data-decor-<place> on <html>, the shapes are assets/decor/ files used as masks and painted with the accent). Spec: management/neuro/decor-brief.md; the ink caps keep the faint text at 4.5:1. */
 :root[data-decor-background="synapses"] body { background-image: none; }
 :root[data-decor-background="synapses"] { --synapse-ink: 6%; --synapse-alpha: 1; --synapse-pulse: none; }
@@ -561,6 +562,7 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)) { box-shadow: var(--card-lit, var(--shadow-1)); }
 :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):not(:hover) { border-color: var(--card-edge, var(--border)); }
 @media (hover: hover) { :root[data-decor-cards="glow"] :is(.card, .guide-card, .tile:not(.hero-tile)):hover { box-shadow: var(--card-lit, var(--shadow-2)); } }
+/* decor:end */
 /* ---------- Navigation ---------- */
 .bar-row { display: flex; align-items: center; gap: var(--s3); }
 .bar-row .search { flex: 1; }

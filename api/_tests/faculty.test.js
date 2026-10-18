@@ -546,3 +546,14 @@ test("the faculty guard passes a clean bundle and fails one that carries another
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("the dashboard takes its faculty line and share link from the manifest, and CS's page is as it was", async () => {
+  const { withAdminIdentity } = await import("../../scripts/prerender.mjs");
+  const admin = readFileSync(new URL("../../admin.html", import.meta.url), "utf8");
+  assert.equal(withAdminIdentity(admin, FACULTIES.cs.site), admin, "the template is written with the CS values");
+  const neuroAdmin = withAdminIdentity(admin, FACULTIES.neuro.site);
+  assert.ok(neuroAdmin.includes(`<small>נחיתה רכה · מדעי המוח בר אילן</small>`));
+  assert.ok(neuroAdmin.includes(`id="share-link">${FACULTIES.neuro.site.url}/?src=wa</code>`));
+  assert.ok(!/מדמ"ח|nechita-raka\.vercel\.app/.test(neuroAdmin));
+  assert.throws(() => withAdminIdentity("<html></html>", FACULTIES.cs.site), /admin\.html is missing/);
+});
