@@ -92,6 +92,12 @@ window.SITE_EN = {
     [`חומרים לקורסי היסוד ביהדות`, `Materials for the basic Jewish Studies courses`],
     [`דרייב יהדות`, `Jewish Studies Drive`],
     // Faculty PR 6b: the neuro resources, the WhatsApp communities and groups, and the "link missing" items (their wa.me links get an English message).
+    [`מבוא לסטטיסטיקה: קבוצת הקורס`, `Intro to Statistics: the course group`],
+    [`קבוצת הוואטסאפ של הקורס מבוא לסטטיסטיקה, בקהילת מחזור תשפ"ו`, `The WhatsApp group of the Intro to Statistics course, in the 5786 cohort's community`],
+    [`מורים פרטיים למדעי המוח`, `Private tutors for Brain Sciences`],
+    [`גיליון של הסטודנטים עם מורים פרטיים לקורסי התואר, לפי קורס`, `The students' sheet of private tutors for the degree's courses, by course`],
+    [`טיפים לפי שנים`, `Tips by year`],
+    [`מסמך של הסטודנטים עם טיפים לכל שנה בתואר: מה חשוב, על מה לשים לב ומה כדאי לקחת`, `The students' document with tips for every year of the degree: what matters, what to watch for and what to take`],
     [`שנה א' (מחזור תשפ"ז)`, `First year (the 5787 cohort)`],
     [`קבוצת שנה א' תשפ"ז: הקישור חסר`, `the first-year group of 5787: link missing`],
     [`הקבוצה או הקהילה של המחזור שלכם. במדעי המוח כל מחזור מנהל קהילת וואטסאפ, ובתוכה קבוצות הקורסים: נכנסים לקהילה ומצטרפים מבפנים. מי שיש לו את הקישור: לוחצים כאן ושולחים לרועי, ההודעה כבר מוכנה.`, `Your cohort's group or community. In Brain Sciences each cohort runs a WhatsApp community with the course groups inside: join the community, then the groups from within. If you have the link: tap here and send it to Roy, the message is ready.`],
