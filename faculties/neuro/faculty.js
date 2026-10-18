@@ -1,7 +1,7 @@
 /*
   The brain sciences manifest (faculty PR 4, content since PR 6a, mascots since 6c, hero, egg and tracks since 6d).
-  The mascots' briefs are in management/neuro/mascots.md. Still a placeholder: site.heroArt (a drawn EEG disc,
-  faculties/neuro/hero-art.svg) until a neuro illustration replaces it.
+  The mascots' briefs are in management/neuro/mascots.md; the hero illustration (a brain on a violet disc, made in Flow)
+  and the design elements (decor) since 6e, management/neuro/decor-brief.md.
 
   הפקולטה: כל מה שמבדיל את האתר של מדעי המוח מאתר של פקולטה אחרת, במקום אחד.
   הבנייה (scripts/build-public.mjs) בוחרת פקולטה לפי משתנה הסביבה FACULTY (ברירת המחדל: cs),
@@ -35,9 +35,9 @@ export default {
     description: `רישום לקורסים, למדה ו-365, שכר לימוד, בחינות ומועד ב', מילואים ולוח השנה האקדמי {year}, לסטודנטים בשנה א' במדעי המוח בבר אילן.`,
     // תמונת השיתוף (וואטסאפ, לינקדאין): הקובץ בתיקייה הזאת, הכתובת שבה היא מתפרסמת, ותיאור לקוראי מסך.
     ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 600, height: 600, alt: `נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים` },
-    // האיור שליד הכותרת: file מוצג במסך רחב, avatar הוא העיגול הקטן ליד השם בטלפון. כרגע ציור זמני (hero-art.svg,
-    // עיגול סגול עם גל EEG); מחליפים בתמונה בתיקייה הזאת (webp, jpg, png או svg) ומעדכנים כאן את השם, הגודל והתיאור.
-    heroArt: { file: `hero-art.svg`, avatar: `hero-art.svg`, alt: `איור זמני: גל EEG על עיגול סגול`, width: 640, height: 640 },
+    // האיור שליד הכותרת: file מוצג במסך רחב, avatar הוא העיגול הקטן ליד השם בטלפון. מוח סגול על עיגול סגול (נוצר ב-Flow,
+    // management/neuro/decor-brief.md). מחליפים בתמונה בתיקייה הזאת (webp, jpg, png או svg) ומעדכנים כאן את השם, הגודל והתיאור.
+    heroArt: { file: `hero-brain.webp`, avatar: `hero-brain-avatar.webp`, alt: `איור: מוח מצויר בגווני סגול על עיגול סגול`, width: 640, height: 640 },
   },
 
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.

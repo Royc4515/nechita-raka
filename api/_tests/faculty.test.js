@@ -27,7 +27,7 @@ const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] 
 const EXPECTED = {
   cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", heroVariant: "terminal", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json", mascotShadow: undefined, decor: undefined },
   // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026), the EEG hero, the egg and the
-  // file name are its own (PR 6d); only the hero illustration is a drawn placeholder.
+  // file name are its own (PR 6d); the hero illustration and the design elements since PR 6e.
   neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true, decor: NEURO_DECOR },
 };
 const expected = EXPECTED[FACULTY.id];

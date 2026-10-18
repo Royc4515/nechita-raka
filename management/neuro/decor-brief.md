@@ -112,3 +112,7 @@ Roy: combine both kinds as needed and for beauty. The ink drawings stay where a 
 
 - `backdrop: "brain"`: the Flow ink brain (`brain-ink.webp`, alpha thresholded, lossless, 400 x 356, 5.5 KB) behind the round hero illustration from 768 px, inset -12% / -15%, accent at 12% (light) and 22% (dark). No text sits there; on phones the illustration is hidden and so is the brain.
 - The neuron watermark was re-encoded the same way (lossless, hard alpha edge): 24 KB down to 3 KB.
+
+## Hero illustration (Roy, 18.10.2026)
+
+Roy chose the colored brain as the neuro hero illustration (`site.heroArt`), replacing the drawn EEG placeholder (`hero-art.svg`, removed). `faculties/neuro/hero-brain.webp` (640 x 640, 29 KB): the Flow brain re-cut at 560 px, centered on a violet disc (radial #8a5cf0 to #3a1b8c, lit from the upper inline end) with a soft lilac glow behind it, cut round. `hero-brain-avatar.webp` (104 x 104, 4 KB) is the same composition for the 52 px brand avatar on phones. The ink-brain backdrop stays behind it as a faint echo.
