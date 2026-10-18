@@ -148,7 +148,7 @@ export default {
   content: {
     order: {
       guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
-      categories: [`university`, `materials`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
+      categories: [`university`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
     },
   },
 
