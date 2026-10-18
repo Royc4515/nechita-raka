@@ -34,6 +34,10 @@ export const DECOR_STYLES = Object.freeze({
   watermark: Object.freeze({ neuron: Object.freeze(["neuron.webp"]) }),
   // A violet lift under the cards in light mode and a faint lit edge in dark mode.
   cards: Object.freeze({ glow: Object.freeze([]) }),
+  // Colored lab illustrations beside the headings of the guides and (from tablet width, the title is long) the links.
+  sections: Object.freeze({ lab: Object.freeze(["lab-flasks.webp", "lab-tubes.webp"]) }),
+  // A lab notebook, a brain and a microscope standing on the footer's top line, like a lab bench.
+  footer: Object.freeze({ bench: Object.freeze(["lab-notebook.webp", "brain.webp", "lab-microscope.webp"]) }),
 });
 /** The colored pieces a terminal line may hold (the .t-* classes in index.html). */
 export const TERMINAL_TOKEN_KINDS = Object.freeze(["prompt", "kw", "str", "out", "dim"]);

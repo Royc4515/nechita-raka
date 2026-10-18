@@ -21,7 +21,7 @@ const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
 const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "philosophy", "linguistics", "physics"];
 // The brain-science design elements of the neuro edition (faculty PR 6e, management/neuro/decor-brief.md); CS has none.
-const NEURO_DECOR = { background: "synapses", headings: "spike", watermark: "neuron", cards: "glow" };
+const NEURO_DECOR = { background: "synapses", headings: "spike", watermark: "neuron", cards: "glow", sections: "lab", footer: "bench" };
 // <track>:<year> from the Gonda study plans; the computational track started in 5787, so it has year 1 only.
 const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] : [1, 2, 3]).map((y) => `${t}:${y}`));
 const EXPECTED = {

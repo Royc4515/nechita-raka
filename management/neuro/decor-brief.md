@@ -84,3 +84,24 @@ The engineer's changes to the brief, after the browser checks:
 - Neuron: the Flow render (Nano Banana, x1, 1:1, project "נחיתה רכה - קמעות", prompt as above) came out as a tall pyramidal cell. Processing: grayscale, paper above 215 dropped, ink stretched x1.6, lines thickened with a 5 px max filter (the fine lines vanished at 96 px), trimmed, max side 480, alpha mask, webp q70. On phones it sits at the bottom inline-end corner (the short tile has no free middle); from 640 px it is centered vertically in the tall tile, clear of the title. The CS rule's `direction: ltr` is reset, otherwise the inline-end inset lands behind the title.
 - Card glow in dark: a 10% accent tint on the border instead of an extra 1 px ring (no double border), kept off while hovering so the hover border still shows.
 - Spike on the headings with a mascot (`h2.has-mascot`, a flex row aligned to the bottom): lifted 0.4em to sit on the text line. Counts keep a 0.4em gap once the brackets are gone.
+
+## Second round: colored lab and brain illustrations (Roy, 18.10.2026)
+
+Roy asked for more and livelier elements ("תהיה יצירתי, תייצר תמונות בסגנון של מוח, דברים של מעבדה") and asked whether the grey, dry realistic look was deliberate. The line drawings are grey only in Flow; on the site they are masks painted violet. For the elements that stand beside content, the style moved to the mascots' own: cartoon, deep plum outlines, flat two-tone shading, violet, lilac, mint and pink. Five Flow renders (Nano Banana, x1, 1:1, same project), each prompt ending with the mascot style line ("cartoon illustration, deep plum outlines, bold dark outlines, flat cel shading with two-tone shading, plain pure white background, no ground shadow, no border, no text, no other objects, centered with a margin"):
+
+| File | Subject | Size |
+| --- | --- | --- |
+| `brain.webp` | a stylized brain, side view, lilac with tiny yellow sparks, no face | 480 x 408, 31 KB |
+| `lab-microscope.webp` | violet microscope, mint slide | 211 x 320, 16 KB |
+| `lab-flasks.webp` | Erlenmeyer, round-bottom flask and beaker, violet, mint and pink liquids | 284 x 320, 18 KB |
+| `lab-tubes.webp` | three test tubes in a wooden rack, pipette, petri dish | 320 x 288, 22 KB |
+| `lab-notebook.webp` | נוי's lab notebook with sticky tabs, a neuron doodle, pencil, iced coffee | 320 x 245, 22 KB |
+
+Processing: white background removed by flood fill from the edges (tolerance 40), trimmed, max side 480 (brain) or 320, webp q80. In dark mode they get the mascots' 1 px pale edge (the plum outline disappears on the dark background otherwise).
+
+Two new places in the vocabulary:
+
+- `sections: "lab"`: the flasks beside the guides heading and the test tubes beside the links heading, at the heading row's free end (left in RTL), 72 px on phones and 96 px from 640 px, lifted so they end above the content. On phones only the flasks: the links title runs the full width there. The FAQ was tried and dropped: its mascot sits in the same spot on every width.
+- `footer: "bench"`: the notebook, the brain and the microscope standing on the footer's top line at the page column's inline end, 72 px tall on phones and 96 px from 640 px.
+
+Added weight for the neuro edition: about 130 KB of images, all decorative CSS backgrounds (no layout shift).

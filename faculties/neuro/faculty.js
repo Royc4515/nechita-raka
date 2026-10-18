@@ -66,7 +66,9 @@ export default {
   //   headings: `spike` קו קטן של פוטנציאל פעולה לפני כותרות הסעיפים, במקום "// ".
   //   watermark: `neuron` ציור של נוירון על האריח הסגול הגדול, במקום "{ }".
   //   cards: `glow` הילה סגולה עדינה לכרטיסים.
-  decor: { background: `synapses`, headings: `spike`, watermark: `neuron`, cards: `glow` },
+  //   sections: `lab` איורים צבעוניים של מעבדה ליד הכותרות של המדריכים והקישורים.
+  //   footer: `bench` מחברת מעבדה, מוח ומיקרוסקופ שעומדים על הקו העליון של התחתית.
+  decor: { background: `synapses`, headings: `spike`, watermark: `neuron`, cards: `glow`, sections: `lab`, footer: `bench` },
 
   // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit").
   labels: {

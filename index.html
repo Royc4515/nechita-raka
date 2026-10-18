@@ -541,6 +541,17 @@ h1::after { content: "_"; font-family: var(--mono); font-weight: 400; color: var
 :root[data-decor-headings="spike"] .count { margin-inline-start: .4em; }
 :root[data-decor-watermark="neuron"] .tile.hero-tile::before { content: ""; direction: inherit; inset-block: auto -12px; inset-inline-start: auto; inset-inline-end: -8px; inline-size: 96px; block-size: 96px; opacity: 1; background: color-mix(in srgb, var(--accent-ink) 14%, transparent); -webkit-mask: url(./assets/decor/neuron.webp) center / contain no-repeat; mask: url(./assets/decor/neuron.webp) center / contain no-repeat; }
 @media (min-width: 640px) { :root[data-decor-watermark="neuron"] .tile.hero-tile::before { inset-block: 0; margin-block: auto; inline-size: 160px; block-size: 160px; } }
+:root[data-decor-sections="lab"] :is(#guides, #categories) { position: relative; }
+:root[data-decor-sections="lab"] :is(#guides, #categories)::after { content: ""; position: absolute; inset-block-start: -36px; inset-inline-end: 0; inline-size: 72px; block-size: 72px; background: center bottom / contain no-repeat; pointer-events: none; }
+:root[data-decor-sections="lab"] #guides::after { background-image: url(./assets/decor/lab-flasks.webp); }
+:root[data-decor-sections="lab"] #categories::after { background-image: url(./assets/decor/lab-tubes.webp); }
+@media (max-width: 639px) { :root[data-decor-sections="lab"] #categories::after { content: none; } }
+@media (min-width: 640px) { :root[data-decor-sections="lab"] :is(#guides, #categories)::after { inset-block-start: -64px; inline-size: 96px; block-size: 96px; } }
+:root[data-decor-footer="bench"] footer { position: relative; }
+:root[data-decor-footer="bench"] footer::before { content: ""; position: absolute; inset-block-start: 1px; inset-inline-end: max(var(--gutter), (100% - 1120px) / 2 + var(--gutter)); translate: 0 -100%; inline-size: 220px; block-size: 72px; background: url(./assets/decor/lab-notebook.webp) left bottom / auto 44px no-repeat, url(./assets/decor/brain.webp) 62px bottom / auto 72px no-repeat, url(./assets/decor/lab-microscope.webp) right bottom / auto 60px no-repeat; pointer-events: none; }
+@media (min-width: 640px) { :root[data-decor-footer="bench"] footer::before { inline-size: 290px; block-size: 96px; background-position: left bottom, 82px bottom, right bottom; background-size: auto 58px, auto 96px, auto 80px; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-sections="lab"] :is(#guides, #categories)::after, :root:not([data-theme="light"])[data-decor-footer="bench"] footer::before { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); } }
+:root[data-theme="dark"][data-decor-sections="lab"] :is(#guides, #categories)::after, :root[data-theme="dark"][data-decor-footer="bench"] footer::before { filter: drop-shadow(0 0 1px rgb(255 255 255 / 70%)); }
 :root[data-decor-cards="glow"] { --shadow-2: 0 1px 2px rgb(15 27 45 / 5%), 0 14px 32px -16px color-mix(in srgb, var(--accent) 38%, transparent); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-decor-cards="glow"] { --shadow-2: none; --card-lit: inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent); --card-edge: color-mix(in srgb, var(--accent) 10%, var(--border)); } }
 :root[data-theme="dark"][data-decor-cards="glow"] { --shadow-2: none; --card-lit: inset 0 1px 0 color-mix(in srgb, var(--accent) 22%, transparent); --card-edge: color-mix(in srgb, var(--accent) 10%, var(--border)); }
