@@ -22,7 +22,7 @@ Goal: the neuro site exists and is used by first-year brain sciences students in
 | # | Item | Owner | Done when |
 | --- | --- | --- | --- |
 | 7 | Neuro Vercel project, database, Groq key, Search Console (PR 5). | Roy, orchestrator | Done 18.10.2026 except Search Console and the weekly mail, which wait for launch. The placeholder site is behind Vercel Authentication. |
-| 8 | Neuro content, theme, נוי ורון, hero variant, track selector (PR 6). | neuro-owner, designer, engineer | Content, mascots and groups done 18.10.2026 (#91 to #93); the engineering half (PR 6d: track selector, years, flavor, CS leaks) is next. |
+| 8 | Neuro content, theme, נוי ורון, hero variant, track selector (PR 6). | neuro-owner, designer, engineer | Done 18.10.2026 (#91 to #96): content, mascots, groups, track selector, years, flavor and decor. Launchable; waiting on Roy's checks and the launch steps (item 9). |
 | 9 | Neuro launch before the change period of semester ב'. | social, orchestrator | Indexed; traffic visible in the neuro admin. |
 | 10 | First exam season on both sites: exam guides, מועד ב', reservist rights. | both owners | Exam-season searches have answers; "not found" searches drop. |
 

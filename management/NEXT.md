@@ -1,6 +1,6 @@
 # Read this first
 
-Written 18.10.2026 by the orchestrator for Roy, updated overnight after the neuro content landed. Kept current: the newest "Where things stand" replaces the old one. To continue, open the orchestrator session and say "continue from management/NEXT.md".
+Written 18.10.2026 by the orchestrator for Roy, updated overnight after the neuro site became launchable. Kept current: the newest "Where things stand" replaces the old one. To continue, open the orchestrator session and say "continue from management/NEXT.md".
 
 ## Where things stand (18.10.2026)
 
@@ -19,6 +19,7 @@ Everything below is merged into main and live, with no visible change on the CS 
 | Faculty PR 4 | #83 | `FACULTY` env everywhere, CI matrix over cs and neuro, a build guard against another faculty's names, and a placeholder `faculties/neuro/` (CS content copied, violet accent, mascots נוי and רון with CS images). `FACULTY=neuro npm run build` produces a neuro site. |
 | Neuro courses | #87, #88 | Roy's catalog scan of department 27 (60 courses) is the neuro catalog; the Gonda study plans of three cohorts for all eight tracks were downloaded, parsed and turned into `plans.json` and a `track:year` yearbook (`management/neuro/plans.md` has the rule and the diffs). |
 | Neuro content | #91, #92, #93 | WhatsApp communities and resources from Roy's WhatsApp (missing links point at Roy), the mascots נוי and רון with 18 images, and the guides, categories and FAQ from the Gonda pages. The neuro site now has everything but the engineering of PR 6d. |
+| Neuro engineering and design | #95, #96 | Track selector with a one-time prompt, years from track:year ids, chat facts naming the track, the neuro file name, egg and EEG hero, the last CS leaks moved out of shared content, and seven manifest-driven decor elements with Flow images (synapse background, brain backdrop, spike headings, lab illustrations, bench footer) plus the colored brain as the hero illustration. CS output verified unchanged except decor-keyed CSS. |
 | Neuro Vercel | #90 | The project nechita-raka-neuro runs with its own database, Groq key and salt, behind Vercel Authentication. |
 | Neuro research | #82 | `management/neuro/programs.md`: seven brain sciences programs with sources, proposed track ids, study-plan pages, catalog codes, contacts, nine open questions. |
 
@@ -31,7 +32,8 @@ The CS site works exactly as before. The code side of the faculty plan (PRs 1 to
 3. **Vercel project for neuro** (faculty PR 5): done on 18.10.2026 in the dashboard (`nechita-raka-neuro`, own Neon database, second Groq key, own salt, admin sign-in). It is behind Vercel Authentication on all deployments until the content PR lands. Left for launch: Resend variables for the weekly mail, the Search Console property and its Workload Identity binding, and turning the protection off.
 4. **Neuro engineering** (faculty PR 6d, in review): track selector, years from `track:year` ids, chat facts naming the track, per-faculty download name, egg and hero, the last CS leaks in shared content, the dark-mode shadow. After it the neuro site is launchable.
 5. **Before launch, yours**: the four missing group links (year 1, year-1 reservists and mentors, the Since 2025 community, the Gonda community), the office room and hours (written as "לפי הוותיקים, עוד לא אומת" until you confirm), the inferred years in `yearbook.json` against the PDFs, a read of the two character prompts, and a walk through the neuro preview.
-6. **Launch** (faculty PR 7): Resend variables for the weekly mail, a Search Console property and its Workload Identity binding, protection off, `noindex` off, the launch kit from the social role, a simulation run with the neuro persona.
+6. **Decide the audience copy**: you told the engineering session the neuro site serves the whole department, first-years first but not only; the copy still says "שנה א'" in titles, descriptions, JSON-LD, llms.txt and the chat's SITE line. Decide, then a copy sweep (content tier) before launch.
+7. **Launch** (faculty PR 7): Resend variables for the weekly mail, a Search Console property and its Workload Identity binding, protection off, `noindex` off, the launch kit from the social role, a simulation run with the neuro persona.
 
 ## Decisions waiting on you
 
