@@ -31,6 +31,9 @@ export default {
     description: `רישום לקורסים, למדה ו-365, שכר לימוד, בחינות ומועד ב', מילואים ולוח השנה האקדמי {year}, לסטודנטים בשנה א' במדעי המחשב בבר אילן.`,
     // תמונת השיתוף (וואטסאפ, לינקדאין): הקובץ בתיקייה הזאת, הכתובת שבה היא מתפרסמת, ותיאור לקוראי מסך.
     ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 600, height: 600, alt: `נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים` },
+    // האיור שליד הכותרת: file מוצג במסך רחב, avatar הוא העיגול הקטן ליד השם בטלפון. שניהם בתיקייה הזאת
+    // ומתפרסמים ב-assets/. סמל המצנח של המותג (האייקון בכותרת ובאפליקציה) משותף לכל הפקולטות ולא כאן.
+    heroArt: { file: `group-photo.webp`, avatar: `group-photo-avatar.webp`, alt: `איור: הקמע של נחיתה רכה נוחת במצנח עשוי קוד וספרים, מעל העיר`, width: 640, height: 640 },
   },
 
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
@@ -75,20 +78,23 @@ export default {
   // הקורסים (faculties/cs/courses/, ההוראות לסריקה ב-README.md שם). catalog: קובץ הסריקה של הקטלוג,
   // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
-  // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג).
+  // fileLabel: איך התוכן המשותף קורא לקובץ (במקום {coursesFile} ב-shared/data.js), ו-fileLabelEn באנגלית.
+  // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג; short, לא חובה, הוא הנוסח הקצר לכפתורי הסינון).
   // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בידיעון מדעי המחשב: שנה א'").
   courses: {
     catalog: `courses/catalog.json`,
     yearbook: `courses/yearbook.json`,
     download: `courses-cs-2027.json`,
+    fileLabel: `קובץ הקורסים של מדמ"ח`,
+    fileLabelEn: `the CS courses file`,
     categories: [
       { id: `1`, label: `שנה א'` },
       { id: `2`, label: `שנה ב'` },
       { id: `3`, label: `שנה ג'` },
-      { id: `cluster1`, label: `אשכול 1: תכנות מתקדם` },
-      { id: `cluster2`, label: `אשכול 2: כללי` },
+      { id: `cluster1`, label: `אשכול 1: תכנות מתקדם`, short: `אשכול 1` },
+      { id: `cluster2`, label: `אשכול 2: כללי`, short: `אשכול 2` },
       { id: `complement`, label: `אשכול השלמה` },
-      { id: `ai`, label: `מגמת AI ומצוינות` },
+      { id: `ai`, label: `מגמת AI ומצוינות`, short: `מגמת AI` },
     ],
     officialSource: `ידיעון מדעי המחשב`,
   },

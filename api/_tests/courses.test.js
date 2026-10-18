@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import { buildCourseChunks, courseUrl, loadCourseChunks } from "../_lib/chat/courses.js";
 import { SITE_URL } from "../_lib/chat/knowledge.js";
-import { retrieve } from "../_lib/chat/retrieve.js";
-import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE } from "../_lib/courses/model.js";
+import { OTHER_TRACK_WEIGHT, retrieve } from "../_lib/chat/retrieve.js";
+import { buildCourses, CATEGORIES, loadCourses, OFFICIAL_SOURCE, yearOf, yearsOf } from "../_lib/courses/model.js";
 import { FACULTIES, FACULTY, facultyFile } from "../../faculties/index.js";
 
 /** The label of a yearbook category of the active faculty, as the chat cites it. */
@@ -24,15 +25,69 @@ test("every course code in the catalog becomes one course, with the scan date", 
   assert.equal(shaped.scannedAt, "2026-10-14");
 });
 
-test("the CS yearbook gives each course its year, and the year list drives course.year", () => {
+test("the CS yearbook gives each course its year, and the year list drives course.year and course.years", () => {
   assert.deepEqual(byCode.get("89110").categories, ["1"]); // מבוא למדעי המחשב
   assert.equal(byCode.get("89110").year, 1);
+  assert.deepEqual(byCode.get("89110").years, [1]);
   assert.equal(byCode.get("891200").year, 1); // מבני נתונים
   assert.equal(byCode.get("89220").year, 2); // אלגוריתמים 1
   assert.equal(byCode.get("891111").year, 2); // תכנות מונחה עצמים
   assert.deepEqual(byCode.get("892322").categories, ["3"]); // אלגוריתמים מתקדמים
   assert.deepEqual(byCode.get("89005").categories, []); // not in the yearbook
   assert.equal(byCode.get("89005").year, null);
+  assert.deepEqual(byCode.get("89005").years, []);
+  assert.deepEqual(byCode.get("895656").years, [], "a pool is not a year"); // מבוא לקריפטוגרפיה
+  assert.equal(yearOf(["1"]), 1, "the model exports the year helpers of course-years.js");
+});
+
+// The brain sciences yearbook: "<track>:<year>" categories (MULTI-FACULTY-PLAN.md D9), as a fixture whatever FACULTY runs.
+const neuro = FACULTIES.neuro;
+const neuroFile = (key) => facultyFile(neuro, neuro.courses[key]);
+const neuroShaped = loadCourses(neuroFile("catalog"), neuroFile("yearbook"));
+const neuroByCode = new Map(neuroShaped.courses.map((c) => [c.code, c]));
+const readJson = (url) => JSON.parse(readFileSync(url, "utf8"));
+const neuroChunks = buildCourseChunks(readJson(neuroFile("catalog")), readJson(neuroFile("yearbook")), neuro);
+const neuroLabel = (id) => neuro.courses.categories.find((c) => c.id === id).label;
+
+test("track:year categories give the set of years, one year when every track agrees, and the chosen track's year", () => {
+  const intro = neuroByCode.get("27202"); // year 1 in every track that takes it
+  assert.ok(intro.categories.includes("cs:1") && intro.categories.includes("psychology:1"), intro.categories.join());
+  assert.deepEqual(intro.years, [1]);
+  assert.equal(intro.year, 1);
+  const spread = neuroByCode.get("27305"); // year 2 in most tracks, year 3 in linguistics and philosophy
+  assert.deepEqual(spread.years, [2, 3]);
+  assert.equal(spread.year, null, "no single year across the tracks");
+  assert.equal(yearOf(spread.categories, "cs"), 2, "the chosen track's year");
+  assert.equal(yearOf(spread.categories, "linguistics"), 3);
+  assert.deepEqual(yearsOf(spread.categories, "single-comp"), [], "not in that track");
+  const known = new Set(neuro.courses.categories.map((c) => c.id));
+  for (const c of neuroShaped.courses) for (const id of c.categories) assert.ok(known.has(id), `${c.code}: ${id}`);
+});
+
+test("the chunks of a faculty with tracks name the track and year of each fact, and carry the tracks for retrieval", () => {
+  const intro = neuroChunks.find((c) => c.id === "course:27202");
+  assert.ok(intro.text.includes(`ב${neuro.courses.officialSource}: `), intro.text);
+  assert.ok(intro.text.includes(neuroLabel("psychology:1")), "a track with its year, by the manifest's label");
+  assert.match(neuroLabel("psychology:1"), /מדעי המוח ופסיכולוגיה: שנה א'/);
+  assert.ok(intro.text.includes(neuroLabel("cs:1")));
+  assert.ok(intro.tracks.includes("cs") && intro.tracks.includes("psychology"), intro.tracks.join());
+  const spread = neuroChunks.find((c) => c.id === "course:27305");
+  assert.ok(spread.text.includes(neuroLabel("cs:2")) && spread.text.includes(neuroLabel("linguistics:3")), "each track with its own year");
+  const outside = neuroChunks.find((c) => !neuroByCode.get(c.id.slice(7)).categories.length);
+  assert.deepEqual(outside.tracks, [], "a course the plans lack has no tracks");
+  const csChunks = buildCourseChunks(readJson(csFile("catalog")), readJson(csFile("yearbook")), FACULTIES.cs);
+  assert.ok(!("tracks" in csChunks[0]), "the CS chunks (no tracks in the manifest) keep their shape");
+});
+
+test("retrieval prefers the chosen track's course facts and leaves facts without tracks alone", () => {
+  const fact = (id, tracks) => ({ id, title: "מבוא למדעי המוח", url: "https://x.example/" + id, text: "קורס מבוא למדעי המוח, יום ב' 10:00.", keywords: ["קורס"], ...(tracks ? { tracks } : {}) });
+  const pool = [fact("course:a", ["cs", "single"]), fact("course:b", ["psychology"]), fact("guide:c"), fact("course:d", [])];
+  const ids = (list) => list.map((c) => c.id);
+  assert.deepEqual(ids(retrieve(pool, "מבוא למדעי המוח", 4)), ["course:a", "course:b", "guide:c", "course:d"], "without a track: index order on a tie");
+  assert.deepEqual(ids(retrieve(pool, "מבוא למדעי המוח", 4, { track: "psychology" })), ["course:b", "guide:c", "course:d", "course:a"], "the other track's fact drops behind");
+  assert.deepEqual(ids(retrieve(pool, "מבוא למדעי המוח", 4, { track: "cs" })), ["course:a", "guide:c", "course:d", "course:b"]);
+  assert.ok(OTHER_TRACK_WEIGHT > 0 && OTHER_TRACK_WEIGHT < 1, "demoted, not dropped");
+  assert.deepEqual(ids(retrieve(pool, "מבוא למדעי המוח", 4, { track: "physics" })), ["guide:c", "course:d", "course:a", "course:b"], "a track no fact names demotes every tracked fact");
 });
 
 test("a course listed in several parts of the yearbook carries every one of them", () => {

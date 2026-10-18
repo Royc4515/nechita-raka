@@ -7,7 +7,7 @@
 // Warnings are worth a look but do not fail the check.
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import { contentFiles, mergeContent, mergeEnglish } from "../faculties/content.js";
+import { contentFiles, contentPlaceholders, mergeContent, mergeEnglish } from "../faculties/content.js";
 import { FACULTIES, FACULTY } from "../faculties/index.js";
 
 const FILES = contentFiles(FACULTY);
@@ -86,7 +86,7 @@ if (!sharedData || !facultyData) report();
 // ---------- 2. The merge (the rules in faculties/content.js, named there when one is broken) ----------
 let data;
 try {
-  data = mergeContent(sharedData, facultyData, FACULTY.content.order);
+  data = mergeContent(sharedData, facultyData, FACULTY.content.order, contentPlaceholders(FACULTY));
 } catch (err) {
   errors.push({ msg: err.message });
   report();
@@ -255,7 +255,7 @@ function checkEnglish(sharedEn, facultyEn) {
   let ui;
   let content;
   try {
-    ({ ui, content } = mergeEnglish(sharedEn, facultyEn));
+    ({ ui, content } = mergeEnglish(sharedEn, facultyEn, contentPlaceholders(FACULTY)));
   } catch (err) {
     errors.push({ msg: err.message });
     return;

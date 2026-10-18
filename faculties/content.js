@@ -10,7 +10,10 @@
 // - featured and site: faculty only.
 // - calendar: the shared calendar, with the faculty's events added and everything sorted by date.
 // - faq: the shared questions in their order; a faculty question goes after the shared question its
-//   `after` names, or at the end when it has none. `after` itself is not published.
+//   `after` names, before the one its `before` names, or at the end when it has neither. Neither is published.
+// - placeholders: shared text may say {mascots} (the faculty's two names, "ביט ובייט") and {coursesFile}
+//   (how the faculty calls its courses file, courses.fileLabel); loadContent and loadEnglish fill them from
+//   the manifest, in Hebrew and in English, so the shared files never name one faculty.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
@@ -84,54 +87,85 @@ function mergeCalendar(shared, faculty) {
   return { ...shared, events: dated ? [...events].sort((a, b) => a.date.localeCompare(b.date)) : events };
 }
 
-/** Shared questions in order; a faculty question goes after the shared question its `after` names, else last. */
+/** Shared questions in order; a faculty question goes after (or before) the shared question it names, else last. */
 function mergeFaq(shared, faculty) {
   const sharedList = asList(shared);
+  const heads = sharedList.map(() => []);
   const merged = sharedList.map((entry) => [entry]);
   const tail = [];
   for (const entry of asList(faculty)) {
-    const { after, ...rest } = entry;
-    if (after == null) { tail.push(entry); continue; }
-    const at = sharedList.findIndex((shared) => shared && shared.q === after);
-    if (at < 0) fail(`the FAQ "${rest.q}" says after: "${after}", but no shared question has that exact text`);
-    merged[at].push(rest);
+    const { after, before, ...rest } = entry;
+    if (after != null && before != null) fail(`the FAQ "${rest.q}" says both after and before; pick one`);
+    if (after == null && before == null) { tail.push(entry); continue; }
+    const [key, name] = after != null ? ["after", after] : ["before", before];
+    const at = sharedList.findIndex((shared) => shared && shared.q === name);
+    if (at < 0) fail(`the FAQ "${rest.q}" says ${key}: "${name}", but no shared question has that exact text`);
+    (key === "after" ? merged : heads)[at].push(rest);
   }
-  return [...merged.flat(), ...tail];
+  return [...merged.flatMap((group, i) => [...heads[i], ...group]), ...tail];
 }
 
-/** The merged content, as index.html has always read it from data.js. Throws on anything the rules reject. */
-export function mergeContent(shared, faculty, order) {
+// ---------- Placeholders: what shared text may say about the faculty without naming it ----------
+
+const PLACEHOLDER_RE = /\{(mascots|coursesFile)\}/g;
+
+/** The values of {mascots} and {coursesFile} for a faculty, in Hebrew (he) and English (en). */
+export function contentPlaceholders(faculty = FACULTY) {
+  return {
+    he: { mascots: faculty.mascots.map((m) => m.name).join(" ו"), coursesFile: faculty.courses.fileLabel },
+    en: { mascots: faculty.mascots.map((m) => m.nameEn).join(" and "), coursesFile: faculty.courses.fileLabelEn },
+  };
+}
+
+/** A text with the known placeholders filled; anything else in braces ({n}, {name}) is left for the page. */
+export const fillText = (text, values) => (values ? text.replace(PLACEHOLDER_RE, (m, key) => values[key]) : text);
+
+/** The same value with every string filled, as a new object (lists and objects are copied, never changed in place). */
+export function fillPlaceholders(value, values) {
+  if (!values) return value;
+  if (typeof value === "string") return fillText(value, values);
+  if (Array.isArray(value)) return value.map((v) => fillPlaceholders(v, values));
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, fillPlaceholders(v, values)]));
+  return value;
+}
+
+/**
+ * The merged content, as index.html has always read it from data.js, with the placeholders filled when
+ * `placeholders` (contentPlaceholders) is given. Throws on anything the rules reject.
+ */
+export function mergeContent(shared, faculty, order, placeholders = null) {
   checkKeys(shared, SHARED_KEYS, "shared/data.js");
   checkKeys(faculty, FACULTY_KEYS, "the faculty's data.js");
   if (!faculty.site || typeof faculty.site !== "object") fail("the faculty's data.js has no site block");
   if (!order || typeof order !== "object") fail("the manifest has no content.order");
-  return {
+  return fillPlaceholders({
     site: faculty.site,
     featured: asList(faculty.featured),
     guides: mergeById(shared.guides, faculty.guides, order.guides, "guides"),
     categories: mergeById(shared.categories, faculty.categories, order.categories, "categories"),
     calendar: mergeCalendar(shared.calendar, faculty.calendar),
     faq: mergeFaq(shared.faq, faculty.faq),
-  };
+  }, placeholders && placeholders.he);
 }
 
-/** The merged English pairs: ui and content from both files, shared first. */
-export function mergeEnglish(shared, faculty) {
+/** The merged English pairs: ui and content from both files, shared first; each pair filled in its own language. */
+export function mergeEnglish(shared, faculty, placeholders = null) {
   checkKeys(shared, ENGLISH_KEYS, "shared/data.en.js");
   checkKeys(faculty, ENGLISH_KEYS, "the faculty's data.en.js");
-  return { ui: [...asList(shared.ui), ...asList(faculty.ui)], content: [...asList(shared.content), ...asList(faculty.content)] };
+  const pair = ([he, en]) => [fillText(he, placeholders && placeholders.he), fillText(en, placeholders && placeholders.en)];
+  return { ui: [...asList(shared.ui), ...asList(faculty.ui)].map(pair), content: [...asList(shared.content), ...asList(faculty.content)].map(pair) };
 }
 
-/** The site's content for a faculty, merged from its two files. */
+/** The site's content for a faculty, merged from its two files, placeholders filled. */
 export function loadContent(faculty = FACULTY) {
   const [shared, own] = contentFiles(faculty).data.map((file) => readScript(file, "SITE_DATA"));
-  return mergeContent(shared, own, faculty.content && faculty.content.order);
+  return mergeContent(shared, own, faculty.content && faculty.content.order, contentPlaceholders(faculty));
 }
 
-/** The site's English pairs for a faculty, merged from its two files. */
+/** The site's English pairs for a faculty, merged from its two files, placeholders filled. */
 export function loadEnglish(faculty = FACULTY) {
   const [shared, own] = contentFiles(faculty).english.map((file) => readScript(file, "SITE_EN"));
-  return mergeEnglish(shared, own);
+  return mergeEnglish(shared, own, contentPlaceholders(faculty));
 }
 
 // ---------- Serialization: the merged data as a script the browser runs ----------

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import { BROWSER_FILES, contentFiles, evalScript, loadContent, loadEnglish, mergeContent, mergeEnglish, siteScript } from "../../faculties/content.js";
+import { BROWSER_FILES, contentFiles, contentPlaceholders, evalScript, fillPlaceholders, fillText, loadContent, loadEnglish, mergeContent, mergeEnglish, siteScript } from "../../faculties/content.js";
 import { FACULTIES, FACULTY, facultyPath } from "../../faculties/index.js";
 
 const guide = (id, extra = {}) => ({ id, title: `t-${id}`, steps: [`s`], ...extra });
@@ -20,7 +20,7 @@ const faculty = () => ({
   guides: [guide("c"), guide("b", { tips: ["faculty"] })],
   categories: [category("y")],
   calendar: { events: [{ date: "2026-12-01", title: "second" }, { date: "2026-10-11", title: "first, faculty" }] },
-  faq: [{ q: "f-last?", a: "end" }, { q: "f-after-1?", a: "mid", after: "q1?" }, { q: "f-after-1b?", a: "mid2", after: "q1?" }],
+  faq: [{ q: "f-last?", a: "end" }, { q: "f-after-1?", a: "mid", after: "q1?" }, { q: "f-after-1b?", a: "mid2", after: "q1?" }, { q: "f-before-1?", a: "first", before: "q1?" }, { q: "f-before-2?", a: "between", before: "q2?" }],
 });
 
 test("guides and categories are the union in the manifest's order, a faculty id replacing the shared one whole", () => {
@@ -38,10 +38,32 @@ test("the calendar keeps the shared fields and sorts shared plus faculty events 
   assert.deepEqual(calendar.events.map((e) => e.title), ["first", "first, faculty", "second", "third"]);
 });
 
-test("faculty FAQ entries go after the shared question they name, in file order, or at the end; `after` is not published", () => {
+test("faculty FAQ entries go after (or before) the shared question they name, in file order, or at the end; `after` and `before` are not published", () => {
   const { faq } = mergeContent(shared(), faculty(), ORDER);
-  assert.deepEqual(faq.map((f) => f.q), ["q1?", "f-after-1?", "f-after-1b?", "q2?", "f-last?"]);
-  assert.ok(faq.every((f) => !("after" in f)));
+  assert.deepEqual(faq.map((f) => f.q), ["f-before-1?", "q1?", "f-after-1?", "f-after-1b?", "f-before-2?", "q2?", "f-last?"]);
+  assert.ok(faq.every((f) => !("after" in f) && !("before" in f)));
+});
+
+test("{mascots} and {coursesFile} are filled from the manifest, in each language, and other braces are left alone", () => {
+  const values = contentPlaceholders(FACULTIES.cs);
+  assert.deepEqual(values, { he: { mascots: "ביט ובייט", coursesFile: FACULTIES.cs.courses.fileLabel }, en: { mascots: "Bit and Byte", coursesFile: FACULTIES.cs.courses.fileLabelEn } });
+  assert.equal(contentPlaceholders(FACULTIES.neuro).he.mascots, "נוי ורון");
+  assert.equal(fillText("שואלים את {mascots} על {coursesFile}, {n} פעמים", values.he), `שואלים את ביט ובייט על ${FACULTIES.cs.courses.fileLabel}, {n} פעמים`);
+  assert.equal(fillText("x {mascots}", null), "x {mascots}", "no values: nothing changes");
+  const nested = { a: ["{mascots}", { b: "{coursesFile}", n: 3 }], c: null };
+  const filled = fillPlaceholders(nested, values.he);
+  assert.deepEqual(filled, { a: ["ביט ובייט", { b: FACULTIES.cs.courses.fileLabel, n: 3 }], c: null });
+  assert.notEqual(filled.a, nested.a, "a new object, the input untouched");
+  assert.equal(nested.a[0], "{mascots}");
+  // The merge fills the content and the pairs; the English side gets the English values.
+  const s = shared();
+  s.guides[0].tips = ["tip for {mascots} and {coursesFile}"];
+  const merged = mergeContent(s, faculty(), ORDER, values);
+  assert.deepEqual(merged.guides[0].tips, [`tip for ביט ובייט and ${FACULTIES.cs.courses.fileLabel}`]);
+  assert.deepEqual(mergeContent(s, faculty(), ORDER).guides[0].tips, ["tip for {mascots} and {coursesFile}"], "without values the text stays");
+  const english = mergeEnglish({ ui: [["{mascots} אומרים {n}", "{mascots} say {n}"]], content: [["{coursesFile}", "{coursesFile}"]] }, { content: [] }, values);
+  assert.deepEqual(english.ui, [["ביט ובייט אומרים {n}", "Bit and Byte say {n}"]]);
+  assert.deepEqual(english.content, [[FACULTIES.cs.courses.fileLabel, FACULTIES.cs.courses.fileLabelEn]]);
 });
 
 test("the merge names what is wrong instead of dropping content", () => {
@@ -52,6 +74,8 @@ test("the merge names what is wrong instead of dropping content", () => {
     [(s) => { s.site = {}; }, /shared\/data\.js has fields/],
     [(s, f) => { delete f.site; }, /no site block/],
     [(s, f) => { f.faq[1].after = "missing?"; }, /no shared question has that exact text/],
+    [(s, f) => { f.faq[3].before = "missing?"; }, /says before: "missing\?", but no shared question/],
+    [(s, f) => { f.faq[3].after = "q1?"; }, /both after and before/],
     [(s, f) => { f.calendar.title = "x"; }, /faculty's calendar has fields/],
     [(s, f) => { f.guids = []; }, /guids/],
     [(s) => { s.guides.push(guide("a")); }, /"a" appears twice in the same file/],

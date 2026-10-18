@@ -6,7 +6,11 @@
  * course belongs to.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { yearOf, yearsOf } from "../../../course-years.js";
 import { FACULTY, facultyFile } from "../../../faculties/index.js";
+
+// The year helpers live in course-years.js (repo root) because the courses page needs the same rules.
+export { inTrack, tracksOf, yearOf, yearsOf } from "../../../course-years.js";
 
 export const CATALOG_FILE = facultyFile(FACULTY, FACULTY.courses.catalog);
 export const YEARBOOK_FILE = facultyFile(FACULTY, FACULTY.courses.yearbook);
@@ -29,11 +33,6 @@ const isoDate = (d) => {
 };
 
 const categoriesOf = (code, yearbook) => [...((yearbook?.categories || {})[code] || [])];
-/** The study year (1-3) when the course is in one of the year lists, else null. */
-const yearOf = (categories) => {
-  const year = categories.find((c) => /^[123]$/.test(c));
-  return year ? Number(year) : null;
-};
 
 /**
  * Teacher names glued together by the catalog ("מר אבי כדריהמר הראל...") are split before each title,
@@ -108,7 +107,11 @@ function pointsOf(rows, sections) {
   return value > 0 ? [value] : [];
 }
 
-/** { scannedAt, courses: [{ code, name, nameEn, points, categories, year, exams, groups }] }, courses in catalog order. */
+/**
+ * { scannedAt, courses: [{ code, name, nameEn, points, categories, year, years, exams, groups }] }, courses in catalog order.
+ * `years` are every study year the categories name (plain "1" ids and "<track>:<year>" ids alike, course-years.js);
+ * `year` is the one of them when they agree, else null. A page with a chosen track derives the year of that track itself.
+ */
 export function buildCourses(catalog, yearbook = null) {
   if (!catalog || !Array.isArray(catalog.rows)) return { scannedAt: "", courses: [] };
   const sections = catalog.sections || {};
@@ -135,6 +138,7 @@ export function buildCourses(catalog, yearbook = null) {
       points,
       categories,
       year: yearOf(categories),
+      years: yearsOf(categories),
       // The semester(s) the yearbook schedules it in; a course also runs in the other semester for retakes.
       plannedIn: (yearbook?.semesters || {})[code] || [],
       exams: [...exams.values()].sort((a, b) => a.date.localeCompare(b.date)),

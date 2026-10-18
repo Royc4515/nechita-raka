@@ -3,7 +3,10 @@
   the launcher (index.html), so the page itself stays as fast as before. Talks to POST /api/chat
   (api/chat.js). The conversation lives in this tab only (sessionStorage); the server stores nothing.
   Names, greetings and images come from faculty.js (window.FACULTY, built from faculties/<id>/faculty.js).
+  On a faculty with study tracks, the track the student picked on the courses page (course-track.js) goes
+  with each question, so the server prefers that track's course facts; without a choice nothing is sent.
 */
+import { readTrack } from "./course-track.js";
 // English (see index.html): each Hebrew string with a pair in data.en.js is swapped; {name} is filled in at run time.
 const EN_STRINGS = document.documentElement.lang === "en" && window.SITE_EN ? window.SITE_EN : null;
 const UI_EN = new Map(EN_STRINGS ? EN_STRINGS.ui : []);
@@ -269,7 +272,7 @@ class ChatPanel {
     while (messages.length && messages[0].role !== "user") messages.shift();
     let reply;
     try {
-      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, lang: EN_STRINGS ? "en" : undefined, messages }) });
+      const res = await fetch("./api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona: this.persona, lang: EN_STRINGS ? "en" : undefined, track: readTrack() || undefined, messages }) });
       const body = await res.json().catch(() => ({}));
       if (res.ok && typeof body.reply === "string") reply = { role: "assistant", content: body.reply, persona: this.persona, sources: Array.isArray(body.sources) ? body.sources : [], roy: body.roy === true };
       else reply = { role: "error", error: ERRORS[body.error] ? body.error : "offline", question: text };

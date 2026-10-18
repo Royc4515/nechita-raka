@@ -6,9 +6,10 @@ import { getKnowledge, israelToday } from "./knowledge.js";
 import { clientIp, limiterFor } from "./limiter.js";
 import { FallbackChain, OpenAICompatibleProvider } from "./llm.js";
 import { DEFAULT_PERSONA, PERSONAS, buildRequest, canaryFor, parseDraft } from "./prompt.js";
-import { retrieve } from "./retrieve.js";
+import { retrieve, TOP_K } from "./retrieve.js";
 import { errors, isSameOriginWrite, json, readJsonObject } from "../http.js";
 import { statsStoreFor } from "../stats/store.js";
+import { FACULTY } from "../../../faculties/index.js";
 
 /** 12 turns of at most 800 characters (Hebrew is 2 bytes a letter in UTF-8), plus JSON. */
 const MAX_CHAT_BODY_BYTES = 32_768;
@@ -29,8 +30,19 @@ export function defaultChatDeps() {
   };
 }
 
+/** The track the page sent (course-track.js) when it is one of the faculty's; anything else is ignored, like an unknown persona. */
+export function parseTrack(raw, faculty = FACULTY) {
+  return Array.isArray(faculty.tracks) && typeof raw === "string" && faculty.tracks.some((t) => t.id === raw) ? raw : "";
+}
+
+/** A line for SITE naming the student's track, so the model answers for it when a course fact lists several; "" without one. */
+export function trackLine(track, faculty = FACULTY) {
+  const found = track ? (faculty.tracks || []).find((t) => t.id === track) : null;
+  return found ? `המסלול של הסטודנט: ${found.label}. כשעובדה על קורס מציינת כמה מסלולים, עונים לפי המסלול הזה.` : "";
+}
+
 /**
- * POST /api/chat   { persona: <a mascot id of the faculty, "bit" | "byte" for CS>, lang?: "en", messages: [{ role, content }] }
+ * POST /api/chat   { persona: <a mascot id of the faculty, "bit" | "byte" for CS>, lang?: "en", track?: <a track id of the faculty>, messages: [{ role, content }] }
  *   -> { reply, sources: [{ title, url }] }
  *
  * validate -> rate-limit -> injection guard -> retrieve -> model chain -> output hooks.
@@ -47,6 +59,7 @@ export async function handleChat(request, deps) {
   const turns = parseHistory(body.messages);
   if (!turns) return errors.badRequest("invalid_messages");
   const personaId = Object.hasOwn(PERSONAS, body.persona) ? body.persona : DEFAULT_PERSONA;
+  const track = parseTrack(body.track);
 
   const latest = turns[turns.length - 1].content;
   // English when the student writes in English, or writes no words at all on the English site (lang: "en").
@@ -74,9 +87,11 @@ export async function handleChat(request, deps) {
     return blocked("injection");
   }
 
-  const facts = retrieve(knowledge.chunks, retrievalQuery(turns));
+  const facts = retrieve(knowledge.chunks, retrievalQuery(turns), TOP_K, { track });
   const canary = canaryFor(config.salt);
-  const request_ = buildRequest({ personaId, core: knowledge.core(today), facts, history: turns, canary, english: !hebrew });
+  const trackNote = trackLine(track);
+  const core = trackNote ? `${knowledge.core(today)}\n${trackNote}` : knowledge.core(today);
+  const request_ = buildRequest({ personaId, core, facts, history: turns, canary, english: !hebrew });
   const result = await deps.chain(config).run(request_, parseDraft);
   if (!result.ok) {
     await record(result.busy ? "busy" : "unavailable");

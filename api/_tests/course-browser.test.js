@@ -84,7 +84,7 @@ test("malformed saved state is cleaned, not trusted, and an empty catalog drops 
 });
 
 test("every module of the courses page loads (catches a syntax error the browser would hit)", async () => {
-  for (const file of ["course-ai.js", "course-ai-dialog.js", "course-calendar.js", "course-calendar-dialog.js", "course-browser.js", "course-card.js", "course-schedule.js", "course-store.js", "course-time.js", "course-week.js"]) {
+  for (const file of ["course-ai.js", "course-ai-dialog.js", "course-calendar.js", "course-calendar-dialog.js", "course-browser.js", "course-card.js", "course-schedule.js", "course-store.js", "course-time.js", "course-track.js", "course-week.js", "course-years.js"]) {
     await assert.doesNotReject(import(`../../${file}`), file);
   }
 });

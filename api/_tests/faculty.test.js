@@ -5,9 +5,9 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCOT_POSES, THEME_KEYS, facultyFile, facultyIdFrom, facultyPath, selectFaculty, validateFaculty } from "../../faculties/index.js";
 import { loadContent, loadEnglish } from "../../faculties/content.js";
-import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
-import { foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
-import { accentLine, homeDescription, robotsTxt, withHero, withSiteName, withTheme } from "../../scripts/prerender.mjs";
+import { browserFaculty, copyFacultyAssets, facultyImageFiles, facultyImageTargets, facultyScript, heroArtFiles, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
+import { facultyImageNames, foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
+import { accentLine, homeDescription, robotsTxt, withHero, withHeroArt, withMascotShadow, withSiteName, withTheme } from "../../scripts/prerender.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -23,10 +23,10 @@ const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "p
 // <track>:<year> from the Gonda study plans; the computational track started in 5787, so it has year 1 only.
 const NEURO_CATEGORIES = NEURO_TRACKS.flatMap((t) => (t === "single-comp" ? [1] : [1, 2, 3]).map((y) => `${t}:${y}`));
 const EXPECTED = {
-  cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json" },
-  // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026) are real; egg, download and
-  // the content are still the CS placeholders until PR 6.
-  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", synonym: "מדעי המוח", egg: "Hello, CS!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-cs-2027.json" },
+  cs: { mascots: ["bit", "byte"], defaultMascot: "bit", url: "https://nechita-raka.vercel.app", heroPath: "~/biu/cs/year-1", heroVariant: "terminal", synonym: "מדעי המחשב", egg: "Hello, CS!", categories: CS_CATEGORIES, tracks: undefined, download: "courses-cs-2027.json", mascotShadow: undefined },
+  // Neuro: identity, catalog (14.10.2026), yearbook and categories (Gonda plans, 18.10.2026), the EEG hero, the egg and the
+  // file name are its own (PR 6d); only the hero illustration is a drawn placeholder.
+  neuro: { mascots: ["noi", "ron"], defaultMascot: "noi", url: "https://nechita-raka-neuro.vercel.app", heroPath: "~/biu/neuro/year-1", heroVariant: "eeg", synonym: "מדעי המוח", egg: "שלום, מוח!", categories: NEURO_CATEGORIES, tracks: NEURO_TRACKS, download: "courses-neuro-2027.json", mascotShadow: true },
 };
 const expected = EXPECTED[FACULTY.id];
 
@@ -62,6 +62,7 @@ test("every folder under faculties/ is a known faculty, and every manifest has t
     }
     assert.equal(f.pwa.themeColor, f.theme.light.accent, `${f.id}: the app color is the light accent`);
     assert.ok(existsSync(`${dir}/${f.site.ogImage.file}`), `${f.id}: the OG image`);
+    for (const file of heroArtFiles(f)) assert.ok(existsSync(`${dir}/${file}`), `${f.id}: the hero art ${file}`);
     for (const m of f.mascots) {
       assert.ok(existsSync(`${dir}/mascot/${m.files.avatar}`), `${f.id}/${m.id}: avatar`);
       assert.ok(existsSync(`${dir}/mascot/${m.files.peek}`), `${f.id}/${m.id}: peek image`);
@@ -92,6 +93,8 @@ test("the active faculty's manifest holds the facts its tests and content rely o
   assert.equal(FACULTY.hero.path, expected.heroPath);
   assert.deepEqual(FACULTY.tracks && FACULTY.tracks.map((t) => t.id), expected.tracks);
   assert.equal(FACULTY.courses.download, expected.download);
+  assert.equal(FACULTY.hero.variant, expected.heroVariant);
+  assert.equal(FACULTY.theme.mascotShadow, expected.mascotShadow);
 });
 
 test("validateFaculty names the broken field", () => {
@@ -112,7 +115,13 @@ test("validateFaculty names the broken field", () => {
     [(f) => { delete f.mascots[0].poseWidths.laptop; }, /poseWidths\.laptop/],
     [(f) => { f.mascots[0].hellos = []; }, /hellos/],
     [(f) => { f.labels.chatPath = ""; }, /labels\.chatPath/],
-    [(f) => { f.hero.variant = "eeg"; }, /hero\.variant/],
+    [(f) => { f.hero.variant = "typewriter"; }, /hero\.variant/],
+    [(f) => { delete f.site.heroArt; }, /site\.heroArt is missing/],
+    [(f) => { f.site.heroArt.file = "../x.webp"; }, /site\.heroArt\.file/],
+    [(f) => { f.site.heroArt.avatar = "faculty.js"; }, /site\.heroArt\.avatar/],
+    [(f) => { f.site.heroArt.alt = ""; }, /site\.heroArt\.alt/],
+    [(f) => { f.site.heroArt.width = "640"; }, /site\.heroArt needs/],
+    [(f) => { f.theme.mascotShadow = "yes"; }, /theme\.mascotShadow/],
     [(f) => { f.hero.path = ""; }, /hero\.path/],
     [(f) => { f.hero.lines = []; }, /hero\.lines/],
     [(f) => { f.hero.lines[0].tokens = [["blink", "x"]]; }, /hero\.lines\[0\]/],
@@ -123,6 +132,9 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.courses.categories = []; }, /courses\.categories/],
     [(f) => { f.courses.categories.push({ id: "1", label: "שוב" }); }, /courses\.categories.*twice/],
     [(f) => { f.courses.categories[0].label = ""; }, /courses\.categories\[0\]\.label/],
+    [(f) => { f.courses.categories[0].short = ""; }, /courses\.categories\[0\]\.short/],
+    [(f) => { delete f.courses.fileLabel; }, /courses\.fileLabel/],
+    [(f) => { f.courses.fileLabelEn = " "; }, /courses\.fileLabelEn/],
     [(f) => { f.courses.officialSource = ""; }, /courses\.officialSource/],
     [(f) => { f.search.synonyms = [["only one"]]; }, /search\.synonyms\[0\]/],
     [(f) => { f.eggs[0].words = []; }, /eggs\[0\]\.words/],
@@ -140,6 +152,7 @@ test("validateFaculty names the broken field", () => {
     [(f) => { f.tracks = [{ id: "a", label: "א" }, { id: "a", label: "ב" }]; }, /tracks lists an id twice/],
     [(f) => { f.tracks = [{ id: "Single", label: "א" }]; }, /tracks\[0\]\.id/],
     [(f) => { f.tracks = [{ id: "single", label: "" }]; }, /tracks\[0\]\.label/],
+    [(f) => { f.tracks = [{ id: "single", label: "א", short: "" }]; }, /tracks\[0\]\.short/],
     [(f) => { f.department.url = "http://cs.biu.ac.il/"; }, /department/],
     [(f) => { delete f.department; }, /department/],
   ];
@@ -149,8 +162,11 @@ test("validateFaculty names the broken field", () => {
     assert.throws(() => validateFaculty(broken), expectedError);
   }
   const withTracks = clone(cs);
-  withTracks.tracks = [{ id: "single", label: "חד-חוגי" }, { id: "cs", label: "משולב" }];
-  assert.equal(validateFaculty(withTracks), withTracks, "a well-formed tracks list is accepted");
+  withTracks.tracks = [{ id: "single", label: "חד-חוגי" }, { id: "cs", label: "משולב", short: "מדמ\"ח" }];
+  withTracks.theme.mascotShadow = true;
+  withTracks.hero.variant = "eeg";
+  withTracks.site.heroArt.file = "drawn.svg";
+  assert.equal(validateFaculty(withTracks), withTracks, "tracks with a short form, the shadow flag, the EEG hero and a drawn hero art are accepted");
 });
 
 test("the browser subset keeps names, lines, theme and labels but not the model prompts", () => {
@@ -162,8 +178,10 @@ test("the browser subset keeps names, lines, theme and labels but not the model 
   assert.deepEqual(subset.search, FACULTY.search);
   assert.deepEqual(subset.eggs, FACULTY.eggs);
   assert.equal(subset.hero, undefined, "the hero is written by the prerender, the page does not need it");
-  assert.equal(subset.courses, undefined, "the course files are read on the server and by the build");
-  assert.equal(subset.tracks, undefined, "nothing reads the tracks yet, so they are not published");
+  // The courses page reads the categories (chips and section titles) and the tracks of its picker; the files stay on the server.
+  assert.deepEqual(subset.courses, { categories: FACULTY.courses.categories.map(({ id, label, short }) => (short === undefined ? { id, label } : { id, label, short })) });
+  assert.deepEqual(subset.tracks, FACULTY.tracks);
+  assert.ok(!("tracks" in subset) || FACULTY.tracks !== undefined, "a faculty without tracks publishes no tracks key");
   assert.equal(subset.department, undefined, "the department link is written into llms.txt by the build");
   assert.equal(subset.site.url, FACULTY.site.url);
   assert.equal(subset.defaultMascot, FACULTY.defaultMascot);
@@ -214,7 +232,28 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
   const lines = [{ steps: 3, start: 0.5, tokens: [["prompt", ">"], " a<b"] }, { steps: 4, start: 1, duration: 0.3, tokens: [["out", "\"ok\""]] }];
   const typed = withHero(template, { ...cs.hero, lines });
   assert.ok(typed.includes(`<pre class="term-body"><span class="ln" style="--n:3;--at:.5s"><span class="t-prompt">&gt;</span> a&lt;b</span><span class="ln" style="--n:4;--at:1s;--d:.3s"><span class="t-out">"ok"</span><span class="t-caret"></span></span></pre>`), typed.slice(typed.indexOf("term-body"), typed.indexOf("term-body") + 300));
-  assert.throws(() => withHero(template, { ...cs.hero, variant: "eeg" }), /hero variant/);
+  assert.throws(() => withHero(template, { ...cs.hero, variant: "typewriter" }), /hero variant/);
+  // The EEG variant: the same window, the trace, then the lines, in place of the whole terminal block.
+  const eeg = withHero(template, { ...cs.hero, variant: "eeg", path: "~/biu/x/year-1", lines });
+  assert.equal((eeg.match(/<div class="term term-eeg" dir="ltr" aria-hidden="true">/g) || []).length, 1);
+  assert.ok(!eeg.includes(`<div class="term" dir="ltr"`), "the terminal block is replaced");
+  assert.ok(eeg.includes(`<span>~/biu/x/year-1</span></div><pre class="term-body"><svg class="eeg" viewBox="0 0 480 24" preserveAspectRatio="none" focusable="false"><path d="M0 12 `), eeg.slice(eeg.indexOf("term-eeg"), eeg.indexOf("term-eeg") + 240));
+  assert.ok(eeg.includes(`pathLength="1000"/></svg><span class="ln" style="--n:3;--at:.5s"><span class="t-prompt">&gt;</span> a&lt;b</span>`), "the typed lines follow the trace");
+  assert.ok(eeg.includes(`<span class="t-caret"></span></span></pre></div>`), "the caret ends the last line");
+  assert.throws(() => withHero(template, { ...cs.hero, variant: "eeg", lines: [{ steps: 3, start: 0.5, tokens: [["onclick", "x"]] }] }), /token kind/);
+  // The hero art: the brand avatar and the hero picture from the manifest; the CS files give the template back.
+  assert.equal(withHeroArt(template, cs.site.heroArt), template, "the CS hero art gives the template back unchanged");
+  const art = withHeroArt(template, { file: "drawn.svg", avatar: "small.webp", alt: "a<b", width: 320, height: 200 });
+  assert.ok(art.includes(`<img class="brand-avatar" src="./assets/small.webp" alt="" width="52" height="52">`));
+  assert.ok(art.includes(`<img src="./assets/drawn.svg" alt="a&lt;b" width="320" height="200" fetchpriority="high">`));
+  assert.ok(!art.includes(cs.site.heroArt.file), "the CS picture is gone");
+  assert.throws(() => withHeroArt(template, { ...cs.site.heroArt, width: "640;x" }), /whole-number/);
+  assert.throws(() => withHeroArt(template.replace('<div class="hero-art">', '<div class="hero-pic">'), cs.site.heroArt), /hero picture/);
+  // The mascot shadow flag: a data attribute on <html> only when asked.
+  assert.equal(withMascotShadow(template, false), template);
+  assert.ok(withMascotShadow(template, true).includes(`<html lang="he" dir="rtl" data-mascot-shadow>`));
+  assert.ok(withMascotShadow(template.replace(`<html lang="he" dir="rtl">`, `<html lang="he" dir="rtl" data-home-title="x">`), true).includes(`<html lang="he" dir="rtl" data-mascot-shadow data-home-title="x">`), "works on a guide page too");
+  assert.throws(() => withMascotShadow(template.replace(`<html lang="he" dir="rtl">`, `<html lang="he">`), true), /<html/);
   assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: 3, start: 0.5, tokens: [["onclick", "x"]] }] }), /token kind/);
   assert.throws(() => withHero(template, { ...cs.hero, lines: [{ steps: "3;color:red", start: 0.5, tokens: ["x"] }] }), /whole steps/);
   assert.throws(() => withHero(template.replace('<pre class="term-body">', "<pre>"), cs.hero), /hero/);
@@ -237,9 +276,12 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
 test("the build copies only the images the manifest names, to their fixed public paths", () => {
   const [first, second] = FACULTY.mascots;
   const files = facultyImageFiles(FACULTY);
-  assert.equal(files.length, 1 + 2 * (2 + MASCOT_POSES.length));
+  assert.equal(files.length, 1 + heroArtFiles(FACULTY).length + 2 * (2 + MASCOT_POSES.length));
   const targets = facultyImageTargets(FACULTY);
   assert.equal(targets[FACULTY.site.ogImage.file], FACULTY.site.ogImage.path);
+  assert.equal(targets[FACULTY.site.heroArt.file], `assets/${FACULTY.site.heroArt.file}`, "the hero art is published under assets/ by its name");
+  assert.equal(targets[FACULTY.site.heroArt.avatar], `assets/${FACULTY.site.heroArt.avatar}`);
+  assert.deepEqual(heroArtFiles({ site: { heroArt: { file: "a.svg", avatar: "a.svg" } } }), ["a.svg"], "one file when the picture doubles as the avatar");
   assert.equal(targets[`mascot/${first.files.peek}`], `assets/mascot/${first.files.peek}`);
   const root = mkdtempSync(join(tmpdir(), "nr-faculty-"));
   try {
@@ -273,11 +315,30 @@ test("the courses block names files that exist, categories with unique ids, and 
   const item = loadContent(FACULTY).categories.flatMap((c) => c.items).find((i) => i.id === "courses-file");
   assert.ok(item, "the content has the course-file item");
   assert.ok(item.url.endsWith(`/${FACULTY.courses.download}`), `${item.url} points at the file the build publishes (${FACULTY.courses.download})`);
+  assert.equal(new Set(ALL.map((f) => f.courses.download)).size, ALL.length, "every faculty publishes its catalog under its own name");
+});
+
+test("the shared content names no faculty's courses file or mascots: it says {coursesFile} and {mascots}, filled from the manifest", () => {
+  const shared = readFileSync("shared/data.js", "utf8") + readFileSync("shared/data.en.js", "utf8");
+  for (const f of ALL) {
+    assert.ok(!shared.includes(f.courses.download), `shared content names ${f.courses.download}`);
+    assert.ok(!shared.includes(nameStem(f.courses.download)), `shared content names ${nameStem(f.courses.download)}`);
+    assert.ok(!shared.includes(f.courses.fileLabel), `shared content says "${f.courses.fileLabel}" instead of {coursesFile}`);
+    assert.ok(!shared.includes(f.mascots.map((m) => m.name).join(" ו")), `shared content names ${f.id}'s mascots instead of {mascots}`);
+  }
+  assert.ok(shared.includes("{coursesFile}") && shared.includes("{mascots}"), "the shared content uses the placeholders");
+  const text = JSON.stringify(loadContent(FACULTY));
+  assert.ok(!text.includes("{coursesFile}") && !text.includes("{mascots}"), "the merged content has them filled");
+  const tip = loadContent(FACULTY).guides.find((g) => g.id === "registration").tips.find((t) => t.includes("AI"));
+  assert.ok(tip.includes(FACULTY.courses.fileLabel) && tip.includes(FACULTY.mascots.map((m) => m.name).join(" ו")), tip);
+  const english = JSON.stringify(loadEnglish(FACULTY));
+  assert.ok(!english.includes("{coursesFile}") && !english.includes("{mascots}"), "the English pairs have them filled too");
+  assert.ok(english.includes(FACULTY.courses.fileLabelEn) && english.includes(FACULTY.mascots.map((m) => m.nameEn).join(" and ")));
 });
 
 test("the hero is a known variant with a path and typed lines; the search and the eggs are lists the page can merge", () => {
-  assert.deepEqual(HERO_VARIANTS, ["terminal"]);
-  assert.equal(FACULTY.hero.variant, "terminal");
+  assert.deepEqual(HERO_VARIANTS, ["terminal", "eeg"]);
+  assert.ok(HERO_VARIANTS.includes(FACULTY.hero.variant));
   assert.ok(FACULTY.hero.lines.length >= 1);
   for (const line of FACULTY.hero.lines) {
     assert.ok(Number.isInteger(line.steps) && line.steps > 0);
@@ -330,6 +391,15 @@ test("the faculty guard passes a clean bundle and fails one that carries another
     clean();
     write("exams.html", `<img src="./assets/mascot/${OTHER.mascots[0].files.avatar}">`);
     assert.match(markers(), new RegExp(`^exams\\.html: ${OTHER.id}: image ${OTHER.mascots[0].files.avatar}$`, "m"));
+    // The other faculty's hero illustration, as a file and as a reference.
+    assert.ok(facultyImageNames(FACULTY).includes(FACULTY.site.heroArt.file));
+    assert.ok(!facultyImageNames(FACULTY).includes(OTHER.site.heroArt.file), "the two faculties' hero art have different names");
+    clean();
+    write(`assets/${OTHER.site.heroArt.file}`, "img");
+    assert.match(markers(), new RegExp(`^assets/${OTHER.site.heroArt.file.replace(".", "\\.")}: ${OTHER.id}: image file`, "m"));
+    clean();
+    write("index.html", `<img src="./assets/${OTHER.site.heroArt.file}">`);
+    assert.match(markers(), new RegExp(`^index\\.html: ${OTHER.id}: image ${OTHER.site.heroArt.file.replace(".", "\\.")}$`, "m"));
     // The other faculty's name in a heading, address in the sitemap, colors in a page.
     clean();
     write("index.html", `<h1>${OTHER.pwa.name}</h1>`);

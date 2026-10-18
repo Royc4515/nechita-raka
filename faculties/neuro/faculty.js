@@ -1,7 +1,7 @@
 /*
-  The brain sciences manifest (faculty PR 4, content since PR 6a). Still CS placeholders: the hero lines and
-  the easter egg, until a designer pass brings neuro ones. The mascots (נוי and רון: characters, lines and images)
-  are the neuro ones since PR 6c; their briefs are in management/neuro/mascots.md. Nothing reads `tracks` yet.
+  The brain sciences manifest (faculty PR 4, content since PR 6a, mascots since 6c, hero, egg and tracks since 6d).
+  The mascots' briefs are in management/neuro/mascots.md. Still a placeholder: site.heroArt (a drawn EEG disc,
+  faculties/neuro/hero-art.svg) until a neuro illustration replaces it.
 
   הפקולטה: כל מה שמבדיל את האתר של מדעי המוח מאתר של פקולטה אחרת, במקום אחד.
   הבנייה (scripts/build-public.mjs) בוחרת פקולטה לפי משתנה הסביבה FACULTY (ברירת המחדל: cs),
@@ -35,6 +35,9 @@ export default {
     description: `רישום לקורסים, למדה ו-365, שכר לימוד, בחינות ומועד ב', מילואים ולוח השנה האקדמי {year}, לסטודנטים בשנה א' במדעי המוח בבר אילן.`,
     // תמונת השיתוף (וואטסאפ, לינקדאין): הקובץ בתיקייה הזאת, הכתובת שבה היא מתפרסמת, ותיאור לקוראי מסך.
     ogImage: { file: `og-image.jpg`, path: `assets/og-image-v2.jpg`, width: 600, height: 600, alt: `נחיתה רכה: מצנח עם פרצוף מחייך נוחת עם תיק וספרים` },
+    // האיור שליד הכותרת: file מוצג במסך רחב, avatar הוא העיגול הקטן ליד השם בטלפון. כרגע ציור זמני (hero-art.svg,
+    // עיגול סגול עם גל EEG); מחליפים בתמונה בתיקייה הזאת (webp, jpg, png או svg) ומעדכנים כאן את השם, הגודל והתיאור.
+    heroArt: { file: `hero-art.svg`, avatar: `hero-art.svg`, alt: `איור זמני: גל EEG על עיגול סגול`, width: 640, height: 640 },
   },
 
   // המחלקה: השם והקישור לאתר הרשמי שלה, לרשימת המקורות הרשמיים ב-llms.txt.
@@ -53,6 +56,8 @@ export default {
   theme: {
     light: { accent: `#6434cc`, accentHover: `#5128ab`, accentInk: `#ffffff`, accentText: `#5a2ebb`, accentSoft: `#eee8fb`, focus: `#6434cc` },
     dark: { accent: `#b89df6`, accentHover: `#cab6f9`, accentInk: `#1a0e3d`, accentText: `#cab6f9`, accentSoft: `#2a1e4e`, focus: `#d6c6fb` },
+    // צל בהיר של פיקסל אחד סביב תמונות הקמעים במצב כהה (הקו השחור של נוי ורון נבלע ברקע הכהה בלעדיו).
+    mascotShadow: true,
   },
 
   // התווית בסגנון טרמינל בראש הצ'אט ("~/year-1 › ask bit").
@@ -60,32 +65,35 @@ export default {
     chatPath: `~/year-1`,
   },
 
-  // החלון המונפש שבראש הדף. variant: הסוג (כרגע יש רק `terminal`, חלון טרמינל שמקליד קוד).
-  // path: השורה בפס העליון של החלון. lines: השורות שמוקלדות, לפי הסדר; בכל שורה:
-  //   steps: מספר צעדי ההקלדה (בערך מספר התווים), start: מתי מתחילים להקליד (שניות),
+  // החלון המונפש שבראש הדף. variant: `eeg`, אותו חלון כמו הטרמינל של מדעי המחשב, ובו גל EEG שמצייר את עצמו
+  // (כשתי שניות, בצבע ההדגשה) ומתחתיו שלוש שורות שמוקלדות. path: השורה בפס העליון של החלון. lines: השורות, לפי הסדר; בכל שורה:
+  //   steps: מספר צעדי ההקלדה (בערך מספר התווים), start: מתי מתחילים להקליד (שניות, אחרי שהגל נגמר),
   //   duration: כמה זמן ההקלדה נמשכת (שניות, לא חובה), tokens: קטעי הטקסט, טקסט רגיל או זוג
   //   [סוג, טקסט] לצבע: prompt (סימן השורה), kw (מילה שמורה), str (מחרוזת), out (פלט), dim (עמום).
   hero: {
-    variant: `terminal`,
+    variant: `eeg`,
     path: `~/biu/neuro/year-1`,
     lines: [
-      { steps: 25, start: 0.3, tokens: [[`prompt`, `❯`], ` python3 soft_landing.py`] },
-      { steps: 18, start: 1, duration: 0.3, tokens: [[`out`, `print("Hello, CS!")`]] },
-      { steps: 28, start: 1.4, tokens: [[`kw`, `if`], ` self.status == `, [`str`, `"1stYear"`], `:`] },
-      { steps: 26, start: 2.1, tokens: [`    `, [`kw`, `return`], ` `, [`str`, `"Soft Landing"`]] },
+      { steps: 24, start: 2.5, tokens: [[`prompt`, `❯`], ` eeg --record first_year`] },
+      { steps: 26, start: 3.2, duration: 0.5, tokens: [[`out`, `signal: stress ↓  curiosity ↑`]] },
+      { steps: 22, start: 3.9, tokens: [[`kw`, `status`], ` = `, [`str`, `"Soft Landing"`]] },
     ],
   },
 
-  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json is the real neuro scan (14.10.2026); yearbook.json and the categories come from the Gonda study plans (18.10.2026, courses/tools/).
-  // download keeps the CS name: the tests and the "courses-file" item (now in faculties/neuro/data.js) point at it; renaming it is an engineering change. catalog: קובץ הסריקה של הקטלוג,
-  // yearbook: המיפוי מהידיעון (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/cs/.
-  // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
-  // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג).
-  // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בידיעון מדעי המחשב: שנה א'").
+  // הקורסים (faculties/neuro/courses/, ההוראות לסריקה ב-README.md שם). catalog.json הוא הסריקה של מחלקה 27 (14.10.2026);
+  // yearbook.json והקטגוריות מתוכניות הלימודים של גונדה (18.10.2026, courses/tools/). catalog: קובץ הסריקה של הקטלוג,
+  // yearbook: המיפוי מתוכניות הלימודים (איזה קורס שייך לאיזו קטגוריה), שניהם יחסית לתיקייה faculties/neuro/.
+  // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הפריט "courses-file" ב-data.js מצביע עליו).
+  // fileLabel: איך התוכן המשותף קורא לקובץ (במקום {coursesFile} ב-shared/data.js), ו-fileLabelEn באנגלית.
+  // categories: הקטגוריות לפי הסדר: המזהה הוא <מסלול>:<שנה> (המסלולים ברשימת tracks למטה), כך שדף הקורסים
+  //   מסנן לפי המסלול שנבחר ומוצא את השנה של כל קורס בו (course-years.js). label מוצג בכותרות ובצ'אט.
+  // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בתוכניות הלימודים...: מדעי המוח ופסיכולוגיה: שנה א'").
   courses: {
     catalog: `courses/catalog.json`,
     yearbook: `courses/yearbook.json`,
-    download: `courses-cs-2027.json`,
+    download: `courses-neuro-2027.json`,
+    fileLabel: `קובץ הקורסים של מדעי המוח`,
+    fileLabelEn: `the Brain Sciences courses file`,
     categories: [
       { id: `single:1`, label: `מדעי המוח חד-חוגי: שנה א'` },
       { id: `single:2`, label: `מדעי המוח חד-חוגי: שנה ב'` },
@@ -124,21 +132,22 @@ export default {
   // ביצי פסחא של הפקולטה, נוספות למשותפות: הקלדת אחת המילים בתיבת החיפוש מציגה את ההודעה (toast),
   // ואפשר גם אפקט (effect, לא חובה): { type: `drift`, code: true, glyphs: [...] } מרחף תווים על המסך.
   eggs: [
-    { words: [`hello world`, `print hello world`, `שלום עולם`], toast: `Hello, CS! 👋`, effect: { type: `drift`, code: true, glyphs: [`{ }`, `;`, `</>`, `0`, `1`, `λ`, `()`, `=>`] } },
+    { words: [`hello brain`, `hello, brain`, `שלום מוח`, `שלום, מוח`, `hello world`, `שלום עולם`], toast: `שלום, מוח! 🧠 86 מיליארד נוירונים, וכולם בשנה א'`, effect: { type: `drift`, glyphs: [`🧠`, `⚡`, `∿`, `🧬`, `🔬`, `☕`] } },
   ],
 
-  // מסלולי הלימוד של הפקולטה (placeholder: nothing reads this list yet; a track selector is a later PR).
-  // id באנגלית קטנה, label בעברית. single: חד-חוגי, cs: משולב עם מדעי המחשב, psychology: משולב עם פסיכולוגיה.
+  // מסלולי הלימוד של הפקולטה. דף הקורסים מציע אותם כבורר (נשמר בדפדפן, כמו ערכת הצבעים), מסנן לפי הקטגוריות
+  // "<מסלול>:<שנה>" שלמעלה, והצ'אט מקבל את המסלול שנבחר ומעדיף את העובדות שלו. בלי בחירה מוצגים כולם (management/DECISIONS.md, 18.10.2026).
+  // id באנגלית קטנה, label בעברית לבורר, short (לא חובה) הנוסח הקצר בכרטיסי הקורסים.
   tracks: [
     // המסלולים לפי ההחלטה מ-18.10.2026 (management/DECISIONS.md): חד-חוגי (ביולוגי וקוגניציה, זהים בשנה א'), חד-חוגי חישובי (חדש בתשפ"ז), ושישה דו-חוגיים.
-    { id: `single`, label: `חד-חוגי` },
-    { id: `single-comp`, label: `חד-חוגי, מגמה חישובית` },
-    { id: `cs`, label: `משולב עם מדעי המחשב` },
-    { id: `psychology`, label: `משולב עם פסיכולוגיה` },
-    { id: `biology`, label: `משולב עם מדעי החיים` },
-    { id: `philosophy`, label: `משולב עם פילוסופיה` },
-    { id: `linguistics`, label: `משולב עם בלשנות` },
-    { id: `physics`, label: `משולב עם פיזיקה` },
+    { id: `single`, label: `חד-חוגי`, short: `חד-חוגי` },
+    { id: `single-comp`, label: `חד-חוגי, מגמה חישובית`, short: `חישובי` },
+    { id: `cs`, label: `משולב עם מדעי המחשב`, short: `מדמ"ח` },
+    { id: `psychology`, label: `משולב עם פסיכולוגיה`, short: `פסיכולוגיה` },
+    { id: `biology`, label: `משולב עם מדעי החיים`, short: `מדעי החיים` },
+    { id: `philosophy`, label: `משולב עם פילוסופיה`, short: `פילוסופיה` },
+    { id: `linguistics`, label: `משולב עם בלשנות`, short: `בלשנות` },
+    { id: `physics`, label: `משולב עם פיזיקה`, short: `פיזיקה` },
   ],
 
   // הסדר של התוכן בדף: מזהי המדריכים ומזהי הקטגוריות משני הקבצים (shared/data.js ו-faculties/neuro/data.js),

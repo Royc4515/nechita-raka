@@ -18,7 +18,10 @@ const BACKGROUND_COLOR = "#f4f7fb"; // --bg of the light theme in index.html
 const browserMascot = ({ id, name, nameEn, gender, files, poseWidths, hellos, timely, joined, thinking, peekLines }) =>
   ({ id, name, nameEn, gender, files, poseWidths, hellos, timely, joined, thinking, peekLines });
 
-/** The browser-safe subset of a manifest: what chat.js, peek.js and index.html read from window.FACULTY. */
+/** A course category as the courses page shows it: the id of the yearbook mapping, its label and the short chip text. */
+const browserCategory = ({ id, label, short }) => ({ id, label, ...(short === undefined ? {} : { short }) });
+
+/** The browser-safe subset of a manifest: what chat.js, peek.js, index.html and course-browser.js read from window.FACULTY. */
 export function browserFaculty(faculty) {
   return {
     id: faculty.id,
@@ -29,6 +32,9 @@ export function browserFaculty(faculty) {
     // The search's faculty synonyms and the faculty's easter eggs, merged by index.html into its shared lists.
     search: faculty.search,
     eggs: faculty.eggs,
+    // The courses page: the categories (chips, section titles) and, for a faculty that has them, the tracks of its picker.
+    courses: { categories: faculty.courses.categories.map(browserCategory) },
+    ...(faculty.tracks === undefined ? {} : { tracks: faculty.tracks }),
     defaultMascot: faculty.defaultMascot,
     mascots: faculty.mascots.map(browserMascot),
   };
@@ -72,15 +78,19 @@ export function reserveDownload(reserved, download) {
   return new Set([...reserved, nameStem(download)]);
 }
 
+/** The hero illustration and its small avatar (site.heroArt), relative to faculties/<id>/; one file when they are the same. */
+export const heroArtFiles = (faculty) => [...new Set([faculty.site.heroArt.file, faculty.site.heroArt.avatar])];
+
 /** Every image file the manifest points to, relative to faculties/<id>/. */
 export function facultyImageFiles(faculty) {
   return [
     faculty.site.ogImage.file,
+    ...heroArtFiles(faculty),
     ...faculty.mascots.flatMap((m) => [`mascot/${m.files.avatar}`, `mascot/${m.files.peek}`, ...MASCOT_POSES.map((pose) => `mascot/${m.files.poses}-${pose}.webp`)]),
   ];
 }
 
-/** Where each image of the faculty is published, relative to the output: the same addresses for every faculty. */
+/** Where each image of the faculty is published, relative to the output: the same addresses for every faculty (the hero art under assets/ by its own name). */
 export function facultyImageTargets(faculty) {
   return Object.fromEntries(facultyImageFiles(faculty).map((file) => [file, file === faculty.site.ogImage.file ? faculty.site.ogImage.path : `assets/${file}`]));
 }

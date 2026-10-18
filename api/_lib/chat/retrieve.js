@@ -5,6 +5,8 @@
 
 /** Enough detail for one answer while keeping a request small on Groq's free tier. */
 export const TOP_K = 3;
+/** A course fact of other tracks only (chunks carry `tracks` on a faculty with tracks) scores this much against the student's track's. */
+export const OTHER_TRACK_WEIGHT = 0.5;
 
 const FINAL_LETTERS = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
 const PREFIX = /^[והבלמשכ]/;
@@ -99,8 +101,14 @@ const B = 0.75;
 const KEYWORD_BOOST = 2;
 const TITLE_BOOST = 1;
 
-/** The `k` best chunks for `query`, best first; empty when nothing matches. */
-export function retrieve(chunks, query, k = TOP_K) {
+/** true for a chunk whose `tracks` list names other tracks but not `track`; chunks without tracks (or with none) are neutral. */
+const otherTrackOnly = (chunk, track) => Boolean(track) && Array.isArray(chunk.tracks) && chunk.tracks.length > 0 && !chunk.tracks.includes(track);
+
+/**
+ * The `k` best chunks for `query`, best first; empty when nothing matches. With `track` (the student's, from the
+ * request), a course fact that belongs to other tracks only drops behind the same fact of the student's track.
+ */
+export function retrieve(chunks, query, k = TOP_K, { track = "" } = {}) {
   const terms = queryTerms(query);
   if (!terms.length) return [];
   const { docs, idf, avg } = indexOf(chunks);
@@ -114,7 +122,7 @@ export function retrieve(chunks, query, k = TOP_K) {
         if (d.keywords.has(t)) score += KEYWORD_BOOST * w;
         if (d.title.has(t)) score += TITLE_BOOST * w;
       }
-      return { chunk: d.chunk, score };
+      return { chunk: d.chunk, score: otherTrackOnly(d.chunk, track) ? score * OTHER_TRACK_WEIGHT : score };
     })
     .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score)
