@@ -857,7 +857,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
           <img class="mascot cal-mascot" data-mascot="calendar" data-h="128" alt="" loading="lazy" decoding="async">
           <a class="btn btn-solid btn-large" id="ics-link" href="./biu-5787.ics">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
-            הוסף את כל התאריכים ליומן
+            הוספת כל התאריכים ליומן
           </a>
           <div class="cal-hint" id="cal-hint"></div>
         </div>
@@ -1250,14 +1250,15 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }
-  const dmy = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const dmy = (d) => `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`;
   function formatRange(ev) {
     const start = parseDate(ev.date);
     if (!ev.until) return dmy(start) + (ev.time ? `, ${ev.time}` : "");
     const end = parseDate(ev.until);
-    if (start.getFullYear() !== end.getFullYear()) return `${dmy(start)}–${dmy(end)}`;
-    if (start.getMonth() !== end.getMonth()) return `${start.getDate()}.${start.getMonth() + 1}–${dmy(end)}`;
-    return `${start.getDate()}–${dmy(end)}`;
+    if (start.getFullYear() !== end.getFullYear()) return `${dmy(start)}-${dmy(end)}`;
+    if (start.getMonth() !== end.getMonth()) return `${pad2(start.getDate())}.${pad2(start.getMonth() + 1)}-${dmy(end)}`;
+    return `${pad2(start.getDate())}-${dmy(end)}`;
   }
   const isCurrent = (ev, today) => parseDate(ev.date) <= today && today <= parseDate(ev.until || ev.date);
   function relativeLabel(ev, today) {
@@ -1915,7 +1916,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     for (const g of groups) {
       const past = g.events.every((ev) => parseDate(ev.until || ev.date) < today);
       bar.append(el("span", { class: `tick${past ? " past" : ""}${edge(g.at)}`, style: `inset-inline-start:${g.at}%`,
-        // LRI…PDI keep a date range like 22–24.3.2027 in order inside the Hebrew label
+        // LRI…PDI keep a date range like 22-24.03.2027 in order inside the Hebrew label
         "data-tip": g.events.map((ev) => `${ev.title} · \u2066${formatRange(ev)}\u2069`).join("\n") }));
     }
     for (const ev of birthdays) {
@@ -1988,7 +1989,11 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       if (term.kind === "semester") {
         stat = Math.floor(Math.round((today - from) / DAY_MS) / 7) + 1;
         unit = tr("שבוע");
-        sub = tr("עברו {pct}% מהסמסטר · עוד {n} ימים עד היום האחרון", { pct: Math.round((passed / total) * 100), n: total - passed });
+        const left = total - passed;
+        const pct = Math.round((passed / total) * 100);
+        sub = left === 0 ? tr("עברו {pct}% מהסמסטר · היום האחרון", { pct })
+          : left === 1 ? tr("עברו {pct}% מהסמסטר · עוד יום אחד", { pct })
+          : tr("עברו {pct}% מהסמסטר · עוד {n} ימים עד היום האחרון", { pct, n: left });
       } else {
         stat = total - passed;
         unit = stat === 1 ? tr("יום נשאר") : tr("ימים נשארו");

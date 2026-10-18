@@ -4,7 +4,7 @@ import { loadContent, readScript } from "../../faculties/content.js";
 import { FACULTIES } from "../../faculties/index.js";
 
 const { cs, neuro } = FACULTIES;
-const isCsEvent = (ev) => /^בחינה:/.test(ev.title) || /מפגש פתיחת שנה במחלקה למדעי המחשב/.test(ev.title);
+const isCsEvent = (ev) => /^בחינה:/.test(ev.title) || /מפגש פתיחת שנה של המחלקה/.test(ev.title);
 
 test("the shared calendar holds only the university's dates, the CS opening and exams are in the CS file", () => {
   const shared = readScript("shared/data.js", "SITE_DATA").calendar.events;
