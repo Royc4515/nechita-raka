@@ -67,6 +67,8 @@ writeFileSync(`${OUT}/manifest.webmanifest`, webmanifest(FACULTY));
 // The calendar file for the "add all dates to my calendar" button: the university's dates plus the faculty's own (scripts/calendar-ics.mjs).
 writeFileSync(`${OUT}/${FACULTY.calendar.file}`, loadIcs(FACULTY));
 copyFacultyAssets(FACULTY, OUT);
+// A faculty with its own icons (faculties/<id>/icons/: the tab icon, the home-screen icons) replaces the shared brand set, file by file.
+if (existsSync(`faculties/${FACULTY.id}/icons`)) cpSync(`faculties/${FACULTY.id}/icons`, `${OUT}/icons`, { recursive: true });
 
 // The content the browser reads: shared/data.js and faculties/<id>/data.js merged into one data.js,
 // as index.html has always read it, and the same for the English pairs.

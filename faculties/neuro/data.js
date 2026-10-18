@@ -100,7 +100,7 @@ window.SITE_DATA = {
       // קישורים בתוך הצעד (מספר הצעד מתחיל מ-1). בלי at הקישור מופיע מתחת לצעד: דף המסלול ותוכנית הלימודים שלו.
       stepLinks: {
         1: [{ id: `inbar`, at: `באינ-בר` }],
-        2: [{ label: `דף המסלול: חד-חוגי`, url: `https://gondabrain.biu.ac.il/neuroscience_extended_track` }, { label: `תוכנית הלימודים: ביולוגית או קוגניציה`, url: `https://gondabrain.biu.ac.il/Extended%20track` }],
+        2: [{ label: `דף המסלול: חד-חוגי`, url: `https://gondabrain.biu.ac.il/neuroscience_extended_track` }, { label: `תוכנית הלימודים: ביולוגית או קוגניציה`, url: `https://gondabrain.biu.ac.il/biology_cognition_track` }],
         3: [{ label: `תוכנית הלימודים: מגמה חישובית`, url: `https://gondabrain.biu.ac.il/computaional_track` }],
         4: [{ label: `דף המסלול: עם מדעי המחשב`, url: `https://gondabrain.biu.ac.il/neuroscience_computer_science` }, { label: `תוכנית הלימודים: עם מדעי המחשב`, url: `https://gondabrain.biu.ac.il/double.major_computer.science` }],
         5: [{ label: `דף המסלול: עם פסיכולוגיה`, url: `https://gondabrain.biu.ac.il/neuroscience_psychology` }, { label: `תוכנית הלימודים: עם פסיכולוגיה`, url: `https://gondabrain.biu.ac.il/neuroscience_and_psychology_CL` }],
@@ -286,7 +286,7 @@ window.SITE_DATA = {
       stepLinks: {
         1: [{ id: `inbar`, at: `אינ-בר` }],
         2: [{ id: `gonda-contact`, at: `בטופס הפנייה באתר המרכז` }],
-        3: [{ label: `מדעי המוח ומדעי החיים, אתר המחלקה`, url: `https://life-sciences.biu.ac.il/tracks/10427` }, { label: `פיזיקה ומדעי המוח, אתר המחלקה`, url: `https://physics.biu.ac.il/Physics-and-Brain-Sciences` }, { label: `פילוסופיה ומדעי המוח, אתר המחלקה`, url: `https://philosophy.biu.ac.il/tracks/ba-in-philosophy-and-neuroscience` }, { label: `מדעי המחשב ומדעי המוח, אתר המחלקה`, url: `https://cs.biu.ac.il/he/computer-science-and-brain-sciences` }, { label: `פסיכולוגיה ומדעי המוח, אתר המחלקה`, url: `https://psychology.biu.ac.il/tracks/2195` }],
+        3: [{ label: `מדעי המוח ומדעי החיים, אתר המחלקה`, url: `https://life-sciences.biu.ac.il/tracks/10427` }, { label: `פיזיקה ומדעי המוח, אתר המחלקה`, url: `https://physics.biu.ac.il/Physics-and-Brain-Sciences` }, { label: `פילוסופיה ומדעי המוח, אתר המחלקה`, url: `https://philosophy.biu.ac.il/tracks/ba-in-philosophy-and-neuroscience` }, { label: `מדעי המחשב ומדעי המוח, אתר המחלקה`, url: `https://cs.biu.ac.il/he/tracks/computer-science-and-brain-sciences-BSc` }, { label: `פסיכולוגיה ומדעי המוח, אתר המחלקה`, url: `https://psychology.biu.ac.il/tracks/2195` }],
         6: [{ id: `wa-main`, at: `בקבוצת הוואטסאפ הראשית` }, { id: `mentor`, at: `בהודעה פרטית` }],
       },
       tips: [
