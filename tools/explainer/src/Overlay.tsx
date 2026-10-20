@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, FONT, Icon, SPEAKER, img } from "./lib";
+import { C, FONT, Icon, SPEAKER, img, isCsChapter } from "./lib";
 import { CHAPTERS } from "./script";
 import { INTRO, TL, lineAt } from "./timeline";
 
@@ -24,7 +24,7 @@ export const Captions: React.FC = () => {
           backdropFilter: "blur(14px)", transform: `translateY(${(1 - inP) * 16}px)`, opacity: Math.min(1, inP * 1.5),
         }}
       >
-        <img src={img(`avatar-${l.who === "bit" ? "bit" : "noi"}.webp`)} style={{ width: 54, height: 54, borderRadius: "50%", border: `3px solid ${sp.color}`, flexShrink: 0 }} />
+        <img src={img(`avatar-${l.who}.webp`)} style={{ width: 54, height: 54, borderRadius: "50%", border: `3px solid ${sp.color}`, flexShrink: 0 }} />
         <div style={{ fontFamily: FONT.body, fontWeight: 700, fontSize: 38, lineHeight: 1.3, color: "#fff", textWrap: "balance" as never }}>
           {words.map((w, i) => {
             const said = frame >= chunk.wordStarts[i] - 2;
@@ -78,7 +78,7 @@ export const TopBar: React.FC = () => {
   const p = spring({ frame: frame - INTRO, fps, config: { damping: 16 } });
   if (frame < INTRO - 2) return null;
   const cur = TL.scenes.filter((s) => s.from <= frame).pop()?.chapter ?? 0;
-  const neuro = cur === 4;
+  const neuro = !isCsChapter(cur);
   return (
     <div style={{ position: "absolute", top: 38, left: 400, width: 1120, display: "flex", alignItems: "center", gap: 18, direction: "rtl", opacity: p, transform: `translateY(${(1 - p) * -30}px)` }}>
       <img src={img(neuro ? "neuro-mark.svg" : "cs-mark.svg")} style={{ width: 52, height: 52, borderRadius: 14 }} />

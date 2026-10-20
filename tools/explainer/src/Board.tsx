@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Easing, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, FONT } from "./lib";
+import { C, FONT, isCsChapter } from "./lib";
 import { CHAPTERS } from "./script";
 import { INTRO, TL, type SceneT } from "./timeline";
 import { BOARDS } from "./boards";
@@ -11,7 +11,7 @@ export const PANEL = { x: 400, y: 128, w: 1120, h: 640 };
 const ChapterCard: React.FC<{ chapter: number; dur: number }> = ({ chapter, dur }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const neuro = chapter === 4;
+  const neuro = !isCsChapter(chapter);
   const a = neuro ? C.neuro : C.cs;
   const b = neuro ? "#8b5cf6" : "#1d8fe0";
   const open = interpolate(frame, [0, 14], [0, 1], { extrapolateRight: "clamp", easing: Easing.bezier(0.7, 0, 0.2, 1) });
@@ -34,12 +34,12 @@ const ChapterCard: React.FC<{ chapter: number; dur: number }> = ({ chapter, dur 
         <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: 34, opacity: interpolate(frame, [6, 16], [0, 0.85], { extrapolateRight: "clamp" }), letterSpacing: 1 }}>
           פרק {chapter + 1}
         </div>
-        <div style={{ display: "flex", gap: 28, marginTop: 6 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", columnGap: 28, marginTop: 6, maxWidth: 900 }}>
           {words.map((w, i) => {
             const p = spring({ frame: frame - 8 - i * 4, fps, config: { damping: 13, stiffness: 120 } });
             return (
               <div key={i} style={{ overflow: "hidden", paddingBottom: 12 }}>
-                <div style={{ fontFamily: FONT.display, fontWeight: 900, fontSize: 150, lineHeight: 1.05, transform: `translateY(${(1 - p) * 110}%)` }}>{w}</div>
+                <div style={{ fontFamily: FONT.display, fontWeight: 900, fontSize: title.title.length > 9 ? 124 : 150, lineHeight: 1.05, transform: `translateY(${(1 - p) * 110}%)` }}>{w}</div>
               </div>
             );
           })}

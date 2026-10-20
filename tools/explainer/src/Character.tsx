@@ -1,10 +1,9 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, FONT, SPEAKER, img } from "./lib";
-import { TL, lastLineOf, lineAt } from "./timeline";
+import { TL, lastLineOf, lineAt, placeAt } from "./timeline";
 import type { Pose, Who } from "./script";
 
-const HEIGHT = 520;
 
 /** How much `who` is speaking around this frame, 0..1, smoothed so the glow fades instead of blinking. */
 function speakAmount(who: Who, frame: number) {
@@ -20,12 +19,19 @@ function envAt(who: Who, frame: number) {
   return v;
 }
 
-export const Character: React.FC<{ who: Who; x: number; enterAt: number; side: 1 | -1 }> = ({ who, x, enterAt, side }) => {
+export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterAt }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const sp = SPEAKER[who];
 
+  const place = placeAt(who, frame);
   const enter = spring({ frame: frame - enterAt, fps, config: { damping: 13, stiffness: 90, mass: 1 } });
+  if (!place.on || frame < enterAt - 2) return null;
+  const x = place.x, HEIGHT = place.h;
+  // lean toward whoever is speaking
+  const speaker = lineAt(frame);
+  const side = speaker && speaker.who !== who ? Math.sign(placeAt(speaker.who, frame).x - x) || 1 : 0;
+  const walk = Math.abs(Math.sin(frame / 3.2)) * place.moving * 22;
   const last = lastLineOf(who, frame);
   const pose: Pose = last?.pose ?? "wave";
   // the pose before the current one, to cross-fade
@@ -41,11 +47,11 @@ export const Character: React.FC<{ who: Who; x: number; enterAt: number; side: 1
   const listening = other && other.who !== who ? 1 : 0;
 
   const breathe = Math.sin(frame / 20 + (who === "bit" ? 1 : 0)) * 0.006;
-  const y = -talk * 16 + (1 - enter) * 120;
+  const y = -talk * 16 + (1 - enter) * 120 - walk;
   const scaleY = 1 + breathe + talk * 0.03;
   const scaleX = 1 - talk * 0.01;
-  const rot = Math.sin(frame / 6.5) * talk * 1.6 + listening * side * -1.2 + Math.sin(frame / 37) * 0.6;
-  const tx = (1 - enter) * side * 560;
+  const rot = Math.sin(frame / 6.5) * talk * 1.6 + listening * side * 1.4 + Math.sin(frame / 37) * 0.6 + Math.sin(frame / 3.2) * place.moving * 3;
+  const tx = (1 - enter) * (x < 960 ? -560 : 560);
 
   const file = (p: Pose) => img(`${sp.prefix}-${p}.webp`);
   return (

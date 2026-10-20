@@ -39,9 +39,12 @@ export const C = {
 export const SPEAKER = {
   bit: { name: "ביט", site: "מדעי המחשב", color: C.csLight, deep: C.cs, prefix: "mascot" },
   noi: { name: "נוי", site: "מדעי המוח", color: C.neuroLight, deep: C.neuro, prefix: "noi" },
+  ron: { name: "רון", site: "מדעי המוח", color: "#6fd6b8", deep: "#178a6c", prefix: "ron" },
 } as const;
 
 export const img = (name: string) => staticFile(`img/${name}`);
+/** Chapters 1-3 tell the story of the first (CS) site, in its blue; everything else is the brain sciences violet. */
+export const isCsChapter = (chapter: number) => chapter >= 1 && chapter <= 3;
 export const shot = (name: string) => staticFile(`shots/${name}`);
 
 /** Spring 0..1 that starts at `at` (frames). */

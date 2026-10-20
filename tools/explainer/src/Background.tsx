@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { noise2D } from "@remotion/noise";
-import { C } from "./lib";
+import { C, isCsChapter } from "./lib";
 import { TL } from "./timeline";
 
 /** How "neuro" the current moment is (0 = CS blue, 1 = violet), eased between chapters. */
 function neuroMix(frame: number) {
-  const marks = TL.scenes.map((s) => ({ at: s.from, v: s.chapter === 4 ? 1 : s.chapter === 5 ? 0.6 : s.chapter === 6 ? 0.45 : 0 }));
-  let v = 0;
+  const marks = TL.scenes.map((s) => ({ at: s.from, v: isCsChapter(s.chapter) ? 0 : 1 }));
+  let v = 1;
   for (const m of marks) {
     const p = interpolate(frame, [m.at, m.at + 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
     v = v + (m.v - v) * p;

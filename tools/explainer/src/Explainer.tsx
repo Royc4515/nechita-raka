@@ -17,11 +17,11 @@ export const Explainer: React.FC = () => {
       <Intro />
       <TopBar />
       <Board />
-      {/* Byte and Ron join for the goodbye, behind the hosts */}
-      <Cameo file="her-celebrate.webp" x={1500} at={outro.boardFrom + 20} height={380} />
-      <Cameo file="ron-celebrate.webp" x={420} at={outro.boardFrom + 28} height={380} />
-      <Character who="noi" x={215} enterAt={INTRO - 8} side={-1} />
-      <Character who="bit" x={1705} enterAt={INTRO - 2} side={1} />
+      {/* Byte comes back with Bit for the goodbye, behind him */}
+      <Cameo file="her-celebrate.webp" x={1500} at={outro.from + 26} height={380} />
+      <Character who="noi" enterAt={INTRO - 8} />
+      <Character who="ron" enterAt={INTRO - 2} />
+      <Character who="bit" enterAt={INTRO} />
       <Glossary />
       <Captions />
       <Confetti at={lastLine.cues[0] ?? lastLine.from} originX={960} originY={360} count={180} />

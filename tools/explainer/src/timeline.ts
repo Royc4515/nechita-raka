@@ -1,5 +1,5 @@
 import manifest from "./audio-manifest.json";
-import { SCENES, captionText, cueOffsets, lineKey, type Line, type Who } from "./script";
+import { SCENES, captionText, cueOffsets, lineKey, type Line, type Stage, type Who } from "./script";
 
 export const FPS = 30;
 const S = (sec: number) => Math.round(sec * FPS);
@@ -32,7 +32,7 @@ export type LineT = Line & {
   cues: number[];
   chunks: Chunk[];
 };
-export type SceneT = { id: string; board: string; chapter: number; from: number; end: number; boardFrom: number; cues: number[]; card?: { from: number; dur: number } };
+export type SceneT = { id: string; board: string; chapter: number; stage: Stage; from: number; end: number; boardFrom: number; cues: number[]; card?: { from: number; dur: number } };
 
 /** Hebrew speech runs at roughly 13 characters a second; used until the real audio exists. */
 const estimate = (caption: string) => caption.length / 13 + 0.35;
@@ -114,7 +114,7 @@ function build() {
       if (next) t += next.who === l.who ? GAP_SAME : GAP_SWITCH;
     });
     t += SCENE_TAIL;
-    scenes.push({ id: sc.id, board: sc.board, chapter: sc.chapter, from, end: t, boardFrom, cues: sceneCues, card });
+    scenes.push({ id: sc.id, board: sc.board, chapter: sc.chapter, stage: sc.stage, from, end: t, boardFrom, cues: sceneCues, card });
   });
   const total = t + OUTRO_TAIL;
   scenes[scenes.length - 1].end = total;
@@ -132,4 +132,23 @@ export function lastLineOf(who: Who, frame: number): LineT | undefined {
   for (const l of TL.lines) { if (l.who === who && l.from <= frame) found = l; }
   return found;
 }
+/** Where each character stands on each stage: x of its center, height, and whether it is on screen. */
+const PLACES: Record<Stage, Record<Who, { x: number; h: number; on: boolean }>> = {
+  hosts: { noi: { x: 215, h: 520, on: true }, ron: { x: 1705, h: 520, on: true }, bit: { x: 2350, h: 520, on: false } },
+  guest: { noi: { x: 150, h: 470, on: true }, ron: { x: 335, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
+};
+const MOVE = 30;
+/** A character's place at a frame, eased between the stages of consecutive scenes. */
+export function placeAt(who: Who, frame: number) {
+  let prev = PLACES.hosts[who], cur = prev, start = -999;
+  for (const s of TL.scenes) {
+    if (s.from > frame) break;
+    const next = PLACES[s.stage][who];
+    if (next !== cur) { prev = cur; cur = next; start = s.from; }
+  }
+  const t = Math.min(1, Math.max(0, (frame - start) / MOVE));
+  const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  return { x: prev.x + (cur.x - prev.x) * e, h: prev.h + (cur.h - prev.h) * e, on: cur.on || t < 1, moving: t > 0 && t < 1 ? Math.sin(t * Math.PI) : 0 };
+}
+
 export const speaking = (frame: number) => TL.lines.some((l) => frame >= l.from && frame < l.from + l.dur);

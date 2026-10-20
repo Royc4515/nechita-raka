@@ -6,7 +6,7 @@
 // for what changed. Delete a file to regenerate it.
 //
 // Usage (from tools/explainer):  ELEVENLABS_API_KEY=... npm run audio
-// Voices: VOICE_BIT and VOICE_NOI choose voices from your account. Without them the script designs two voices
+// Voices: VOICE_NOI, VOICE_RON and VOICE_BIT choose voices from your account. Without them the script designs the voices
 // from the character descriptions (Voice Design, eleven_ttv_v3), saves them to the account, and remembers them
 // in public/audio/voices.json. Previews of the designed voices are saved next to it, to listen to.
 // Options: --only=lines|sfx|music   --skip-music
@@ -77,18 +77,20 @@ function envelope(file: string): number[] {
 /* ---------- voices ---------- */
 const DESCRIPTIONS = {
   bit: "A cheerful, energetic young Israeli man in his early twenties, a computer science student. Warm, playful, slightly geeky, quick friendly delivery, native Hebrew speaker, clear studio-quality narration.",
+  ron: "A calm, composed young Israeli man in his early twenties, a computational brain sciences student. Lower warm voice, dry understated humor, measured clear delivery, native Hebrew speaker, clear studio-quality narration.",
   noi: "An enthusiastic, curious young Israeli woman in her early twenties, a brain sciences student. Bright, warm and expressive, smiles while she talks, native Hebrew speaker, clear studio-quality narration.",
 } as const;
 const SAMPLE = {
   bit: "היי, אני ביט, סטודנט שנה א' במדעי המחשב בבר־אילן. אני אוהב קפה, קוד, ובעיקר להסביר דברים מסובכים בצורה פשוטה. בואו נראה יחד איך בונים אתר שלם, צעד אחר צעד, בלי מילים מפחידות.",
+  ron: "היי, אני רון, סטודנט שנה א' במדעי המוח בבר־אילן, במגמה החישובית. אני אוהב טבלאות, תה עם נענע, והסברים מסודרים. היום אני אסביר לכם בשקט ובסדר איך נבנה האתר שלנו, צעד אחר צעד, בלי מילים מסובכות.",
   noi: "היי, אני נוי, סטודנטית שנה א' במדעי המוח בבר־אילן. אני מתלהבת מכל עובדה על המוח, ושואלת המון שאלות. היום אני רוצה להבין איך בנו את האתר שלנו, ואני בטוחה שגם אתם תבינו.",
 } as const;
 
-async function voices(): Promise<Record<"bit" | "noi", string>> {
+async function voices(): Promise<Record<"bit" | "noi" | "ron", string>> {
   const file = join(audioDir, "voices.json");
   const known = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : {};
-  const out = { bit: process.env.VOICE_BIT || known.bit, noi: process.env.VOICE_NOI || known.noi };
-  for (const who of ["bit", "noi"] as const) {
+  const out = { bit: process.env.VOICE_BIT || known.bit, noi: process.env.VOICE_NOI || known.noi, ron: process.env.VOICE_RON || known.ron };
+  for (const who of ["noi", "ron", "bit"] as const) {
     if (out[who]) continue;
     console.log(`Designing a voice for ${who}...`);
     const res = await call("/v1/text-to-voice/design", { voice_description: DESCRIPTIONS[who], model_id: "eleven_ttv_v3", text: SAMPLE[who], guidance_scale: 4 });
@@ -98,7 +100,7 @@ async function voices(): Promise<Record<"bit" | "noi", string>> {
       if (b64) writeFileSync(join(audioDir, "voices", `${who}-preview-${i + 1}.mp3`), Buffer.from(b64, "base64"));
     });
     const created = await call("/v1/text-to-voice", {
-      voice_name: who === "bit" ? "Bit (נחיתה רכה)" : "Noi (נחיתה רכה)",
+      voice_name: `${{ bit: "Bit", noi: "Noi", ron: "Ron" }[who]} (נחיתה רכה)`,
       voice_description: DESCRIPTIONS[who],
       generated_voice_id: previews[0].generated_voice_id,
     });

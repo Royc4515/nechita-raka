@@ -109,6 +109,7 @@ const Scatter: React.FC<BoardProps> = ({ cues }) => {
   const phone = spring({ frame: frame - c3 - 10, fps, config: { damping: 12, stiffness: 110 } });
   return (
     <AbsoluteFill>
+      <Lead cues={cues} text="מאיפה הכול התחיל?" icon="sparkle" color={C.cs} />
       {chips.map(([t, i, x, y, at], k) => {
         const nx = noise2D("x" + k, frame / 70, 0) * 18, ny = noise2D("y" + k, 0, frame / 70) * 14;
         const tx = x + (560 - 120 - x) * gather, ty = y + (300 - y) * gather;
