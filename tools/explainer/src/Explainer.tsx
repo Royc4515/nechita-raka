@@ -18,7 +18,7 @@ export const Explainer: React.FC = () => {
       <TopBar />
       <Board />
       {/* Byte comes back with Bit for the goodbye, behind him */}
-      <Cameo file="her-celebrate.webp" x={1500} at={outro.from + 26} height={380} />
+      <Cameo file="her-celebrate.webp" x={1500} at={outro.from + 26} height={380} tag={{ name: "בייט", site: "מדעי המחשב" }} />
       <Character who="noi" enterAt={INTRO - 8} />
       <Character who="ron" enterAt={INTRO - 2} />
       <Character who="bit" enterAt={INTRO} />

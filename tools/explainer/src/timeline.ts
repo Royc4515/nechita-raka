@@ -134,8 +134,8 @@ export function lastLineOf(who: Who, frame: number): LineT | undefined {
 }
 /** Where each character stands on each stage: x of its center, height, and whether it is on screen. */
 const PLACES: Record<Stage, Record<Who, { x: number; h: number; on: boolean }>> = {
-  hosts: { noi: { x: 215, h: 520, on: true }, ron: { x: 1705, h: 520, on: true }, bit: { x: 2350, h: 520, on: false } },
-  guest: { noi: { x: 150, h: 470, on: true }, ron: { x: 335, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
+  hosts: { noi: { x: 1705, h: 520, on: true }, ron: { x: 215, h: 520, on: true }, bit: { x: 2350, h: 520, on: false } },
+  guest: { noi: { x: 335, h: 470, on: true }, ron: { x: 150, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
 };
 const MOVE = 30;
 /** A character's place at a frame, eased between the stages of consecutive scenes. */

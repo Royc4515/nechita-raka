@@ -52,6 +52,10 @@ export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterA
   const scaleX = 1 - talk * 0.01;
   const rot = Math.sin(frame / 6.5) * talk * 1.6 + listening * side * 1.4 + Math.sin(frame / 37) * 0.6 + Math.sin(frame / 3.2) * place.moving * 3;
   const tx = (1 - enter) * (x < 960 ? -560 : 560);
+  // Noi and Ron are drawn facing screen-right and Bit facing screen-left. Face the way you walk, otherwise face the board.
+  const dx = placeAt(who, frame + 1).x - x;
+  const facesRight = place.moving > 0.05 && Math.abs(dx) > 0.5 ? dx > 0 : x < 960;
+  const flip = (who === "bit" ? !facesRight : facesRight) ? 1 : -1;
 
   const file = (p: Pose) => img(`${sp.prefix}-${p}.webp`);
   return (
@@ -68,7 +72,7 @@ export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterA
       <div
         style={{
           position: "absolute", left: 0, right: 0, bottom: 40, height: HEIGHT, display: "flex", justifyContent: "center", alignItems: "flex-end",
-          transform: `translateY(${y}px) rotate(${rot}deg) scale(${scaleX}, ${scaleY})`, transformOrigin: "50% 100%",
+          transform: `translateY(${y}px) rotate(${rot}deg) scale(${scaleX * flip}, ${scaleY})`, transformOrigin: "50% 100%",
           filter: `drop-shadow(0 18px 30px rgba(0,0,0,.35)) brightness(${1 - (1 - amount) * 0.06 * listening})`,
         }}
       >
@@ -80,33 +84,44 @@ export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterA
           style={{ height: HEIGHT, transform: `scale(${0.9 + 0.1 * swap}) translateY(${(1 - swap) * 18}px)`, transformOrigin: "50% 100%" }}
         />
       </div>
-      {/* name tag */}
-      <div
-        style={{
-          position: "absolute", bottom: 26, left: "50%", transform: `translateX(-50%) scale(${1 + amount * 0.06})`,
-          display: "flex", alignItems: "center", gap: 10, padding: "8px 18px", borderRadius: 999, whiteSpace: "nowrap",
-          background: amount > 0.5 ? sp.deep : "rgba(10,16,32,.72)", border: `1.5px solid ${sp.color}88`,
-          boxShadow: amount > 0.5 ? `0 8px 30px ${sp.deep}aa` : "none", fontFamily: FONT.display, color: "#fff", direction: "rtl",
-        }}
-      >
-        <span style={{ fontWeight: 800, fontSize: 26 }}>{sp.name}</span>
-        <span style={{ fontWeight: 500, fontSize: 20, opacity: 0.8 }}>{sp.site}</span>
-      </div>
+      <NameTag name={sp.name} site={sp.site} color={sp.color} deep={sp.deep} active={amount} bottom={26} />
     </div>
   );
 };
 
-/** Byte and Ron, who only wave at the end. */
-export const Cameo: React.FC<{ file: string; x: number; at: number; height?: number; flip?: boolean }> = ({ file, x, at, height = 400, flip }) => {
+/** The pill under a character; `active` (0..1) lights it up while that character speaks. */
+const NameTag: React.FC<{ name: string; site: string; color: string; deep: string; active: number; bottom: number }> = ({ name, site, color, deep, active, bottom }) => (
+  <div
+    style={{
+      position: "absolute", bottom, left: "50%", transform: `translateX(-50%) scale(${1 + active * 0.06})`,
+      display: "flex", alignItems: "center", gap: 10, padding: "8px 18px", borderRadius: 999, whiteSpace: "nowrap",
+      background: active > 0.5 ? deep : "rgba(10,16,32,.72)", border: `1.5px solid ${color}88`,
+      boxShadow: active > 0.5 ? `0 8px 30px ${deep}aa` : "none", fontFamily: FONT.display, color: "#fff", direction: "rtl",
+    }}
+  >
+    <span style={{ fontWeight: 800, fontSize: 26 }}>{name}</span>
+    <span style={{ fontWeight: 500, fontSize: 20, opacity: 0.8 }}>{site}</span>
+  </div>
+);
+
+/** A character who only appears for the goodbye (Byte), with the same name tag as the cast. */
+export const Cameo: React.FC<{ file: string; x: number; at: number; height?: number; flip?: boolean; tag?: { name: string; site: string } }> = ({ file, x, at, height = 400, flip, tag }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const p = spring({ frame: frame - at, fps, config: { damping: 12, stiffness: 110 } });
   if (frame < at) return null;
   const bob = Math.sin((frame - at) / 7) * 6;
   return (
-    <div style={{ position: "absolute", left: x - 200, bottom: 60, width: 400, height, display: "flex", justifyContent: "center", alignItems: "flex-end", transform: `translateY(${(1 - p) * 300 + bob}px)`, opacity: Math.min(1, p * 2) }}>
-      <img src={img(file)} style={{ height, transform: flip ? "scaleX(-1)" : undefined, filter: "drop-shadow(0 18px 30px rgba(0,0,0,.35)) brightness(.92)" }} />
-    </div>
+    <>
+      <div style={{ position: "absolute", left: x - 200, bottom: 60, width: 400, height, display: "flex", justifyContent: "center", alignItems: "flex-end", transform: `translateY(${(1 - p) * 300 + bob}px)`, opacity: Math.min(1, p * 2) }}>
+        <img src={img(file)} style={{ height, transform: flip ? "scaleX(-1)" : undefined, filter: "drop-shadow(0 18px 30px rgba(0,0,0,.35)) brightness(.92)" }} />
+      </div>
+      {tag && (
+        <div style={{ position: "absolute", left: x - 200, bottom: 0, width: 400, height: 80, opacity: Math.min(1, p * 2) }}>
+          <NameTag name={tag.name} site={tag.site} color={C.csLight} deep={C.cs} active={0} bottom={26} />
+        </div>
+      )}
+    </>
   );
 };
 
