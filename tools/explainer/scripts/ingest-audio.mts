@@ -38,10 +38,12 @@ function envelope(file: string): number[] {
   const pcm = execFileSync("ffmpeg", ["-v", "error", "-i", file, "-ac", "1", "-ar", String(rate), "-f", "s16le", "-"], { maxBuffer: 1 << 28 });
   const samples = new Int16Array(pcm.buffer, pcm.byteOffset, pcm.length >> 1);
   const out: number[] = [];
-  for (let i = 0; i < samples.length; i += win) {
-    let sum = 0, n = 0;
-    for (let j = i; j < Math.min(i + win, samples.length); j++) { sum += samples[j] * samples[j]; n++; }
-    out.push(Math.sqrt(sum / Math.max(1, n)) / 32768);
+  // win is fractional (8000 / 30), so frame boundaries are rounded to whole samples
+  for (let f = 0; Math.round(f * win) < samples.length; f++) {
+    const start = Math.round(f * win), end = Math.min(Math.round((f + 1) * win), samples.length);
+    let sum = 0;
+    for (let j = start; j < end; j++) sum += samples[j] * samples[j];
+    out.push(Math.sqrt(sum / Math.max(1, end - start)) / 32768);
   }
   const peak = Math.max(...out, 1e-6);
   return out.map((v) => Math.round(Math.min(1, v / (peak * 0.8)) * 100) / 100);
