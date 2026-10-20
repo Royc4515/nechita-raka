@@ -1,5 +1,5 @@
 import manifest from "./audio-manifest.json";
-import { SCENES, captionText, cueOffsets, lineKey, type Line, type Stage, type Who } from "./script";
+import { SCENES, SHORT_SCENES, captionText, cueOffsets, lineKey, type Line, type Scene, type Stage, type Who } from "./script";
 
 export const FPS = 30;
 const S = (sec: number) => Math.round(sec * FPS);
@@ -72,14 +72,18 @@ function splitCaption(text: string): { text: string; start: number }[] {
   return chunks;
 }
 
-function build() {
+/** wide: the full 16:9 video. tall: the 9:16 short. */
+export type Format = "wide" | "tall";
+type Opts = { format: Format; intro: number; chapterCards: boolean; outroTail: number };
+
+function build(source: Scene[], opts: Opts) {
   const lines: LineT[] = [];
   const scenes: SceneT[] = [];
-  let t = INTRO;
+  let t = opts.intro;
   let chapter = -1;
-  SCENES.forEach((sc, si) => {
+  source.forEach((sc, si) => {
     let card: SceneT["card"];
-    if (sc.chapter !== chapter && si > 0) {
+    if (opts.chapterCards && sc.chapter !== chapter && si > 0) {
       card = { from: t, dur: CHAPTER_CARD };
       t += CHAPTER_CARD;
     }
@@ -89,7 +93,7 @@ function build() {
     t += SCENE_LEAD;
     const sceneCues: number[] = [];
     sc.lines.forEach((l, li) => {
-      const key = lineKey(sc.id, li);
+      const key = l.key ?? lineKey(sc.id, li);
       const caption = captionText(l.text);
       const a = AUDIO.lines?.[key];
       const sec = a ? a.duration : estimate(caption);
@@ -116,24 +120,29 @@ function build() {
     t += SCENE_TAIL;
     scenes.push({ id: sc.id, board: sc.board, chapter: sc.chapter, stage: sc.stage, from, end: t, boardFrom, cues: sceneCues, card });
   });
-  const total = t + OUTRO_TAIL;
+  const total = t + opts.outroTail;
   scenes[scenes.length - 1].end = total;
-  return { lines, scenes, total };
+  return { lines, scenes, total, intro: opts.intro, format: opts.format, width: opts.format === "wide" ? 1920 : 1080, height: opts.format === "wide" ? 1080 : 1920 };
 }
+export type Timeline = ReturnType<typeof build>;
 
-export const TL = build();
+export const TL = build(SCENES, { format: "wide", intro: INTRO, chapterCards: true, outroTail: OUTRO_TAIL });
+/** The short starts straight on the first line: on a phone the first second decides whether people stay. */
+export const TL_SHORT = build(SHORT_SCENES, { format: "tall", intro: S(0.5), chapterCards: false, outroTail: S(3.2) });
 
-export function lineAt(frame: number): LineT | undefined {
-  return TL.lines.find((l) => frame >= l.from && frame < l.from + l.dur);
+export function lineAt(tl: Timeline, frame: number): LineT | undefined {
+  return tl.lines.find((l) => frame >= l.from && frame < l.from + l.dur);
 }
 /** The last line a character said at or before this frame (for its pose), or undefined. */
-export function lastLineOf(who: Who, frame: number): LineT | undefined {
+export function lastLineOf(tl: Timeline, who: Who, frame: number): LineT | undefined {
   let found: LineT | undefined;
-  for (const l of TL.lines) { if (l.who === who && l.from <= frame) found = l; }
+  for (const l of tl.lines) { if (l.who === who && l.from <= frame) found = l; }
   return found;
 }
 /** Where each character stands on each stage: x of its center, height, and whether it is on screen. */
 const PLACES: Record<Stage, Record<Who, { x: number; h: number; on: boolean }>> = {
+  // the short: everyone on stage under the board, Noi on the right as in the full video
+  trio: { noi: { x: 830, h: 630, on: true }, ron: { x: 245, h: 630, on: true }, bit: { x: 540, h: 670, on: true } },
   hosts: { noi: { x: 1705, h: 520, on: true }, ron: { x: 215, h: 520, on: true }, bit: { x: 2350, h: 520, on: false } },
   guest: { noi: { x: 335, h: 470, on: true }, ron: { x: 150, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
 };
@@ -142,20 +151,21 @@ const MOVE = 30;
 const CROSS = 48;
 const OFF_LEFT = -260, OFF_RIGHT = 2180;
 /** A character's place at a frame, eased between the stages of consecutive scenes. */
-export function placeAt(who: Who, frame: number) {
-  let prev = PLACES.hosts[who], cur = prev, start = -999;
-  for (const s of TL.scenes) {
+export function placeAt(tl: Timeline, who: Who, frame: number) {
+  let prev = PLACES[tl.scenes[0].stage === "trio" ? "trio" : "hosts"][who], cur = prev, start = -999;
+  const mid = tl.width / 2;
+  for (const s of tl.scenes) {
     if (s.from > frame) break;
     const next = PLACES[s.stage][who];
     if (next !== cur) { prev = cur; cur = next; start = s.from; }
   }
   // A character who changes sides would otherwise walk in front of the board.
-  const crosses = prev.on && cur.on && (prev.x < 960) !== (cur.x < 960);
+  const crosses = prev.on && cur.on && (prev.x < mid) !== (cur.x < mid);
   const t = Math.min(1, Math.max(0, (frame - start) / (crosses ? CROSS : MOVE)));
   const h = prev.h + (cur.h - prev.h) * t;
   const moving = t > 0 && t < 1 ? Math.sin(t * Math.PI) : 0;
   if (crosses) {
-    const exitX = prev.x < 960 ? OFF_LEFT : OFF_RIGHT, enterX = cur.x < 960 ? OFF_LEFT : OFF_RIGHT;
+    const exitX = prev.x < mid ? OFF_LEFT : OFF_RIGHT, enterX = cur.x < mid ? OFF_LEFT : OFF_RIGHT;
     const x = t < 0.5
       ? prev.x + (exitX - prev.x) * Math.pow(t * 2, 3)
       : enterX + (cur.x - enterX) * (1 - Math.pow(1 - (t - 0.5) * 2, 3));
@@ -165,4 +175,4 @@ export function placeAt(who: Who, frame: number) {
   return { x: prev.x + (cur.x - prev.x) * e, h, on: cur.on || t < 1, moving };
 }
 
-export const speaking = (frame: number) => TL.lines.some((l) => frame >= l.from && frame < l.from + l.dur);
+

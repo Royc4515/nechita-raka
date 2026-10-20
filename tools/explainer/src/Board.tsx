@@ -2,10 +2,13 @@ import React from "react";
 import { AbsoluteFill, Easing, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, FONT, isCsChapter } from "./lib";
 import { CHAPTERS } from "./script";
-import { INTRO, TL, type SceneT } from "./timeline";
+import { useTL } from "./context";
+import type { SceneT } from "./timeline";
 import { BOARDS } from "./boards";
 
 export const PANEL = { x: 400, y: 128, w: 1120, h: 640 };
+/** In the short the same 1120x640 board is scaled to the phone's width, under the header. */
+const TALL_PANEL = { x: 36, y: 330, scale: 0.9 };
 
 /** The chapter title card: a colored wipe that covers the board, then opens onto the next scene. */
 const ChapterCard: React.FC<{ chapter: number; dur: number }> = ({ chapter, dur }) => {
@@ -56,7 +59,8 @@ const SceneBoard: React.FC<{ s: SceneT; next?: SceneT }> = ({ s, next }) => {
   const frame = useCurrentFrame(); // relative to s.boardFrom
   const { fps } = useVideoConfig();
   const Comp = BOARDS[s.board];
-  const end = (next ? next.from : TL.total) - s.boardFrom;
+  const tl = useTL();
+  const end = (next ? next.from : tl.total) - s.boardFrom;
   const enter = spring({ frame, fps, config: { damping: 16, stiffness: 110 } });
   const exit = interpolate(frame, [end - 10, end], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.in(Easing.cubic) });
   const cues = s.cues.map((c) => c - s.boardFrom);
@@ -77,15 +81,17 @@ const SceneBoard: React.FC<{ s: SceneT; next?: SceneT }> = ({ s, next }) => {
 export const Board: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const enter = spring({ frame: frame - (INTRO - 14), fps, config: { damping: 15, stiffness: 80 } });
-  if (frame < INTRO - 16) return null;
+  const tl = useTL();
+  const tall = tl.format === "tall";
+  const enter = tall ? spring({ frame, fps, config: { damping: 15, stiffness: 80 } }) : spring({ frame: frame - (tl.intro - 14), fps, config: { damping: 15, stiffness: 80 } });
+  if (!tall && frame < tl.intro - 16) return null;
   const float = Math.sin(frame / 55) * 5;
   const tilt = Math.sin(frame / 90) * 0.8;
   return (
     <div
       style={{
-        position: "absolute", left: PANEL.x, top: PANEL.y, width: PANEL.w, height: PANEL.h,
-        transform: `perspective(2400px) translateY(${float + (1 - enter) * 120}px) rotateX(${tilt}deg) scale(${0.85 + 0.15 * enter})`,
+        position: "absolute", left: tall ? TALL_PANEL.x : PANEL.x, top: tall ? TALL_PANEL.y : PANEL.y, width: PANEL.w, height: PANEL.h, transformOrigin: "0 0",
+        transform: `${tall ? `scale(${TALL_PANEL.scale}) ` : ""}perspective(2400px) translateY(${float + (1 - enter) * 120}px) rotateX(${tilt}deg) scale(${0.85 + 0.15 * enter})`,
         opacity: Math.min(1, enter * 1.5),
       }}
     >
@@ -98,12 +104,12 @@ export const Board: React.FC = () => {
           boxShadow: "0 50px 120px rgba(0,0,0,.55), 0 0 0 1.5px rgba(255,255,255,.65) inset, 0 0 0 1px rgba(255,255,255,.08)",
         }}
       >
-        {TL.scenes.map((s, i) => (
-          <Sequence key={s.id} from={s.boardFrom} durationInFrames={(TL.scenes[i + 1]?.from ?? TL.total) - s.boardFrom + 1} layout="none">
-            <SceneBoard s={s} next={TL.scenes[i + 1]} />
+        {tl.scenes.map((s, i) => (
+          <Sequence key={s.id} from={s.boardFrom} durationInFrames={(tl.scenes[i + 1]?.from ?? tl.total) - s.boardFrom + 1} layout="none">
+            <SceneBoard s={s} next={tl.scenes[i + 1]} />
           </Sequence>
         ))}
-        {TL.scenes.filter((s) => s.card).map((s) => (
+        {tl.scenes.filter((s) => s.card).map((s) => (
           <Sequence key={"card-" + s.id} from={s.card!.from} durationInFrames={s.card!.dur + 2} layout="none">
             <ChapterCard chapter={s.chapter} dur={s.card!.dur + 2} />
           </Sequence>

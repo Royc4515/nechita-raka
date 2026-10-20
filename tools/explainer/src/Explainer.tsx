@@ -4,9 +4,10 @@ import { Background, Grain } from "./Background";
 import { Board } from "./Board";
 import { Cameo, Character } from "./Character";
 import { Intro } from "./Intro";
-import { Captions, Confetti, Glossary, TopBar } from "./Overlay";
+import { Captions, Confetti, Glossary, ShortHeader, TopBar } from "./Overlay";
 import { Sound } from "./Sound";
-import { INTRO, TL } from "./timeline";
+import { TimelineContext } from "./context";
+import { INTRO, TL, TL_SHORT } from "./timeline";
 
 export const Explainer: React.FC = () => {
   const outro = TL.scenes[TL.scenes.length - 1];
@@ -28,5 +29,27 @@ export const Explainer: React.FC = () => {
       <Grain />
       <Sound />
     </AbsoluteFill>
+  );
+};
+
+/** The 9:16 short: the same pieces on the short timeline, with a header instead of the intro and chapter bar. */
+export const Short: React.FC = () => {
+  const lastLine = TL_SHORT.lines[TL_SHORT.lines.length - 1];
+  return (
+    <TimelineContext.Provider value={TL_SHORT}>
+      <AbsoluteFill style={{ backgroundColor: "#070c18" }}>
+        <Background />
+        <ShortHeader />
+        <Board />
+        <Character who="ron" enterAt={2} />
+        <Character who="noi" enterAt={6} />
+        <Character who="bit" enterAt={0} />
+        <Glossary />
+        <Captions />
+        <Confetti at={lastLine.cues[0] ?? lastLine.from} originX={540} originY={700} count={160} />
+        <Grain />
+        <Sound />
+      </AbsoluteFill>
+    </TimelineContext.Provider>
   );
 };

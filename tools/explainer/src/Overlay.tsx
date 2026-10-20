@@ -2,21 +2,24 @@ import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, FONT, Icon, SPEAKER, img, isCsChapter } from "./lib";
 import { CHAPTERS } from "./script";
-import { INTRO, TL, lineAt } from "./timeline";
+import { useTL } from "./context";
+import { lineAt } from "./timeline";
 
 /** Captions: the current chunk of the current line, word by word. */
 export const Captions: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const l = lineAt(frame) ?? lineAt(frame - 6);
-  if (!l || frame < INTRO) return null;
+  const tl = useTL();
+  const tall = tl.format === "tall";
+  const l = lineAt(tl, frame) ?? lineAt(tl, frame - 6);
+  if (!l || frame < tl.intro) return null;
   const chunk = l.chunks.find((c) => frame >= c.from && frame < c.to) ?? (frame >= l.from + l.dur ? l.chunks[l.chunks.length - 1] : l.chunks[0]);
   const sp = SPEAKER[l.who];
   const inP = spring({ frame: frame - chunk.from, fps, config: { damping: 18, stiffness: 160 } });
   const outP = interpolate(frame, [l.from + l.dur, l.from + l.dur + 6], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const words = chunk.text.split(" ");
   return (
-    <div style={{ position: "absolute", left: 470, right: 470, bottom: 44, display: "flex", justifyContent: "center", direction: "rtl", opacity: outP }}>
+    <div style={{ position: "absolute", ...(tall ? { left: 40, right: 40, top: 945 } : { left: 470, right: 470, bottom: 44 }), display: "flex", justifyContent: "center", direction: "rtl", opacity: outP }}>
       <div
         style={{
           display: "flex", alignItems: "center", gap: 18, padding: "18px 30px", borderRadius: 26, maxWidth: 980,
@@ -24,8 +27,8 @@ export const Captions: React.FC = () => {
           backdropFilter: "blur(14px)", transform: `translateY(${(1 - inP) * 16}px)`, opacity: Math.min(1, inP * 1.5),
         }}
       >
-        <img src={img(`avatar-${l.who}.webp`)} style={{ width: 54, height: 54, borderRadius: "50%", border: `3px solid ${sp.color}`, flexShrink: 0 }} />
-        <div style={{ fontFamily: FONT.body, fontWeight: 700, fontSize: 38, lineHeight: 1.3, color: "#fff", textWrap: "balance" as never }}>
+        <img src={img(`avatar-${l.who}.webp`)} style={{ width: tall ? 72 : 54, height: tall ? 72 : 54, borderRadius: "50%", border: `3px solid ${sp.color}`, flexShrink: 0 }} />
+        <div style={{ fontFamily: FONT.body, fontWeight: 700, fontSize: tall ? 50 : 38, lineHeight: 1.3, color: "#fff", textWrap: "balance" as never }}>
           {words.map((w, i) => {
             const said = frame >= chunk.wordStarts[i] - 2;
             return (
@@ -44,7 +47,8 @@ export const Captions: React.FC = () => {
 export const Glossary: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const l = TL.lines.find((x) => x.term && frame >= (x.cues[0] ?? x.from) - 2 && frame < x.from + x.dur + 40);
+  const tl = useTL();
+  const l = tl.lines.find((x) => x.term && frame >= (x.cues[0] ?? x.from) - 2 && frame < x.from + x.dur + 40);
   if (!l || !l.term) return null;
   const at = (l.cues[0] ?? l.from) - 2;
   const p = spring({ frame: frame - at, fps, config: { damping: 12, stiffness: 130 } });
@@ -54,7 +58,8 @@ export const Glossary: React.FC = () => {
   return (
     <div
       style={{
-        position: "absolute", left: 22, top: 140, width: 370, direction: "rtl",
+        position: "absolute", direction: "rtl",
+        ...(tl.format === "tall" ? { left: 40, right: 40, top: 56 } : { left: 22, top: 140, width: 370 }),
         transform: `translateY(${(1 - p) * -40 - out * 20}px) rotate(${(1 - p) * -6 - 2}deg) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5) * (1 - out),
         transformOrigin: "50% 0%",
       }}
@@ -75,9 +80,10 @@ export const Glossary: React.FC = () => {
 export const TopBar: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const p = spring({ frame: frame - INTRO, fps, config: { damping: 16 } });
-  if (frame < INTRO - 2) return null;
-  const cur = TL.scenes.filter((s) => s.from <= frame).pop()?.chapter ?? 0;
+  const tl = useTL();
+  const p = spring({ frame: frame - tl.intro, fps, config: { damping: 16 } });
+  if (frame < tl.intro - 2) return null;
+  const cur = tl.scenes.filter((s) => s.from <= frame).pop()?.chapter ?? 0;
   const neuro = !isCsChapter(cur);
   return (
     <div style={{ position: "absolute", top: 38, left: 400, width: 1120, display: "flex", alignItems: "center", gap: 18, direction: "rtl", opacity: p, transform: `translateY(${(1 - p) * -30}px)` }}>
@@ -94,6 +100,27 @@ export const TopBar: React.FC = () => {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+};
+
+/** The short's header: the brand and what the video is about, so a viewer who lands mid-scroll knows where they are. */
+export const ShortHeader: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const tl = useTL();
+  const p = spring({ frame, fps, config: { damping: 16 } });
+  const cur = tl.scenes.filter((s) => s.from <= frame).pop()?.chapter ?? 1;
+  const neuro = !isCsChapter(cur);
+  return (
+    <div style={{ position: "absolute", top: 70, left: 40, right: 40, direction: "rtl", opacity: p, transform: `translateY(${(1 - p) * -30}px)` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <img src={img(neuro ? "neuro-mark.svg" : "cs-mark.svg")} style={{ width: 64, height: 64, borderRadius: 16 }} />
+        <div style={{ fontFamily: FONT.display, fontWeight: 800, fontSize: 40, color: "#fff" }}>נחיתה רכה</div>
+      </div>
+      <div style={{ fontFamily: FONT.display, fontWeight: 900, fontSize: 64, lineHeight: 1.1, color: "#fff", marginTop: 26 }}>
+        איך בונים אתר לסטודנטים <span style={{ color: neuro ? C.neuroLight : C.csLight }}>עם AI</span>
       </div>
     </div>
   );

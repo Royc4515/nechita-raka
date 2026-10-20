@@ -2,11 +2,12 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { noise2D } from "@remotion/noise";
 import { C, isCsChapter } from "./lib";
-import { TL } from "./timeline";
+import { useTL } from "./context";
+import type { Timeline } from "./timeline";
 
 /** How "neuro" the current moment is (0 = CS blue, 1 = violet), eased between chapters. */
-function neuroMix(frame: number) {
-  const marks = TL.scenes.map((s) => ({ at: s.from, v: isCsChapter(s.chapter) ? 0 : 1 }));
+function neuroMix(tl: Timeline, frame: number) {
+  const marks = tl.scenes.map((s) => ({ at: s.from, v: isCsChapter(s.chapter) ? 0 : 1 }));
   let v = 1;
   for (const m of marks) {
     const p = interpolate(frame, [m.at, m.at + 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -31,14 +32,17 @@ const Blob: React.FC<{ seed: string; color: string; size: number; x: number; y: 
 
 export const Background: React.FC = () => {
   const frame = useCurrentFrame();
-  const n = neuroMix(frame);
+  const tl = useTL();
+  const n = neuroMix(tl, frame);
+  // the blobs are placed for 16:9; in the short they are stretched over the taller frame
+  const sx = tl.width / 1920, sy = tl.height / 1080;
   const drift = (frame * 0.35) % 48;
   return (
     <AbsoluteFill style={{ background: `radial-gradient(120% 90% at 50% 40%, ${C.navy} 0%, ${C.night} 70%)` }}>
-      <Blob seed="a" color={C.cs} size={1300} x={1500} y={220} opacity={0.75 * (1 - n * 0.55)} />
-      <Blob seed="b" color={C.neuro} size={1200} x={380} y={820} opacity={0.35 + n * 0.5} />
-      <Blob seed="c" color="#14b8a6" size={900} x={980} y={1050} opacity={0.18} />
-      <Blob seed="d" color={n > 0.5 ? C.neuroLight : C.csLight} size={700} x={260} y={120} opacity={0.18} />
+      <Blob seed="a" color={C.cs} size={1300} x={1500 * sx} y={220 * sy} opacity={0.75 * (1 - n * 0.55)} />
+      <Blob seed="b" color={C.neuro} size={1200} x={380 * sx} y={820 * sy} opacity={0.35 + n * 0.5} />
+      <Blob seed="c" color="#14b8a6" size={900} x={980 * sx} y={1050 * sy} opacity={0.18} />
+      <Blob seed="d" color={n > 0.5 ? C.neuroLight : C.csLight} size={700} x={260 * sx} y={120 * sy} opacity={0.18} />
       {/* dot grid drifting slowly */}
       <AbsoluteFill
         style={{

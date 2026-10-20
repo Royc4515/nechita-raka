@@ -1,18 +1,19 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, FONT, SPEAKER, img } from "./lib";
-import { TL, lastLineOf, lineAt, placeAt } from "./timeline";
+import { useTL } from "./context";
+import { lastLineOf, lineAt, placeAt, type Timeline } from "./timeline";
 import type { Pose, Who } from "./script";
 
 
 /** How much `who` is speaking around this frame, 0..1, smoothed so the glow fades instead of blinking. */
-function speakAmount(who: Who, frame: number) {
+function speakAmount(tl: Timeline, who: Who, frame: number) {
   let s = 0;
-  for (let k = -5; k <= 5; k++) { const l = lineAt(frame + k); if (l?.who === who) s++; }
+  for (let k = -5; k <= 5; k++) { const l = lineAt(tl, frame + k); if (l?.who === who) s++; }
   return s / 11;
 }
-function envAt(who: Who, frame: number) {
-  const l = lineAt(frame);
+function envAt(tl: Timeline, who: Who, frame: number) {
+  const l = lineAt(tl, frame);
   if (!l || l.who !== who) return 0;
   const i = frame - l.from;
   const v = (l.env[i - 1] ?? 0) * 0.25 + (l.env[i] ?? 0) * 0.5 + (l.env[i + 1] ?? 0) * 0.25;
@@ -23,27 +24,29 @@ export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterA
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const sp = SPEAKER[who];
+  const tl = useTL();
+  const mid = tl.width / 2;
 
-  const place = placeAt(who, frame);
+  const place = placeAt(tl, who, frame);
   const enter = spring({ frame: frame - enterAt, fps, config: { damping: 13, stiffness: 90, mass: 1 } });
   if (!place.on || frame < enterAt - 2) return null;
   const x = place.x, HEIGHT = place.h;
   // lean toward whoever is speaking
-  const speaker = lineAt(frame);
-  const side = speaker && speaker.who !== who ? Math.sign(placeAt(speaker.who, frame).x - x) || 1 : 0;
+  const speaker = lineAt(tl, frame);
+  const side = speaker && speaker.who !== who ? Math.sign(placeAt(tl, speaker.who, frame).x - x) || 1 : 0;
   const walk = Math.abs(Math.sin(frame / 3.2)) * place.moving * 22;
-  const last = lastLineOf(who, frame);
+  const last = lastLineOf(tl, who, frame);
   const pose: Pose = last?.pose ?? "wave";
   // the pose before the current one, to cross-fade
-  const prevLine = last ? [...TL.lines].reverse().find((l) => l.who === who && l.from < last.from) : undefined;
+  const prevLine = last ? [...tl.lines].reverse().find((l) => l.who === who && l.from < last.from) : undefined;
   const prevPose: Pose = prevLine?.pose ?? "wave";
   const since = last ? frame - last.from : 999;
   const swap = spring({ frame: since, fps, config: { damping: 12, stiffness: 200, mass: 0.6 } });
   const fadeOld = interpolate(since, [0, 5], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
-  const talk = envAt(who, frame);
-  const amount = speakAmount(who, frame);
-  const other = lineAt(frame);
+  const talk = envAt(tl, who, frame);
+  const amount = speakAmount(tl, who, frame);
+  const other = lineAt(tl, frame);
   const listening = other && other.who !== who ? 1 : 0;
 
   const breathe = Math.sin(frame / 20 + (who === "bit" ? 1 : 0)) * 0.006;
@@ -51,10 +54,10 @@ export const Character: React.FC<{ who: Who; enterAt: number }> = ({ who, enterA
   const scaleY = 1 + breathe + talk * 0.03;
   const scaleX = 1 - talk * 0.01;
   const rot = Math.sin(frame / 6.5) * talk * 1.6 + listening * side * 1.4 + Math.sin(frame / 37) * 0.6 + Math.sin(frame / 3.2) * place.moving * 3;
-  const tx = (1 - enter) * (x < 960 ? -560 : 560);
+  const tx = (1 - enter) * (x < mid ? -560 : 560);
   // Noi and Ron are drawn facing screen-right and Bit facing screen-left. Face the way you walk, otherwise face the board.
-  const dx = placeAt(who, frame + 1).x - x;
-  const facesRight = place.moving > 0.05 && Math.abs(dx) > 0.5 ? dx > 0 : x < 960;
+  const dx = placeAt(tl, who, frame + 1).x - x;
+  const facesRight = place.moving > 0.05 && Math.abs(dx) > 0.5 ? dx > 0 : x < mid;
   const flip = (who === "bit" ? !facesRight : facesRight) ? 1 : -1;
 
   const file = (p: Pose) => img(`${sp.prefix}-${p}.webp`);

@@ -14,8 +14,8 @@
 
 export type Who = "bit" | "noi" | "ron";
 export type Pose = "wave" | "think" | "celebrate" | "point" | "calendar" | "idea" | "laptop";
-export type Stage = "hosts" | "guest";
-export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string } };
+export type Stage = "hosts" | "guest" | "trio";
+export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string }; key?: string };
 export type Scene = { id: string; board: string; chapter: number; stage: Stage; lines: Line[] };
 
 export const CHAPTERS = [
@@ -191,3 +191,23 @@ export function cueOffsets(t: string): number[] {
 export function lineKey(sceneId: string, index: number) {
   return `${sceneId}-${String(index + 1).padStart(2, "0")}`;
 }
+
+/** Look up a line of the full video by its audio key ("ai-02"), keeping that key so the short reuses its audio. */
+function take(key: string): Line {
+  const m = /^(.*)-(\d\d)$/.exec(key);
+  const line = m && SCENES.find((s) => s.id === m[1])?.lines[Number(m[2]) - 1];
+  if (!line) throw new Error(`no line ${key}`);
+  return { ...line, key };
+}
+
+/**
+  The vertical short (about a minute): a hook, three ideas, the links. It reuses lines of the full video, so it
+  needs no new audio. All three characters stay on stage ("trio"), Bit tells and the hosts react.
+*/
+export const SHORT_SCENES: Scene[] = [
+  { id: "short-problem", board: "scatter", chapter: 1, stage: "trio", lines: [take("problem-02"), take("problem-04")] },
+  { id: "short-content", board: "contentCode", chapter: 1, stage: "trio", lines: [take("content-code-03")] },
+  { id: "short-ai", board: "aiLoop", chapter: 2, stage: "trio", lines: [take("ai-01"), take("ai-02"), take("ai-04")] },
+  { id: "short-sites", board: "twoSites", chapter: 4, stage: "trio", lines: [take("two-sites-02"), take("two-sites-04"), take("two-sites-06")] },
+  { id: "short-outro", board: "outro", chapter: 6, stage: "trio", lines: [take("outro-01"), take("outro-03")] },
+];
