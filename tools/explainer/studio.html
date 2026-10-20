@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>סטודיו הסבר · נחיתה רכה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Rubik:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the 16:9 stage and its controls on one side, the script (scene cards) on the other; stacks on narrow screens. */
+:root {
+  --bg: #f3f5f9; --panel: #ffffff; --ink: #14213d; --muted: #5a6478; --line: #dde2ec;
+  --accent: #0b5fae; --accent-ink: #ffffff; --accent-soft: #e6f1fb; --violet: #6434cc;
+  --ok: #1f7a4d; --warn: #b4321f; --stage: #0d1526;
+  --f-display: "Rubik", "Assistant", Arial, sans-serif;
+  --f-body: "Assistant", "Rubik", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1422; --panel: #161e30; --ink: #e7ecf5; --muted: #9aa5ba; --line: #2a3550;
+  --accent: #5cb8f0; --accent-ink: #04213a; --accent-soft: #10304d; --violet: #b89df6;
+  --ok: #57c48c; --warn: #f08a76; --stage: #050911; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1422; --panel: #161e30; --ink: #e7ecf5; --muted: #9aa5ba; --line: #2a3550;
+  --accent: #5cb8f0; --accent-ink: #04213a; --accent-soft: #10304d; --violet: #b89df6;
+  --ok: #57c48c; --warn: #f08a76; --stage: #050911; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 8px 14px; font-weight: 600; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); }
+
+header.top { max-width: 1500px; margin: 0 auto 18px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; justify-content: space-between; }
+header.top h1 { font-size: 26px; }
+header.top h1 span { color: var(--accent); }
+header.top p { margin: 0; color: var(--muted); }
+
+.app { max-width: 1500px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 1000px) { .app { grid-template-columns: minmax(0, 1fr); } }
+.left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 16px; min-width: 0; }
+@media (max-width: 1000px) { .left { position: static; } }
+
+.stage { background: var(--stage); border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; max-width: 100%; position: relative; }
+.stage canvas { width: 100%; height: 100%; display: block; }
+.stage .rec { position: absolute; inset: auto 12px 12px auto; background: rgba(180, 50, 31, .92); color: #fff; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+
+.transport { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.transport .pos { margin-inline-start: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.panel h2 { font-size: 18px; }
+.panel .hint { color: var(--muted); font-size: 14px; margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 200px; }
+.field label { font-size: 13px; font-weight: 700; color: var(--muted); }
+.field input, .field select { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; min-width: 0; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--muted); }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--ink); }
+.msg { font-size: 14px; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); }
+.msg.err { background: color-mix(in srgb, var(--warn) 14%, transparent); color: var(--warn); }
+.msg a { color: inherit; font-weight: 700; }
+
+.scenes { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.scene { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.scene.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.scene .head { display: flex; gap: 10px; align-items: baseline; }
+.scene .num { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.scene h3 { font-size: 17px; flex: 1; min-width: 0; }
+.scene textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--bg); line-height: 1.6; }
+.scene .foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pill { font-size: 13px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+.pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+.pill.err { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.pill.busy { color: var(--accent); border-color: var(--accent); }
+.scene .foot .spacer { flex: 1; }
+.scene .chars { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+details summary { cursor: pointer; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>סטודיו הסבר · <span>נחיתה רכה</span></h1>
+  <p>שקופיות, קריינות בעברית מ-ElevenLabs, וייצוא לסרטון. הכול רץ בדפדפן שלך.</p>
+</header>
+
+<main class="app">
+  <section class="left">
+    <div class="stage" id="stage"><canvas id="cv" width="1920" height="1080" aria-label="תצוגת השקופית"></canvas><div class="rec" id="recBadge" hidden>● מקליט</div></div>
+    <div class="transport">
+      <button id="btnPrev" title="סצנה קודמת">→ הקודמת</button>
+      <button id="btnPlay" class="primary">▶ הפעלה מכאן</button>
+      <button id="btnNext" title="סצנה הבאה">הבאה ←</button>
+      <button id="btnFull">מסך מלא</button>
+      <span class="pos" id="pos"></span>
+    </div>
+
+    <div class="panel">
+      <h2>קריינות</h2>
+      <div class="row">
+        <div class="field"><label for="apiKey">מפתח API של ElevenLabs</label><input id="apiKey" type="password" autocomplete="off" placeholder="sk_..." dir="ltr"></div>
+        <div class="field"><label for="model">מודל</label>
+          <select id="model">
+            <option value="eleven_v3">Eleven v3 (עברית, מומלץ)</option>
+            <option value="eleven_v4">Eleven v4 (עברית, דרך Text to Dialogue)</option>
+          </select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="voiceSel">קול</label><select id="voiceSel"><option value="">טענו את הקולות מהחשבון</option></select></div>
+        <div class="field"><label for="voiceId">או מזהה קול (Voice ID)</label><input id="voiceId" dir="ltr" placeholder="למשל קול משובט שלך"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="stability">יציבות</label>
+          <select id="stability">
+            <option value="0">יצירתי (יותר רגש, פחות צפוי)</option>
+            <option value="0.5" selected>טבעי</option>
+            <option value="1">יציב (אחיד, קצת מונוטוני)</option>
+          </select></div>
+        <label class="check"><input id="remember" type="checkbox"> לזכור את המפתח בדפדפן הזה</label>
+      </div>
+      <div class="row">
+        <button id="btnVoices">טעינת קולות</button>
+        <button id="btnSample">דוגמת קול קצרה</button>
+        <button id="btnGenAll" class="primary">יצירת כל הקריינות</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <p class="hint">המודלים Multilingual v2 ו-Flash לא תומכים בעברית, ולכן הם לא ברשימה. כל תו בקריינות עולה קרדיט אחד בערך; קטע שכבר נוצר נשמר בדפדפן ולא נוצר שוב עד שמשנים את הטקסט, הקול או המודל.</p>
+      <div id="msg" class="msg" hidden></div>
+    </div>
+
+    <div class="panel">
+      <h2>ייצוא</h2>
+      <div class="row">
+        <button id="btnExport" class="primary">ייצוא סרטון</button>
+        <button id="btnMp3">הורדת MP3 לכל סצנה</button>
+        <button id="btnCopy">העתקת התסריט</button>
+      </div>
+      <label class="check"><input id="monitor" type="checkbox" checked> להשמיע את הקול בזמן הייצוא</label>
+      <p class="hint">הייצוא מנגן את כל הסרטון בזמן אמת ומקליט אותו (MP4 אם הדפדפן תומך, אחרת WebM). צריך להשאיר את הלשונית הזאת פתוחה וגלויה עד הסוף, אחרת הווידאו נעצר. הכי טוב ב-Chrome.</p>
+      <div id="exportMsg" class="msg" hidden></div>
+    </div>
+  </section>
+
+  <section class="scenes" id="scenes" aria-label="התסריט"></section>
+</main>
+
+<script src="scenes.js"></script>
+<script>/*EMBED*/</script>
+<script>
+"use strict";
+const SCENES = window.SCENES;
+const N = SCENES.length;
+const W = 1920, H = 1080;
+const GAP = 0.9;           // שקט בין סצנות, בשניות
+const LS = "nr-explainer:";
+
+/* ---------- storage (every access may throw, e.g. in a private window) ---------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(LS + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(LS + k); } catch {} },
+};
+let idb = null;
+function openDb() {
+  return new Promise((res) => {
+    try {
+      const r = indexedDB.open("nr-explainer", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("clips");
+      r.onsuccess = () => { idb = r.result; res(); };
+      r.onerror = () => res();
+    } catch { res(); }
+  });
+}
+function dbGet(key) {
+  return new Promise((res) => {
+    if (!idb) return res(null);
+    try { const q = idb.transaction("clips").objectStore("clips").get(key); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); } catch { res(null); }
+  });
+}
+function dbPut(key, blob) {
+  try { idb && idb.transaction("clips", "readwrite").objectStore("clips").put(blob, key); } catch {}
+}
+
+/* ---------- narration text ---------- */
+const edits = store.get("narr", {});
+const narr = (i) => edits[SCENES[i].id] ?? SCENES[i].narration;
+const beatsOf = (t) => t.split("|").map((s) => s.trim());
+const cleanText = (t) => beatsOf(t).filter(Boolean).join(" ");
+function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+
+/* ---------- settings ---------- */
+const $ = (id) => document.getElementById(id);
+const settings = Object.assign({ model: "eleven_v3", stability: "0.5", voiceId: "", voiceName: "", remember: false, apiKey: "" }, store.get("settings", {}));
+function saveSettings() {
+  const s = { ...settings };
+  if (!s.remember) s.apiKey = "";
+  store.set("settings", s);
+}
+const voiceId = () => ($("voiceId").value.trim() || $("voiceSel").value);
+const clipKey = (i) => hash([settings.model, voiceId(), settings.stability, cleanText(narr(i))].join("|"));
+
+/* ---------- audio ---------- */
+const AC = window.AudioContext || window.webkitAudioContext;
+const actx = new AC();
+const master = actx.createGain();
+const monitor = actx.createGain();
+master.connect(monitor); monitor.connect(actx.destination);
+const S = SCENES.map(() => ({ status: "none", buffer: null, blob: null, key: "", error: "" }));
+
+async function attachClip(i, blob, key) {
+  const s = S[i];
+  s.blob = blob; s.key = key;
+  s.buffer = await actx.decodeAudioData(await blob.arrayBuffer());
+  s.status = "ready";
+}
+async function refreshClip(i) {
+  const s = S[i], key = clipKey(i);
+  if (s.key === key && s.status === "ready") return;
+  s.status = "none"; s.buffer = null; s.blob = null; s.key = key; s.error = "";
+  const blob = voiceId() ? await dbGet(key) : null;
+  if (blob && S[i].key === key) { try { await attachClip(i, blob, key); } catch { s.status = "none"; } }
+  renderSceneCard(i); renderStats();
+}
+const refreshAll = () => Promise.all(SCENES.map((_, i) => refreshClip(i)));
+
+async function elevenTTS(text) {
+  const key = $("apiKey").value.trim();
+  const voice = voiceId();
+  if (!key) throw new Error("חסר מפתח API.");
+  if (!voice) throw new Error("לא נבחר קול.");
+  const stability = Number(settings.stability);
+  const v4 = settings.model === "eleven_v4";
+  const url = v4
+    ? "https://api.elevenlabs.io/v1/text-to-dialogue?output_format=mp3_44100_128"
+    : `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_128`;
+  const body = v4
+    ? { inputs: [{ text, voice_id: voice }], model_id: "eleven_v4", language_code: "he", settings: { stability } }
+    : { text, model_id: settings.model, language_code: "he", voice_settings: { stability, similarity_boost: 0.75 } };
+  let res;
+  try {
+    res = await fetch(url, { method: "POST", headers: { "xi-api-key": key, "Content-Type": "application/json", Accept: "audio/mpeg" }, body: JSON.stringify(body) });
+  } catch {
+    throw new Error("אין חיבור ל-ElevenLabs. בדקו את האינטרנט, ושהקובץ נפתח בדפדפן רגיל (לא בתוך אפליקציה).");
+  }
+  if (!res.ok) {
+    let detail = "";
+    try { const j = await res.json(); detail = j.detail?.message || j.detail?.[0]?.msg || (typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail || j)); } catch {}
+    if (res.status === 401) throw new Error("המפתח לא התקבל (401). בדקו שהעתקתם אותו במלואו ושיש לו הרשאת Text to Speech.");
+    throw new Error(`ElevenLabs החזיר ${res.status}: ${detail || res.statusText}`);
+  }
+  return await res.blob();
+}
+
+async function generate(i) {
+  const s = S[i];
+  s.status = "busy"; s.error = ""; renderSceneCard(i);
+  const key = clipKey(i);
+  try {
+    const blob = await elevenTTS(cleanText(narr(i)));
+    dbPut(key, blob);
+    await attachClip(i, blob, key);
+  } catch (e) {
+    s.status = "error"; s.error = e.message || String(e);
+  }
+  renderSceneCard(i); renderStats();
+  return s.status === "ready";
+}
+
+/* ---------- images ---------- */
+const IMG = {};
+function loadImages() {
+  const embedded = window.EMBEDDED_ASSETS || {};
+  return Promise.all(Object.entries(window.ASSET_PATHS).map(([k, p]) => new Promise((res) => {
+    const im = new Image();
+    im.onload = () => { IMG[k] = im; res(); };
+    im.onerror = () => res();
+    im.src = embedded[k] || "../../" + p;
+  })));
+}
+
+/* ---------- canvas renderer ---------- */
+const cv = $("cv");
+const ctx = cv.getContext("2d");
+const PAL = {
+  cs: { a: "#0b5fae", soft: "#e6f1fb", deep: "#073a6b" },
+  neuro: { a: "#6434cc", soft: "#eee8fb", deep: "#3b1d80" },
+};
+const INK = "#14213d", MUTED = "#5a6478", PAPER = "#f6f7fb", LINE = "#dde2ec", CARD = "#ffffff", WARN = "#b4321f";
+const F = { d: '"Rubik", "Assistant", Arial, sans-serif', b: '"Assistant", "Rubik", Arial, sans-serif', m: '"JetBrains Mono", Menlo, Consolas, monospace' };
+const R = { t: 0, starts: [0], still: true };
+let pal = PAL.cs;
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function rv(b, delay = 0) {
+  if (R.still) return 1;
+  const s = (R.starts[Math.min(b, R.starts.length - 1)] ?? 0) + delay;
+  const p = clamp((R.t - s) / 0.5, 0, 1);
+  return 1 - Math.pow(1 - p, 3);
+}
+function reveal(p, fn) {
+  if (p <= 0) return;
+  ctx.save(); ctx.globalAlpha *= p; ctx.translate(0, (1 - p) * 26); fn(); ctx.restore();
+}
+function font(w, size, fam = F.b) { ctx.font = `${w} ${size}px ${fam}`; }
+function txt(s, x, y, o = {}) {
+  const { size = 36, w = 400, fam = F.b, color = INK, align = "right", dir = "rtl", base = "alphabetic" } = o;
+  font(w, size, fam); ctx.fillStyle = color; ctx.textAlign = align; ctx.direction = dir; ctx.textBaseline = base;
+  ctx.fillText(s, x, y);
+}
+function fitSize(s, size, maxW, w = 800, fam = F.d) {
+  font(w, size, fam);
+  while (size > 20 && ctx.measureText(s).width > maxW) { size -= 2; font(w, size, fam); }
+  return size;
+}
+function wrap(s, maxW) {
+  const words = s.split(" "); const lines = []; let cur = "";
+  for (const w of words) {
+    const t = cur ? cur + " " + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+function para(s, x, y, maxW, lh, o = {}) {
+  font(o.w || 400, o.size || 36, o.fam || F.b);
+  const lines = wrap(s, maxW);
+  lines.forEach((l, k) => txt(l, x, y + k * lh, o));
+  return lines.length * lh;
+}
+function rr(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function card(x, y, w, h, o = {}) {
+  const { fill = CARD, stroke = LINE, r = 26, shadow = true, dash = null, lw = 2 } = o;
+  ctx.save();
+  if (shadow) { ctx.shadowColor = "rgba(20,33,61,.10)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; }
+  rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill();
+  ctx.shadowColor = "transparent";
+  if (stroke) { if (dash) ctx.setLineDash(dash); ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
+  ctx.restore();
+}
+function img(key, x, y, w, h, align = "bottom") {
+  const im = IMG[key]; if (!im) return;
+  const s = Math.min(w / im.width, h / im.height);
+  const dw = im.width * s, dh = im.height * s;
+  const dx = x + (w - dw) / 2, dy = align === "bottom" ? y + h - dh : y + (h - dh) / 2;
+  ctx.drawImage(im, dx, dy, dw, dh);
+}
+function avatar(key, cx, cy, r, ring) {
+  const im = IMG[key]; if (!im) return;
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.closePath();
+  ctx.fillStyle = "#fff"; ctx.fill(); ctx.clip(); ctx.drawImage(im, cx - r, cy - r, r * 2, r * 2); ctx.restore();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = ring; ctx.stroke();
+}
+function arrow(x1, y1, x2, y2, color, lw = 4) {
+  ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const a = Math.atan2(y2 - y1, x2 - x1), L = 16;
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - L * Math.cos(a - 0.5), y2 - L * Math.sin(a - 0.5));
+  ctx.lineTo(x2 - L * Math.cos(a + 0.5), y2 - L * Math.sin(a + 0.5));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function icon(kind, x, y, s) {
+  ctx.save(); ctx.fillStyle = pal.soft; rr(x, y, s, s, 24); ctx.fill();
+  ctx.fillStyle = pal.a; ctx.strokeStyle = pal.a; ctx.lineWidth = 8; ctx.lineCap = "round";
+  if (kind === "chart") {
+    [[0.22, 0.55], [0.44, 0.35], [0.66, 0.2]].forEach(([fx, fy]) => { rr(x + s * fx - 6, y + s * fy, 18, s * (0.8 - fy), 6); ctx.fill(); });
+  } else if (kind === "lock") {
+    rr(x + s * 0.24, y + s * 0.46, s * 0.52, s * 0.36, 10); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + s / 2, y + s * 0.46, s * 0.16, Math.PI, 0); ctx.stroke();
+  }
+  ctx.restore();
+}
+function numDot(n, cx, cy, r = 26, fill = pal.a) {
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = fill; ctx.fill();
+  txt(String(n), cx, cy + 1, { size: r * 1.05, w: 800, fam: F.d, color: "#fff", align: "center", base: "middle", dir: "ltr" });
+}
+
+function background() {
+  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "rgba(20,33,61,.07)";
+  for (let y = 24; y < H; y += 48) for (let x = 24; x < W; x += 48) { ctx.beginPath(); ctx.arc(x, y, 1.6, 0, Math.PI * 2); ctx.fill(); }
+  ctx.fillStyle = pal.a; ctx.fillRect(W - 14, 0, 14, H);
+}
+function header(s) {
+  txt(s.kicker, 1780, 140, { size: 30, w: 700, color: pal.a });
+  font(800, 74, F.d);
+  wrap(s.title, 1500).forEach((l, k) => txt(l, 1780, 228 + k * 84, { size: 74, w: 800, fam: F.d }));
+}
+function footer(i, progress) {
+  ctx.fillStyle = LINE; ctx.fillRect(140, 1000, 1640, 2);
+  ctx.fillStyle = pal.a; ctx.fillRect(1762, 1028, 18, 18);
+  txt("נחיתה רכה", 1748, 1046, { size: 26, w: 700, fam: F.d });
+  txt(`${String(i + 1).padStart(2, "0")} / ${String(N).padStart(2, "0")}`, 140, 1046, { size: 24, fam: F.m, color: MUTED, align: "left", dir: "ltr" });
+  if (progress != null) { ctx.fillStyle = pal.a; ctx.fillRect(W - W * progress, H - 6, W * progress, 6); }
+}
+
+const DRAW = {
+  cover(s) {
+    ctx.fillStyle = pal.soft; ctx.beginPath(); ctx.arc(520, 640, 400, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = PAL.neuro.soft; ctx.beginPath(); ctx.arc(860, 860, 190, 0, Math.PI * 2); ctx.fill();
+    const xs = [110, 320, 545, 760], hs = [470, 470, 450, 450];
+    s.images.forEach((k, j) => reveal(rv(0, 0.15 * j), () => img(k, xs[j], 990 - hs[j], 240, hs[j])));
+    txt(s.kicker, 1780, 250, { size: 32, w: 700, color: pal.a });
+    txt(s.title[0], 1780, 380, { size: 112, w: 800, fam: F.d });
+    txt(s.title[1], 1780, 500, { size: 112, w: 800, fam: F.d, color: pal.a });
+    para(s.sub, 1780, 585, 820, 50, { size: 36, color: MUTED });
+    s.chapters.forEach((c, j) => reveal(rv(c.b), () => {
+      const y = 740 + j * 66;
+      numDot(j + 1, 1754, y - 12, 22);
+      txt(c.text, 1710, y, { size: 36, w: 600 });
+    }));
+  },
+
+  chips(s) {
+    header(s);
+    const slots = [[1600, 420, -3], [1250, 450, 2.5], [1560, 570, 1.5], [1210, 610, -2], [1520, 730, -1.5], [1250, 780, 3]];
+    s.chips.forEach((c, j) => reveal(rv(c.b, 0.18 * j), () => {
+      const [cx, cy, rot] = slots[j];
+      font(600, 34); const w = ctx.measureText(c.text).width + 64;
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot * Math.PI / 180);
+      card(-w / 2, -40, w, 80, { r: 40 });
+      txt(c.text, 0, 12, { size: 34, w: 600, align: "center" });
+      ctx.restore();
+    }));
+    reveal(rv(s.question.b), () => {
+      txt(s.question.text, 1400, 920, { size: 46, w: 800, fam: F.d, color: pal.a, align: "center" });
+    });
+    reveal(rv(0), () => img("byteThink", 770, 560, 220, 430));
+    reveal(rv(s.result.b), () => {
+      const r = s.result, x = 140, y = 330, w = 600, h = 640;
+      card(x, y, w, h, { fill: pal.a, stroke: null });
+      txt(r.sub, x + w - 48, y + 76, { size: 30, w: 700, color: "rgba(255,255,255,.75)" });
+      txt(r.title, x + w - 48, y + 150, { size: 64, w: 800, fam: F.d, color: "#fff" });
+      r.lines.forEach((l, k) => {
+        const ly = y + 240 + k * 64;
+        ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.beginPath(); ctx.arc(x + w - 60, ly - 11, 8, 0, Math.PI * 2); ctx.fill();
+        txt(l, x + w - 84, ly, { size: 34, w: 600, color: "#fff" });
+      });
+    });
+  },
+
+  split(s) {
+    header(s);
+    const boxes = [[980, 330, 800, 460], [140, 330, 800, 460]];
+    s.cards.forEach((c, j) => reveal(rv(c.b), () => {
+      const [x, y, w, h] = boxes[j];
+      card(x, y, w, h);
+      txt(c.label, x + w - 48, y + 86, { size: 50, w: 800, fam: F.d, color: pal.a });
+      ctx.fillStyle = pal.soft; rr(x + 40, y + 120, w - 80, c.code.length * 56 + 30, 16); ctx.fill();
+      c.code.forEach((l, k) => txt(l, x + w - 70, y + 172 + k * 56, { size: 32, fam: F.m, w: 600, dir: "ltr" }));
+      para(c.desc, x + w - 48, y + h - 60, w - 96, 44, { size: 32, color: MUTED });
+    }));
+    const st = s.flow.steps, gap = 70, total = 1640, w = (total - gap * (st.length - 1)) / st.length;
+    st.forEach((t, k) => reveal(rv(s.flow.b, 0.25 * k), () => {
+      const x = 1780 - (k + 1) * w - k * gap, y = 850;
+      card(x, y, w, 96, { r: 48, fill: k === st.length - 1 ? pal.a : CARD, stroke: k === st.length - 1 ? null : LINE });
+      txt(t, x + w / 2, y + 60, { size: 34, w: 700, align: "center", color: k === st.length - 1 ? "#fff" : INK });
+      if (k > 0) arrow(x + w + gap - 12, y + 48, x + w + 14, y + 48, pal.a);
+    }));
+  },
+
+  fact(s) {
+    header(s);
+    const x = 140, y = 330, w = 920, h = 600;
+    reveal(rv(0), () => {
+      card(x, y, w, h, { fill: "#14213d", stroke: null });
+      ctx.fillStyle = "#e86a5a"; [0, 1, 2].forEach((k) => { ctx.fillStyle = ["#e86a5a", "#e9b949", "#5cc287"][k]; ctx.beginPath(); ctx.arc(x + 44 + k * 30, y + 40, 9, 0, Math.PI * 2); ctx.fill(); });
+      txt("shared/data.js", x + w - 40, y + 50, { size: 24, fam: F.m, color: "#8b97b0", dir: "ltr" });
+      const hl = rv(1);
+      const col = { key: "#8cc8ff", str: "#ffd58a", plain: "#c9d2e3" };
+      s.code.forEach((l, k) => {
+        const ly = y + 120 + k * 52;
+        if (l.hl && hl > 0) { ctx.save(); ctx.globalAlpha *= 0.35 * hl; ctx.fillStyle = pal.a; ctx.fillRect(x + 20, ly - 36, w - 40, 52); ctx.restore(); }
+        txt(l.t, x + 44, ly, { size: 27, fam: F.m, color: col[l.k], align: "left", dir: "ltr" });
+      });
+    });
+    s.points.forEach((p, k) => reveal(rv(p.b), () => {
+      const py = 400 + k * 180;
+      ctx.fillStyle = pal.a; ctx.fillRect(1772, py - 44, 8, 120);
+      para(p.text, 1740, py, 620, 56, { size: 42, w: 700 });
+    }));
+  },
+
+  steps(s) {
+    header(s);
+    const n = s.steps.length, gap = 56, bw = (1640 - gap * (n - 1)) / n, y = 330, bh = s.numbered ? 300 : 230;
+    s.steps.forEach((st, k) => {
+      const x = 1780 - (k + 1) * bw - k * gap;
+      reveal(rv(st.b, 0.1), () => {
+        card(x, y, bw, bh);
+        let ty = y + 70;
+        if (s.numbered) { numDot(k + 1, x + bw - 50, y + 54); ty = y + 140; }
+        if (st.image) img(st.image, x + 24, y + 24, 96, 96, "center");
+        txt(st.title, x + bw - 32, ty, { size: fitSize(st.title, 40, bw - 64), w: 800, fam: F.d, color: s.numbered ? INK : pal.a });
+        para(st.sub, x + bw - 32, ty + 54, bw - 64, 40, { size: 29, color: MUTED });
+        if (k > 0) arrow(x + bw + gap - 10, y + bh / 2, x + bw + 12, y + bh / 2, pal.a);
+      });
+      if (st.warn) reveal(rv(st.warn.b), () => {
+        font(700, 28); const ww = ctx.measureText(st.warn.text).width + 48;
+        card(x + bw / 2 - ww / 2, y + bh + 26, ww, 60, { r: 30, fill: "#fdecea", stroke: WARN, shadow: false });
+        txt(st.warn.text, x + bw / 2, y + bh + 66, { size: 28, w: 700, color: WARN, align: "center" });
+      });
+    });
+    const hasImg = s.images && s.images.length;
+    if (hasImg) reveal(rv(0), () => img(s.images[0], 140, 660, 330, 330));
+    if (s.badge) reveal(rv(s.badge.b, 0.2), () => {
+      const bx = hasImg ? 500 : 140;
+      card(bx, 700, 420, 240, { fill: pal.a, stroke: null });
+      txt(s.badge.value, bx + 210, 840, { size: 120, w: 800, fam: F.d, color: "#fff", align: "center", dir: "ltr" });
+      txt(s.badge.label, bx + 210, 900, { size: 30, w: 600, color: "rgba(255,255,255,.85)", align: "center" });
+    });
+    if (s.note) reveal(rv(s.note.b), () => {
+      const nx = s.badge ? 980 : (hasImg ? 520 : 140);
+      const nw = 1780 - nx;
+      ctx.fillStyle = pal.a; ctx.fillRect(1772, 735, 8, 150);
+      para(s.note.text, 1740, 790, nw - 60, 60, { size: 46, w: 800, fam: F.d });
+    });
+  },
+
+  features(s) {
+    header(s);
+    const n = s.cards.length, gap = 48, w = (1640 - gap * (n - 1)) / n, y = 330, h = 580;
+    s.cards.forEach((c, k) => reveal(rv(c.b), () => {
+      const x = 1780 - (k + 1) * w - k * gap;
+      card(x, y, w, h);
+      ctx.fillStyle = pal.a; rr(x, y, w, 14, 7); ctx.fill();
+      const ty = y + 250;
+      if (c.images) c.images.forEach((im, j) => avatar(im, x + w - 90 - j * 120, y + 110, 52, pal.a));
+      else icon(c.icon, x + w - 140, y + 58, 104);
+      txt(c.title, x + w - 40, ty, { size: 48, w: 800, fam: F.d, color: pal.a });
+      para(c.body, x + w - 40, ty + 66, w - 80, 50, { size: 34 });
+    }));
+  },
+
+  branches(s) {
+    header(s);
+    reveal(rv(s.rejected.b), () => {
+      const x = 1300, y = 300, w = 480, h = 170;
+      card(x, y, w, h, { dash: [10, 10], shadow: false, fill: "#fbfbfd" });
+      txt(s.rejected.title, x + w - 36, y + 62, { size: 38, w: 800, fam: F.d, color: MUTED });
+      font(800, 38, F.d); const tw = ctx.measureText(s.rejected.title).width;
+      ctx.strokeStyle = WARN; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x + w - 36, y + 50); ctx.lineTo(x + w - 36 - tw, y + 50); ctx.stroke();
+      para(s.rejected.sub, x + w - 36, y + 112, w - 72, 38, { size: 27, color: MUTED });
+    });
+    const cards = [[1000, 590, 780, 330], [140, 590, 780, 330]];
+    reveal(rv(s.repo.b), () => {
+      card(760, 300, 400, 150, { fill: INK, stroke: null });
+      txt(s.repo.title, 960, 368, { size: 38, w: 800, fam: F.d, color: "#fff", align: "center" });
+      txt(s.repo.sub, 960, 420, { size: 28, fam: F.m, color: "#9fb0cf", align: "center", dir: "ltr" });
+    });
+    s.sites.forEach((st, k) => {
+      const p = PAL[st.faculty], [x, y, w, h] = cards[k];
+      reveal(rv(st.b, 0.2 * k), () => {
+        ctx.save(); ctx.strokeStyle = p.a; ctx.lineWidth = 5; ctx.setLineDash([2, 12]); ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(960, 450); ctx.bezierCurveTo(960, 530, x + w / 2, 500, x + w / 2, y); ctx.stroke(); ctx.restore();
+        card(x, y, w, h);
+        ctx.fillStyle = p.a; rr(x, y, w, 16, 8); ctx.fill();
+        txt(st.title, x + w - 40, y + 96, { size: 50, w: 800, fam: F.d, color: p.a });
+        font(600, 28, F.m); const ew = ctx.measureText(st.env).width + 36;
+        ctx.fillStyle = p.soft; rr(x + w - 40 - ew, y + 130, ew, 52, 12); ctx.fill();
+        txt(st.env, x + w - 58, y + 166, { size: 28, w: 600, fam: F.m, color: p.deep, dir: "ltr" });
+        txt(st.url, x + w - 40, y + 260, { size: 32, w: 600, fam: F.m, dir: "ltr" });
+        st.images.forEach((im, j) => avatar(im, x + 80 + j * 110, y + 100, 48, p.a));
+      });
+    });
+    reveal(rv(s.note.b), () => txt(s.note.text, 960, 975, { size: 36, w: 800, fam: F.d, color: pal.a, align: "center" }));
+  },
+
+  org(s) {
+    header(s);
+    const hi = rv(s.owner.b);
+    // owner: always on screen, turns accent at its beat
+    card(800, 300, 320, 120, { fill: hi > 0.5 ? pal.a : CARD, stroke: hi > 0.5 ? null : LINE });
+    txt(s.owner.title, 960, 352, { size: 42, w: 800, fam: F.d, align: "center", color: hi > 0.5 ? "#fff" : INK });
+    txt(s.owner.sub, 960, 396, { size: 26, w: 600, align: "center", color: hi > 0.5 ? "rgba(255,255,255,.85)" : MUTED });
+    reveal(rv(s.manager.b), () => {
+      ctx.fillStyle = LINE; ctx.fillRect(958, 420, 4, 50);
+      card(760, 470, 400, 120, { fill: INK, stroke: null });
+      txt(s.manager.title, 960, 522, { size: 38, w: 800, fam: F.d, align: "center", color: "#fff" });
+      txt(s.manager.sub, 960, 566, { size: 25, align: "center", color: "#b8c3d9" });
+    });
+    const rx = 600, rw = 1180, cols = 4, g = 22, pw = (rw - g * (cols - 1)) / cols;
+    reveal(rv(s.rolesB), () => { ctx.fillStyle = LINE; ctx.fillRect(958, 590, 4, 40); ctx.fillRect(rx + pw / 2, 628, rw - pw, 4); });
+    s.roles.forEach((r, k) => reveal(rv(s.rolesB, 0.3 + 0.07 * k), () => {
+      const c = k % cols, row = Math.floor(k / cols);
+      const x = rx + rw - (c + 1) * pw - c * g, y = 650 + row * 96;
+      card(x, y, pw, 78, { r: 39, shadow: false });
+      txt(r, x + pw / 2, y + 50, { size: 30, w: 700, align: "center" });
+    }));
+    reveal(rv(s.sims.b), () => {
+      card(140, 640, 400, 180, { dash: [10, 8], stroke: pal.a, shadow: false, fill: pal.soft });
+      txt(s.sims.title, 510, 700, { size: 34, w: 800, fam: F.d, color: pal.a });
+      para(s.sims.sub, 510, 746, 340, 36, { size: 26 });
+    });
+    reveal(rv(s.note.b), () => txt(s.note.text, 1780, 920, { size: 34, w: 700, color: MUTED }));
+  },
+
+  list(s) {
+    header(s);
+    reveal(rv(0), () => img(s.images[0], 140, 520, 520, 470));
+    s.items.forEach((it, k) => reveal(rv(it.b), () => {
+      const y = 380 + k * 150;
+      ctx.fillStyle = pal.a; ctx.fillRect(1762, y - 34, 18, 18);
+      txt(it.text, 1730, y, { size: 48, w: 800, fam: F.d, dir: it.ltr ? "ltr" : "rtl" });
+      txt(it.sub, 1730, y + 52, { size: 32, color: MUTED });
+    }));
+  },
+
+  closing(s) {
+    ctx.fillStyle = pal.soft; ctx.beginPath(); ctx.arc(520, 660, 420, 0, Math.PI * 2); ctx.fill();
+    const xs = [80, 310, 530, 740], hs = [410, 410, 400, 400];
+    s.images.forEach((k, j) => reveal(rv(0, 0.12 * j), () => img(k, xs[j], 990 - hs[j], 260, hs[j])));
+    txt(s.kicker, 1780, 250, { size: 32, w: 700, color: pal.a });
+    txt(s.title, 1780, 410, { size: 150, w: 800, fam: F.d });
+    s.sites.forEach((st, k) => reveal(rv(0, 0.3 + 0.2 * k), () => {
+      const p = PAL[st.faculty], x = 1100, y = 480 + k * 150, w = 680, h = 120;
+      card(x, y, w, h);
+      ctx.fillStyle = p.a; ctx.fillRect(x + w - 12, y, 12, h);
+      txt(st.label, x + w - 40, y + 46, { size: 28, w: 700, color: MUTED });
+      txt(st.url, x + w - 40, y + 94, { size: 34, w: 600, fam: F.m, color: p.a, dir: "ltr" });
+    }));
+    reveal(rv(s.footer.b), () => para(s.footer.text, 1780, 860, 680, 50, { size: 38, w: 700 }));
+  },
+};
+
+/* durations and beat timing */
+const estimate = (i) => Math.max(4, cleanText(narr(i)).length / 13);
+const speechDur = (i) => (S[i].buffer ? S[i].buffer.duration : estimate(i));
+const sceneDur = (i) => speechDur(i) + GAP;
+function beatStarts(i) {
+  const parts = beatsOf(narr(i)), d = speechDur(i);
+  const total = parts.reduce((a, p) => a + p.length + 1, 0) || 1;
+  let acc = 0;
+  return parts.map((p) => { const st = Math.max(0, (acc / total) * d - 0.15); acc += p.length + 1; return st; });
+}
+
+function render(i, t, still, progress) {
+  const s = SCENES[i];
+  pal = PAL[s.accent] || PAL.cs;
+  R.t = t; R.still = still; R.starts = beatStarts(i);
+  ctx.save();
+  ctx.clearRect(0, 0, W, H);
+  background();
+  DRAW[s.kind](s);
+  footer(i, progress);
+  ctx.restore();
+}
+
+/* ---------- player ---------- */
+const P = { playing: false, idx: 0, startAt: 0, src: null, onEnd: null };
+let selected = 0;
+function stopSource() { try { P.src && P.src.stop(); } catch {} P.src = null; }
+function startScene() {
+  const s = S[P.idx];
+  P.startAt = actx.currentTime + 0.08;
+  stopSource();
+  if (s.buffer) { const src = actx.createBufferSource(); src.buffer = s.buffer; src.connect(master); src.start(P.startAt); P.src = src; }
+  select(P.idx, false);
+}
+async function playFrom(i, onEnd = null) {
+  await actx.resume();
+  P.idx = i; P.playing = true; P.onEnd = onEnd;
+  startScene(); updateTransport();
+}
+function stop() {
+  stopSource(); P.playing = false; updateTransport();
+  const cb = P.onEnd; P.onEnd = null; if (cb) cb(false);
+}
+function totalDur() { let d = 0; for (let i = 0; i < N; i++) d += sceneDur(i); return d; }
+function elapsedBefore(i) { let d = 0; for (let k = 0; k < i; k++) d += sceneDur(k); return d; }
+function frame() {
+  if (P.playing) {
+    const t = actx.currentTime - P.startAt;
+    if (t >= sceneDur(P.idx)) {
+      if (P.idx < N - 1) { P.idx++; startScene(); }
+      else { P.playing = false; stopSource(); updateTransport(); const cb = P.onEnd; P.onEnd = null; if (cb) cb(true); }
+    }
+    const tt = Math.max(0, actx.currentTime - P.startAt);
+    render(P.idx, tt, false, (elapsedBefore(P.idx) + Math.min(tt, sceneDur(P.idx))) / totalDur());
+    $("pos").textContent = `${fmt(elapsedBefore(P.idx) + tt)} / ${fmt(totalDur())}`;
+  } else {
+    render(selected, 1e9, true, null);
+  }
+  requestAnimationFrame(frame);
+}
+const fmt = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+
+/* ---------- UI ---------- */
+function showMsg(el, text, err = false, html = false) {
+  el.hidden = !text; el.classList.toggle("err", err);
+  if (html) el.innerHTML = text; else el.textContent = text;
+}
+function select(i, scroll = true) {
+  selected = i;
+  document.querySelectorAll(".scene").forEach((el, k) => el.classList.toggle("sel", k === i));
+  if (scroll) document.querySelectorAll(".scene")[i]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  if (!P.playing) $("pos").textContent = `סצנה ${i + 1} מתוך ${N} · ${fmt(totalDur())} בסך הכול`;
+}
+function updateTransport() {
+  $("btnPlay").textContent = P.playing ? "■ עצירה" : "▶ הפעלה מכאן";
+}
+function sceneTitle(s) { return Array.isArray(s.title) ? s.title.join(" ") : s.title; }
+
+function buildSceneCards() {
+  const host = $("scenes");
+  SCENES.forEach((s, i) => {
+    const el = document.createElement("article");
+    el.className = "scene";
+    el.innerHTML = `
+      <div class="head"><span class="num">${String(i + 1).padStart(2, "0")}</span><h3></h3></div>
+      <textarea id="narr-${s.id}" dir="rtl" aria-label="קריינות לסצנה ${i + 1}"></textarea>
+      <div class="foot">
+        <span class="pill" data-role="status"></span>
+        <span class="chars" data-role="chars"></span>
+        <span class="spacer"></span>
+        <button data-role="view">צפייה</button>
+        <button data-role="listen">השמעה</button>
+        <button data-role="gen">יצירה</button>
+        <button data-role="reset" hidden>שחזור</button>
+      </div>`;
+    el.querySelector("h3").textContent = sceneTitle(s);
+    const ta = el.querySelector("textarea");
+    ta.value = narr(i);
+    let timer = 0;
+    ta.addEventListener("input", () => {
+      if (ta.value === s.narration) delete edits[s.id]; else edits[s.id] = ta.value;
+      store.set("narr", edits);
+      renderSceneCard(i);
+      clearTimeout(timer); timer = setTimeout(() => refreshClip(i), 400);
+    });
+    ta.addEventListener("focus", () => { if (!P.playing) select(i, false); });
+    el.querySelector('[data-role="view"]').onclick = () => { if (P.playing) stop(); select(i, false); };
+    el.querySelector('[data-role="listen"]').onclick = () => { if (P.playing) stop(); playFrom(i); };
+    el.querySelector('[data-role="gen"]').onclick = async () => { await generate(i); };
+    el.querySelector('[data-role="reset"]').onclick = () => { delete edits[s.id]; store.set("narr", edits); ta.value = s.narration; renderSceneCard(i); refreshClip(i); };
+    el.addEventListener("click", (e) => { if (e.target === el) select(i, false); });
+    host.appendChild(el);
+    renderSceneCard(i);
+  });
+}
+function renderSceneCard(i) {
+  const el = document.querySelectorAll(".scene")[i]; if (!el) return;
+  const s = S[i], st = el.querySelector('[data-role="status"]');
+  const map = { none: ["אין קריינות עדיין", ""], busy: ["יוצר…", "busy"], ready: [`קריינות · ${fmt(s.buffer?.duration || 0)}`, "ok"], error: ["שגיאה", "err"] };
+  const [label, cls] = map[s.status];
+  st.textContent = label; st.className = "pill " + cls; st.title = s.error || "";
+  const text = narr(i), beats = beatsOf(text).length;
+  el.querySelector('[data-role="chars"]').textContent = `${cleanText(text).length} תווים · ${beats} פעימות`;
+  el.querySelector('[data-role="gen"]').disabled = s.status === "busy";
+  el.querySelector('[data-role="gen"]').textContent = s.status === "ready" ? "יצירה מחדש" : "יצירה";
+  el.querySelector('[data-role="listen"]').disabled = s.status !== "ready";
+  el.querySelector('[data-role="reset"]').hidden = !(SCENES[i].id in edits);
+  if (s.status === "error") showMsg($("msg"), `סצנה ${i + 1}: ${s.error}`, true);
+}
+function renderStats() {
+  const chars = SCENES.reduce((a, _, i) => a + cleanText(narr(i)).length, 0);
+  const ready = S.filter((s) => s.status === "ready").length;
+  const missing = SCENES.reduce((a, _, i) => a + (S[i].status === "ready" ? 0 : cleanText(narr(i)).length), 0);
+  $("stats").innerHTML = `<span>סצנות עם קריינות: <b>${ready} / ${N}</b></span><span>תווים בתסריט: <b>${chars.toLocaleString("he-IL")}</b></span><span>עוד ליצירה: <b>${missing.toLocaleString("he-IL")}</b> תווים</span><span>אורך משוער: <b>${fmt(totalDur())}</b></span>`;
+  if (!P.playing) select(selected, false);
+}
+
+function download(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+
+function wire() {
+  $("apiKey").value = settings.apiKey || "";
+  $("model").value = settings.model;
+  $("stability").value = settings.stability;
+  $("remember").checked = !!settings.remember;
+  $("voiceId").value = settings.voiceId || "";
+  if (settings.voiceSel) { const o = new Option(settings.voiceName || settings.voiceSel, settings.voiceSel, true, true); $("voiceSel").add(o); }
+
+  $("apiKey").addEventListener("change", () => { settings.apiKey = $("apiKey").value.trim(); saveSettings(); });
+  $("remember").addEventListener("change", () => { settings.remember = $("remember").checked; settings.apiKey = $("apiKey").value.trim(); saveSettings(); });
+  $("model").addEventListener("change", () => { settings.model = $("model").value; saveSettings(); refreshAll(); });
+  $("stability").addEventListener("change", () => { settings.stability = $("stability").value; saveSettings(); refreshAll(); });
+  $("voiceId").addEventListener("change", () => { settings.voiceId = $("voiceId").value.trim(); saveSettings(); refreshAll(); });
+  $("voiceSel").addEventListener("change", () => {
+    const o = $("voiceSel").selectedOptions[0];
+    settings.voiceSel = $("voiceSel").value; settings.voiceName = o ? o.textContent : ""; saveSettings(); refreshAll();
+  });
+
+  $("btnVoices").onclick = async () => {
+    const key = $("apiKey").value.trim();
+    if (!key) return showMsg($("msg"), "צריך קודם להדביק מפתח API.", true);
+    showMsg($("msg"), "טוען קולות…");
+    try {
+      const res = await fetch("https://api.elevenlabs.io/v1/voices", { headers: { "xi-api-key": key } });
+      if (!res.ok) throw new Error(res.status === 401 ? "המפתח לא התקבל (401). צריך הרשאת Voices: read." : `שגיאה ${res.status}`);
+      const { voices = [] } = await res.json();
+      const sel = $("voiceSel"); const cur = settings.voiceSel;
+      sel.innerHTML = '<option value="">בחרו קול</option>';
+      voices.sort((a, b) => (a.category === "cloned" ? -1 : 0) - (b.category === "cloned" ? -1 : 0))
+        .forEach((v) => sel.add(new Option(`${v.name}${v.category ? " · " + v.category : ""}`, v.voice_id, false, v.voice_id === cur)));
+      showMsg($("msg"), `נטענו ${voices.length} קולות. קולות משובטים מופיעים ראשונים.`);
+    } catch (e) { showMsg($("msg"), e.message || "טעינת הקולות נכשלה.", true); }
+  };
+
+  $("btnSample").onclick = async () => {
+    showMsg($("msg"), "יוצר דוגמה…");
+    try {
+      const blob = await elevenTTS("אהלן! זאת דוגמה קצרה לקול של הסרטון על נחיתה רכה, האתר שבניתי לסטודנטים בבר־אילן.");
+      const buf = await actx.decodeAudioData(await blob.arrayBuffer());
+      await actx.resume();
+      const src = actx.createBufferSource(); src.buffer = buf; src.connect(actx.destination); src.start();
+      showMsg($("msg"), "מנגן את הדוגמה.");
+    } catch (e) { showMsg($("msg"), e.message, true); }
+  };
+
+  $("btnGenAll").onclick = async () => {
+    const todo = SCENES.map((_, i) => i).filter((i) => S[i].status !== "ready");
+    if (!todo.length) return showMsg($("msg"), "לכל הסצנות כבר יש קריינות. כדי ליצור סצנה מחדש, לחצו \"יצירה מחדש\" בכרטיס שלה.");
+    $("btnGenAll").disabled = true;
+    let ok = 0;
+    for (const [n, i] of todo.entries()) {
+      showMsg($("msg"), `יוצר סצנה ${i + 1} (${n + 1} מתוך ${todo.length})…`);
+      if (await generate(i)) ok++; else break;
+    }
+    $("btnGenAll").disabled = false;
+    if (ok === todo.length) showMsg($("msg"), `נוצרה קריינות ל-${ok} סצנות. אפשר ללחוץ "הפעלה מכאן" על הסצנה הראשונה.`);
+  };
+
+  $("btnPlay").onclick = () => { if (P.playing) stop(); else playFrom(selected); };
+  $("btnNext").onclick = () => { const i = Math.min(N - 1, (P.playing ? P.idx : selected) + 1); P.playing ? playFrom(i) : select(i); };
+  $("btnPrev").onclick = () => { const i = Math.max(0, (P.playing ? P.idx : selected) - 1); P.playing ? playFrom(i) : select(i); };
+  $("btnFull").onclick = () => { $("stage").requestFullscreen?.().catch(() => {}); };
+
+  document.addEventListener("keydown", (e) => {
+    if (/^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement?.tagName)) return;
+    if (e.key === " ") { e.preventDefault(); $("btnPlay").click(); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); $("btnNext").click(); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); $("btnPrev").click(); }
+  });
+
+  $("btnCopy").onclick = async () => {
+    const text = SCENES.map((s, i) => `${i + 1}. ${sceneTitle(s)}\n${cleanText(narr(i))}`).join("\n\n");
+    try { await navigator.clipboard.writeText(text); showMsg($("exportMsg"), "התסריט הועתק."); }
+    catch { download(new Blob([text], { type: "text/plain;charset=utf-8" }), "tasrit-nechita-raka.txt"); showMsg($("exportMsg"), "ההעתקה נחסמה, אז התסריט ירד כקובץ טקסט."); }
+  };
+
+  $("btnMp3").onclick = async () => {
+    const ready = S.map((s, i) => [s, i]).filter(([s]) => s.status === "ready");
+    if (!ready.length) return showMsg($("exportMsg"), "עדיין אין קריינות להוריד.", true);
+    for (const [s, i] of ready) { download(s.blob, `${String(i + 1).padStart(2, "0")}-${SCENES[i].id}.mp3`); await new Promise((r) => setTimeout(r, 350)); }
+    showMsg($("exportMsg"), `ירדו ${ready.length} קובצי MP3. אם הדפדפן שאל אם לאשר הורדה של כמה קבצים, צריך לאשר.`);
+  };
+
+  $("btnExport").onclick = exportVideo;
+}
+
+async function exportVideo() {
+  const missing = S.map((s, i) => (s.status === "ready" ? null : i + 1)).filter(Boolean);
+  if (missing.length && !$("btnExport").dataset.confirm) {
+    $("btnExport").dataset.confirm = "1";
+    $("btnExport").textContent = "לייצא בכל זאת";
+    return showMsg($("exportMsg"), `לסצנות ${missing.join(", ")} אין קריינות. הן ייצאו בלי קול, עם תזמון משוער. לחצו שוב כדי לייצא בכל זאת.`, true);
+  }
+  delete $("btnExport").dataset.confirm; $("btnExport").textContent = "ייצוא סרטון";
+  if (!window.MediaRecorder || !cv.captureStream) return showMsg($("exportMsg"), "הדפדפן הזה לא יודע להקליט וידאו. נסו ב-Chrome או ב-Edge.", true);
+  await document.fonts.ready;
+  let vstream;
+  try { vstream = cv.captureStream(30); }
+  catch { return showMsg($("exportMsg"), "הדפדפן חסם את ההקלטה של השקופיות. פתחו את הקובץ explainer.html שנבנה (עם התמונות בתוכו), לא את studio.html.", true); }
+  const dest = actx.createMediaStreamDestination();
+  master.connect(dest);
+  monitor.gain.value = $("monitor").checked ? 1 : 0;
+  const stream = new MediaStream([...vstream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  // MP4 only with H.264: an MP4 holding VP9 plays in Chrome but not on phones or in WhatsApp, so WebM is the honest fallback.
+  const types = ['video/mp4;codecs="avc1.640028,mp4a.40.2"', 'video/mp4;codecs="avc1.42E01E,mp4a.40.2"', 'video/webm;codecs="vp9,opus"', 'video/webm;codecs="vp8,opus"', "video/webm"];
+  const mimeType = types.find((t) => MediaRecorder.isTypeSupported(t)) || "";
+  const rec = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 10_000_000, audioBitsPerSecond: 192_000 });
+  const chunks = [];
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  const ui = (on) => { ["btnExport", "btnGenAll", "btnPlay", "btnNext", "btnPrev"].forEach((id) => ($(id).disabled = on)); $("recBadge").hidden = !on; };
+  ui(true);
+  showMsg($("exportMsg"), `מקליט את הסרטון (${fmt(totalDur())}). השאירו את הלשונית פתוחה וגלויה עד הסוף.`);
+  rec.onstop = () => {
+    master.disconnect(dest); monitor.gain.value = 1; ui(false);
+    const blob = new Blob(chunks, { type: (mimeType || "video/webm").split(";")[0] });
+    const ext = blob.type.includes("mp4") ? "mp4" : "webm";
+    const name = `nechita-raka-explainer.${ext}`;
+    download(blob, name);
+    const url = URL.createObjectURL(blob);
+    showMsg($("exportMsg"), `הסרטון מוכן (${(blob.size / 1048576).toFixed(1)}MB, ${ext.toUpperCase()}). אם ההורדה לא התחילה: <a href="${url}" download="${name}">הורדה</a>.${ext === "webm" ? " WebM נפתח ב-Chrome וב-VLC; בשביל וואטסאפ אפשר להמיר ל-MP4 ב-CapCut או ב-HandBrake." : ""}`, false, true);
+  };
+  select(0, false);
+  rec.start(1000);
+  await new Promise((r) => setTimeout(r, 500));
+  playFrom(0, (done) => setTimeout(() => rec.state !== "inactive" && rec.stop(), done ? 800 : 0));
+}
+
+(async function boot() {
+  buildSceneCards();
+  wire();
+  select(0, false);
+  requestAnimationFrame(frame);
+  await Promise.all([openDb(), loadImages(), document.fonts.load('800 40px "Rubik"').catch(() => {}), document.fonts.load('600 20px "Assistant"').catch(() => {}), document.fonts.load('400 20px "JetBrains Mono"').catch(() => {})]);
+  await refreshAll();
+  renderStats();
+})();
+</script>
+</body>
+</html>
