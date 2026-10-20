@@ -138,6 +138,9 @@ const PLACES: Record<Stage, Record<Who, { x: number; h: number; on: boolean }>> 
   guest: { noi: { x: 335, h: 470, on: true }, ron: { x: 150, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
 };
 const MOVE = 30;
+/** A change of side is longer: walk off the near edge, then come back on from the far edge. */
+const CROSS = 48;
+const OFF_LEFT = -260, OFF_RIGHT = 2180;
 /** A character's place at a frame, eased between the stages of consecutive scenes. */
 export function placeAt(who: Who, frame: number) {
   let prev = PLACES.hosts[who], cur = prev, start = -999;
@@ -146,9 +149,20 @@ export function placeAt(who: Who, frame: number) {
     const next = PLACES[s.stage][who];
     if (next !== cur) { prev = cur; cur = next; start = s.from; }
   }
-  const t = Math.min(1, Math.max(0, (frame - start) / MOVE));
+  // A character who changes sides would otherwise walk in front of the board.
+  const crosses = prev.on && cur.on && (prev.x < 960) !== (cur.x < 960);
+  const t = Math.min(1, Math.max(0, (frame - start) / (crosses ? CROSS : MOVE)));
+  const h = prev.h + (cur.h - prev.h) * t;
+  const moving = t > 0 && t < 1 ? Math.sin(t * Math.PI) : 0;
+  if (crosses) {
+    const exitX = prev.x < 960 ? OFF_LEFT : OFF_RIGHT, enterX = cur.x < 960 ? OFF_LEFT : OFF_RIGHT;
+    const x = t < 0.5
+      ? prev.x + (exitX - prev.x) * Math.pow(t * 2, 3)
+      : enterX + (cur.x - enterX) * (1 - Math.pow(1 - (t - 0.5) * 2, 3));
+    return { x, h, on: true, moving: t > 0 && t < 1 ? 1 : 0 };
+  }
   const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  return { x: prev.x + (cur.x - prev.x) * e, h: prev.h + (cur.h - prev.h) * e, on: cur.on || t < 1, moving: t > 0 && t < 1 ? Math.sin(t * Math.PI) : 0 };
+  return { x: prev.x + (cur.x - prev.x) * e, h, on: cur.on || t < 1, moving };
 }
 
 export const speaking = (frame: number) => TL.lines.some((l) => frame >= l.from && frame < l.from + l.dur);
