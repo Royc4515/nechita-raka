@@ -17,7 +17,7 @@ export const SFX = {
 export type SfxName = keyof typeof SFX;
 
 /** Shown on the outro whenever a music bed is used. The current bed is a CC BY 4.0 track that requires it. */
-export const MUSIC_CREDIT = "Music: “Study And Relax” by Kevin MacLeod (incompetech.com), CC BY 4.0";
+export const MUSIC_CREDIT = "Music: “Wallpaper” by Kevin MacLeod (incompetech.com), CC BY 4.0";
 
 export const MUSIC = {
   prompt:

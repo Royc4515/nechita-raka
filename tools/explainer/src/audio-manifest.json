@@ -9586,5 +9586,9 @@
    "file": "audio/sfx/confetti.mp3",
    "duration": 2.037551
   }
+ },
+ "music": {
+  "file": "audio/music/bed.mp3",
+  "duration": 220.081633
  }
 }
