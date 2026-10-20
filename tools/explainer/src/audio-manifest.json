@@ -9559,6 +9559,22 @@
   "pop": {
    "file": "audio/sfx/pop.mp3",
    "duration": 1.044898
+  },
+  "click": {
+   "file": "audio/sfx/click.mp3",
+   "duration": 0.626939
+  },
+  "chime": {
+   "file": "audio/sfx/chime.mp3",
+   "duration": 2.037551
+  },
+  "stamp": {
+   "file": "audio/sfx/stamp.mp3",
+   "duration": 1.044898
+  },
+  "error": {
+   "file": "audio/sfx/error.mp3",
+   "duration": 2.037551
   }
  }
 }
