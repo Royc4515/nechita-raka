@@ -7,7 +7,8 @@ import React from "react";
 import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { noise2D } from "@remotion/noise";
 import { Appear, Badge, C, CheckDot, FONT, Icon, Phone, cueAt, img, shot, useRamp, type BoardProps } from "../lib";
-import type { SfxName } from "../sounds";
+import { MUSIC_CREDIT, type SfxName } from "../sounds";
+import { AUDIO } from "../timeline";
 
 const W = 1120, H = 640;
 const title: React.CSSProperties = { fontFamily: FONT.display, fontWeight: 800, color: C.ink };
@@ -581,6 +582,11 @@ const Outro: React.FC<BoardProps> = ({ cues }) => {
         <div style={{ position: "absolute", left: 0, right: 0, top: 420, textAlign: "center", transform: `scale(${big})` }}>
           <div style={{ ...title, fontWeight: 900, fontSize: 130, backgroundImage: `linear-gradient(90deg, ${C.cs}, ${C.neuro})`, WebkitBackgroundClip: "text", color: "transparent" }}>בהצלחה!</div>
         </div>
+      )}
+      {AUDIO.music && (
+        <Appear at={c(1) + 20} y={10} style={{ ...abs(0, 596, 1120, 30), textAlign: "center", fontFamily: FONT.body, fontSize: 18, color: "#5b6478", direction: "ltr" }}>
+          {MUSIC_CREDIT}
+        </Appear>
       )}
     </AbsoluteFill>
   );

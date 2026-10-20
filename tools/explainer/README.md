@@ -31,3 +31,4 @@ npm run render                         # out/nechita-raka-explainer.mp4, 1080p
 - **בלי קול:** אפשר לרנדר גם לפני `npm run audio`. אז התזמון משוער והדמויות "מדברות" בתנועה סינתטית. זה טוב לבדיקת ויזואל, לא לסרטון הסופי.
 - **בסביבת הענן:** Chromium כבר מותקן, ומעבירים אותו כך: `REMOTION_CHROME=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell npm run render`.
 - Remotion חינמי לשימוש אישי ולצוותים קטנים (ראו את הרישיון שלו).
+- **מוזיקה:** ‏"Study And Relax" של Kevin MacLeod ‏(incompetech.com), ברישיון CC BY 4.0. הרישיון מחייב קרדיט, והקרדיט מופיע אוטומטית בסוף הסרטון כשיש קובץ `public/audio/music/bed.mp3`.

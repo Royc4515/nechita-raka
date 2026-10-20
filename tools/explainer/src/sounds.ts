@@ -16,6 +16,9 @@ export const SFX = {
 } as const;
 export type SfxName = keyof typeof SFX;
 
+/** Shown on the outro whenever a music bed is used. The current bed is a CC BY 4.0 track that requires it. */
+export const MUSIC_CREDIT = "Music: “Study And Relax” by Kevin MacLeod (incompetech.com), CC BY 4.0";
+
 export const MUSIC = {
   prompt:
     "Light, optimistic instrumental background music for an animated explainer video about students building a website. " +
