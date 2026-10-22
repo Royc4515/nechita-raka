@@ -222,13 +222,13 @@ export const TOUR_SCENES: Scene[] = [
     id: "tour-hello", board: "tourHello", chapter: 4, stage: "duo",
     lines: [
       { who: "noi", pose: "wave", text: "[excited] היי! אני נוי, וזה רון. אנחנו גרים באתר של מדעי המוח." },
-      { who: "ron", pose: "point", text: "^נחיתה רכה: כל מה שסטודנט במדעי המוח בבר־אילן צריך, במקום אחד. ^בואו נעשה סיבוב קצר." },
+      { who: "ron", pose: "point", text: "^נחיתה רכה: כל מה שסטודנט במדעי המוח בבר־אילן צריך, במקום אחד, בלי לחפש בעשרות אתרים וקבוצות. ^בואו נראה מה יש שם." },
     ],
   },
   {
     id: "tour-search", board: "tourSearch", chapter: 4, stage: "duo",
     lines: [
-      { who: "noi", pose: "point", text: "^מתחילים מהחיפוש. כותבים ^מילואים, ^וכל מה שקשור קופץ." },
+      { who: "noi", pose: "point", text: "^מחפשים משהו? כותבים, למשל, ^מילואים, ^וכל מה שקשור קופץ: מדריכים וקישורים." },
       { who: "ron", pose: "idea", text: "^ואם אתם יודעים מה אתם מחפשים, הכול מסודר בלשוניות שבתחתית המסך." },
     ],
   },
@@ -256,7 +256,7 @@ export const TOUR_SCENES: Scene[] = [
   {
     id: "tour-outro", board: "tourOutro", chapter: 4, stage: "duo",
     lines: [
-      { who: "noi", pose: "celebrate", text: "^הכתובת על המסך, ^ואפשר להוסיף את האתר למסך הבית, כמו אפליקציה." },
+      { who: "noi", pose: "celebrate", text: "^הכתובת על המסך. ^שמרו את האתר במסך הבית, כמו אפליקציה, והכול תמיד בהישג יד." },
       { who: "ron", pose: "celebrate", text: "נתראה שם. ^בהצלחה!" },
     ],
   },
