@@ -364,10 +364,9 @@ window.SITE_EN = {
 
     // Faculty PR 6b: the WhatsApp communities and groups, and the "link missing" items (their wa.me links get an English message).
     [`שנה א' (מחזור תשפ"ז)`, `First year (the 5787 cohort)`],
-    [`שנה א' תשפ"ז: מחכים לקישור`, `Year 1, 5787 cohort: waiting for the link`],
-    [`בכל מחזור במדעי המוח יש קהילת וואטסאפ: נכנסים אליה ומצטרפים מבפנים לקבוצות הקורסים. הכרטיס פותח הודעה מוכנה לרועי.`, `Each Brain Sciences cohort runs a WhatsApp community: join it, then the course groups from within. The card opens a ready-made message to Roy.`],
-    [`קהילת המחזור, עם קבוצות הקורסים בפנים. יש לכם את הקישור? שלחו לרועי.`, `The cohort's community, with the course groups inside. Have the link? Send it to Roy.`],
-    [`https://wa.me/972547287807?text=היי%20רועי%2C%20חסר%20באתר%20הקישור%20לקבוצת%20שנה%20א'%20תשפ%22ז.%20הנה%20הקישור%3A`, `https://wa.me/972547287807?text=Hi%20Roy%2C%20the%20site%20is%20missing%20the%20link%20to%20the%20first-year%20group%20of%205787.%20Here%20it%20is%3A`],
+    [`בכל מחזור במדעי המוח יש קהילת וואטסאפ: נכנסים אליה ומצטרפים מבפנים לקבוצות הקורסים.`, `Each Brain Sciences cohort runs a WhatsApp community: join it, then the course groups from within.`],
+    [`קהילת המחזור בוואטסאפ, עם קבוצות הקורסים בפנים.`, `The cohort's WhatsApp community, with the course groups inside.`],
+    [`קהילת מדעי המוח תשפ"ז`, `The Brain Sciences 5787 community`],
     [`מילואימניקים שנה א': מחכים לקישור`, `First-year reservists: waiting for the link`],
     [`במחזורים הקודמים הקבוצה בתוך קהילת המחזור. הכרטיס פותח הודעה מוכנה לרועי.`, `In the earlier cohorts the group sits inside the cohort's community. The card opens a ready-made message to Roy.`],
     [`קבוצת המילואימניקים של המחזור. יש לכם את הקישור? שלחו אותו לרועי.`, `The cohort's reservists group. Have the link? Send it to Roy.`],
