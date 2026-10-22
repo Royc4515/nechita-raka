@@ -7,15 +7,17 @@
         לא נאמרת ולא מופיעה בכתוביות. מילים באנגלית כתובות כפי שהן נשמעות (גיטהאב, ורסל).
   pose: התנוחה של הדמות בזמן השורה (wave, think, celebrate, point, calendar, idea, laptop).
   term: כרטיס "מילון" שקופץ על המסך: המילה, וההסבר בשורה אחת.
-  stage: מי על הבמה. hosts: נוי משמאל ורון מימין. guest: נוי ורון יחד משמאל, וביט מציג מימין.
+  say: (לא חובה) מה הקול אומר, כשההגייה צריכה ניקוד או כתיב אחר מהכתוביות. ה-^ נשארים ב-text.
+  stage: מי על הבמה. hosts: נוי מימין ורון משמאל. guest: נוי ורון יחד משמאל, וביט מציג מימין.
+         trio ו-duo הם לסרטונים האנכיים: שלושתם, או רק נוי ורון, מתחת ללוח.
 
   הקובץ נקרא גם מ-scripts/generate-audio.mts, ולכן אין בו ייבוא של React.
 */
 
 export type Who = "bit" | "noi" | "ron";
 export type Pose = "wave" | "think" | "celebrate" | "point" | "calendar" | "idea" | "laptop";
-export type Stage = "hosts" | "guest" | "trio";
-export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string }; key?: string };
+export type Stage = "hosts" | "guest" | "trio" | "duo";
+export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string }; key?: string; say?: string };
 export type Scene = { id: string; board: string; chapter: number; stage: Stage; lines: Line[] };
 
 export const CHAPTERS = [
@@ -210,4 +212,53 @@ export const SHORT_SCENES: Scene[] = [
   { id: "short-ai", board: "aiLoop", chapter: 2, stage: "trio", lines: [take("ai-01"), take("ai-02"), take("ai-04")] },
   { id: "short-sites", board: "twoSites", chapter: 4, stage: "trio", lines: [take("two-sites-02"), take("two-sites-04"), take("two-sites-06")] },
   { id: "short-outro", board: "outro", chapter: 6, stage: "trio", lines: [take("outro-01"), take("outro-03")] },
+];
+
+/**
+  The site tour (vertical, about a minute): Noi and Ron walk a new student through what is on the brain sciences site,
+  one tab at a time. Its lines are new (their own audio files, keys tour-hello-01...), and Bit stays home.
+*/
+export const TOUR_SCENES: Scene[] = [
+  {
+    id: "tour-hello", board: "tourHello", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "wave", text: "[excited] היי! אני נוי, וזה רון. אנחנו גרים באתר של מדעי המוח." },
+      { who: "ron", pose: "point", text: "^נחיתה רכה: כל מה שסטודנט במדעי המוח בבר־אילן צריך, במקום אחד, בלי לחפש בעשרות אתרים וקבוצות. ^בואו נראה מה יש שם." },
+    ],
+  },
+  {
+    id: "tour-search", board: "tourSearch", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "point", text: "^מחפשים משהו? כותבים, למשל, ^מבחנים, ^וכל מה שקשור קופץ: מדריכים וקישורים." },
+      { who: "ron", pose: "idea", text: "^ואם אתם יודעים מה אתם מחפשים, הכול מסודר בלשוניות שבתחתית המסך." },
+    ],
+  },
+  {
+    id: "tour-links", board: "tourLinks", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "point", text: "^בקישורים: אינ־בר, למדה, אתרי התוכנית, ^וקבוצות הוואטסאפ.", say: "בקישורים: אִינְבָּר, לַמְדָּה, אתרי התוכנית, וקבוצות הוואטסאפ." },
+      { who: "ron", pose: "think", text: "^במדריכים: צעד אחר צעד, מרישום לקורסים ועד מילואים. ^וכל מדריך בנוי מהאתרים הרשמיים." },
+    ],
+  },
+  {
+    id: "tour-courses", board: "tourCourses", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "laptop", text: "^במערכת: כל הקורסים, עם שעות, חדרים ומרצים, ^לפי המסלול שלכם." },
+      { who: "ron", pose: "calendar", text: "^בוחרים קורסים וקבוצות, ^ונבנית לכם מערכת שבועית עם המבחנים. ^ואת לוח השנה אפשר להוסיף ליומן בטלפון." },
+    ],
+  },
+  {
+    id: "tour-chat", board: "tourChat", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "wave", text: "ואם משהו לא ברור? ^שואלים אותנו בצ'אט." },
+      { who: "ron", pose: "think", text: "^אנחנו עונים רק לפי מה שכתוב באתר. ^ובדברים חשובים, תמיד כדאי לבדוק גם במקור הרשמי." },
+    ],
+  },
+  {
+    id: "tour-outro", board: "tourOutro", chapter: 4, stage: "duo",
+    lines: [
+      { who: "noi", pose: "celebrate", text: "^הכתובת על המסך. ^שמרו את האתר במסך הבית, כמו אפליקציה, והכול תמיד בהישג יד." },
+      { who: "ron", pose: "celebrate", text: "נתראה שם. ^בהצלחה!" },
+    ],
+  },
 ];
