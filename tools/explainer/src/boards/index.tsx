@@ -641,13 +641,13 @@ const TourHello: React.FC<BoardProps> = ({ cues, dur }) => {
 const TourSearch: React.FC<BoardProps> = ({ cues }) => {
   const frame = useCurrentFrame();
   const c = (i: number) => cueAt(cues, i);
-  const word = "מילואים";
+  const word = "מבחנים";
   const typed = word.slice(0, Math.max(0, Math.min(word.length, Math.floor((frame - c(2)) / 3))));
   const caret = frame >= c(1) && Math.floor(frame / 12) % 2 === 0;
   const results = [
-    { kind: "מדריך", t: "סטודנטים במילואים", s: "מה מגיע לכם בלימודים" },
-    { kind: "מדריך", t: "אפוד אקדמי", s: "ההתאמות למילואימניקים" },
-    { kind: "קישור", t: "מילואימניקים ואנשי כוחות הביטחון", s: "האתר של בר־אילן" },
+    { kind: "מדריך", t: "בחינות, מועד ב' ומועד מיוחד", s: "מה צריך כדי להיכנס, ואיך נרשמים למועד ב'" },
+    { kind: "קישור", t: "שהם, קטלוג הקורסים", s: "סילבוס, מרצים ומועדי בחינות" },
+    { kind: "קישור", t: "דרייב מדעי המוח", s: "סיכומים ומבחנים משנים קודמות" },
   ];
   const tabs = useRamp(c(4) - 4, c(4) + 12);
   return (

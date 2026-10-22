@@ -7,6 +7,7 @@
         לא נאמרת ולא מופיעה בכתוביות. מילים באנגלית כתובות כפי שהן נשמעות (גיטהאב, ורסל).
   pose: התנוחה של הדמות בזמן השורה (wave, think, celebrate, point, calendar, idea, laptop).
   term: כרטיס "מילון" שקופץ על המסך: המילה, וההסבר בשורה אחת.
+  say: (לא חובה) מה הקול אומר, כשההגייה צריכה ניקוד או כתיב אחר מהכתוביות. ה-^ נשארים ב-text.
   stage: מי על הבמה. hosts: נוי מימין ורון משמאל. guest: נוי ורון יחד משמאל, וביט מציג מימין.
          trio ו-duo הם לסרטונים האנכיים: שלושתם, או רק נוי ורון, מתחת ללוח.
 
@@ -16,7 +17,7 @@
 export type Who = "bit" | "noi" | "ron";
 export type Pose = "wave" | "think" | "celebrate" | "point" | "calendar" | "idea" | "laptop";
 export type Stage = "hosts" | "guest" | "trio" | "duo";
-export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string }; key?: string };
+export type Line = { who: Who; text: string; pose: Pose; term?: { word: string; def: string }; key?: string; say?: string };
 export type Scene = { id: string; board: string; chapter: number; stage: Stage; lines: Line[] };
 
 export const CHAPTERS = [
@@ -228,14 +229,14 @@ export const TOUR_SCENES: Scene[] = [
   {
     id: "tour-search", board: "tourSearch", chapter: 4, stage: "duo",
     lines: [
-      { who: "noi", pose: "point", text: "^מחפשים משהו? כותבים, למשל, ^מילואים, ^וכל מה שקשור קופץ: מדריכים וקישורים." },
+      { who: "noi", pose: "point", text: "^מחפשים משהו? כותבים, למשל, ^מבחנים, ^וכל מה שקשור קופץ: מדריכים וקישורים." },
       { who: "ron", pose: "idea", text: "^ואם אתם יודעים מה אתם מחפשים, הכול מסודר בלשוניות שבתחתית המסך." },
     ],
   },
   {
     id: "tour-links", board: "tourLinks", chapter: 4, stage: "duo",
     lines: [
-      { who: "noi", pose: "point", text: "^בקישורים: אינ־בר, למדה, אתרי התוכנית, ^וקבוצות הוואטסאפ." },
+      { who: "noi", pose: "point", text: "^בקישורים: אינ־בר, למדה, אתרי התוכנית, ^וקבוצות הוואטסאפ.", say: "בקישורים: אִינְבָּר, למדה, אתרי התוכנית, וקבוצות הוואטסאפ." },
       { who: "ron", pose: "think", text: "^במדריכים: צעד אחר צעד, מרישום לקורסים ועד מילואים. ^וכל מדריך בנוי מהאתרים הרשמיים." },
     ],
   },

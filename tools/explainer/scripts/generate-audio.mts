@@ -118,7 +118,7 @@ async function lines() {
   const all = [...SCENES, ...TOUR_SCENES].flatMap((s) => s.lines.map((l, i) => ({ scene: s, l, i })));
   for (const [n, { scene, l, i }] of all.entries()) {
     const k = lineKey(scene.id, i);
-    const text = ttsText(l.text);
+    const text = ttsText(l.say ?? l.text);
     const id = `${k}-${sha([v[l.who], text].join("|"))}`;
     const file = join(audioDir, "lines", `${id}.mp3`);
     const rel = `audio/lines/${id}.mp3`;
