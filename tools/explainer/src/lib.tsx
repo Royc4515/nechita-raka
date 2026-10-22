@@ -110,6 +110,9 @@ const paths: Record<string, React.ReactNode> = {
   calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
   whatsapp: <><path d="M4 20l1.3-4A8 8 0 1112 20a8 8 0 01-4-1z" /></>,
   copy: <><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V4H4v12h4" /></>,
+  home: <><path d="M4 11l8-7 8 7v9H4z" /><path d="M10 20v-6h4v6" /></>,
+  grid: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18M3 15h18M9 4v16M15 4v16" /></>,
+  help: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.7-2.5 2-2.5 4M12 17h.01" /></>,
   gear: <><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" /></>,
 };
 export const Icon: React.FC<{ name: keyof typeof paths | string; size?: number; color?: string; stroke?: number; style?: React.CSSProperties }> = ({

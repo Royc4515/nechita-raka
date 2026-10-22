@@ -29,6 +29,12 @@ export const BOARD_SFX: Record<string, (SfxName | null)[]> = {
   team: ["swoosh", "pop", "pop", "pop", "pop", "pop", "chime"],
   tips: ["pop", "pop", "pop"],
   outro: ["swoosh", "confetti"],
+  tourHello: ["swoosh", "pop"],
+  tourSearch: ["click", "typing", "pop", "swoosh"],
+  tourLinks: ["pop", "pop", "swoosh", "stamp"],
+  tourCourses: ["swoosh", "click", "pop", "success", "chime"],
+  tourChat: ["pop", "pop", "stamp"],
+  tourOutro: ["swoosh", "click", "confetti"],
 };
 
 /* ---------- shared pieces ---------- */
@@ -592,7 +598,269 @@ const Outro: React.FC<BoardProps> = ({ cues }) => {
   );
 };
 
+/* ---------- the site tour (vertical): what is on the brain sciences site ---------- */
+const N = C.neuro;
+const TABS: [string, string][] = [["בית", "home"], ["המערכת", "grid"], ["מדריכים", "book"], ["קישורים", "link"], ["לוח שנה", "calendar"], ["שאלות", "help"]];
+
+/** The site's bottom tab bar, as a strip of the six tabs; `lit` is the index that glows, -1 for none. */
+const TabBar: React.FC<{ at: number; lit?: number; style?: React.CSSProperties }> = ({ at, lit = -1, style }) => (
+  <div style={{ display: "flex", gap: 10, ...style }}>
+    {TABS.map(([t, i], k) => (
+      <Appear key={t} at={at + k * 4} y={30}>
+        <div style={{ width: 150, padding: "14px 0", borderRadius: 22, textAlign: "center", background: k === lit ? C.neuroSoft : "#fff", boxShadow: k === lit ? `0 0 0 3px ${N}` : "0 10px 26px rgba(18,28,52,.1), 0 0 0 1px rgba(18,28,52,.06)" }}>
+          <div style={{ display: "grid", placeItems: "center" }}><Icon name={i} size={38} color={k === lit ? N : C.muted} /></div>
+          <div style={{ ...title, fontSize: 24, fontWeight: 700, marginTop: 4, color: k === lit ? N : C.ink }}>{t}</div>
+        </div>
+      </Appear>
+    ))}
+  </div>
+);
+
+/** 1. Hello: the site's name, then the phone, then the six tabs. */
+const TourHello: React.FC<BoardProps> = ({ cues, dur }) => {
+  const frame = useCurrentFrame();
+  const c1 = cueAt(cues, 1), c2 = cueAt(cues, 2);
+  const move = useRamp(c1 - 4, c1 + 16);
+  const scroll = interpolate(frame, [c1, dur], [0, 0.18], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const lit = frame >= c2 + 30 ? Math.floor((frame - c2 - 30) / 8) % TABS.length : -1;
+  return (
+    <AbsoluteFill>
+      <div style={{ position: "absolute", top: 120 - move * 40, right: 70 + move * 0, left: 70 + move * 300, display: "flex", flexDirection: "column", alignItems: move > 0.5 ? "flex-start" : "center", transform: `scale(${1 - move * 0.2})`, transformOrigin: "100% 0%" }}>
+        <Appear at={2}><img src={img("hero-brain.webp")} style={{ width: 150, height: 150, borderRadius: "50%", boxShadow: `0 0 0 6px ${C.neuroSoft}, 0 18px 40px rgba(100,52,204,.3)` }} /></Appear>
+        <Appear at={8}><div style={{ ...title, fontSize: 104, fontWeight: 900, marginTop: 14 }}>נחיתה רכה</div></Appear>
+        <Appear at={14}><div style={{ ...body, fontSize: 40, color: N }}>מדעי המוח · בר־אילן</div></Appear>
+      </div>
+      <Appear at={c1} x={-140} style={abs(70, 60)}><Phone src={shot("neuro-mobile.webp")} width={250} scroll={scroll} tilt={12} glow={N} /></Appear>
+      <Appear at={c1 + 10} style={abs(420, 330)}><div style={{ ...body, fontSize: 32 }}>כל מה שצריך, במקום אחד</div></Appear>
+      {frame >= c2 && <TabBar at={c2} lit={lit} style={{ position: "absolute", right: 50, top: 420, flexWrap: "wrap", width: 620 }} />}
+    </AbsoluteFill>
+  );
+};
+
+/** 2. Search: "מילואים" is typed, the results come up, then the tab bar. */
+const TourSearch: React.FC<BoardProps> = ({ cues }) => {
+  const frame = useCurrentFrame();
+  const c = (i: number) => cueAt(cues, i);
+  const word = "מילואים";
+  const typed = word.slice(0, Math.max(0, Math.min(word.length, Math.floor((frame - c(2)) / 3))));
+  const caret = frame >= c(1) && Math.floor(frame / 12) % 2 === 0;
+  const results = [
+    { kind: "מדריך", t: "סטודנטים במילואים", s: "מה מגיע לכם בלימודים" },
+    { kind: "מדריך", t: "אפוד אקדמי", s: "ההתאמות למילואימניקים" },
+    { kind: "קישור", t: "מילואימניקים ואנשי כוחות הביטחון", s: "האתר של בר־אילן" },
+  ];
+  const tabs = useRamp(c(4) - 4, c(4) + 12);
+  return (
+    <AbsoluteFill>
+      <Lead cues={cues} text="מה מחפשים?" icon="search" color={N} />
+      {frame >= c(1) && (
+        <>
+          <Appear at={c(1)} x={-120} style={abs(60, 70)}><Phone src={shot(frame >= c(3) ? "neuro-search.webp" : "neuro-mobile.webp")} width={230} scroll={0.12} tilt={10} glow={N} /></Appear>
+          <Appear at={c(1)} y={-30} style={{ ...abs(360, 70, 700, 96), ...card, display: "flex", alignItems: "center", gap: 18, padding: "0 28px", boxShadow: `0 0 0 4px ${C.neuroSoft}, 0 18px 50px rgba(18,28,52,.12)` }}>
+            <Icon name="search" size={40} color={N} />
+            <div style={{ ...title, fontSize: 44, fontWeight: 700 }}>{typed}<span style={{ opacity: caret ? 1 : 0, color: N }}>|</span></div>
+          </Appear>
+          <div style={{ position: "absolute", left: 360, width: 700, top: 196, opacity: 1 - tabs, transform: `translateY(${-tabs * 20}px)` }}>
+            {results.map((r, i) => (
+              <Appear key={r.t} at={c(3) + i * 6} y={30} style={{ ...card, display: "flex", alignItems: "center", gap: 18, padding: "16px 24px", marginBottom: 14 }}>
+                <div style={{ padding: "6px 14px", borderRadius: 12, background: C.neuroSoft, ...title, fontSize: 22, color: N }}>{r.kind}</div>
+                <div><div style={{ ...title, fontSize: 30 }}>{r.t}</div><div style={{ ...body, fontSize: 22 }}>{r.s}</div></div>
+              </Appear>
+            ))}
+          </div>
+        </>
+      )}
+      {frame >= c(4) && <TabBar at={c(4)} lit={Math.floor((frame - c(4) - 20) / 9) % TABS.length} style={{ position: "absolute", right: 40, top: 300, flexWrap: "wrap", width: 700, justifyContent: "center" }} />}
+    </AbsoluteFill>
+  );
+};
+
+/** 3. Links on the right, guides on the left, and the official-sources stamp. */
+const TourLinks: React.FC<BoardProps> = ({ cues }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const c = (i: number) => cueAt(cues, i);
+  const links: [string, string][] = [["אינ־בר", "globe"], ["למדה", "doc"], ["אתרי התוכנית", "link"]];
+  const groups = ["קבוצת המחלקה", "קבוצות הקורסים"];
+  const guides = [{ t: "רישום לקורסים", n: 7 }, { t: "בחינות", n: 6 }, { t: "סטודנטים במילואים", n: 5 }];
+  const stamp = spring({ frame: frame - c(4), fps, config: { damping: 10, stiffness: 160 } });
+  return (
+    <AbsoluteFill>
+      <Appear at={0} style={abs(600, 36)}><div style={{ display: "flex", alignItems: "center", gap: 14 }}><Badge icon="link" color={N} size={64} /><div style={{ ...title, fontSize: 46 }}>קישורים</div></div></Appear>
+      <div style={{ position: "absolute", right: 50, top: 130, width: 470, display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
+        {links.map(([t, i], k) => <Appear key={t} at={c(1) + k * 6} x={60} y={0}><Pill text={t} icon={i} color={N} big /></Appear>)}
+        {groups.map((t, k) => <Appear key={t} at={c(2) + k * 6} x={60} y={0}><Pill text={t} icon="whatsapp" color="#25a35a" big /></Appear>)}
+      </div>
+      <div style={{ position: "absolute", left: 560, top: 60, bottom: 60, width: 3, borderRadius: 3, background: C.line }} />
+      <Appear at={c(3)} style={abs(60, 36)}><div style={{ display: "flex", alignItems: "center", gap: 14 }}><Badge icon="book" color={N} size={64} /><div style={{ ...title, fontSize: 46 }}>מדריכים</div></div></Appear>
+      <div style={{ position: "absolute", left: 50, top: 130, width: 470 }}>
+        {guides.map((g, k) => (
+          <Appear key={g.t} at={c(3) + 4 + k * 7} x={-60} y={0} style={{ ...card, padding: "16px 22px", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ ...title, fontSize: 30 }}>{g.t}</div>
+            <div style={{ ...body, fontSize: 22, color: N, display: "flex", alignItems: "center", gap: 8 }}><span style={{ width: 22, height: 22, borderRadius: "50%", border: `3px solid ${N}` }} />{g.n} צעדים</div>
+          </Appear>
+        ))}
+      </div>
+      {frame >= c(4) && (
+        <div style={{ position: "absolute", left: 90, top: 470, transform: `scale(${2 - stamp}) rotate(-6deg)`, opacity: Math.min(1, stamp * 2) }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 24px", borderRadius: 16, border: `4px solid ${C.mint}`, background: "#fff", ...title, fontSize: 32, color: C.mint }}>
+            <Icon name="shield" size={36} color={C.mint} />מהאתרים הרשמיים
+          </div>
+        </div>
+      )}
+    </AbsoluteFill>
+  );
+};
+
+/** 4. Courses: the list with times, rooms and lecturers, the track, the stars, then the week and the calendar. */
+const TOUR_COURSES = [
+  { t: "מבוא לנוירוביולוגיה", short: "נוירוביולוגיה", w: "א' 10:00-12:00", p: "905, חדר 61", day: 0, from: 10, to: 12, exam: "29.1" },
+  { t: "חדו\"א למדעי המוח", short: "חדו\"א", w: "ג' 08:00-12:00", p: "901, חדר 101", day: 2, from: 8, to: 12, exam: "24.1", extra: { day: 1, from: 8, to: 10 } },
+  { t: "מבוא לפסיכולוגיה", short: "פסיכולוגיה", w: "ג' 12:00-14:00", p: "901, חדר 101", day: 2, from: 12, to: 14, exam: "21.1" },
+];
+const TourCourses: React.FC<BoardProps> = ({ cues }) => {
+  const frame = useCurrentFrame();
+  const c = (i: number) => cueAt(cues, i);
+  const week = useRamp(c(4) - 6, c(4) + 10);
+  const days = ["א'", "ב'", "ג'", "ד'", "ה'"];
+  const gx = 420, gw = 600, gy = 110, hour = 38; // grid: 08:00 at gy, one hour = 38px
+  return (
+    <AbsoluteFill>
+      <Appear at={0} x={120} style={abs(850, 60)}><Phone src={shot("neuro-courses.webp")} width={210} scroll={0.05} tilt={-10} glow={N} /></Appear>
+      <Appear at={c(2)} style={abs(470, 36)}>
+        <div style={{ ...card, padding: "10px 20px", display: "flex", alignItems: "center", gap: 10, boxShadow: `0 0 0 3px ${N}` }}>
+          <Icon name="user" size={30} color={N} /><span style={{ ...title, fontSize: 26, color: N }}>המסלול שלי: שנה א'</span>
+        </div>
+      </Appear>
+      <div style={{ position: "absolute", left: 50, top: 120, width: 760, opacity: 1 - week, transform: `translateX(${week * -60}px)` }}>
+        {TOUR_COURSES.map((co, k) => {
+          const starred = frame >= c(3) + k * 6;
+          return (
+            <Appear key={co.t} at={c(1) + k * 6} y={30} style={{ ...card, padding: "16px 24px", marginBottom: 14, display: "flex", alignItems: "center", gap: 18 }}>
+              <svg width={44} height={44} viewBox="0 0 24 24" style={{ transform: `scale(${starred ? 1 + 0.25 * Math.max(0, 1 - (frame - c(3) - k * 6) / 8) : 1})` }}>
+                <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill={starred ? C.amber : "none"} stroke={starred ? C.amber : C.muted} strokeWidth={2} strokeLinejoin="round" />
+              </svg>
+              <div style={{ flex: 1 }}>
+                <div style={{ ...title, fontSize: 30 }}>{co.t}</div>
+                <div style={{ ...body, fontSize: 22, display: "flex", gap: 22 }}><span>🕘 {co.w}</span><span>📍 {co.p}</span></div>
+              </div>
+            </Appear>
+          );
+        })}
+      </div>
+      {frame >= c(4) - 6 && (
+        <div style={{ position: "absolute", left: 40, top: 90, width: 780, height: 420, opacity: week, transform: `translateX(${(1 - week) * 60}px)` }}>
+          <div style={{ ...title, fontSize: 34, position: "absolute", right: 0, top: 10 }}>המערכת שלי</div>
+          {days.map((d, i) => (
+            <div key={d} style={{ position: "absolute", right: 10 + i * (gw / 5) - 0, top: 56, width: gw / 5 - 10, ...title, fontSize: 24, color: C.muted, textAlign: "center" }}>{d}</div>
+          ))}
+          <div style={{ position: "absolute", right: 10, top: 96, width: gw, height: hour * 6, borderRadius: 18, background: "#fff", boxShadow: "inset 0 0 0 1px rgba(18,28,52,.08)" }} />
+          {TOUR_COURSES.flatMap((co, k) => [{ ...co, k }, ...(co.extra ? [{ ...co, ...co.extra, k }] : [])]).map((b, i) => (
+            <Appear key={i} at={c(4) + i * 5} scale={0.6} y={0} style={{ position: "absolute", right: 14 + b.day * (gw / 5), top: 100 + (b.from - 8) * hour, width: gw / 5 - 18, height: (b.to - b.from) * hour - 6, borderRadius: 12, background: [N, "#8b5cf6", C.mint][b.k], color: "#fff", padding: "6px 8px", boxSizing: "border-box", overflow: "hidden" }}>
+              <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: 19, lineHeight: 1.15 }}>{b.short}</div>
+            </Appear>
+          ))}
+          <div style={{ position: "absolute", left: 0, top: 96, width: 150, display: "flex", flexDirection: "column", gap: 10 }}>
+            <Appear at={c(4) + 18}><div style={{ ...title, fontSize: 22, color: C.muted }}>מבחנים</div></Appear>
+            {TOUR_COURSES.slice().sort((a, b) => parseFloat(a.exam) - parseFloat(b.exam)).map((co, k) => (
+              <Appear key={co.t} at={c(4) + 22 + k * 5} x={-30} y={0} style={{ ...card, borderRadius: 14, padding: "8px 12px" }}><div style={{ ...title, fontSize: 22, color: C.red }}>{co.exam}</div><div style={{ ...body, fontSize: 17 }}>{co.short}</div></Appear>
+            ))}
+          </div>
+        </div>
+      )}
+      <Appear at={c(5)} y={40} style={abs(240, 540)}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 28px", borderRadius: 999, background: N, color: "#fff", boxShadow: "0 16px 40px rgba(100,52,204,.35)" }}>
+          <Icon name="calendar" size={34} color="#fff" /><span style={{ ...title, color: "#fff", fontSize: 30 }}>הוספת כל התאריכים ליומן</span>
+        </div>
+      </Appear>
+    </AbsoluteFill>
+  );
+};
+
+/** 5. Chat: a question, Ron's answer from the site, and the reminder to check the official source. */
+const TourChat: React.FC<BoardProps> = ({ cues }) => {
+  const frame = useCurrentFrame();
+  const c = (i: number) => cueAt(cues, i);
+  const typing = frame >= c(1) + 14 && frame < c(2);
+  const bubble = (mine: boolean): React.CSSProperties => ({
+    ...card, borderRadius: 26, padding: "16px 24px", maxWidth: 560,
+    ...(mine ? { background: N, color: "#fff", borderBottomLeftRadius: 8 } : { background: C.neuroSoft, borderBottomRightRadius: 8 }),
+  });
+  return (
+    <AbsoluteFill>
+      <Lead cues={cues} text="שואלים אותנו" icon="chat" color={N} />
+      {frame >= c(1) && <Appear at={c(1)} x={140} style={abs(830, 60)}><Phone src={shot("neuro-chat.webp")} width={230} tilt={-10} glow={N} /></Appear>}
+      <div style={{ position: "absolute", left: 60, top: 70, width: 700, display: "flex", flexDirection: "column", gap: 18 }}>
+        <Appear at={c(1) + 4} x={-40} y={0} style={{ alignSelf: "flex-end", ...bubble(true) }}>
+          <div style={{ ...title, color: "#fff", fontSize: 30, fontWeight: 700 }}>איך נרשמים לקורסים באינ־בר?</div>
+        </Appear>
+        {typing && (
+          <Appear at={c(1) + 14} style={{ alignSelf: "flex-start", ...bubble(false), display: "flex", gap: 10 }}>
+            {[0, 1, 2].map((k) => <div key={k} style={{ width: 14, height: 14, borderRadius: "50%", background: N, opacity: 0.35 + 0.65 * Math.max(0, Math.sin((frame - k * 4) / 5)) }} />)}
+          </Appear>
+        )}
+        {frame >= c(2) && (
+          <Appear at={c(2)} x={40} y={0} style={{ alignSelf: "flex-start", ...bubble(false) }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}><img src={img("avatar-ron.webp")} style={{ width: 44, height: 44, borderRadius: "50%" }} /><span style={{ ...title, fontSize: 24, color: N }}>רון</span></div>
+            <div style={{ ...body, fontSize: 27, color: C.ink, lineHeight: 1.35 }}>הרישום נפתח בהדרגה, לפי חלון אישי. כל הצעדים מחכים לך במדריך הרישום באתר.</div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 10, padding: "6px 14px", borderRadius: 99, background: "#fff", ...title, fontSize: 21, color: N }}><Icon name="book" size={24} color={N} />מדריך: רישום לקורסים</div>
+          </Appear>
+        )}
+      </div>
+      <Appear at={c(3)} y={30} style={abs(140, 500)}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 24px", borderRadius: 16, border: `3px solid ${C.mint}`, background: "#fff", ...title, fontSize: 28, color: C.mint }}>
+          <Icon name="shield" size={34} color={C.mint} />בדברים חשובים: בודקים גם במקור הרשמי
+        </div>
+      </Appear>
+    </AbsoluteFill>
+  );
+};
+
+/** 6. Goodbye: the address, add to the home screen, and good luck. */
+const TourOutro: React.FC<BoardProps> = ({ cues }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const c = (i: number) => cueAt(cues, i);
+  const big = spring({ frame: frame - c(3), fps, config: { damping: 9, stiffness: 120 } });
+  const icon = spring({ frame: frame - c(2) - 14, fps, config: { damping: 9, stiffness: 140 } });
+  const shrink = useRamp(c(3) - 4, c(3) + 10);
+  return (
+    <AbsoluteFill>
+      <div style={{ opacity: 1 - shrink, transform: `translateY(${-shrink * 30}px)` }}>
+        <Appear at={c(1)} y={40} style={{ ...abs(70, 60, 980, 150), ...card, display: "flex", alignItems: "center", gap: 28, padding: "0 34px", borderRight: `14px solid ${N}` }}>
+          <img src={img("neuro-mark.svg")} style={{ width: 100, borderRadius: 24 }} />
+          <div><div style={{ ...body, fontSize: 28 }}>נחיתה רכה · מדעי המוח</div><div style={{ fontFamily: FONT.mono, fontWeight: 600, fontSize: 44, color: N, direction: "ltr", textAlign: "right" }}>nechita-raka-neuro.vercel.app</div></div>
+        </Appear>
+        <Appear at={c(2)} y={30} style={abs(560, 260)}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 26px", borderRadius: 999, border: `3px solid ${C.neuroLight}`, background: "#fff", ...title, fontSize: 32, color: N }}>
+            <Icon name="phone" size={34} color={N} />הוספה למסך הבית
+          </div>
+        </Appear>
+        {frame >= c(2) && (
+          <div style={{ position: "absolute", left: 120, top: 240, display: "grid", gridTemplateColumns: "repeat(4, 76px)", gap: 18, padding: 22, borderRadius: 32, background: "linear-gradient(160deg, #2a1d5c, #120c2b)" }}>
+            {Array.from({ length: 8 }, (_, k) => k === 5
+              ? <img key={k} src={img("hero-brain.webp")} style={{ width: 76, height: 76, borderRadius: 20, transform: `scale(${icon})`, boxShadow: `0 0 0 3px ${C.neuroLight}` }} />
+              : <div key={k} style={{ width: 76, height: 76, borderRadius: 20, background: "rgba(255,255,255,.14)" }} />)}
+          </div>
+        )}
+      </div>
+      {frame >= c(3) && (
+        <div style={{ position: "absolute", left: 0, right: 0, top: 230, textAlign: "center", transform: `scale(${big})` }}>
+          <div style={{ ...title, fontWeight: 900, fontSize: 150, backgroundImage: `linear-gradient(90deg, ${N}, #b89df6)`, WebkitBackgroundClip: "text", color: "transparent" }}>בהצלחה!</div>
+        </div>
+      )}
+      <Appear at={c(1) + 20} y={10} style={{ ...abs(0, 560, 1120, 30), textAlign: "center", ...body, fontSize: 22, color: C.muted }}>יוזמה של סטודנט · לא אתר רשמי של בר־אילן</Appear>
+      {AUDIO.music && (
+        <Appear at={c(1) + 26} y={10} style={{ ...abs(0, 598, 1120, 30), textAlign: "center", fontFamily: FONT.body, fontSize: 18, color: "#5b6478", direction: "ltr" }}>
+          {MUSIC_CREDIT}
+        </Appear>
+      )}
+    </AbsoluteFill>
+  );
+};
+
 export const BOARDS: Record<string, React.FC<BoardProps>> = {
   sites: Sites, scatter: Scatter, contentCode: ContentCode, sources: Sources, aiLoop: AiLoop, pipeline: Pipeline,
   smart: Smart, twoSites: TwoSites, neuroBuild: NeuroBuild, team: Team, tips: Tips, outro: Outro,
+  tourHello: TourHello, tourSearch: TourSearch, tourLinks: TourLinks, tourCourses: TourCourses, tourChat: TourChat, tourOutro: TourOutro,
 };

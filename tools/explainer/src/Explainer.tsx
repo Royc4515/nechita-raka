@@ -7,7 +7,8 @@ import { Intro } from "./Intro";
 import { Captions, Confetti, Glossary, ShortHeader, TopBar } from "./Overlay";
 import { Sound } from "./Sound";
 import { TimelineContext } from "./context";
-import { INTRO, TL, TL_SHORT } from "./timeline";
+import { C } from "./lib";
+import { INTRO, TL, TL_SHORT, TL_TOUR } from "./timeline";
 
 export const Explainer: React.FC = () => {
   const outro = TL.scenes[TL.scenes.length - 1];
@@ -45,6 +46,26 @@ export const Short: React.FC = () => {
         <Character who="noi" enterAt={6} />
         <Character who="bit" enterAt={0} />
         <Glossary />
+        <Captions />
+        <Confetti at={lastLine.cues[0] ?? lastLine.from} originX={540} originY={700} count={160} />
+        <Grain />
+        <Sound />
+      </AbsoluteFill>
+    </TimelineContext.Provider>
+  );
+};
+
+/** The 9:16 site tour: Noi and Ron show what is on the brain sciences site. */
+export const Tour: React.FC = () => {
+  const lastLine = TL_TOUR.lines[TL_TOUR.lines.length - 1];
+  return (
+    <TimelineContext.Provider value={TL_TOUR}>
+      <AbsoluteFill style={{ backgroundColor: "#070c18" }}>
+        <Background />
+        <ShortHeader headline={<>מה יש באתר של <span style={{ color: C.neuroLight }}>מדעי המוח</span></>} />
+        <Board />
+        <Character who="ron" enterAt={2} />
+        <Character who="noi" enterAt={6} />
         <Captions />
         <Confetti at={lastLine.cues[0] ?? lastLine.from} originX={540} originY={700} count={160} />
         <Grain />

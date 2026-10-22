@@ -106,7 +106,7 @@ export const TopBar: React.FC = () => {
 };
 
 /** The short's header: the brand and what the video is about, so a viewer who lands mid-scroll knows where they are. */
-export const ShortHeader: React.FC = () => {
+export const ShortHeader: React.FC<{ headline?: React.ReactNode }> = ({ headline }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const tl = useTL();
@@ -120,7 +120,7 @@ export const ShortHeader: React.FC = () => {
         <div style={{ fontFamily: FONT.display, fontWeight: 800, fontSize: 40, color: "#fff" }}>נחיתה רכה</div>
       </div>
       <div style={{ fontFamily: FONT.display, fontWeight: 900, fontSize: 64, lineHeight: 1.1, color: "#fff", marginTop: 26 }}>
-        איך בונים אתר לסטודנטים <span style={{ color: neuro ? C.neuroLight : C.csLight }}>עם AI</span>
+        {headline ?? <>איך בונים אתר לסטודנטים <span style={{ color: neuro ? C.neuroLight : C.csLight }}>עם AI</span></>}
       </div>
     </div>
   );

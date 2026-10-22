@@ -7,6 +7,7 @@
     "audio": "node --experimental-strip-types --no-warnings scripts/generate-audio.mts",
     "still": "remotion still Explainer out/still.png",
     "render": "remotion render Explainer out/nechita-raka-explainer.mp4",
+    "render:tour": "remotion render Tour out/nechita-raka-tour.mp4",
     "typecheck": "tsc -p ."
   },
   "dependencies": {

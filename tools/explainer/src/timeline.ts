@@ -1,5 +1,5 @@
 import manifest from "./audio-manifest.json";
-import { SCENES, SHORT_SCENES, captionText, cueOffsets, lineKey, type Line, type Scene, type Stage, type Who } from "./script";
+import { SCENES, SHORT_SCENES, TOUR_SCENES, captionText, cueOffsets, lineKey, type Line, type Scene, type Stage, type Who } from "./script";
 
 export const FPS = 30;
 const S = (sec: number) => Math.round(sec * FPS);
@@ -129,6 +129,8 @@ export type Timeline = ReturnType<typeof build>;
 export const TL = build(SCENES, { format: "wide", intro: INTRO, chapterCards: true, outroTail: OUTRO_TAIL });
 /** The short starts straight on the first line: on a phone the first second decides whether people stay. */
 export const TL_SHORT = build(SHORT_SCENES, { format: "tall", intro: S(0.5), chapterCards: false, outroTail: S(3.2) });
+/** The site tour, vertical like the short. */
+export const TL_TOUR = build(TOUR_SCENES, { format: "tall", intro: S(0.5), chapterCards: false, outroTail: S(3.2) });
 
 export function lineAt(tl: Timeline, frame: number): LineT | undefined {
   return tl.lines.find((l) => frame >= l.from && frame < l.from + l.dur);
@@ -143,6 +145,8 @@ export function lastLineOf(tl: Timeline, who: Who, frame: number): LineT | undef
 const PLACES: Record<Stage, Record<Who, { x: number; h: number; on: boolean }>> = {
   // the short: everyone on stage under the board, Noi on the right as in the full video
   trio: { noi: { x: 830, h: 630, on: true }, ron: { x: 245, h: 630, on: true }, bit: { x: 540, h: 670, on: true } },
+  // the tour: just the hosts under the board, a little bigger, Noi on the right
+  duo: { noi: { x: 790, h: 680, on: true }, ron: { x: 290, h: 680, on: true }, bit: { x: 1400, h: 670, on: false } },
   hosts: { noi: { x: 1705, h: 520, on: true }, ron: { x: 215, h: 520, on: true }, bit: { x: 2350, h: 520, on: false } },
   guest: { noi: { x: 335, h: 470, on: true }, ron: { x: 150, h: 470, on: true }, bit: { x: 1705, h: 520, on: true } },
 };
@@ -152,7 +156,8 @@ const CROSS = 48;
 const OFF_LEFT = -260, OFF_RIGHT = 2180;
 /** A character's place at a frame, eased between the stages of consecutive scenes. */
 export function placeAt(tl: Timeline, who: Who, frame: number) {
-  let prev = PLACES[tl.scenes[0].stage === "trio" ? "trio" : "hosts"][who], cur = prev, start = -999;
+  const first = tl.scenes[0].stage;
+  let prev = PLACES[first === "trio" || first === "duo" ? first : "hosts"][who], cur = prev, start = -999;
   const mid = tl.width / 2;
   for (const s of tl.scenes) {
     if (s.from > frame) break;

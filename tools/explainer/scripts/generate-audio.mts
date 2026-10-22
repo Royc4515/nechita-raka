@@ -15,7 +15,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SCENES, captionText, lineKey, ttsText } from "../src/script.ts";
+import { SCENES, TOUR_SCENES, captionText, lineKey, ttsText } from "../src/script.ts";
 import { MUSIC, SFX } from "../src/sounds.ts";
 
 const FPS = 30;
@@ -115,7 +115,7 @@ async function voices(): Promise<Record<"bit" | "noi" | "ron", string>> {
 async function lines() {
   const v = await voices();
   manifest.voices = v;
-  const all = SCENES.flatMap((s) => s.lines.map((l, i) => ({ scene: s, l, i })));
+  const all = [...SCENES, ...TOUR_SCENES].flatMap((s) => s.lines.map((l, i) => ({ scene: s, l, i })));
   for (const [n, { scene, l, i }] of all.entries()) {
     const k = lineKey(scene.id, i);
     const text = ttsText(l.text);

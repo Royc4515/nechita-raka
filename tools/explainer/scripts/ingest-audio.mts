@@ -1,6 +1,6 @@
 // Builds src/audio-manifest.json from audio files that were made elsewhere (for example with the ElevenLabs
 // connector in Claude, which returns finished MP3s but no per-character timing):
-//   public/audio/lines/<line key>.mp3   one file per line, named by lineKey() (hello-01, problem-02, ...)
+//   public/audio/lines/<line key>.mp3   one file per line, named by lineKey() (hello-01, problem-02, tour-hello-01, ...)
 //   public/audio/sfx/<name>.mp3         one file per sound in src/sounds.ts
 //   public/audio/music/bed.mp3          optional music bed
 // Optional: a TSV of "<name>\t<url>" lines as the first argument downloads each URL to the matching path first
@@ -12,7 +12,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SCENES, lineKey } from "../src/script.ts";
+import { SCENES, TOUR_SCENES, lineKey } from "../src/script.ts";
 import { SFX } from "../src/sounds.ts";
 
 const FPS = 30;
@@ -53,7 +53,7 @@ const manifest: Record<string, unknown> = { lines: {}, sfx: {} };
 const lines = manifest.lines as Record<string, unknown>;
 const sfx = manifest.sfx as Record<string, unknown>;
 let missing = 0;
-for (const s of SCENES) s.lines.forEach((_, i) => {
+for (const s of [...SCENES, ...TOUR_SCENES]) s.lines.forEach((_, i) => {
   const k = lineKey(s.id, i);
   const rel = `audio/lines/${k}.mp3`;
   if (!existsSync(join(pub, rel))) { missing++; return; }
