@@ -45,3 +45,38 @@ https://nechita-raka-neuro.vercel.app/?src=wa
 ```
 
 Why: the video gets watched once; a short text with one concrete action brings back the people who meant to look later.
+
+## 4. Per cohort: link first, video right after (Roy's plan, 22.10.2026)
+
+Two messages in a row in each year community: first the text with the link (WhatsApp builds the preview card from `og-image`), then the video with a one-line caption. Each year gets the angle that matters to it now; every item named is on the site.
+
+### שנה א' (מחזור תשפ"ז)
+
+```
+היי, יש אתר שמרכז את כל מה שצריך בשנה הראשונה במדעי המוח: נחיתה רכה.
+הקישורים החשובים, קבוצות הקורסים, מדריכים צעד אחר צעד (רישום, בחינות, מילואים, בניין 901), כל הקורסים עם שעות וחדרים, ולוח השנה.
+תקופת השינויים נגמרת ב-28.10.2026, אז שווה להציץ לפני.
+https://nechita-raka-neuro.vercel.app/?src=wa
+```
+
+### שנה ב' (מחזור תשפ"ו)
+
+```
+היי, יש אתר לסטודנטים של מדעי המוח: נחיתה רכה.
+כל הקורסים לפי המסלול שלכם, עם שעות, חדרים ומועדי בחינות, ואפשר לבנות ממנו מערכת שבועית. יש גם מדריך על כל המסלולים, והדרייב עם סיכומים ומבחנים משנים קודמות.
+https://nechita-raka-neuro.vercel.app/?src=wa
+```
+
+### שנה ג' (מחזור תשפ"ה)
+
+```
+היי, יש אתר לסטודנטים של מדעי המוח: נחיתה רכה.
+הקורסים עם שעות, חדרים ומועדי בחינות, מערכת שבועית, מדריכי בחינות ומילואים, וגם הקישורים למסלול הישיר למאסטר ולתוכנית V1.
+https://nechita-raka-neuro.vercel.app/?src=wa
+```
+
+### The video, right after (same caption in all three)
+
+```
+ובדקה אחת, נוי ורון מראים מה יש שם 🎬
+```
