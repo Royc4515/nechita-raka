@@ -950,7 +950,7 @@ window.SITE_DATA = {
           id: `lemida-video-finder`,
           desc: `תוסף כרום שמוצא את כל ההקלטות בקורס בלמדה ומעתיק את הקישורים`,
           name: `Lemida Video Finder`,
-          note: `כלי שסטודנט מבר-אילן פיתח, לא של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`,
+          note: `פיתח: Thomy-G, סטודנט מבר-אילן. לא כלי של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`,
           url: `https://github.com/Thomy-G/Lemida-Video-finder-plugin`,
           keywords: [`הקלטות`, `הרצאות מוקלטות`, `סרטונים`, `וידאו`, `video`, `להוריד`, `הורדה`, `למדה`, `lemida`, `moodle`, `תוסף`, `כרום`, `chrome`, `extension`],
         },

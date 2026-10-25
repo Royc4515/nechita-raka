@@ -910,7 +910,7 @@ window.SITE_EN = {
     [`שנה של Google AI Plus בחינם`, `A free year of Google AI Plus`],
     [`Gemini לסטודנטים`, `Gemini for students`],
     [`תוסף כרום שמוצא את כל ההקלטות בקורס בלמדה ומעתיק את הקישורים`, `A Chrome extension that finds every recording in a Lemida course and copies the links`],
-    [`כלי שסטודנט מבר-אילן פיתח, לא של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`, `Built by a Bar-Ilan student, not by the university. Open source, installed manually in developer mode.`],
+    [`פיתח: Thomy-G, סטודנט מבר-אילן. לא כלי של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`, `Built by Thomy-G, a Bar-Ilan student. Not a university tool. Open source, installed manually in developer mode.`],
     [`לממש עד 31.12.2026. נדרש כרטיס אשראי, ואחרי שנה 19 ש"ח לחודש אם לא מבטלים.`, `Redeem by 31.12.2026. A credit card is required, and after the year it's 19 NIS a month unless you cancel.`],
     [`לוח השנה האקדמי תשפ"ז`, `Academic calendar 2026-27`],
     [`סמסטר א'`, `Semester A`],
