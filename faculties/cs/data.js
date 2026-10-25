@@ -29,8 +29,7 @@ window.SITE_DATA = {
   },
 
   // שורת "הכי שימושי": מזהים (id) של פריטים מהקטגוריות למטה
-  // `opening-event` למעלה עד המפגש ב-21.10. אחרי זה מוחקים אותו מכאן ומהקטגוריה university.
-  featured: [`opening-event`, `inbar`, `lemida`, `cs-drive`, `wa-important`, `gemini`],
+  featured: [`inbar`, `lemida`, `lemida-video-finder`, `cs-drive`, `wa-important`, `gemini`],
 
   // מדריכים, באותו פורמט כמו ב-shared/data.js (ההסבר על השדות שם).
   guides: [
@@ -183,7 +182,7 @@ window.SITE_DATA = {
 
   categories: [
     {
-      // מחליפה את הקטגוריה המשותפת university (אותם אתרים), ועוד שלושה פריטים של המחלקה: קובץ הקורסים, מפגש הפתיחה והמזכירות.
+      // מחליפה את הקטגוריה המשותפת university (אותם אתרים), ועוד שני פריטים של המחלקה: קובץ הקורסים והמזכירות.
       id: `university`,
       title: `אתרי האוניברסיטה`,
       items: [
@@ -229,13 +228,6 @@ window.SITE_DATA = {
           name: `תקופת השינויים והרישום`,
           url: `https://www.biu.ac.il/page/22573`,
           keywords: [`שינויים`, `רישום`, `חלון זמן`, `חלון אישי`, `הוספת קורס`, `ביטול קורס`],
-        },
-        {
-          id: `opening-event`,
-          desc: `מפגש פתיחת שנה: 21.10.2026 ב-13:00, מרחב הלמידה (503)`,
-          name: `הרשמה למפגש`,
-          url: `https://forms.gle/w6ZthiDpzTSwHQcd9`,
-          keywords: [`מפגש`, `פתיחת שנה`, `אירוע`, `הרשמה`, `קהילה`, `מרחב הלמידה`, `503`],
         },
         {
           id: `cs-contact`,

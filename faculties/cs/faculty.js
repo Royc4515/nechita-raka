@@ -164,8 +164,8 @@ export default {
       microwaves: { he: `לסטודנטים במדמ"ח הכי קרוב בדרך כלל המיקרוגל בבניין 216, ומי שיש לו גישה למרחב הלמידה של מדמ"ח (503) יכול לחמם במטבחון שם, עם מיקרוגלים נפרדים לבשרי ולחלבי. `, en: `For CS students, the closest microwave is usually in building 216, and anyone with access to the CS learning space (503) can heat food in its kitchenette, which has separate microwaves for meat and dairy. ` },
     },
     order: {
-      guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
-      categories: [`university`, `materials`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
+      guides: [`registration`, `courses`, `lemida-365`, `lemida-videos`, `payments`, `cs-study-space`, `campus`, `bar-gate`, `campus-map`, `shuttle`, `food`, `reserves`, `academic-vest`, `exams`, `help`, `first-week`],
+      categories: [`university`, `materials`, `perks`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`],
     },
   },
 

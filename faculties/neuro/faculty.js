@@ -215,8 +215,8 @@ export default {
       microwaves: { he: ``, en: `` },
     },
     order: {
-      guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
-      categories: [`university`, `neuro-year1-courses`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
+      guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `lemida-videos`, `payments`, `gonda-building`, `campus`, `bar-gate`, `campus-map`, `shuttle`, `food`, `reserves`, `academic-vest`, `exams`, `help`, `first-week`],
+      categories: [`university`, `neuro-year1-courses`, `materials`, `perks`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`],
     },
   },
 

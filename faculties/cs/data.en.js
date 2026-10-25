@@ -91,8 +91,6 @@ window.SITE_EN = {
     [`נסרק מהקטלוג של האוניברסיטה ב-14.10.2026. לא מקור רשמי: מה שקובע הוא אינ-בר.`, `Scanned from the university catalog on 14.10.2026. Not an official source: Inbar decides.`],
     [`פנייה למזכירות תואר ראשון של המחלקה`, `Contact the department's undergraduate office`],
     [`מזכירות מדמ"ח`, `CS office`],
-    [`מפגש פתיחת שנה: 21.10.2026 ב-13:00, מרחב הלמידה (503)`, `Year-opening event at the department: 21.10 at 13:00, the learning space (503)`],
-    [`הרשמה למפגש`, `Register for the event`],
     [`מה עושים כשחסר לי קורס במערכת או שיש חפיפה?`, `What do I do if a course is missing from my schedule or two courses overlap?`],
     [`פונים למחלקה דרך אינ-בר > בקשות ואישורים > פניה למחלקה, או למזכירות תואר ראשון של מדמ"ח: bsc@cs.biu.ac.il. בחפיפה כדאי קודם לבדוק אם אחד הקורסים נפתח גם בשעה אחרת.`, `Contact the department through Inbar > Requests and approvals ("בקשות ואישורים") > Contact the department ("פניה למחלקה"), or the CS undergraduate office: bsc@cs.biu.ac.il. For an overlap, first check whether one of the courses is also offered at another time.`],
     [`אי אפשר להירשם לשני קורסים שהשעות שלהם חופפות. באותה פנייה למחלקה מטפלים גם בקורס חובה מלא, בנקודות זכות ובתנאי קדם. בסוף בודקים באינ-בר, במערכת שעות, שהכול נכון: האחריות להרכבת המערכת היא של הסטודנט.`, `You can't register for two courses whose hours overlap. The same request to the department also covers a full required course, credits and prerequisites. At the end, check your timetable ("מערכת שעות") in Inbar to make sure everything is right: building your schedule is your responsibility.`],
