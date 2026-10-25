@@ -35,7 +35,7 @@ window.SITE_DATA = {
 
   // שורת "הכי שימושי": מזהים (id) של פריטים מהקטגוריות למטה
   // `gonda-registration` למעלה כל עוד תקופת השינויים פתוחה (עד 28.10.2026). אחרי זה אפשר להוריד אותו מכאן.
-  featured: [`inbar`, `gonda-registration`, `lemida`, `neuro-drive`, `wa-neuro-brainstorm`, `gemini`],
+  featured: [`inbar`, `gonda-registration`, `lemida`, `lemida-video-finder`, `neuro-drive`, `wa-neuro-brainstorm`, `gemini`],
 
   // מדריכים, באותו פורמט כמו ב-shared/data.js (ההסבר על השדות שם).
   guides: [
