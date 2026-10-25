@@ -144,6 +144,8 @@ window.SITE_EN = {
     [`סיכומים ומבחנים משנים קודמות`, `Summaries and exams from previous years`],
     [`דרייב מדמ"ח`, `CS Drive`],
     [`חומרים לקורסי היסוד ביהדות`, `Materials for the basic Jewish Studies courses`],
+    [`תוסף כרום שמוצא את כל ההקלטות בקורס בלמדה ומעתיק את הקישורים`, `A Chrome extension that finds every recording in a Lemida course and copies the links`],
+    [`כלי שסטודנט במדמ"ח פיתח, לא של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`, `Built by a CS student, not by the university. Open source, installed manually in developer mode.`],
     [`דרייב יהדות`, `Jewish Studies Drive`],
     [`קבוצות וואטסאפ של מדעי המחשב`, `Computer Science WhatsApp groups`],
     [`הקבוצה הראשית של שנה א'`, `The main first-year group`],

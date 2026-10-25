@@ -334,6 +334,14 @@ window.SITE_DATA = {
           url: `https://drive.google.com/drive/folders/1GILYMng8JMRFLoPq2sA5r5LhI6Mvb7P7`,
           keywords: [`יהדות`, `יסודות`, `סיכומים`, `drive`, `גוגל דרייב`],
         },
+        {
+          id: `lemida-video-finder`,
+          desc: `תוסף כרום שמוצא את כל ההקלטות בקורס בלמדה ומעתיק את הקישורים`,
+          name: `Lemida Video Finder`,
+          note: `כלי שסטודנט במדמ"ח פיתח, לא של האוניברסיטה. קוד פתוח, מותקן ידנית במצב מפתח.`,
+          url: `https://github.com/Thomy-G/Lemida-Video-finder-plugin`,
+          keywords: [`הקלטות`, `הרצאות מוקלטות`, `סרטונים`, `וידאו`, `video`, `להוריד`, `הורדה`, `למדה`, `lemida`, `moodle`, `תוסף`, `כרום`, `chrome`, `extension`],
+        },
       ],
     },
     {
