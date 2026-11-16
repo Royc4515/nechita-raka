@@ -248,6 +248,10 @@
 .cb-exam-date, .cb-exam-hour { display: block; }
 .cb-exam-date { font-weight: 600; }
 .cb-exam-hour { color: var(--muted); }
+.cb-contacts { margin-block-start: var(--s4); font-size: var(--fs-small); }
+.cb-contacts-title { margin: 0 0 var(--s1); font-size: .8125rem; font-weight: 600; color: var(--faint); }
+.cb-contacts ul { margin: 0; padding: 0; list-style: none; }
+.cb-contacts li { margin-block-end: var(--s1); overflow-wrap: anywhere; }
 .cb-exams { margin-block-start: var(--s4); border-collapse: collapse; font-size: var(--fs-small); }
 .cb-exams caption { caption-side: top; text-align: start; font-size: .8125rem; font-weight: 600; color: var(--faint); padding-block-end: var(--s1); }
 .cb-exams th, .cb-exams td { padding: 4px var(--s3) 4px 0; text-align: start; font-weight: 400; }

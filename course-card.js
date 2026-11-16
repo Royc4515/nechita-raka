@@ -181,6 +181,20 @@ function examTable(course, { tr }) {
     el("tbody", {}, ...semesters.map((sem) => el("tr", {}, el("th", { scope: "row", text: tr(sem) }), ...types.map((t) => cell(sem, t))))));
 }
 
+/**
+ * The lecturers' emails, as the department publishes them on its staff page (courses.lecturers in the
+ * manifest). Nothing when no lecturer of the course has one.
+ */
+function contactList(course, { tr }) {
+  const contacts = course.contacts || [];
+  if (!contacts.length) return null;
+  return el("div", { class: "cb-contacts" },
+    el("p", { class: "cb-contacts-title", text: tr("מיילים של המרצים") }),
+    el("ul", {}, ...contacts.map((c) => el("li", {},
+      el("span", { text: c.name }), " ",
+      el("a", { href: `mailto:${c.email}`, dir: "ltr", "data-key": `mail|${course.code}`, text: c.email })))));
+}
+
 /** Groups with no time, folded away; the fold stays open across redraws once opened. */
 function untimedFold(course, untimed, ctx) {
   const fold = el("details", { class: "cb-untimed", open: ctx.untimedOpen || undefined },
@@ -251,7 +265,8 @@ export function courseCard(course, ctx) {
         return b;
       })() : null,
       summer ? el("p", { class: "cb-muted", text: summer === 1 ? tr("ועוד קבוצה אחת בסמסטר קיץ (בודקים באינ-בר)") : tr("ועוד {n} קבוצות בסמסטר קיץ (בודקים באינ-בר)", { n: summer }) }) : null,
-      examTable(course, helpers)));
+      examTable(course, helpers),
+      contactList(course, helpers)));
   details.addEventListener("toggle", () => ctx.onToggle && ctx.onToggle(course.code, details.open));
   return el("div", { class: `cb-item${ctx.highlight ? " is-target" : ""}${starred ? " is-starred" : ""}` }, star, details);
 }

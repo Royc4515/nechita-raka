@@ -116,10 +116,12 @@ export default {
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
   // fileLabel: איך התוכן המשותף קורא לקובץ (במקום {coursesFile} ב-shared/data.js), ו-fileLabelEn באנגלית.
   // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג; short, לא חובה, הוא הנוסח הקצר לכפתורי הסינון).
+  // lecturers: לא חובה. המיילים של המרצים כפי שהמחלקה מפרסמת אותם בדף הסגל, לפי השם בקטלוג; כרטיס הקורס מציג אותם.
   // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בידיעון מדעי המחשב: שנה א'").
   courses: {
     catalog: `courses/catalog.json`,
     yearbook: `courses/yearbook.json`,
+    lecturers: `courses/lecturers.json`,
     download: `courses-cs-2027.json`,
     fileLabel: `קובץ הקורסים של מדמ"ח`,
     fileLabelEn: `the CS courses file`,

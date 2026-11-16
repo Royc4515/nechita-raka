@@ -435,6 +435,7 @@ window.SITE_EN = {
     [`הסרה מהקורסים שלי`, `Remove from my courses`],
     [`הוספה לקורסים שלי`, `Add to my courses`],
     [`בלי שעה בקטלוג ({n})`, `No time in the catalog ({n})`],
+    [`מיילים של המרצים`, `Lecturers' email`],
     [`ועוד {n} קבוצות בסמסטר האחר`, `{n} more groups in the other semester`],
     [`השיעור הבא`, `Next class`],
     [`השבוע שלי`, `My week`],

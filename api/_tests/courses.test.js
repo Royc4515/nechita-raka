@@ -151,6 +151,33 @@ test("a year-long semester reads as two semesters, and a missing yearbook only d
   assert.deepEqual(buildCourses({}), { scannedAt: "", courses: [] });
 });
 
+test("a course lists its lecturers' published emails once each, matched by name without the title", () => {
+  const catalog = {
+    rows: [
+      { code: "1", name: "x", group: "01", kind: "הרצאה", semester: "סמסטר א'", teachers: "פרופ' נועה אגמון", day: "", hours: "", lid: "1" },
+      { code: "1", name: "x", group: "02", kind: "תרגיל", semester: "סמסטר א'", teachers: "פרופ' נועה אגמון\nמר אין מייל", day: "", hours: "", lid: "2" },
+    ],
+  };
+  const lecturers = { checkedOn: "2026-11-16", lecturers: { "נועה אגמון": { email: "agmon@cs.biu.ac.il", profile: "https://cs.biu.ac.il/he/noa-agmon" } } };
+  const built = buildCourses(catalog, null, lecturers);
+  assert.equal(built.lecturersCheckedOn, "2026-11-16");
+  assert.deepEqual(built.courses[0].contacts, [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il", profile: "https://cs.biu.ac.il/he/noa-agmon" }]);
+  assert.deepEqual(buildCourses(catalog).courses[0].contacts, []);
+});
+
+test("the CS lecturers file has a source and date, and every email is well formed and used by a course", () => {
+  const file = JSON.parse(readFileSync(csFile("lecturers"), "utf8"));
+  assert.match(file.source, /^https:\/\/cs\.biu\.ac\.il\//);
+  assert.match(file.checkedOn, /^\d{4}-\d{2}-\d{2}$/);
+  const withLecturers = buildCourses(JSON.parse(readFileSync(csFile("catalog"), "utf8")), null, file);
+  const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
+  for (const [name, { email }] of Object.entries(file.lecturers)) {
+    assert.match(email, /^[^\s@]+@[^\s@]+\.[a-z]+$/i, name);
+    assert.ok(used.has(email), `${name} teaches no course in the catalog`);
+  }
+  assert.ok(withLecturers.courses.find((c) => c.code === "89110").contacts.length > 0, "Intro to CS has its lecturer's email");
+});
+
 // ---------- the chat ----------
 
 test("course chunks carry the scan date and link to the course's card on the site", () => {

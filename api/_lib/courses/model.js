@@ -14,6 +14,8 @@ export { inTrack, tracksOf, yearOf, yearsOf } from "../../../course-years.js";
 
 export const CATALOG_FILE = facultyFile(FACULTY, FACULTY.courses.catalog);
 export const YEARBOOK_FILE = facultyFile(FACULTY, FACULTY.courses.yearbook);
+/** Optional: lecturer emails as the department publishes them (faculties/cs/courses/lecturers.json). */
+export const LECTURERS_FILE = FACULTY.courses.lecturers ? facultyFile(FACULTY, FACULTY.courses.lecturers) : null;
 
 /**
  * The yearbook's categories, in the order the page shows them. A course can be in several (a course in
@@ -43,6 +45,25 @@ const TITLE = new RegExp(`(?<=${TITLES} [^\\s,]+(?: [^\\s,]+)* [^\\s,]+)(?=${TIT
 /** A title stays on the same line as its name ("פרופ' משה", not "פרופ'" then "משה"). */
 const ATTACH_TITLE = /(^|, )(מר|גב'|ד"ר|פרופ'|עו"ד|הרב) /g;
 const teachersOf = (s) => clean(s).replace(TITLE, ", ").replace(ATTACH_TITLE, "$1$2 ");
+
+/** "פרופ' נועה אגמון" -> "נועה אגמון": the catalog's non-breaking spaces become plain ones. */
+const bareName = (name) => name.replace(new RegExp(`^${TITLES}\\s+`), "").replace(/\s+/g, " ").trim();
+
+/**
+ * The course's lecturers who have a published email, once each, in the order they first appear:
+ * [{ name, email, profile }]. `name` is as the card shows it (with the title).
+ */
+function contactsOf(groups, lecturers) {
+  const list = lecturers?.lecturers || {};
+  const seen = new Map();
+  for (const g of groups) {
+    for (const name of g.teachers.split(", ").filter(Boolean)) {
+      const entry = list[bareName(name)];
+      if (entry?.email && !seen.has(entry.email)) seen.set(entry.email, { name: name.replace(/\s+/g, " "), email: entry.email, profile: entry.profile || "" });
+    }
+  }
+  return [...seen.values()];
+}
 
 const PENDING = "טרם שובץ";
 /** The catalog's placeholder room for "the department arranges it". */
@@ -112,7 +133,7 @@ function pointsOf(rows, sections) {
  * `years` are every study year the categories name (plain "1" ids and "<track>:<year>" ids alike, course-years.js);
  * `year` is the one of them when they agree, else null. A page with a chosen track derives the year of that track itself.
  */
-export function buildCourses(catalog, yearbook = null) {
+export function buildCourses(catalog, yearbook = null, lecturers = null) {
   if (!catalog || !Array.isArray(catalog.rows)) return { scannedAt: "", courses: [] };
   const sections = catalog.sections || {};
   const byCode = new Map();
@@ -124,6 +145,7 @@ export function buildCourses(catalog, yearbook = null) {
     const info = rows.map((r) => sections[r.lid]).find(Boolean);
     const points = pointsOf(rows, sections);
     const categories = categoriesOf(code, yearbook);
+    const groups = rows.map((r) => groupOf(r, sections[r.lid]));
     const exams = new Map();
     for (const r of rows) {
       for (const t of sections[r.lid]?.terms || []) {
@@ -142,10 +164,11 @@ export function buildCourses(catalog, yearbook = null) {
       // The semester(s) the yearbook schedules it in; a course also runs in the other semester for retakes.
       plannedIn: (yearbook?.semesters || {})[code] || [],
       exams: [...exams.values()].sort((a, b) => a.date.localeCompare(b.date)),
-      groups: rows.map((r) => groupOf(r, sections[r.lid])),
+      groups,
+      contacts: contactsOf(groups, lecturers),
     };
   });
-  return { scannedAt: String(catalog.meta?.scraped_at || "").slice(0, 10), courses };
+  return { scannedAt: String(catalog.meta?.scraped_at || "").slice(0, 10), lecturersCheckedOn: String(lecturers?.checkedOn || ""), courses };
 }
 
 function readJson(file) {
@@ -154,12 +177,14 @@ function readJson(file) {
 }
 
 /** The courses from the files in the repo. A missing yearbook only drops the years; a missing catalog throws. */
-export function loadCourses(catalogFile = CATALOG_FILE, yearbookFile = YEARBOOK_FILE) {
+export function loadCourses(catalogFile = CATALOG_FILE, yearbookFile = YEARBOOK_FILE, lecturersFile = LECTURERS_FILE) {
   let yearbook = null;
   try {
     yearbook = readJson(yearbookFile);
   } catch (err) {
     console.error(`courses: ${err.message}; courses will have no year`);
   }
-  return buildCourses(readJson(catalogFile), yearbook);
+  // The manifest names it, so a missing file is a mistake: fail loudly, like the catalog.
+  const lecturers = lecturersFile ? readJson(lecturersFile) : null;
+  return buildCourses(readJson(catalogFile), yearbook, lecturers);
 }
