@@ -189,10 +189,12 @@ function contactList(course, { tr }) {
   const contacts = course.contacts || [];
   if (!contacts.length) return null;
   return el("div", { class: "cb-contacts" },
-    el("p", { class: "cb-contacts-title", text: tr("מיילים של המרצים") }),
+    el("p", { class: "cb-contacts-title", text: contacts.length === 1 ? tr("מייל למרצה") : tr("מיילים של המרצים") }),
     el("ul", {}, ...contacts.map((c) => el("li", {},
-      el("span", { text: c.name }), " ",
-      el("a", { href: `mailto:${c.email}`, dir: "ltr", "data-key": `mail|${course.code}`, text: c.email })))));
+      el("a", { class: "cb-mail", href: `mailto:${c.email}`, "data-key": `mail|${course.code}`, "aria-label": tr("מייל ל{name}: {email}", { name: c.name, email: c.email }) },
+        el("span", { class: "cb-mail-icon", "aria-hidden": "true", text: "✉" }),
+        el("span", { class: "cb-mail-name", text: c.name }),
+        el("bdi", { dir: "ltr", class: "cb-mail-addr", text: c.email }))))));
 }
 
 /** Groups with no time, folded away; the fold stays open across redraws once opened. */
@@ -255,6 +257,7 @@ export function courseCard(course, ctx) {
         summaryLine(course, groups, ctx)),
       el("span", { class: "cb-chevron", "aria-hidden": "true" })),
     el("div", { class: "cb-body" },
+      contactList(course, helpers),
       groups.some((g) => g.kind === "הרצאה") && groups.some((g) => g.kind === "תרגיל")
         ? el("p", { class: "cb-hint", text: tr("בוחרים הרצאה אחת ותרגול אחד. העיגול מוסיף את הקבוצה למערכת שלי.") }) : null,
       ...kindSections(course, groups, ctx),
@@ -265,8 +268,7 @@ export function courseCard(course, ctx) {
         return b;
       })() : null,
       summer ? el("p", { class: "cb-muted", text: summer === 1 ? tr("ועוד קבוצה אחת בסמסטר קיץ (בודקים באינ-בר)") : tr("ועוד {n} קבוצות בסמסטר קיץ (בודקים באינ-בר)", { n: summer }) }) : null,
-      examTable(course, helpers),
-      contactList(course, helpers)));
+      examTable(course, helpers)));
   details.addEventListener("toggle", () => ctx.onToggle && ctx.onToggle(course.code, details.open));
   return el("div", { class: `cb-item${ctx.highlight ? " is-target" : ""}${starred ? " is-starred" : ""}` }, star, details);
 }

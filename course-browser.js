@@ -109,8 +109,93 @@ function courseDoc(course, { tr, searchDoc }) {
   return searchDoc(course.name, [course.code, course.nameEn, yearLabel(course, tr), tr("קורס")].filter(Boolean).join(" "), teachers.join(" "), boost);
 }
 
-/** Entries for index.html's search box and palette: one per course, opening its card. */
+const TEACHER_TITLE = /^(?:מר|גב'|ד"ר|פרופ'|עו"ד|הרב)\s+/;
+/** "פרופ' נועה אגמון" -> "נועה אגמון" (the catalog's non-breaking spaces become plain ones). */
+export const bareTeacher = (name) => name.replace(TEACHER_TITLE, "").replace(/\s+/g, " ").trim();
+
+/**
+ * Every teacher in the catalog, once: { name (with the title), bare, email, courses: [course] }, by name.
+ * The email is the one the department publishes (course.contacts, from courses.lecturers in the manifest).
+ */
+export function lecturersOf(list) {
+  const byName = new Map();
+  for (const course of list.courses) {
+    const emails = new Map((course.contacts || []).map((c) => [bareTeacher(c.name), c.email]));
+    for (const raw of new Set(course.groups.flatMap((g) => g.teachers.split(", ")).filter(Boolean))) {
+      const bare = bareTeacher(raw);
+      const entry = byName.get(bare) || { name: raw.replace(/\s+/g, " "), bare, email: "", courses: [] };
+      entry.email ||= emails.get(bare) || "";
+      if (!entry.courses.includes(course)) entry.courses.push(course);
+      byName.set(bare, entry);
+    }
+  }
+  return [...byName.values()].sort((a, b) => a.bare.localeCompare(b.bare, "he"));
+}
+
+/** A lecturer as the site search sees it: the name, then the email and the words people use for it. */
+function lecturerEntry(lecturer, { tr, searchDoc, navigate, en }) {
+  const href = `./courses?cq=${encodeURIComponent(lecturer.bare)}`;
+  const names = lecturer.courses.map((c) => (en && c.nameEn) || c.name);
+  const count = names.length === 1 ? tr("קורס אחד") : tr("{n} קורסים", { n: names.length });
+  return {
+    type: tr("מרצה"),
+    title: lecturer.name,
+    sub: [lecturer.email, count].filter(Boolean).join(" · "),
+    doc: searchDoc(lecturer.name, lecturer.email, names.join(" "), 1),
+    href,
+    run: () => navigate(href),
+    course: true,
+  };
+}
+
+/** Courses by name, once each (a course can have two codes with the same name); the first code wins. */
+function uniqueByName(courses, en) {
+  const seen = new Set();
+  return courses.filter((c) => {
+    const name = (en && c.nameEn) || c.name;
+    return !seen.has(name) && seen.add(name);
+  });
+}
+
+/**
+ * The lecturers' emails page (a guide with `lecturers: true`): every lecturer the department publishes an
+ * email for, with the courses they teach, and a box that filters the list as you type.
+ */
+export function mountLecturers(root, helpers) {
+  const { tr, en, rank, searchDoc } = helpers;
+  if (!document.querySelector('link[href="./course-browser.css"]')) document.head.append(el("link", { rel: "stylesheet", href: "./course-browser.css" }));
+  root.replaceChildren(el("p", { class: "cb-muted", text: tr("טוען את רשימת המרצים…") }));
+  return loadCourseList().then((list) => {
+    const lecturers = lecturersOf(list).filter((l) => l.email);
+    const rows = lecturers.map((l) => ({
+      lecturer: l,
+      doc: searchDoc(l.name, l.email, l.courses.map((c) => `${c.name} ${c.nameEn || ""} ${c.code}`).join(" ")),
+      node: el("li", { class: "lec-item" },
+        el("p", { class: "lec-name", text: l.name }),
+        el("a", { class: "lec-mail", href: `mailto:${l.email}`, dir: "ltr", "data-key": "lecturers|mail", text: l.email }),
+        el("p", { class: "lec-courses" }, ...uniqueByName(l.courses, en).flatMap((c, i) => [i ? " · " : "", el("a", { href: courseHref(c.code), text: (en && c.nameEn) || c.name })]))),
+    }));
+    const listNode = el("ul", { class: "lec-list" }, ...rows.map((r) => r.node));
+    const status = el("p", { class: "cb-muted", role: "status", text: tr("{n} מרצים", { n: rows.length }) });
+    const input = el("input", { type: "search", class: "cb-q", placeholder: tr("שם מרצה או קורס"), "aria-label": tr("חיפוש מרצה"), autocomplete: "off", enterkeyhint: "search" });
+    input.addEventListener("input", () => {
+      const raw = input.value.trim();
+      const shown = raw ? new Set(rank(rows, raw).list) : null;
+      const ordered = shown ? [...shown, ...rows.filter((r) => !shown.has(r))] : rows;
+      for (const r of rows) r.node.hidden = Boolean(shown) && !shown.has(r);
+      listNode.replaceChildren(...ordered.map((r) => r.node));
+      status.textContent = shown ? tr("{n} מרצים", { n: shown.size }) : tr("{n} מרצים", { n: rows.length });
+    });
+    root.replaceChildren(input, status, listNode);
+  });
+}
+
+/** Entries for index.html's search box and palette: one per course, opening its card, and one per lecturer. */
 export function courseSearchEntries(list, helpers) {
+  return [...courseEntriesOf(list, helpers), ...lecturersOf(list).map((l) => lecturerEntry(l, helpers))];
+}
+
+function courseEntriesOf(list, helpers) {
   const { tr, navigate, en } = helpers;
   return list.courses.map((course) => {
     const lecture = course.groups.find((g) => g.kind === "הרצאה" && g.teachers) || course.groups.find((g) => g.teachers);

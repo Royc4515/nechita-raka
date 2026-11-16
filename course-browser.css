@@ -248,10 +248,22 @@
 .cb-exam-date, .cb-exam-hour { display: block; }
 .cb-exam-date { font-weight: 600; }
 .cb-exam-hour { color: var(--muted); }
-.cb-contacts { margin-block-start: var(--s4); font-size: var(--fs-small); }
+/* The lecturers' emails: first thing in an open card, as tappable rows. */
+.cb-contacts { margin-block-end: var(--s3); }
 .cb-contacts-title { margin: 0 0 var(--s1); font-size: .8125rem; font-weight: 600; color: var(--faint); }
-.cb-contacts ul { margin: 0; padding: 0; list-style: none; }
-.cb-contacts li { margin-block-end: var(--s1); overflow-wrap: anywhere; }
+.cb-contacts ul { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s1); }
+.cb-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s2); min-height: 44px; padding: var(--s1) var(--s3); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: inherit; }
+.cb-mail:hover, .cb-mail:focus-visible { border-color: var(--accent-text); }
+.cb-mail-icon { color: var(--accent-text); font-size: 1.1em; }
+.cb-mail-name { font-weight: 600; }
+.cb-mail-addr { color: var(--accent-text); text-decoration: underline; overflow-wrap: anywhere; font-size: var(--fs-small); }
+/* The lecturers' emails page */
+.lec-list { margin: var(--s3) 0 0; padding: 0; list-style: none; display: grid; gap: var(--s2); }
+.lec-item { padding: var(--s2) var(--s3); border: 1px solid var(--border); border-radius: 12px; }
+.lec-item[hidden] { display: none; }
+.lec-name { margin: 0; font-weight: 600; }
+.lec-mail { display: inline-block; min-height: 32px; padding-block: var(--s1); overflow-wrap: anywhere; }
+.lec-courses { margin: 0; font-size: var(--fs-small); color: var(--muted); }
 .cb-exams { margin-block-start: var(--s4); border-collapse: collapse; font-size: var(--fs-small); }
 .cb-exams caption { caption-side: top; text-align: start; font-size: .8125rem; font-weight: 600; color: var(--faint); padding-block-end: var(--s1); }
 .cb-exams th, .cb-exams td { padding: 4px var(--s3) 4px 0; text-align: start; font-weight: 400; }

@@ -88,3 +88,22 @@ test("every module of the courses page loads (catches a syntax error the browser
     await assert.doesNotReject(import(`../../${file}`), file);
   }
 });
+
+// ---------- lecturers (the site search and the lecturers' emails page) ----------
+import { bareTeacher, courseSearchEntries, lecturersOf } from "../../course-browser.js";
+
+test("lecturers are listed once each, with the published email and every course they teach", () => {
+  const list = {
+    courses: [
+      { code: "1", name: "מבוא", groups: [{ teachers: "פרופ' נועה אגמון, מר דני" }, { teachers: "מר דני" }], contacts: [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il" }] },
+      { code: "2", name: "רובוטים", groups: [{ teachers: "פרופ' נועה אגמון" }], contacts: [] },
+    ],
+  };
+  assert.equal(bareTeacher("ד\"ר יוני  זוהר"), "יוני זוהר");
+  const lecturers = lecturersOf(list);
+  assert.deepEqual(lecturers.map((l) => [l.bare, l.email, l.courses.map((c) => c.code)]), [["דני", "", ["1"]], ["נועה אגמון", "agmon@cs.biu.ac.il", ["1", "2"]]]);
+  const helpers = { tr: (s, v = {}) => s.replace(/\{(\w+)\}/g, (_, k) => v[k]), searchDoc: (t, k, b) => ({ t, k, b }), navigate: () => {}, en: false };
+  const agmon = courseSearchEntries(list, helpers).find((e) => e.type === "מרצה" && e.title.includes("אגמון"));
+  assert.equal(agmon.href, `./courses?cq=${encodeURIComponent("נועה אגמון")}`);
+  assert.match(agmon.sub, /agmon@cs\.biu\.ac\.il · 2 קורסים/);
+});

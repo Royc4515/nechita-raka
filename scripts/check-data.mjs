@@ -177,6 +177,7 @@ function checkStepLinks(g, where) {
 }
 
 data.guides.forEach(checkGuide);
+if (data.guides.filter((g) => g.lecturers === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת המרצים (lecturers: true).", "lecturers: true");
 if (data.guides.filter((g) => g.courses === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת הקורסים (courses: true).", "courses: true");
 
 const cal = data.calendar;
