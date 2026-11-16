@@ -1182,8 +1182,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       for (const w of `${doc.t} ${doc.k}`.split(" ")) {
         if (w.length < 4 || seen.has(w)) continue;
         seen.add(w);
+        // Two edits only for longer words, so "shatl" is not offered "what".
         const d = editDistance(w, word, 2);
-        if (d < bestDistance) { best = w; bestDistance = d; }
+        if (d < bestDistance && (d === 1 || Math.max(w.length, word.length) >= 6)) { best = w; bestDistance = d; }
       }
     }
     return best;
@@ -2807,7 +2808,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const changed = query && fixed.some((w, i) => w !== words[i]);
       setHidden(didYouMean, !changed);
       if (!changed) return didYouMean.replaceChildren();
-      const suggestion = fixed.join(" ");
+      // The site's words are kept normalized ("מבחנ"): show them with their final letter ("מבחן").
+      const FINAL = { "כ": "ך", "מ": "ם", "נ": "ן", "פ": "ף", "צ": "ץ" };
+      const suggestion = fixed.map((w) => w.replace(/[כמנפצ]$/, (ch) => FINAL[ch])).join(" ");
       const chip = el("button", { type: "button", class: "chip", text: suggestion });
       chip.addEventListener("click", () => { input.value = suggestion; apply(); syncUrl(); });
       didYouMean.replaceChildren(tr("התכוונתם ל"), chip, "?");
