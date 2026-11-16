@@ -32,7 +32,9 @@ Columns: S = students, U = urgency, E = effort.
 | --- | --- | --- | --- | --- | --- | --- |
 | Verify change-period dates and the 14.10 course scan hold through 28.10 | 5 | 5 | 1 | 25.0 | closed 16.11.2026, unverified | cs-owner checks Inbar announcements; update `checkedOn`. |
 | Exam-season guide refresh before מועד א' of semester א' | 5 | 4 | 2 | 10.0 | open (re-scored 16.11.2026) | Dates come in December; sources to be checked then. |
-| Source and `checkedOn` for the CS exam dates in `faculties/cs/data.js` (21.1 to 26.2.2027) | 5 | 4 | 1 | 20.0 | open (added 16.11.2026) | Eight מועד א'/ב' events since #63 (15.10.2026) with no source on record. cs-owner: match them to the department's published exam schedule before students plan around them. |
+| Source and `checkedOn` for the CS exam dates in `faculties/cs/data.js` (21.1 to 26.2.2027) | 5 | 4 | 1 | 20.0 | open (added 16.11.2026) | Eight מועד א'/ב' events since #63 (15.10.2026) with no source on record. Research 16.11.2026: no official CS or course page publishes them; the official calendar only gives the period 18.1–28.2.2027, per-course dates live in Inbar's exam schedule. Unconfirmed. cs-owner: match them to the department's published exam schedule before students plan around them. |
+| Degree-requirements FAQ ("מה צריך כדי לסיים את התואר?") | 4 | 2 | 1 | 8.0 | done 16.11.2026 | Searches "סיום תואר", "ידיעון", "חובות". Sources: cs.biu.ac.il/he/Yedion, /node/317, stuad.biu.ac.il/node/58. |
+| Lecturer contacts from cs.biu.ac.il/faculty | 4 | 3 | 2 | 6.0 | waiting on Roy | Official staff page lists emails for 43 people; profile pages have room and hours. Roy to choose: link to profile or copy email. Not published: TAs, some math lecturers. |
 | Source for the `cs-study-space` guide (check-data warning) | 4 | 1 | 1 | 4.0 | open | No `sources` on the CS learning space guide (building 503, My BLE-ID entry). cs-owner: add the department page or the secretariat's instruction (faculty PR 6g could not invent one). |
 
 ## Neuro
