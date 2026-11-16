@@ -165,18 +165,22 @@ test("a course lists its lecturers' published emails once each, matched by name 
   assert.deepEqual(buildCourses(catalog).courses[0].contacts, []);
 });
 
-test("the CS lecturers file has a source and date, and every email is well formed and used by a course", () => {
-  const file = JSON.parse(readFileSync(csFile("lecturers"), "utf8"));
-  assert.match(file.source, /^https:\/\/cs\.biu\.ac\.il\//);
-  assert.match(file.checkedOn, /^\d{4}-\d{2}-\d{2}$/);
-  const withLecturers = buildCourses(JSON.parse(readFileSync(csFile("catalog"), "utf8")), null, file);
-  const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
-  for (const [name, { email }] of Object.entries(file.lecturers)) {
-    assert.match(email, /^[^\s@]+@[^\s@]+\.[a-z]+$/i, name);
-    assert.ok(used.has(email), `${name} teaches no course in the catalog`);
-  }
-  assert.ok(withLecturers.courses.find((c) => c.code === "89110").contacts.length > 0, "Intro to CS has its lecturer's email");
-});
+for (const faculty of Object.values(FACULTIES).filter((f) => f.courses.lecturers)) {
+  test(`the ${faculty.id} lecturers file has official sources and a date, and every email is well formed and used by a course`, () => {
+    const file = JSON.parse(readFileSync(facultyFile(faculty, faculty.courses.lecturers), "utf8"));
+    const official = /^https:\/\/[a-z-]+\.biu\.ac\.il\//;
+    assert.match(file.source, official);
+    assert.match(file.checkedOn, /^\d{4}-\d{2}-\d{2}$/);
+    const withLecturers = buildCourses(JSON.parse(readFileSync(facultyFile(faculty, faculty.courses.catalog), "utf8")), null, file);
+    const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
+    for (const [name, entry] of Object.entries(file.lecturers)) {
+      assert.match(entry.email, /^[^\s@]+@[^\s@]+\.[a-z]+$/i, name);
+      if (entry.source) assert.match(entry.source, official, name);
+      assert.ok(used.has(entry.email), `${name} teaches no course in the catalog`);
+    }
+    if (faculty.id === "cs") assert.ok(withLecturers.courses.find((c) => c.code === "89110").contacts.length > 0, "Intro to CS has its lecturer's email");
+  });
+}
 
 // ---------- the chat ----------
 

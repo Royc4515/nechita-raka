@@ -170,6 +170,24 @@ window.SITE_DATA = {
     },
     // מחליף את המדריך המשותף campus-map: אותו תוכן, ועוד בניין 901 והבניינים של שנה א'.
     {
+      id: `lecturers`,
+      title: `המיילים של המרצים`,
+      summary: `מרצי קורסי התוכנית שהמחלקות שלהם מפרסמות להם מייל, עם הקורסים שהם מלמדים.`,
+      // lecturers: true מציג כאן את רשימת המרצים והמיילים (course-browser.js), מהקובץ courses/lecturers.json.
+      lecturers: true,
+      steps: [
+        `מחפשים את המרצה לפי שם או לפי שם הקורס, ולוחצים על המייל כדי לכתוב.`,
+        `כותבים מהמייל של האוניברסיטה, ובשורת הנושא את שם הקורס ומספר הקבוצה.`,
+        `מרצה שלא מופיע כאן? בדף הסגל של המרכז לחקר המוח יש את חברי הסגל. מתרגלים לא מופיעים שם.`,
+      ],
+      stepLinks: {
+        3: [{ label: `סגל המרכז לחקר המוח`, url: `https://gondabrain.biu.ac.il/faculty`, at: `בדף הסגל של המרכז לחקר המוח` }],
+      },
+      sources: [{ label: `סגל המרכז לחקר המוח`, url: `https://gondabrain.biu.ac.il/faculty` }, { label: `סגל המחלקה לפיזיקה`, url: `https://physics.biu.ac.il/faculty` }, { label: `סגל המחלקה לפילוסופיה`, url: `https://philosophy.biu.ac.il/faculty` }, { label: `סגל המחלקה למתמטיקה`, url: `https://math.biu.ac.il/faculty` }, { label: `סגל המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/he/faculty` }, { label: `סגל הפקולטה למדעי החיים`, url: `https://life-sciences.biu.ac.il/senior` }, { label: `סגל המחלקה למוזיקה`, url: `https://music.biu.ac.il/faculty` }],
+      checkedOn: `16.11.2026`,
+      keywords: [`מייל`, `מיילים`, `אימייל`, `email`, `מרצה`, `מרצים`, `מרצות`, `לכתוב למרצה`, `לפנות למרצה`, `קשר עם מרצה`, `סגל`, `כתובת`],
+    },
+    {
       id: `campus-map`,
       title: `מפת הקמפוס והתמצאות`,
       summary: `איך מוצאים בניין וכיתה, איפה בניין 901 ומשרד התוכנית, איפה ההרצאות של שנה א', ואיך מנווטים בקמפוס הגדול.`,

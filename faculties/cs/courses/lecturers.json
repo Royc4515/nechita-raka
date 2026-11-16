@@ -1,7 +1,7 @@
 {
   "source": "https://cs.biu.ac.il/he/faculty",
   "checkedOn": "2026-11-16",
-  "note": "Lecturer emails exactly as the CS department publishes them on its staff page. Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email.",
+  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the CS staff page; an entry with its own `source` comes from another department's page (math, life sciences) or a profile page. Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email.",
   "lecturers": {
     "אורי שחם": {
       "email": "uri.shaham@biu.ac.il",
@@ -26,6 +26,16 @@
     "אלכסנדר שלייפמן": {
       "email": "shleyfa@biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/alex-shleyfman"
+    },
+    "אסתר עזרא": {
+      "email": "ezraest@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/esther-ezra",
+      "source": "https://cs.biu.ac.il/he/esther-ezra"
+    },
+    "אפי כהן": {
+      "email": "Efi.cohen@biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/3712",
+      "source": "https://math.biu.ac.il/adjunct_faculty"
     },
     "אריאל נוף": {
       "email": "ariel.nof@biu.ac.il",
@@ -87,6 +97,11 @@
       "email": "yaron.orenstein@biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/yaron-orenstein"
     },
+    "ישי פינטו": {
+      "email": "yishay.pinto@biu.ac.il",
+      "profile": "https://life-sciences.biu.ac.il/node/10422",
+      "source": "https://life-sciences.biu.ac.il/senior"
+    },
     "ליעם רודיטי": {
       "email": "liamr@cs.biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/liam-roditty"
@@ -111,6 +126,11 @@
       "email": "nathan@cs.biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/nathan-netanyahu"
     },
+    "נתן קלר": {
+      "email": "nkeller@math.biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/522",
+      "source": "https://math.biu.ac.il/faculty"
+    },
     "עדי בן צבי": {
       "email": "adi.benzvi@biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/adi-benzvi"
@@ -126,6 +146,11 @@
     "צבי קופלוביץ": {
       "email": "kopelot.biu@gmail.com",
       "profile": "https://cs.biu.ac.il/he/tsvi-kopelowitz"
+    },
+    "רון אונגר": {
+      "email": "ron@biomodel.os.biu.ac.il",
+      "profile": "https://life-sciences.biu.ac.il/node/631",
+      "source": "https://life-sciences.biu.ac.il/senior"
     },
     "רעות צרפתי": {
       "email": "reut.tsarfaty@biu.ac.il",
