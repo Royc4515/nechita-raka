@@ -53,13 +53,16 @@ const bareName = (name) => name.replace(new RegExp(`^${TITLES}\\s+`), "").replac
  * The course's lecturers who have a published email, once each, in the order they first appear:
  * [{ name, email, profile }]. `name` is as the card shows it (with the title).
  */
+/** A plain address only: no "?", "&" or spaces that could add recipients or headers to a mailto link. */
+const EMAIL = /^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/;
+
 function contactsOf(groups, lecturers) {
   const list = lecturers?.lecturers || {};
   const seen = new Map();
   for (const g of groups) {
     for (const name of g.teachers.split(", ").filter(Boolean)) {
       const entry = list[bareName(name)];
-      if (entry?.email && !seen.has(entry.email)) seen.set(entry.email, { name: name.replace(/\s+/g, " "), email: entry.email, profile: entry.profile || "" });
+      if (entry?.email && EMAIL.test(entry.email) && !seen.has(entry.email)) seen.set(entry.email, { name: name.replace(/\s+/g, " "), email: entry.email, profile: entry.profile || "" });
     }
   }
   return [...seen.values()];

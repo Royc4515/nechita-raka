@@ -163,6 +163,9 @@ test("a course lists its lecturers' published emails once each, matched by name 
   assert.equal(built.lecturersCheckedOn, "2026-11-16");
   assert.deepEqual(built.courses[0].contacts, [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il", profile: "https://cs.biu.ac.il/he/noa-agmon" }]);
   assert.deepEqual(buildCourses(catalog).courses[0].contacts, []);
+  // An address that could smuggle a recipient into the mailto link is dropped.
+  const bad = { lecturers: { "נועה אגמון": { email: "x?bcc=a%40evil.co@b.cc" } } };
+  assert.deepEqual(buildCourses(catalog, null, bad).courses[0].contacts, []);
 });
 
 for (const faculty of Object.values(FACULTIES).filter((f) => f.courses.lecturers)) {
@@ -174,7 +177,7 @@ for (const faculty of Object.values(FACULTIES).filter((f) => f.courses.lecturers
     const withLecturers = buildCourses(JSON.parse(readFileSync(facultyFile(faculty, faculty.courses.catalog), "utf8")), null, file);
     const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
     for (const [name, entry] of Object.entries(file.lecturers)) {
-      assert.match(entry.email, /^[^\s@]+@[^\s@]+\.[a-z]+$/i, name);
+      assert.match(entry.email, /^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/, name);
       if (entry.source) assert.match(entry.source, official, name);
       assert.ok(used.has(entry.email), `${name} teaches no course in the catalog`);
     }

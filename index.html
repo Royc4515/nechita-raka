@@ -1319,7 +1319,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       list = run(alt, "all");
       if (list.length) return { list, query: alt, mode: "all", remapped: toHebrewLayout(raw) };
     }
-    if (!allowFuzzy) return { list: run(query, "any"), query, mode: "any" };
+    // Close spellings cost a pass over every word of every entry: only for a short query (a sentence pasted
+    // in, or a crafted ?q= link, keeps to exact words).
+    if (!allowFuzzy || query.required.length > 8 || raw.length > 100) return { list: run(query, "any"), query, mode: "any" };
     // A typo or another spelling ("נעה אגמון", "מבחנם"): every word, each matching its closest spelling.
     list = run(query, "all", true);
     if (list.length) return { list, query, mode: "all", fuzzy: true };
@@ -2800,7 +2802,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     // Nothing found: offer the query with each unmatched word replaced by its closest word on the site.
     const didYouMean = $("#did-you-mean");
     function renderDidYouMean(query) {
-      const words = query ? query.words : [];
+      const words = query && query.words.length <= 8 ? query.words : [];
       const fixed = words.map((w) => (QUESTION_WORDS.has(w) || w.length < 3 ? w : closestWord(w, index.map((e) => e.doc)) || w));
       const changed = query && fixed.some((w, i) => w !== words[i]);
       setHidden(didYouMean, !changed);
