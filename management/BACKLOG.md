@@ -17,10 +17,10 @@ Columns: S = students, U = urgency, E = effort.
 | Chat: greeting-prefixed and follow-up messages answer "לא הבנתי" | 4 | 3 | 2 | 6.0 | open | Baseline 15.10.2026, `security-extras.md`: three probes. Check which model answered (`chat: "ok", model` log). |
 | Chat: invented Inbar menu paths and buildings when no fact matches | 5 | 3 | 2 | 7.5 | open | Baseline 15.10.2026: 11 of 50 invented-fact. Facts per Inbar screen, a buildings fact, stronger "not sure" rule. |
 | Chat: gender slashes ("את/ה", "קח/י") where the prompt says plural | 3 | 2 | 1 | 6.0 | open | Baseline 15.10.2026: seven answers. Prompt line or style-hook check. |
-| Chat: the personal registration window is said to open 12.10 14:00 (it is published then; changes start 14.10) | 5 | 4 | 1 | 20.0 | open | Second run 18.10.2026: stressed 3 (also in the baseline) and neuro 5 (new). Facts: guide:registration. Make the fact say "published 12.10 14:00, your own time is in Inbar" in one sentence. |
+| Chat: the personal registration window is said to open 12.10 14:00 (it is published then; changes start 14.10) | 5 | 2 | 1 | 10.0 | open (re-scored 16.11.2026: the change period ended 28.10; matters again before semester ב' registration) | Second run 18.10.2026: stressed 3 (also in the baseline) and neuro 5 (new). Facts: guide:registration. Make the fact say "published 12.10 14:00, your own time is in Inbar" in one sentence. |
 | Chat: neuro students get the CS main group link as "the brain sciences group" and the CS courses file as theirs | 3 | 3 | 1 | 9.0 | open | Second run 18.10.2026: neuro 3 (new), neuro 9 (baseline). The CS site has no neuro groups; a neuro question should get "not on this site" (see the Neuro row on group links). |
 | Chat: building 503 placed in the 400 zone; 304 placed in the 200 zone | 3 | 2 | 1 | 6.0 | open | Second run 18.10.2026: english 8 (new), stressed 10 (baseline, partly fixed). Add the zone table (200 exact sciences, 300 law and lecture halls, 400 Jewish studies, 500 Israel Heritage) to the campus-map chat fact, or tell the model not to name zones. |
-| Chat: special-sitting rule for reservists invented ("two weeks after the original exam", "only two sittings", "free") | 4 | 3 | 1 | 12.0 | open | Second run 18.10.2026: reservist 1 (new). guide:reserves: submit after Moed B, no later than two weeks after it. |
+| Chat: special-sitting rule for reservists invented ("two weeks after the original exam", "only two sittings", "free") | 4 | 4 | 1 | 16.0 | open (re-scored 16.11.2026: exams start 18.1.2027) | Second run 18.10.2026: reservist 1 (new). guide:reserves: submit after Moed B, no later than two weeks after it. |
 | Chat: raw source tags in the answer text ("מקורות: [faq:20]", "FAQ 20") | 3 | 2 | 1 | 6.0 | open | Second run 18.10.2026: reservist 6 and 8. Strip `[faq:N]` / `[guide:x]` tags in the answer hook, or tell the prompt not to print them. |
 | Chat: "about 70 credit points in year 1" where the baseline said it is not on the site | 4 | 3 | 1 | 12.0 | open | Second run 18.10.2026: stressed 8 (new). No credit fact exists; the "not sure" rule did not hold. Cs-owner to check the yearbook, then either add the fact or keep the refusal. |
 | Simulations README: env change needs a redeploy; default delay too fast for Groq | 1 | 2 | 1 | 2.0 | done 16.10.2026 | Baseline attempt 1 failed on both. Fix: README says an env change needs a redeploy and explains the pacing; the script's default is now `--delay-ms 20000` and a `busy` answer is retried twice, a minute apart. |
@@ -30,8 +30,9 @@ Columns: S = students, U = urgency, E = effort.
 
 | Item | S | U | E | Score | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Verify change-period dates and the 14.10 course scan hold through 28.10 | 5 | 5 | 1 | 25.0 | open | cs-owner checks Inbar announcements; update `checkedOn`. |
-| Exam-season guide refresh before מועד א' of semester א' | 5 | 2 | 2 | 5.0 | open | Dates come in December; sources to be checked then. |
+| Verify change-period dates and the 14.10 course scan hold through 28.10 | 5 | 5 | 1 | 25.0 | closed 16.11.2026, unverified | cs-owner checks Inbar announcements; update `checkedOn`. |
+| Exam-season guide refresh before מועד א' of semester א' | 5 | 4 | 2 | 10.0 | open (re-scored 16.11.2026) | Dates come in December; sources to be checked then. |
+| Source and `checkedOn` for the CS exam dates in `faculties/cs/data.js` (21.1 to 26.2.2027) | 5 | 4 | 1 | 20.0 | open (added 16.11.2026) | Eight מועד א'/ב' events since #63 (15.10.2026) with no source on record. cs-owner: match them to the department's published exam schedule before students plan around them. |
 | Source for the `cs-study-space` guide (check-data warning) | 4 | 1 | 1 | 4.0 | open | No `sources` on the CS learning space guide (building 503, My BLE-ID entry). cs-owner: add the department page or the secretariat's instruction (faculty PR 6g could not invent one). |
 
 ## Neuro
