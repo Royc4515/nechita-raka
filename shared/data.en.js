@@ -437,6 +437,7 @@ window.SITE_EN = {
     [`בלי שעה בקטלוג ({n})`, `No time in the catalog ({n})`],
     [`מיילים של המרצים`, `Lecturers' email`],
     [`מייל למרצה`, `Email the lecturer`],
+    [`התכוונתם ל`, `Did you mean `],
     [`מייל ל{name}: {email}`, `Email {name}: {email}`],
     [`מרצה`, `Lecturer`],
     [`{n} מרצים`, `{n} lecturers`],

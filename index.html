@@ -268,6 +268,7 @@ main { padding-block: var(--s2) var(--s8); }
 /* Empty state */
 .empty { margin-block-start: var(--s7); padding: var(--s7) var(--s5); text-align: center; background: var(--surface); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .empty .try { color: var(--muted); margin-block: var(--s3) var(--s2); }
+.did-you-mean { margin-block: var(--s3) 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s1); }
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-block-end: var(--s4); }
 .chip { min-block-size: 48px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent-text); font-weight: 600; cursor: pointer; }
 .empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
@@ -878,6 +879,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   <div class="empty" id="empty" hidden>
     <img class="mascot empty-mascot" data-mascot="think" data-h="120" alt="" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
+    <p class="did-you-mean" id="did-you-mean" hidden></p>
     <p class="try">אולי ננסה:</p>
     <div class="chips" id="empty-chips"></div>
     <p class="still">ואם עדיין חסר משהו, כתבו לרועי בקבוצה.</p>
@@ -1166,6 +1168,25 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   for (const group of SYNONYM_GROUPS) {
     const forms = group.map((word) => normalize(word));
     forms.forEach((form) => SYNONYMS.set(form, forms));
+  }
+  /**
+   * "Did you mean": for a word nothing matched, the closest word in the site (titles and keywords, 4+ letters),
+   * within 2 edits. Null when no word is close enough. `docs` are the entries' search docs.
+   */
+  function closestWord(word, docs) {
+    if (word.length < 3) return null;
+    let best = null;
+    let bestDistance = 3;
+    const seen = new Set();
+    for (const doc of docs) {
+      for (const w of `${doc.t} ${doc.k}`.split(" ")) {
+        if (w.length < 4 || seen.has(w)) continue;
+        seen.add(w);
+        const d = editDistance(w, word, 2);
+        if (d < bestDistance) { best = w; bestDistance = d; }
+      }
+    }
+    return best;
   }
   // ---------- Search ranking ----------
   // Everything searchable has three fields: title (t), keywords (k) and body (b).
@@ -2776,6 +2797,19 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       courseHits.querySelector("ol").replaceChildren(...items);
       return found.length;
     }
+    // Nothing found: offer the query with each unmatched word replaced by its closest word on the site.
+    const didYouMean = $("#did-you-mean");
+    function renderDidYouMean(query) {
+      const words = query ? query.words : [];
+      const fixed = words.map((w) => (QUESTION_WORDS.has(w) || w.length < 3 ? w : closestWord(w, index.map((e) => e.doc)) || w));
+      const changed = query && fixed.some((w, i) => w !== words[i]);
+      setHidden(didYouMean, !changed);
+      if (!changed) return didYouMean.replaceChildren();
+      const suggestion = fixed.join(" ");
+      const chip = el("button", { type: "button", class: "chip", text: suggestion });
+      chip.addEventListener("click", () => { input.value = suggestion; apply(); syncUrl(); });
+      didYouMean.replaceChildren(tr("התכוונתם ל"), chip, "?");
+    }
     function apply() {
       const raw = input.value.trim();
       const key = normalize(raw);
@@ -2806,6 +2840,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }
       setHidden(empty, !active || total > 0);
       $("#empty-q").textContent = raw;
+      renderDidYouMean(active && total === 0 ? ranked.query : null);
       if (!active) statusEl.replaceChildren();
       else if (total && ranked.remapped) statusEl.replaceChildren(tr("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „"), el("bdi", { text: ranked.remapped }), "”");
       else if (total && ranked.mode === "any") statusEl.replaceChildren(tr("לא נמצא משהו שמתאים לכל המילים. {results} שמתאימות לחלק מהן.", { results: resultsText(total) }));

@@ -43,6 +43,7 @@ export function courseChunks({ scannedAt, courses }, faculty = FACULTY) {
       c.exams.length ? `מועדי בחינה: ${c.exams.map((e) => `${e.type} ${dmy(e.date)} ${e.hour}`).join("; ")}.` : "",
       ...shown.map((l) => `- ${l}`),
       lines.length > shown.length ? `- ועוד ${lines.length - shown.length} קבוצות בקטלוג.` : "",
+      (c.contacts || []).length ? `מיילים של המרצים (מדף הסגל של המחלקה): ${c.contacts.map((x) => `${x.name} ${x.email}`).join("; ")}.` : "",
       `מקור: קטלוג הקורסים של בר אילן${scanned ? `, נסרק ב-${scanned}` : ""}. לא רשמי והשעות עשויות להשתנות: תמיד לומר את תאריך הסריקה ולהפנות לבדוק באינ-בר.`,
     ].filter(Boolean).join("\n");
     return {
@@ -50,11 +51,50 @@ export function courseChunks({ scannedAt, courses }, faculty = FACULTY) {
       title: `${c.name} (${c.code})`,
       url: courseUrl(c.code),
       text,
-      keywords: [c.code, c.name, c.nameEn, categories, "קורס", "מערכת שעות", "הרצאה", "תרגיל", "מרצה", "שעות", "קבוצה", "מועד", "חדר"].filter(Boolean),
+      keywords: [c.code, c.name, c.nameEn, categories, "קורס", "מערכת שעות", "הרצאה", "תרגיל", "מרצה", "שעות", "קבוצה", "מועד", "חדר", ...((c.contacts || []).length ? ["מייל", "אימייל"] : [])].filter(Boolean),
       // On a faculty with tracks: the tracks that take the course (empty when the yearbook lacks it), for retrieval.
       ...(hasTracks ? { tracks: tracksOf(c.categories) } : {}),
     };
   });
+}
+
+/**
+ * One chunk per lecturer with a published email ("מה המייל של נועה אגמון?"): the name, the email and the
+ * courses they teach. The link is the lecturers' emails page. Emails come only from courses.lecturers.
+ */
+export function lecturerChunks({ courses, lecturersCheckedOn }) {
+  const byEmail = new Map();
+  for (const c of courses) {
+    for (const contact of c.contacts || []) {
+      const entry = byEmail.get(contact.email) || { ...contact, courses: [] };
+      if (!entry.courses.some((x) => x.name === c.name)) entry.courses.push(c);
+      byEmail.set(contact.email, entry);
+    }
+  }
+  const checked = dmy(lecturersCheckedOn);
+  return [...byEmail.values()].map((l) => ({
+    id: `lecturer:${l.email}`,
+    title: `המייל של ${l.name}`,
+    url: `${SITE_URL}/lecturers`,
+    text: [
+      `${l.name}: המייל ${l.email}.`,
+      `קורסים: ${l.courses.map((c) => `${c.name} (${c.code})`).join(", ")}.`,
+      `מקור: דף הסגל של המחלקה${checked ? `, נבדק ב-${checked}` : ""}. כל המיילים של המרצים בדף המיילים של המרצים באתר.`,
+    ].join("\n"),
+    keywords: [l.name, l.name.replace(/^\S+\s/, ""), l.email, "מייל", "אימייל", "מרצה", ...l.courses.map((c) => c.name)],
+  }));
+}
+
+/** Course and lecturer chunks for the chat, and the lecturer emails an answer may contain. Empty when the catalog is missing. */
+export function loadCourseFacts() {
+  try {
+    const shaped = loadCourses();
+    const lecturers = lecturerChunks(shaped);
+    return { chunks: [...courseChunks(shaped), ...lecturers], emails: lecturers.map((c) => c.id.slice("lecturer:".length).toLowerCase()) };
+  } catch (err) {
+    console.error(`courses: ${err.message}; the chat will not answer course questions`);
+    return { chunks: [], emails: [] };
+  }
 }
 
 /** Kept for the tests: chunks straight from a catalog object, for the active faculty or a named one. */

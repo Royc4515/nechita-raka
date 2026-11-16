@@ -191,7 +191,7 @@ function contactList(course, { tr }) {
   return el("div", { class: "cb-contacts" },
     el("p", { class: "cb-contacts-title", text: contacts.length === 1 ? tr("מייל למרצה") : tr("מיילים של המרצים") }),
     el("ul", {}, ...contacts.map((c) => el("li", {},
-      el("a", { class: "cb-mail", href: `mailto:${c.email}`, "data-key": `mail|${course.code}`, "aria-label": tr("מייל ל{name}: {email}", { name: c.name, email: c.email }) },
+      el("a", { class: "cb-mail", href: `mailto:${c.email}?subject=${encodeURIComponent(`${course.name} (${course.code})`)}`, "data-key": `mail|${course.code}`, "aria-label": tr("מייל ל{name}: {email}", { name: c.name, email: c.email }) },
         el("span", { class: "cb-mail-icon", "aria-hidden": "true", text: "✉" }),
         el("span", { class: "cb-mail-name", text: c.name }),
         el("bdi", { dir: "ltr", class: "cb-mail-addr", text: c.email }))))));

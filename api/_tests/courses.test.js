@@ -220,3 +220,25 @@ test("a hall named with a dash keeps it, and the chat lists each weekly meeting 
   const discrete = chunks.find((c) => c.id === "course:891195").text;
   assert.match(discrete, /יום ב' 09:00 - 11:00, יום ג' 10:00 - 12:00/);
 });
+
+test("the chat gets one fact per lecturer with a published email, and may write those emails", async () => {
+  const { lecturerChunks } = await import("../_lib/chat/courses.js");
+  const shaped = {
+    lecturersCheckedOn: "2026-11-16",
+    courses: [
+      { code: "1", name: "מבוא", contacts: [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il" }] },
+      { code: "2", name: "רובוטים", contacts: [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il" }] },
+      { code: "3", name: "בלי", contacts: [] },
+    ],
+  };
+  const [chunk, ...rest] = lecturerChunks(shaped);
+  assert.equal(rest.length, 0);
+  assert.equal(chunk.url, `${SITE_URL}/lecturers`);
+  assert.match(chunk.text, /agmon@cs\.biu\.ac\.il/);
+  assert.match(chunk.text, /מבוא \(1\), רובוטים \(2\)/);
+  assert.match(chunk.text, /נבדק ב-16\.11\.2026/);
+  if (FACULTY.id === "cs") {
+    const { getKnowledge } = await import("../_lib/chat/knowledge.js");
+    assert.ok(getKnowledge().allowedEmails.includes("agmon@cs.biu.ac.il"));
+  }
+});

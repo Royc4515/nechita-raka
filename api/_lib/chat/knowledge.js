@@ -6,7 +6,7 @@
  */
 import { loadContent } from "../../../faculties/content.js";
 import { FACULTY } from "../../../faculties/index.js";
-import { loadCourseChunks } from "./courses.js";
+import { loadCourseFacts } from "./courses.js";
 import { hidePhones } from "./phones.js";
 import { SITE_URL } from "./site.js";
 
@@ -130,7 +130,9 @@ export function getKnowledge() {
   if (!cached) {
     const data = loadSiteData();
     const { urls, emails } = allowlists(data);
-    cached = { data, chunks: [...buildChunks(data), ...loadCourseChunks()], allowedUrls: urls, allowedEmails: emails, core: (today) => buildCore(data, today) };
+    // Lecturer emails come from the department's staff page (courses.lecturers), so they are allowed too.
+    const courses = loadCourseFacts();
+    cached = { data, chunks: [...buildChunks(data), ...courses.chunks], allowedUrls: urls, allowedEmails: [...new Set([...emails, ...courses.emails])], core: (today) => buildCore(data, today) };
   }
   return cached;
 }
