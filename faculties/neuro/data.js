@@ -313,7 +313,7 @@ window.SITE_DATA = {
         `פרקטיקום, מעבדות ותוכנית המצוינות V1: הכול דרך משרד התוכנית. למעבדות המחקר נכנסים משנה ב'.`,
         `הנהלים של התוכנית (פטורים, תיקון ציון, המעבר לשנה ב', מקוריות טקסטים) כתובים בדף הנהלים. כדאי לקרוא פעם אחת.`,
       ],
-      links: [`mentor`, `gonda-contact`, `gonda-procedures`, `wa-main`, `inbar`],
+      links: [`mentor`, `gonda-contact`, `gonda-procedures`, `wa-main`, `inbar`, { label: `זכויות אקדמיות, אגודת הסטודנטים`, url: `https://www.bis.org.il/en/academic-rights` }],
       sources: [
         { label: `מרכז שירות וגיוס`, url: `https://www.biu.ac.il/registration-and-admission/information/service-and-info-section` },
         { label: `יצירת קשר, המרכז לחקר המוח`, url: `https://gondabrain.biu.ac.il/contact` },
@@ -376,6 +376,20 @@ window.SITE_DATA = {
           name: `המרכז הרב-תחומי לחקר המוח ע"ש גונדה`,
           url: `https://gondabrain.biu.ac.il/`,
           keywords: [`גונדה`, `gonda`, `המרכז לחקר המוח`, `אתר המחלקה`, `מדעי המוח`, `מעבדות`, `חוקרים`, `אירועים`],
+        },
+        {
+          id: `gonda-seminar`,
+          desc: `הסמינר השבועי של המרכז, בימי שני: 23.11, 30.11, 14.12, 21.12 ו-4.1. בדף אין שעה וחדר, אז שואלים במשרד אם אפשר להגיע`,
+          name: `הסמינר המחלקתי של המרכז לחקר המוח`,
+          url: `https://gondabrain.biu.ac.il/node/578`,
+          keywords: [`סמינר`, `סמינר מחלקתי`, `הרצאות`, `חוקרים`, `אירועים`, `גונדה`, `seminar`],
+        },
+        {
+          id: `gonda-where-to`,
+          desc: `סדרת "המוח לאן?": מפגשים, סדנאות וסיורים על מה עושים אחרי התואר, באקדמיה, בתעשייה ובקליניקה, עם הבוגרים ו-Brainstorm BIU`,
+          name: `המוח לאן? אירועי קריירה של גונדה`,
+          url: `https://gondabrain.biu.ac.il/node/901`,
+          keywords: [`קריירה`, `תעסוקה`, `אחרי התואר`, `בוגרים`, `תעשייה`, `סדנאות`, `סיורים`, `אירועים`, `brainstorm`],
         },
         {
           id: `gonda-contact`,

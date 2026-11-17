@@ -475,7 +475,7 @@ window.SITE_DATA = {
         1: [{ id: `inbar`, at: `אינ-בר` }],
         4: [{ id: `wa-main`, at: `בקבוצת הוואטסאפ הראשית` }, { id: `mentor`, at: `בהודעה פרטית` }],
       },
-      links: [`mentor`, `wa-main`, `inbar`],
+      links: [`mentor`, `wa-main`, `inbar`, { label: `זכויות אקדמיות, אגודת הסטודנטים`, url: `https://www.bis.org.il/en/academic-rights` }],
       sources: [
         { label: `מרכז שירות וגיוס`, url: `https://www.biu.ac.il/registration-and-admission/information/service-and-info-section` },
         { label: `הנחיות הרישום`, url: `https://www.biu.ac.il/page/13336` },

@@ -573,6 +573,7 @@ window.SITE_EN = {
     [`Esc סגירה`, `Esc close`],
   ],
   content: [
+    [`זכויות אקדמיות, אגודת הסטודנטים`, `Academic rights, Student Union`],
     [`הארכת הזמן המקסימלית ללקות למידה היא 25% מזמן הבחינה, והאישור ניתן במדור תמיכה והנגשה לסטודנט: negishut.student@biu.ac.il.`, `The maximum extra time for a learning disability is 25% of the exam time, approved by the Student Support and Accessibility Unit: negishut.student@biu.ac.il.`],
     [`בפעם הראשונה שיש לכם שיעור בבניין חדש (גם בסמסטר ב'), כדאי להגיע כמה דקות מוקדם ולעבור על המסלול מהשער ועד הכיתה.`, `The first time you have a class in a new building (semester B included), come a few minutes early and walk the route from the gate to the classroom.`],
     [`לפני כל תקופת שינויים מתפרסם באינ-בר חלון הזמן האישי: השעה שממנה אפשר להתחיל לבצע שינויים.`, `Before each add/drop period, Inbar shows your personal registration slot: the time from which you can start making changes.`],

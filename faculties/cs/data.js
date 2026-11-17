@@ -186,7 +186,7 @@ window.SITE_DATA = {
         2: [{ id: `cs-contact`, at: `בטופס הפנייה באתר המחלקה` }],
         5: [{ id: `wa-main`, at: `בקבוצת הוואטסאפ הראשית` }, { id: `mentor`, at: `בהודעה פרטית` }],
       },
-      links: [`mentor`, `cs-contact`, `wa-main`, `inbar`],
+      links: [`mentor`, `cs-contact`, `wa-main`, `inbar`, { label: `זכויות אקדמיות, אגודת הסטודנטים`, url: `https://www.bis.org.il/en/academic-rights` }],
       sources: [
         { label: `מרכז שירות וגיוס`, url: `https://www.biu.ac.il/registration-and-admission/information/service-and-info-section` },
         { label: `יצירת קשר עם המחלקה למדעי המחשב`, url: `https://cs.biu.ac.il/contact` },
