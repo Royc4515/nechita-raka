@@ -151,6 +151,42 @@ test("a year-long semester reads as two semesters, and a missing yearbook only d
   assert.deepEqual(buildCourses({}), { scannedAt: "", courses: [] });
 });
 
+test("a course lists its lecturers' published emails once each, matched by name without the title", () => {
+  const catalog = {
+    rows: [
+      { code: "1", name: "x", group: "01", kind: "הרצאה", semester: "סמסטר א'", teachers: "פרופ' נועה אגמון", day: "", hours: "", lid: "1" },
+      { code: "1", name: "x", group: "02", kind: "תרגיל", semester: "סמסטר א'", teachers: "פרופ' נועה אגמון\nמר אין מייל", day: "", hours: "", lid: "2" },
+    ],
+  };
+  const lecturers = { checkedOn: "2026-11-16", lecturers: { "נועה אגמון": { email: "agmon@cs.biu.ac.il", profile: "https://cs.biu.ac.il/he/noa-agmon" } } };
+  const built = buildCourses(catalog, null, lecturers);
+  assert.equal(built.lecturersCheckedOn, "2026-11-16");
+  assert.deepEqual(built.courses[0].contacts, [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il", profile: "https://cs.biu.ac.il/he/noa-agmon" }]);
+  assert.deepEqual(buildCourses(catalog).courses[0].contacts, []);
+  // An address that could smuggle a recipient into the mailto link is dropped.
+  const bad = { lecturers: { "נועה אגמון": { email: "x?bcc=a%40evil.co@b.cc" } } };
+  assert.deepEqual(buildCourses(catalog, null, bad).courses[0].contacts, []);
+});
+
+for (const faculty of Object.values(FACULTIES).filter((f) => f.courses.lecturers)) {
+  test(`the ${faculty.id} lecturers file has official sources and a date, and every email is well formed and used by a course`, () => {
+    const file = JSON.parse(readFileSync(facultyFile(faculty, faculty.courses.lecturers), "utf8"));
+    const official = /^https:\/\/[a-z-]+\.biu\.ac\.il\//;
+    assert.match(file.source, official);
+    assert.match(file.checkedOn, /^\d{4}-\d{2}-\d{2}$/);
+    const withLecturers = buildCourses(JSON.parse(readFileSync(facultyFile(faculty, faculty.courses.catalog), "utf8")), null, file);
+    const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
+    for (const [name, entry] of Object.entries(file.lecturers)) {
+      assert.match(entry.email, /^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/, name);
+      // Only university addresses (Roy, 17.11.2026): a personal address a department lists stays off the site.
+      assert.match(entry.email, /@(?:[\w-]+\.)*biu\.ac\.il$/i, name);
+      if (entry.source) assert.match(entry.source, official, name);
+      assert.ok(used.has(entry.email), `${name} teaches no course in the catalog`);
+    }
+    if (faculty.id === "cs") assert.ok(withLecturers.courses.find((c) => c.code === "89110").contacts.length > 0, "Intro to CS has its lecturer's email");
+  });
+}
+
 // ---------- the chat ----------
 
 test("course chunks carry the scan date and link to the course's card on the site", () => {
@@ -192,4 +228,26 @@ test("a hall named with a dash keeps it, and the chat lists each weekly meeting 
   assert.ok(calc2.slots.some((s) => s.building === "טבע 211-2"), JSON.stringify(calc2.slots));
   const discrete = chunks.find((c) => c.id === "course:891195").text;
   assert.match(discrete, /יום ב' 09:00 - 11:00, יום ג' 10:00 - 12:00/);
+});
+
+test("the chat gets one fact per lecturer with a published email, and may write those emails", async () => {
+  const { lecturerChunks } = await import("../_lib/chat/courses.js");
+  const shaped = {
+    lecturersCheckedOn: "2026-11-16",
+    courses: [
+      { code: "1", name: "מבוא", contacts: [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il" }] },
+      { code: "2", name: "רובוטים", contacts: [{ name: "פרופ' נועה אגמון", email: "agmon@cs.biu.ac.il" }] },
+      { code: "3", name: "בלי", contacts: [] },
+    ],
+  };
+  const [chunk, ...rest] = lecturerChunks(shaped);
+  assert.equal(rest.length, 0);
+  assert.equal(chunk.url, `${SITE_URL}/lecturers`);
+  assert.match(chunk.text, /agmon@cs\.biu\.ac\.il/);
+  assert.match(chunk.text, /מבוא \(1\), רובוטים \(2\)/);
+  assert.match(chunk.text, /נבדק ב-16\.11\.2026/);
+  if (FACULTY.id === "cs") {
+    const { getKnowledge } = await import("../_lib/chat/knowledge.js");
+    assert.ok(getKnowledge().allowedEmails.includes("agmon@cs.biu.ac.il"));
+  }
 });

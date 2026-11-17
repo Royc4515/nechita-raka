@@ -268,6 +268,7 @@ main { padding-block: var(--s2) var(--s8); }
 /* Empty state */
 .empty { margin-block-start: var(--s7); padding: var(--s7) var(--s5); text-align: center; background: var(--surface); border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .empty .try { color: var(--muted); margin-block: var(--s3) var(--s2); }
+.did-you-mean { margin-block: var(--s3) 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s1); }
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s2); margin-block-end: var(--s4); }
 .chip { min-block-size: 48px; padding-inline: var(--s4); border-radius: 999px; border: 1px solid var(--border); background: var(--accent-soft); color: var(--accent-text); font-weight: 600; cursor: pointer; }
 .empty .still { color: var(--muted); font-size: var(--fs-meta); margin-block-end: var(--s4); }
@@ -878,6 +879,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   <div class="empty" id="empty" hidden>
     <img class="mascot empty-mascot" data-mascot="think" data-h="120" alt="" loading="lazy" decoding="async">
     <p><strong>לא מצאנו כלום עבור „<bdi id="empty-q"></bdi>”</strong></p>
+    <p class="did-you-mean" id="did-you-mean" hidden></p>
     <p class="try">אולי ננסה:</p>
     <div class="chips" id="empty-chips"></div>
     <p class="still">ואם עדיין חסר משהו, כתבו לרועי בקבוצה.</p>
@@ -1157,6 +1159,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     ["יום הולדת", "יומולדת", "יומהולדת", "birthday"],
     ["wifi", "וויפי", "ויפי", "אינטרנט"],
     ["אינפי", "חדוא", "חשבון אינפיניטסימלי", "calculus"],
+    // A missed exam is what מועד ב' and the special sitting are for.
+    ["מפספסים", "פספסתי", "פספוס", "החמצתי", "מועד מיוחד", "מועד ב"],
     // The faculty's own groups (search.synonyms in faculties/<id>/faculty.js, via faculty.js).
     ...window.FACULTY.search.synonyms,
   ];
@@ -1164,6 +1168,26 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   for (const group of SYNONYM_GROUPS) {
     const forms = group.map((word) => normalize(word));
     forms.forEach((form) => SYNONYMS.set(form, forms));
+  }
+  /**
+   * "Did you mean": for a word nothing matched, the closest word in the site (titles and keywords, 4+ letters),
+   * within 2 edits. Null when no word is close enough. `docs` are the entries' search docs.
+   */
+  function closestWord(word, docs) {
+    if (word.length < 3) return null;
+    let best = null;
+    let bestDistance = 3;
+    const seen = new Set();
+    for (const doc of docs) {
+      for (const w of `${doc.t} ${doc.k}`.split(" ")) {
+        if (w.length < 4 || seen.has(w)) continue;
+        seen.add(w);
+        // Two edits only for longer words, so "shatl" is not offered "what".
+        const d = editDistance(w, word, 2);
+        if (d < bestDistance && (d === 1 || Math.max(w.length, word.length) >= 6)) { best = w; bestDistance = d; }
+      }
+    }
+    return best;
   }
   // ---------- Search ranking ----------
   // Everything searchable has three fields: title (t), keywords (k) and body (b).
@@ -1174,7 +1198,49 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   // Question words: they don't have to appear in a result, but "מתי" means the answer is probably a date.
   const QUESTION_WORDS = new Set(["מתי", "איפה", "איך", "מה", "למה", "כמה", "האם", "יש", "אני", "צריך", "רוצה", "אפשר", "של", "עם", "על", "את",
     "רואים", "מוצאים", "עושים", "לעשות",
-    "what", "when", "where", "how", "why", "is", "are", "do", "does", "can", "my", "the", "an", "to", "of", "for", "in", "on", "with", "need"].map((w) => normalize(w)));
+    // How people phrase a question ("מה עושים כש...", "מישהו יודע איך..."): the intent words, not the topic.
+    "כש", "כשאני", "כשיש", "אם", "ואם", "מישהו", "יודע", "יודעת", "יודעים", "בבקשה", "לגבי", "בקשר", "רוצים", "צריכים", "צריכה",
+    "משהו", "זה", "הזה", "זאת", "לי", "שלי", "אותי", "קורה", "עושה", "עשיתי", "מתבצע", "אמור", "אמורים", "אפשרי", "נכון",
+    "what", "when", "where", "how", "why", "is", "are", "do", "does", "can", "my", "the", "an", "to", "of", "for", "in", "on", "with", "need",
+    "if", "i", "me", "should", "someone", "please", "about", "happens",
+    // "המייל של אגמון": the topic is the name; alone ("מייל של מרצה") they still find the lecturers' emails page.
+    "מייל", "המייל", "אימייל", "email", "מרצה", "המרצה", "מרצים", "מרצות"].map((w) => normalize(w)));
+  // A word with no hit at all may be a typo or another spelling ("נעה" for "נועה"): the closest word in the
+  // entry counts, but much less than a real hit. Only for words of 4 letters or more, so short words stay exact.
+  const dropVY = (w) => w.replace(/[וי]/g, "");
+  function editDistance(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      let rowMin = i;
+      for (let j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        rowMin = Math.min(rowMin, cur[j]);
+      }
+      if (rowMin > max) return max + 1;
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+  function fuzzyScore(doc, token) {
+    if (token.length < 3) return 0;
+    const max = token.length >= 7 ? 2 : 1;
+    const bare = dropVY(token);
+    let best = 0;
+    for (const field of ["t", "k", "b"]) {
+      // The words of a field, split once per entry.
+      const words = (doc.words ||= {})[field] ||= [...new Set(doc[field].split(" "))];
+      for (const w of words) {
+        if (w.length < 3 || Math.abs(w.length - token.length) > max + 1) continue;
+        // A prefix letter typed or not ("ומבחן"), and the same word with or without ו and י, count alike.
+        const close = dropVY(w) === bare || (token.length >= 4 && (editDistance(w, token, max) <= max
+          || (HEB_PREFIXES.includes(w[0]) && editDistance(w.slice(1), token, max) <= max)));
+        if (close) { best = Math.max(best, FIELD_WEIGHT[field]); break; }
+      }
+    }
+    return best;
+  }
   // 3 = whole word, 2 = start of a word (a Hebrew prefix letter is allowed before it), 1 = inside a word
   function wordHit(field, word) {
     let best = 0;
@@ -1187,18 +1253,34 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     }
     return best;
   }
-  function tokenScore(doc, token) {
+  // "במילואים" or "כשמפספסים" typed with one or two prefix letters: also the word without them (and its
+  // synonyms), trusted less. Computed once per word typed.
+  const FORMS = new Map();
+  function formsOf(token) {
+    if (FORMS.has(token)) return FORMS.get(token);
+    const stems = [[token, 1]];
+    // The rest must still be a real word (4 letters or more), so "מייל" is never read as מ + "ייל".
+    if (token.length > 4 && HEB_PREFIXES.includes(token[0])) {
+      stems.push([token.slice(1), 0.6]);
+      if (token.length > 5 && HEB_PREFIXES.includes(token[1])) stems.push([token.slice(2), 0.5]);
+    }
+    const forms = [];
+    for (const [stem, weight] of stems) for (const option of SYNONYMS.get(stem) || [stem]) forms.push([option, weight]);
+    FORMS.set(token, forms);
+    return forms;
+  }
+  function tokenScore(doc, token, fuzzy = false) {
     let best = 0;
-    for (const option of SYNONYMS.get(token) || [token]) {
-      for (const field of ["t", "k", "b"]) best = Math.max(best, wordHit(doc[field], option) * FIELD_WEIGHT[field]);
-      // "במילואים" typed with a prefix letter: also try without it, but trust that less
-      if (option.length > 3 && HEB_PREFIXES.includes(option[0])) {
-        const bare = option.slice(1);
-        for (const field of ["t", "k", "b"]) best = Math.max(best, wordHit(doc[field], bare) * FIELD_WEIGHT[field] * 0.6);
+    for (const [option, weight] of formsOf(token)) {
+      for (const field of ["t", "k", "b"]) {
+        const hit = wordHit(doc[field], option);
+        // A word without its prefix letters counts only at the start of a word, not inside another one.
+        if (hit && (weight === 1 || hit >= 2)) best = Math.max(best, hit * FIELD_WEIGHT[field] * weight);
       }
     }
-    return best;
+    return best || (fuzzy ? fuzzyScore(doc, token) : 0);
   }
+
   // One-letter words ("ב" in "מועד ב") are too common to require, but still count as part of the phrase.
   function parseQuery(normalized) {
     const words = normalized.split(" ").filter(Boolean);
@@ -1206,11 +1288,12 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return { phrase: normalized, words, required: required.length ? required : words, when: words.includes("מתי") || words.includes("when") };
   }
   // 0 = no match. mode "all": every word must be found; "any": at least one (the fallback).
-  function scoreDoc(doc, query, mode = "all") {
+  // fuzzy: a word with no hit may match the closest spelling (the second pass, when nothing matched exactly).
+  function scoreDoc(doc, query, mode = "all", fuzzy = false) {
     let score = 0;
     let hits = 0;
     for (const token of query.required) {
-      const s = tokenScore(doc, token);
+      const s = tokenScore(doc, token, fuzzy);
       if (s) { hits++; score += s; } else if (mode === "all") return 0;
     }
     if (!hits) return 0;
@@ -1225,8 +1308,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
   const BIRTHDAY_WORDS = "יום הולדת יומולדת מזל טוב רועי חונך עוגה חגיגה";
   const isLatin = (raw) => /^[a-z;,.' ]+$/i.test(raw);
   // Ranks entries ({ doc }) for what the user typed: every word, then the keyboard-layout fix, then any word.
-  function rankEntries(entries, raw) {
-    const run = (query, mode) => entries.map((e) => [e, scoreDoc(e.doc, query, mode)]).filter(([, s]) => s > 0)
+  // fuzzy: false keeps to exact words (the course list, when the rest of the site already matched exactly).
+  function rankEntries(entries, raw, { fuzzy: allowFuzzy = true } = {}) {
+    const run = (query, mode, fuzzy = false) => entries.map((e) => [e, scoreDoc(e.doc, query, mode, fuzzy)]).filter(([, s]) => s > 0)
       .sort((a, b) => b[1] - a[1]).map(([e]) => e);
     const query = parseQuery(normalize(raw));
     let list = run(query, "all");
@@ -1236,7 +1320,13 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       list = run(alt, "all");
       if (list.length) return { list, query: alt, mode: "all", remapped: toHebrewLayout(raw) };
     }
-    return { list: run(query, "any"), query, mode: "any" };
+    // Close spellings cost a pass over every word of every entry: only for a short query (a sentence pasted
+    // in, or a crafted ?q= link, keeps to exact words).
+    if (!allowFuzzy || query.required.length > 8 || raw.length > 100) return { list: run(query, "any"), query, mode: "any" };
+    // A typo or another spelling ("נעה אגמון", "מבחנם"): every word, each matching its closest spelling.
+    list = run(query, "all", true);
+    if (list.length) return { list, query, mode: "all", fuzzy: true };
+    return { list: run(query, "any", true), query, mode: "any", fuzzy: true };
   }
   const toHebrewLayout = (text) => [...text.toLowerCase()].map((ch) => QWERTY_TO_HEBREW[ch] || ch).join("");
   // ---------- Dates ----------
@@ -1707,6 +1797,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       });
     return node;
   }
+  function lecturersNode() {
+    const node = el("section", { class: "course-browser lecturers", id: "lecturers", "aria-label": tr("המיילים של המרצים") });
+    import("./course-browser.js")
+      .then((mod) => mod.mountLecturers(node, courseHelpers()))
+      .catch((err) => {
+        console.warn("lecturers: could not load the list", err);
+        node.replaceChildren(el("p", { text: tr("לא הצלחנו לטעון את רשימת המרצים. נסו לרענן, או חפשו בדף הסגל של המחלקה.") }));
+      });
+    return node;
+  }
   // The site search and the palette get one entry per course, once the list is loaded (on first use).
   let courseEntries = [];
   let courseLoad = null;
@@ -1717,9 +1817,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     return courseLoad;
   }
   /** Courses that match every word typed; empty until the list is loaded. */
-  function rankCourses(raw) {
+  function rankCourses(raw, fuzzy = true) {
     if (!courseEntries.length || !normalize(raw)) return [];
-    const ranked = rankEntries(courseEntries, raw);
+    const ranked = rankEntries(courseEntries, raw, { fuzzy });
     return ranked.mode === "all" ? ranked.list : [];
   }
   function renderGuideView(guide, itemsById, year) {
@@ -1732,6 +1832,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       guide.summary ? el("p", { class: "guide-summary" }, bidiText(guide.summary)) : null,
       guideMap(guide),
       guide.courses ? courseBrowserNode() : null,
+      guide.lecturers ? lecturersNode() : null,
       ...stepsList(guide, itemsById),
       guide.tips && guide.tips.length ? el("section", { class: "tips", "aria-labelledby": "tips-h" },
         setMascot(el("img", { class: "mascot tips-mascot", alt: "", decoding: "async" }), "idea", 104),
@@ -2314,8 +2415,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       const q = normalize(raw);
       if (!q) return index.filter((e) => e.suggest).slice(0, 8);
       // Site results first, then up to three courses, so a course name never hides a guide.
-      const site = rankEntries(index, raw).list.slice(0, 10);
-      const courses = rankCourses(raw).slice(0, 3);
+      const siteRanked = rankEntries(index, raw);
+      const site = siteRanked.list.slice(0, 10);
+      const courses = rankCourses(raw, Boolean(siteRanked.fuzzy)).slice(0, 3);
       return [...site.slice(0, 10 - courses.length), ...courses];
     }
     function paint() {
@@ -2623,10 +2725,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     let lastKey = null;
     for (const list of [groups.guides, groups.events, groups.faq, groups.categories]) list.forEach((e, i) => { e.i = i; });
     groups.categories.forEach((cat) => cat.children.forEach((e, i) => { e.i = i; }));
-    function filterAll(query, mode) {
+    function filterAll(query, mode, fuzzy = false) {
       const active = Boolean(query);
       const show = (entry) => {
-        entry.score = active ? scoreDoc(entry.doc, query, mode) : 1;
+        entry.score = active ? scoreDoc(entry.doc, query, mode, fuzzy) : 1;
         setHidden(entry.node, !entry.score);
         if (entry.expand) entry.expand(active && entry.score > 0);
         return entry.score ? 1 : 0;
@@ -2683,8 +2785,8 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }));
     }
     // Courses that match, as links to their cards, with one more link to all of them on the courses page.
-    function renderCourseHits(raw) {
-      const found = rankCourses(raw);
+    function renderCourseHits(raw, fuzzy) {
+      const found = rankCourses(raw, fuzzy);
       setHidden(courseHits, !found.length);
       if (!found.length) return 0;
       const hitLink = (href, ...body) => el("li", {}, el("a", { class: "hit", href }, ...body));
@@ -2697,6 +2799,21 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }
       courseHits.querySelector("ol").replaceChildren(...items);
       return found.length;
+    }
+    // Nothing found: offer the query with each unmatched word replaced by its closest word on the site.
+    const didYouMean = $("#did-you-mean");
+    function renderDidYouMean(query) {
+      const words = query && query.words.length <= 8 ? query.words : [];
+      const fixed = words.map((w) => (QUESTION_WORDS.has(w) || w.length < 3 ? w : closestWord(w, index.map((e) => e.doc)) || w));
+      const changed = query && fixed.some((w, i) => w !== words[i]);
+      setHidden(didYouMean, !changed);
+      if (!changed) return didYouMean.replaceChildren();
+      // The site's words are kept normalized ("מבחנ"): show them with their final letter ("מבחן").
+      const FINAL = { "כ": "ך", "מ": "ם", "נ": "ן", "פ": "ף", "צ": "ץ" };
+      const suggestion = fixed.map((w) => w.replace(/[כמנפצ]$/, (ch) => FINAL[ch])).join(" ");
+      const chip = el("button", { type: "button", class: "chip", text: suggestion });
+      chip.addEventListener("click", () => { input.value = suggestion; apply(); syncUrl(); });
+      didYouMean.replaceChildren(tr("התכוונתם ל"), chip, "?");
     }
     function apply() {
       const raw = input.value.trim();
@@ -2719,12 +2836,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         setHidden(courseHits, true);
       } else {
         ranked = rankEntries(index, raw);
-        total = filterAll(ranked.query, ranked.mode);
-        total += renderCourseHits(raw);
+        // Close spellings of a course or a lecturer only when the site found nothing exact ("מייל" is not "מיכל").
+        const courseCount = renderCourseHits(raw, Boolean(ranked.fuzzy));
+        // A lecturer's or a course's name matched every word: the site's partial matches would only be noise.
+        if (ranked.mode === "any" && courseCount) ranked = { ...ranked, mode: "all", list: [] };
+        total = filterAll(ranked.query, ranked.mode, ranked.fuzzy) + courseCount;
         sortTimer = setTimeout(() => sortResults(true), SORT_DELAY_MS);
       }
       setHidden(empty, !active || total > 0);
       $("#empty-q").textContent = raw;
+      renderDidYouMean(active && total === 0 ? ranked.query : null);
       if (!active) statusEl.replaceChildren();
       else if (total && ranked.remapped) statusEl.replaceChildren(tr("המקלדת הייתה באנגלית? מוצגות תוצאות עבור „"), el("bdi", { text: ranked.remapped }), "”");
       else if (total && ranked.mode === "any") statusEl.replaceChildren(tr("לא נמצא משהו שמתאים לכל המילים. {results} שמתאימות לחלק מהן.", { results: resultsText(total) }));

@@ -1,0 +1,92 @@
+{
+  "source": "https://gondabrain.biu.ac.il/faculty",
+  "checkedOn": "2026-11-16",
+  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the Gonda faculty page; an entry with its own `source` comes from another department's page (physics, philosophy, math, CS, life sciences, music). Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email. Only Bar-Ilan addresses (…biu.ac.il): a personal address a department lists is left out (Roy, 17.11.2026).",
+  "lecturers": {
+    "אברהם קליין": {
+      "email": "avraham.klein@biu.ac.il",
+      "profile": "https://physics.biu.ac.il/node/6189",
+      "source": "https://physics.biu.ac.il/faculty"
+    },
+    "אדם יואל זיידל": {
+      "email": "adam.zaidel@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/264"
+    },
+    "אורן גליקמן": {
+      "email": "oren.glickman@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/oren-glickman",
+      "source": "https://cs.biu.ac.il/he/faculty"
+    },
+    "איליה ייסין": {
+      "email": "iliya.esin@biu.ac.il",
+      "profile": "https://physics.biu.ac.il/node/5877",
+      "source": "https://physics.biu.ac.il/faculty"
+    },
+    "אילנה ציון-גולומביק": {
+      "email": "elana.zion-golumbic@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/281"
+    },
+    "אלון חסיד": {
+      "email": "alon.chasid@biu.ac.il",
+      "profile": "https://philosophy.biu.ac.il/AlonChasid",
+      "source": "https://philosophy.biu.ac.il/AlonChasid"
+    },
+    "ארז שיינר": {
+      "email": "erez@math.biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/677",
+      "source": "https://math.biu.ac.il/faculty"
+    },
+    "ארי זיבוטפסקי": {
+      "email": "ari.zivotofsky@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/265"
+    },
+    "דוד זאדה": {
+      "email": "david.itschak-zada@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/871"
+    },
+    "דנה כהן": {
+      "email": "dana.cohen@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/268"
+    },
+    "ודים אקסלרוד": {
+      "email": "vadim.axelrod@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/235"
+    },
+    "חמוטל סלובין": {
+      "email": "hamutal.slovin@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/275"
+    },
+    "יובל דולב": {
+      "email": "yuval.dolev@biu.ac.il",
+      "profile": "https://philosophy.biu.ac.il/YuvalDolev",
+      "source": "https://philosophy.biu.ac.il/YuvalDolev"
+    },
+    "יזהר בר-גד": {
+      "email": "izhar.bar-gad@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/250"
+    },
+    "מיכאל מגרל": {
+      "email": "megereli@math.biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/516",
+      "source": "https://math.biu.ac.il/faculty"
+    },
+    "משה בר": {
+      "email": "moshe.bar@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/bar"
+    },
+    "עדי שניר": {
+      "email": "adi.snir@biu.ac.il",
+      "profile": "https://music.biu.ac.il/node/1858",
+      "source": "https://music.biu.ac.il/node/1858"
+    },
+    "עמית צור": {
+      "email": "Amit.Tzur@biu.ac.il",
+      "profile": "https://life-sciences.biu.ac.il/node/1888",
+      "source": "https://life-sciences.biu.ac.il/senior"
+    },
+    "צבי רוט": {
+      "email": "zvi.roth@biu.ac.il",
+      "profile": "https://gondabrain.biu.ac.il/node/799"
+    }
+  }
+}

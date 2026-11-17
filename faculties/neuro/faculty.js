@@ -141,6 +141,7 @@ export default {
   courses: {
     catalog: `courses/catalog.json`,
     yearbook: `courses/yearbook.json`,
+    lecturers: `courses/lecturers.json`,
     download: `courses-neuro-2027.json`,
     fileLabel: `קובץ הקורסים של מדעי המוח`,
     fileLabelEn: `the Brain Sciences courses file`,
@@ -215,7 +216,7 @@ export default {
       microwaves: { he: ``, en: `` },
     },
     order: {
-      guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
+      guides: [`registration`, `neuro-registration`, `neuro-tracks`, `courses`, `lecturers`, `lemida-365`, `payments`, `campus`, `bar-gate`, `gonda-building`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
       categories: [`university`, `neuro-year1-courses`, `materials`, `wa-neuro-year1`, `wa-neuro-year2`, `wa-neuro-year3`, `wa-neuro-brainstorm`, `wa-neuro-gonda`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
     },
   },

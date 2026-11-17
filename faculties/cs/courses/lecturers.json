@@ -1,0 +1,152 @@
+{
+  "source": "https://cs.biu.ac.il/he/faculty",
+  "checkedOn": "2026-11-16",
+  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the CS staff page; an entry with its own `source` comes from another department's page (math, life sciences) or a profile page. Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email. Only Bar-Ilan addresses (…biu.ac.il): a personal address a department lists is left out (Roy, 17.11.2026).",
+  "lecturers": {
+    "אורי שחם": {
+      "email": "uri.shaham@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/uri-shaham"
+    },
+    "אורן גליקמן": {
+      "email": "oren.glickman@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/oren-glickman"
+    },
+    "אילון יוגב": {
+      "email": "eylon.yogev@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/eylon-yogev"
+    },
+    "אלי פורת": {
+      "email": "porately@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/ely-porat"
+    },
+    "אליעד צפדיה": {
+      "email": "eliad.tsfadia@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/eliad-tsfadia"
+    },
+    "אלכסנדר שלייפמן": {
+      "email": "shleyfa@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/alex-shleyfman"
+    },
+    "אסתר עזרא": {
+      "email": "ezraest@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/esther-ezra",
+      "source": "https://cs.biu.ac.il/he/esther-ezra"
+    },
+    "אפי כהן": {
+      "email": "Efi.cohen@biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/3712",
+      "source": "https://math.biu.ac.il/adjunct_faculty"
+    },
+    "אריאל נוף": {
+      "email": "ariel.nof@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/ariel-nof"
+    },
+    "ארנולד פילצר": {
+      "email": "arnold.filtser@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/arnold-filtser"
+    },
+    "גילעד אשרוב": {
+      "email": "gilad.asharov@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/gilad-asharov"
+    },
+    "גל צ'צ'יק": {
+      "email": "gal.chechik@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/gal-chechik"
+    },
+    "גל קמינקא": {
+      "email": "galk@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/gal-kaminka"
+    },
+    "דוד סרנה": {
+      "email": "david.sarne@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/david-sarne"
+    },
+    "דורון פלד": {
+      "email": "doronp@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/doron-a-peled"
+    },
+    "הדר פרנקל": {
+      "email": "hadar.frenkel@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/hadar-frenkel"
+    },
+    "יהונתן אומן": {
+      "email": "aumann@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/yonatan-aumann"
+    },
+    "יואב גולדברג": {
+      "email": "yogo@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/yoav-goldberg"
+    },
+    "יוני זוהר": {
+      "email": "yoni.zohar@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/yoni-zohar"
+    },
+    "ינאי אלעזר": {
+      "email": "yanai.elazar@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/yanai-elazar"
+    },
+    "ירון אורנשטיין": {
+      "email": "yaron.orenstein@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/yaron-orenstein"
+    },
+    "ישי פינטו": {
+      "email": "yishay.pinto@biu.ac.il",
+      "profile": "https://life-sciences.biu.ac.il/node/10422",
+      "source": "https://life-sciences.biu.ac.il/senior"
+    },
+    "ליעם רודיטי": {
+      "email": "liamr@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/liam-roditty"
+    },
+    "מרינה קוגן-סדצקי": {
+      "email": "marina.kogan-sadetsky@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/marina-kogan-sadetsky"
+    },
+    "משה לוינשטיין": {
+      "email": "moshe.lewenstein@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/moshe-lewenstein"
+    },
+    "נועה אגמון": {
+      "email": "agmon@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/noa-agmon"
+    },
+    "נועם רזין": {
+      "email": "razinno@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/node/534"
+    },
+    "נתן נתניהו": {
+      "email": "nathan@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/nathan-netanyahu"
+    },
+    "נתן קלר": {
+      "email": "nkeller@math.biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/522",
+      "source": "https://math.biu.ac.il/faculty"
+    },
+    "עדי בן צבי": {
+      "email": "adi.benzvi@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/adi-benzvi"
+    },
+    "עידו דגן": {
+      "email": "dagan@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/ido-dagan"
+    },
+    "עידן שורץ": {
+      "email": "idan.schwartz@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/idan-schwartz"
+    },
+    "רון אונגר": {
+      "email": "ron@biomodel.os.biu.ac.il",
+      "profile": "https://life-sciences.biu.ac.il/node/631",
+      "source": "https://life-sciences.biu.ac.il/senior"
+    },
+    "רעות צרפתי": {
+      "email": "reut.tsarfaty@biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/reut-tsarfaty"
+    },
+    "שרית קראוס": {
+      "email": "sarit@cs.biu.ac.il",
+      "profile": "https://cs.biu.ac.il/he/sarit-kraus"
+    }
+  }
+}

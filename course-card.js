@@ -181,6 +181,23 @@ function examTable(course, { tr }) {
     el("tbody", {}, ...semesters.map((sem) => el("tr", {}, el("th", { scope: "row", text: tr(sem) }), ...types.map((t) => cell(sem, t))))));
 }
 
+/**
+ * The lecturers' emails, as the department publishes them on its staff page (courses.lecturers in the
+ * manifest). Nothing when no lecturer of the course has one.
+ */
+function contactList(course, helpers) {
+  const { tr } = helpers;
+  const contacts = course.contacts || [];
+  if (!contacts.length) return null;
+  return el("div", { class: "cb-contacts" },
+    el("p", { class: "cb-contacts-title", text: contacts.length === 1 ? tr("מייל למרצה") : tr("מיילים של המרצים") }),
+    el("ul", {}, ...contacts.map((c) => el("li", {},
+      el("a", { class: "cb-mail", href: `mailto:${c.email}?subject=${encodeURIComponent(`${courseName(course, helpers)} (${course.code})`)}`, "data-key": `mail|${course.code}`, "aria-label": tr("מייל ל{name}: {email}", { name: c.name, email: c.email }) },
+        el("span", { class: "cb-mail-icon", "aria-hidden": "true", text: "✉" }),
+        el("span", { class: "cb-mail-name", text: c.name }),
+        el("bdi", { dir: "ltr", class: "cb-mail-addr", text: c.email }))))));
+}
+
 /** Groups with no time, folded away; the fold stays open across redraws once opened. */
 function untimedFold(course, untimed, ctx) {
   const fold = el("details", { class: "cb-untimed", open: ctx.untimedOpen || undefined },
@@ -241,6 +258,7 @@ export function courseCard(course, ctx) {
         summaryLine(course, groups, ctx)),
       el("span", { class: "cb-chevron", "aria-hidden": "true" })),
     el("div", { class: "cb-body" },
+      contactList(course, helpers),
       groups.some((g) => g.kind === "הרצאה") && groups.some((g) => g.kind === "תרגיל")
         ? el("p", { class: "cb-hint", text: tr("בוחרים הרצאה אחת ותרגול אחד. העיגול מוסיף את הקבוצה למערכת שלי.") }) : null,
       ...kindSections(course, groups, ctx),

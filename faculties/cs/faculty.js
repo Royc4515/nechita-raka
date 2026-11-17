@@ -116,10 +116,12 @@ export default {
   // download: השם שבו הבנייה מפרסמת את קובץ הסריקה (הקישור "קובץ הקורסים" בתוכן מצביע עליו).
   // fileLabel: איך התוכן המשותף קורא לקובץ (במקום {coursesFile} ב-shared/data.js), ו-fileLabelEn באנגלית.
   // categories: הקטגוריות מהידיעון לפי הסדר בדף הקורסים (id נשמר במיפוי, label מוצג; short, לא חובה, הוא הנוסח הקצר לכפתורי הסינון).
+  // lecturers: לא חובה. המיילים של המרצים כפי שהמחלקה מפרסמת אותם בדף הסגל, לפי השם בקטלוג; כרטיס הקורס מציג אותם.
   // officialSource: שם המקור הרשמי של הקטגוריות, כפי שהצ'אט מצטט אותו ("בידיעון מדעי המחשב: שנה א'").
   courses: {
     catalog: `courses/catalog.json`,
     yearbook: `courses/yearbook.json`,
+    lecturers: `courses/lecturers.json`,
     download: `courses-cs-2027.json`,
     fileLabel: `קובץ הקורסים של מדמ"ח`,
     fileLabelEn: `the CS courses file`,
@@ -164,7 +166,7 @@ export default {
       microwaves: { he: `לסטודנטים במדמ"ח הכי קרוב בדרך כלל המיקרוגל בבניין 216, ומי שיש לו גישה למרחב הלמידה של מדמ"ח (503) יכול לחמם במטבחון שם, עם מיקרוגלים נפרדים לבשרי ולחלבי. `, en: `For CS students, the closest microwave is usually in building 216, and anyone with access to the CS learning space (503) can heat food in its kitchenette, which has separate microwaves for meat and dairy. ` },
     },
     order: {
-      guides: [`registration`, `courses`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
+      guides: [`registration`, `courses`, `lecturers`, `lemida-365`, `payments`, `campus`, `bar-gate`, `cs-study-space`, `campus-map`, `shuttle`, `food`, `exams`, `reserves`, `academic-vest`, `help`, `first-week`],
       categories: [`university`, `materials`, `whatsapp`, `courses-a`, `wa-year1-spring`, `wa-years23`, `wa-required-electives`, `wa-electives`, `wa-seminars`, `food`, `food-campus-places`, `food-park100`, `food-ramat-ilan`, `perks`],
     },
   },

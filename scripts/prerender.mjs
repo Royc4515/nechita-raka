@@ -223,6 +223,21 @@ function coursesHtml(courses) {
   return `<section class="course-browser" id="course-browser" aria-label="הקורסים"><ul class="course-static">${rows}</ul></section>`;
 }
 
+/** The lecturers' emails page without scripts: each lecturer with a published email, and their courses. */
+function lecturersHtml(courses) {
+  if (!courses || !courses.courses.length) return "";
+  const byEmail = new Map();
+  for (const c of courses.courses) {
+    for (const contact of c.contacts || []) {
+      const entry = byEmail.get(contact.email) || { ...contact, courses: [] };
+      entry.courses.push(c);
+      byEmail.set(contact.email, entry);
+    }
+  }
+  const rows = [...byEmail.values()].map((l) => `<li class="lec-item"><p class="lec-name">${esc(l.name)}</p><a class="lec-mail" dir="ltr" href="mailto:${esc(l.email)}">${esc(l.email)}</a><p class="lec-courses">${l.courses.map((c) => `<a href="./courses?c=${esc(c.code)}">${esc(c.name)}</a>`).join(" · ")}</p></li>`).join("");
+  return `<section class="course-browser lecturers" id="lecturers" aria-label="המיילים של המרצים"><ul class="lec-list">${rows}</ul></section>`;
+}
+
 /** Same as stepContent() in index.html: a link with `at` wraps that phrase of the step, the others follow as small links. */
 const stepAnchor = (link, content) => (link.guide
   ? `<a class="step-link" href="${guideHref(link.guide)}" title="${esc(link.label)}">${content}</a>`
@@ -271,6 +286,7 @@ function guideViewHtml(guide, items, year, courses = null) {
     guide.map && isSafeUrl(guide.map.url) && isSafeUrl(guide.map.embed)
       ? `<section class="guide-map" aria-label="מפה"><div class="actions">${linkButton({ url: guide.map.url }, guide.map.label || "פתיחה בגוגל מפות")}</div></section>` : "",
     guide.courses ? coursesHtml(courses) : "",
+    guide.lecturers ? lecturersHtml(courses) : "",
     `<p class="steps-progress"><span>אפשר לסמן כל צעד שסיימתם. הסימון נשמר במכשיר הזה.</span></p>`,
     `<ol class="steps">${steps}</ol>`,
     tips,
