@@ -6,9 +6,10 @@ import { FACULTIES, validateFaculty } from "../../faculties/index.js";
 import { browserFaculty } from "../../scripts/faculty-public.mjs";
 
 const { cs, neuro } = FACULTIES;
-const CS_CHIPS = ["מתי מתחילות הבחינות?", "איך משנים קורס באינ-בר?", "שכחתי סיסמה ללמדה", "מה עושים עם מבחן במילואים?", "באיזה חדר ההרצאה בהכנה למדעי המחשב?"];
+// Updated 17.11.2026 for the exam season: the registration and prep-course chips gave way to the lecturer email and degree requirements.
+const CS_CHIPS = ["מתי מתחילות הבחינות?", "מה המייל של המרצה במבוא למדעי המחשב?", "שכחתי סיסמה ללמדה", "מה עושים עם מבחן במילואים?", "מה צריך כדי לסיים את התואר?"];
 
-test("CS keeps the five suggestion chips it always had, in order", () => {
+test("CS has its five suggestion chips, in order", () => {
   assert.deepEqual(cs.chat.suggestions, CS_CHIPS);
   assert.deepEqual(browserFaculty(cs).chat.suggestions, CS_CHIPS);
 });

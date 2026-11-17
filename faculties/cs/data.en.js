@@ -20,7 +20,8 @@ window.SITE_EN = {
     [`מגמת AI ומצוינות`, `AI and excellence track`],
     [`מגמת AI`, `AI track`],
     // The chat's suggestion buttons that only CS has (chat.suggestions).
-    [`באיזה חדר ההרצאה בהכנה למדעי המחשב?`, `Which room is the Preparation for CS lecture in?`],
+    [`מה המייל של המרצה במבוא למדעי המחשב?`, `What's the Intro to CS lecturer's email?`],
+    [`מה צריך כדי לסיים את התואר?`, `What do I need to finish the degree?`],
     // The Shabbat rest's closed page (site.shabbat).
     [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
     [`בשבת גם ביט ובייט מכבים את המסכים, והאתר נח איתם. בלי באגים, בלי דדליינים, בלי "עוד רגע אני מסיים".`, `On Shabbat Bit and Byte switch off their screens too, and the site rests with them. No bugs, no deadlines, no "just one more minute".`],
@@ -66,9 +67,6 @@ window.SITE_EN = {
     [`איך מוצאים בניין וכיתה, איפה המחלקה והמזכירות, ואיך מנווטים בקמפוס הגדול.`, `How to find a building and classroom, where the department and its office are, and how to navigate the big campus.`],
     [`לאן פונים בשאלה אקדמית ולאן בבעיה טכנית.`, `Where to turn with an academic question and where with a technical problem.`],
     [`אתרי האוניברסיטה`, `University sites`],
-    [`מפגש פתיחת שנה של המחלקה`, `Year-opening event at the Department of Computer Science and AI`],
-    [`במרחב הלמידה, בניין 503. אוכל, אנשים, קהילה, ועוד כמה דברים ששווה להגיע בשבילם. צריך להירשם מראש.`, `In the learning space, building 503. Food, people, community, and a few more things worth showing up for. Registration required.`],
-    [`להרשמה למפגש`, `Register for the event`],
     [`בחינה: מבוא למדעי המחשב, מועד א'`, `Exam: Intro to CS, Moed A`],
     [`בחינה: מתמטיקה בדידה, מועד א'`, `Exam: Discrete Math, Moed A`],
     [`בחינה: אלגברה ליניארית 1, מועד א'`, `Exam: Linear Algebra 1, Moed A`],
@@ -91,8 +89,6 @@ window.SITE_EN = {
     [`נסרק מהקטלוג של האוניברסיטה ב-14.10.2026. לא מקור רשמי: מה שקובע הוא אינ-בר.`, `Scanned from the university catalog on 14.10.2026. Not an official source: Inbar decides.`],
     [`פנייה למזכירות תואר ראשון של המחלקה`, `Contact the department's undergraduate office`],
     [`מזכירות מדמ"ח`, `CS office`],
-    [`מפגש פתיחת שנה: 21.10.2026 ב-13:00, מרחב הלמידה (503)`, `Year-opening event at the department: 21.10 at 13:00, the learning space (503)`],
-    [`הרשמה למפגש`, `Register for the event`],
     [`מה עושים כשחסר לי קורס במערכת או שיש חפיפה?`, `What do I do if a course is missing from my schedule or two courses overlap?`],
     [`פונים למחלקה דרך אינ-בר > בקשות ואישורים > פניה למחלקה, או למזכירות תואר ראשון של מדמ"ח: bsc@cs.biu.ac.il. בחפיפה כדאי קודם לבדוק אם אחד הקורסים נפתח גם בשעה אחרת.`, `Contact the department through Inbar > Requests and approvals ("בקשות ואישורים") > Contact the department ("פניה למחלקה"), or the CS undergraduate office: bsc@cs.biu.ac.il. For an overlap, first check whether one of the courses is also offered at another time.`],
     [`אי אפשר להירשם לשני קורסים שהשעות שלהם חופפות. באותה פנייה למחלקה מטפלים גם בקורס חובה מלא, בנקודות זכות ובתנאי קדם. בסוף בודקים באינ-בר, במערכת שעות, שהכול נכון: האחריות להרכבת המערכת היא של הסטודנט.`, `You can't register for two courses whose hours overlap. The same request to the department also covers a full required course, credits and prerequisites. At the end, check your timetable ("מערכת שעות") in Inbar to make sure everything is right: building your schedule is your responsibility.`],
