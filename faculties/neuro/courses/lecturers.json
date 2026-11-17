@@ -1,7 +1,7 @@
 {
   "source": "https://gondabrain.biu.ac.il/faculty",
   "checkedOn": "2026-11-16",
-  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the Gonda faculty page; an entry with its own `source` comes from another department's page (physics, philosophy, math, CS, life sciences, music). Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email.",
+  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the Gonda faculty page; an entry with its own `source` comes from another department's page (physics, philosophy, math, CS, life sciences, music). Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email. Only Bar-Ilan addresses (…biu.ac.il): a personal address a department lists is left out (Roy, 17.11.2026).",
   "lecturers": {
     "אברהם קליין": {
       "email": "avraham.klein@biu.ac.il",
@@ -65,6 +65,11 @@
       "email": "izhar.bar-gad@biu.ac.il",
       "profile": "https://gondabrain.biu.ac.il/node/250"
     },
+    "מיכאל מגרל": {
+      "email": "megereli@math.biu.ac.il",
+      "profile": "https://math.biu.ac.il/node/516",
+      "source": "https://math.biu.ac.il/faculty"
+    },
     "משה בר": {
       "email": "moshe.bar@biu.ac.il",
       "profile": "https://gondabrain.biu.ac.il/bar"
@@ -82,10 +87,6 @@
     "צבי רוט": {
       "email": "zvi.roth@biu.ac.il",
       "profile": "https://gondabrain.biu.ac.il/node/799"
-    },
-    "רפי חדד": {
-      "email": "rafihaddad@gmail.com",
-      "profile": "https://gondabrain.biu.ac.il/node/260"
     }
   }
 }

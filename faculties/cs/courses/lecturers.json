@@ -1,7 +1,7 @@
 {
   "source": "https://cs.biu.ac.il/he/faculty",
   "checkedOn": "2026-11-16",
-  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the CS staff page; an entry with its own `source` comes from another department's page (math, life sciences) or a profile page. Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email.",
+  "note": "Lecturer emails exactly as Bar-Ilan departments publish them on their staff pages. `source` is the CS staff page; an entry with its own `source` comes from another department's page (math, life sciences) or a profile page. Keys are names as the catalog spells them, without the title. Only lecturers who teach a course in catalog.json and have a published email. Only Bar-Ilan addresses (…biu.ac.il): a personal address a department lists is left out (Roy, 17.11.2026).",
   "lecturers": {
     "אורי שחם": {
       "email": "uri.shaham@biu.ac.il",
@@ -69,14 +69,6 @@
       "email": "hadar.frenkel@biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/hadar-frenkel"
     },
-    "טלי קאופמן": {
-      "email": "kaufmant@mit.edu",
-      "profile": "https://cs.biu.ac.il/he/tali-kaufman"
-    },
-    "טליה עדן": {
-      "email": "talyaa01@gmail.com",
-      "profile": "https://cs.biu.ac.il/he/talya-eden"
-    },
     "יהונתן אומן": {
       "email": "aumann@cs.biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/yonatan-aumann"
@@ -142,10 +134,6 @@
     "עידן שורץ": {
       "email": "idan.schwartz@biu.ac.il",
       "profile": "https://cs.biu.ac.il/he/idan-schwartz"
-    },
-    "צבי קופלוביץ": {
-      "email": "kopelot.biu@gmail.com",
-      "profile": "https://cs.biu.ac.il/he/tsvi-kopelowitz"
     },
     "רון אונגר": {
       "email": "ron@biomodel.os.biu.ac.il",

@@ -178,6 +178,8 @@ for (const faculty of Object.values(FACULTIES).filter((f) => f.courses.lecturers
     const used = new Set(withLecturers.courses.flatMap((c) => c.contacts.map((x) => x.email)));
     for (const [name, entry] of Object.entries(file.lecturers)) {
       assert.match(entry.email, /^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/, name);
+      // Only university addresses (Roy, 17.11.2026): a personal address a department lists stays off the site.
+      assert.match(entry.email, /@(?:[\w-]+\.)*biu\.ac\.il$/i, name);
       if (entry.source) assert.match(entry.source, official, name);
       assert.ok(used.has(entry.email), `${name} teaches no course in the catalog`);
     }
