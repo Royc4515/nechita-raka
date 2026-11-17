@@ -20,7 +20,8 @@ window.SITE_EN = {
     [`מגמת AI ומצוינות`, `AI and excellence track`],
     [`מגמת AI`, `AI track`],
     // The chat's suggestion buttons that only CS has (chat.suggestions).
-    [`באיזה חדר ההרצאה בהכנה למדעי המחשב?`, `Which room is the Preparation for CS lecture in?`],
+    [`מה המייל של המרצה במבוא למדעי המחשב?`, `What's the Intro to CS lecturer's email?`],
+    [`מה צריך כדי לסיים את התואר?`, `What do I need to finish the degree?`],
     // The Shabbat rest's closed page (site.shabbat).
     [`גם האתר לוקח מנוחה`, `The site takes a rest too`],
     [`בשבת גם ביט ובייט מכבים את המסכים, והאתר נח איתם. בלי באגים, בלי דדליינים, בלי "עוד רגע אני מסיים".`, `On Shabbat Bit and Byte switch off their screens too, and the site rests with them. No bugs, no deadlines, no "just one more minute".`],

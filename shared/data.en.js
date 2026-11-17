@@ -197,7 +197,6 @@ window.SITE_EN = {
     [`נראה שיש שגיאה בקובץ data.js. כדאי לבדוק את השינוי האחרון שנעשה בו: פסיק חסר, או גרשיים שהמקלדת בטלפון החליפה (‘ ’ או “ ” במקום \`).`, `data.js seems to have an error. Check the last change made to it: a missing comma, or quotes the phone keyboard replaced (‘ ’ or “ ” instead of \`).`],
     [`משהו בקובץ data.js לא בפורמט הנכון, כנראה שדה חסר או ריק. כדאי לבדוק את השינוי האחרון שנעשה בו.`, `Something in data.js isn't in the right format, probably a missing or empty field. Check the last change made to it.`],
     [`מתי מתחילות הבחינות?`, `When do exams start?`],
-    [`איך משנים קורס באינ-בר?`, `How do I change a course in Inbar?`],
     [`שכחתי סיסמה ללמדה`, `I forgot my Lemida password`],
     [`מה עושים עם מבחן במילואים?`, `What if I have an exam during reserve duty?`],
     [`הגעתם ל-15 השאלות של היום. נתראה מחר! בינתיים אפשר לחפש באתר או לשאול את רועי בקבוצה.`, `You've reached today's 15 questions. See you tomorrow! Meanwhile you can search the site or ask Roy in the group.`],

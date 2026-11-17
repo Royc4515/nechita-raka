@@ -12,7 +12,6 @@ window.SITE_EN = {
   ui: [
     // The chat's suggestion buttons (chat.suggestions); the other three are shared.
     [`איך בוחרים מסלול במדעי המוח?`, `How do I choose a track in Brain Sciences?`],
-    [`איך נרשמים לקורסים באינ-בר?`, `How do I register for courses in Inbar?`],
     [`איפה נמצא בניין 901?`, `Where is building 901?`],
     [`איך נרשמים לקורסים של המחלקה השנייה?`, `How do I register for the second department's courses?`],
     [`למי כותבים כשיש שאלה על התוכנית?`, `Who do I write to with a question about the program?`],
