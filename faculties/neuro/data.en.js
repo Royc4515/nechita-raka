@@ -102,6 +102,7 @@ window.SITE_EN = {
     [`נוי ורון הם AI: תאריכים וכללים כדאי לבדוק במקור הרשמי. עד 15 שאלות ביום, והשיחה לא נשמרת בשרת.`, `Noi and Ron are AI: check dates and rules against the official source. Up to 15 questions a day, and the chat isn't saved on the server.`],
   ],
   content: [
+    [`פטור מקורס בחירה (מתשפ"ה): על קורס שנלמד במוסד אקדמי מוכר אחר, עד 2 קורסי בחירה בחד-חוגי ועד 1 בדו-חוגי. מבקשים אישור מראש (לא ניתן בדיעבד), הסילבוס צריך להראות נגיעה ישירה למוח, הציון 80 לפחות, ולא על סמך סמינר או סמינריון.`, `Elective exemption (since 2024-25): for a course taken at another recognized academic institution, up to 2 electives in the single major and 1 in a double major. Ask for approval in advance (not retroactively); the syllabus must relate directly to the brain, the grade must be 80 or more, and a seminar doesn't count.`],
     [`הסמינר השבועי של המרכז, בימי שני: 23.11, 30.11, 14.12, 21.12 ו-4.1. בדף אין שעה וחדר, אז שואלים במשרד אם אפשר להגיע`, `The center's weekly seminar, on Mondays: 23.11, 30.11, 14.12, 21.12 and 4.1. The page has no time or room, so ask the office whether you can attend`],
     [`הסמינר המחלקתי של המרכז לחקר המוח`, `The brain research center's department seminar`],
     [`סדרת "המוח לאן?": מפגשים, סדנאות וסיורים על מה עושים אחרי התואר, באקדמיה, בתעשייה ובקליניקה, עם הבוגרים ו-Brainstorm BIU`, `The "Brain, Where To?" series: meetups, workshops and tours on what comes after the degree, in academia, industry and the clinic, with the alumni and Brainstorm BIU`],
