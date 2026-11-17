@@ -6,20 +6,20 @@ import { FACULTIES } from "../../faculties/index.js";
 const { cs, neuro } = FACULTIES;
 const isCsEvent = (ev) => /^בחינה:/.test(ev.title) || /מפגש פתיחת שנה של המחלקה/.test(ev.title);
 
-test("the shared calendar holds only the university's dates, the CS opening and exams are in the CS file", () => {
+test("the shared calendar holds only the university's dates, the CS exams are in the CS file", () => {
   const shared = readScript("shared/data.js", "SITE_DATA").calendar.events;
   const own = readScript("faculties/cs/data.js", "SITE_DATA").calendar.events;
   assert.equal(shared.filter(isCsEvent).length, 0);
-  assert.equal(own.length, 17);
+  assert.equal(own.length, 16);
   assert.ok(own.every(isCsEvent));
 });
 
-test("CS shows the 17 CS events merged into the shared calendar, sorted by date; neuro shows none of them", () => {
+test("CS shows the 16 CS events merged into the shared calendar, sorted by date; neuro shows none of them", () => {
   const csEvents = loadContent(cs).calendar.events;
   const neuroEvents = loadContent(neuro).calendar.events;
-  assert.equal(csEvents.filter(isCsEvent).length, 17);
+  assert.equal(csEvents.filter(isCsEvent).length, 16);
   assert.equal(neuroEvents.filter(isCsEvent).length, 0);
-  assert.equal(csEvents.length, neuroEvents.length + 17, "the two calendars differ by exactly the CS events");
+  assert.equal(csEvents.length, neuroEvents.length + 16, "the two calendars differ by exactly the CS events");
   for (const events of [csEvents, neuroEvents]) {
     assert.deepEqual(events.map((e) => e.date), events.map((e) => e.date).sort(), "sorted by date");
   }

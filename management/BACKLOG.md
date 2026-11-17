@@ -36,6 +36,11 @@ Columns: S = students, U = urgency, E = effort.
 | Degree-requirements FAQ ("מה צריך כדי לסיים את התואר?") | 4 | 2 | 1 | 8.0 | done 16.11.2026 | Searches "סיום תואר", "ידיעון", "חובות". Sources: cs.biu.ac.il/he/Yedion, /node/317, stuad.biu.ac.il/node/58. |
 | Lecturer emails in each course card | 4 | 3 | 2 | 6.0 | done 16.11.2026 | `faculties/cs/courses/lecturers.json` from cs.biu.ac.il/he/faculty: 33 lecturers matched to the catalog, 112 courses show at least one email. Not covered: TAs (no official list), lecturers from other departments (math), staff with no published email. |
 | Smarter search: question phrasing, two prefix letters, typos and spelling variants; lecturers in the search; the lecturers' emails page | 5 | 3 | 3 | 5.0 | done 16.11.2026 | Roy asked 16.11.2026. Typo matching is a second pass only when nothing matched exactly. Lecturer results link to `./courses?cq=<name>`; "מייל"/"מרצה" alone lead to the `lecturers` guide. |
+| Freshness pass 17.11.2026: registration text after the change period, opening event removed, chat chips for exam season, sources re-verified | 5 | 3 | 2 | 7.5 | done 17.11.2026 | cs-owner (shared + CS) and neuro-owner; links: no 404s, 30 bot-blocks (403), 2 timeouts through the proxy. |
+| Mid-semester catalog rescan (courses/catalog.json is from 14.10.2026; the README calls for one about six weeks in) | 5 | 4 | 3 | 6.7 | open | Both faculties. Diff report to Roy before publishing. |
+| Semester ב' registration dates into the calendar and the registration guide | 5 | 3 | 1 | 15.0 | open, waiting on publication | Not in the calendar PDF or the changes page on 17.11.2026; re-check in December. |
+| Re-add `gonda-registration` to the neuro featured row before semester ב' registration | 3 | 2 | 1 | 6.0 | open | Removed 17.11.2026 after the change period. |
+| `first-week` guide: rename or retire now that the first week is over | 3 | 2 | 1 | 6.0 | open, Roy to decide | A calendar event (11.10) links to it. |
 | Source for the `cs-study-space` guide (check-data warning) | 4 | 1 | 1 | 4.0 | open | No `sources` on the CS learning space guide (building 503, My BLE-ID entry). cs-owner: add the department page or the secretariat's instruction (faculty PR 6g could not invent one). |
 
 ## Neuro
