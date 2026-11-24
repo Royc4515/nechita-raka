@@ -1,0 +1,89 @@
+BEGIN:VEVENT
+UID:neuro-workshop-week-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261204
+SUMMARY:שבוע הסדנאות המעשיות של שנה ג'
+LOCATION:בניין 901
+DESCRIPTION:לרשומים לסדנאות. מקור: משרד התוכני
+ ת למדעי המוח
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:neuro-advanced-degrees-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261130T144500Z
+DTEND:20261130T160000Z
+SUMMARY:ערב חשיפה לתארים מתקדמים במדעי המוח
+DESCRIPTION:לסטודנטים בשנה ג'. שעת הסיום משוערת
+ . מקור: משרד התוכנית למדעי המוח
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:neuro-alumni-panel-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261202T150000Z
+DTEND:20261202T163000Z
+SUMMARY:פאנל בוגרים: מה עושים אחרי התואר?
+DESCRIPTION:לכל הסטודנטים למדעי המוח. שעת הסיו
+ ם משוערת. מקור: משרד התוכנית למדעי המוח
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:neuro-lab-fair-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261124T164500Z
+DTEND:20261124T180000Z
+SUMMARY:יריד המעבדות השנתי ופאנל "איך משתלבי
+ ם במעבדה?"
+LOCATION:בניין 901\, האולם בקומה 1-
+DESCRIPTION:הפאנל לשנה א' וב' בהובלת Brainstorm. הרשמ
+ ה: https://forms.cloud.microsoft/r/whCn7yGGgr. שעת הסיום משוע
+ רת. מקור: משרד התוכנית למדעי המוח
+URL:https://forms.cloud.microsoft/r/whCn7yGGgr
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:gonda-seminar-20261130@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261130T120000Z
+DTEND:20261130T133000Z
+SUMMARY:הסמינר השבועי של המרכז לחקר המוח
+LOCATION:בניין 901\, קומה 1\, חדר 101
+DESCRIPTION:שעת הסיום משוערת. מקור: gondabrain.biu.ac.il/
+ node/578
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:gonda-seminar-20261214@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261214T120000Z
+DTEND:20261214T133000Z
+SUMMARY:הסמינר השבועי של המרכז לחקר המוח
+LOCATION:בניין 901\, קומה 1\, חדר 101
+DESCRIPTION:שעת הסיום משוערת. מקור: gondabrain.biu.ac.il/
+ node/578
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:gonda-seminar-20261221@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261221T120000Z
+DTEND:20261221T133000Z
+SUMMARY:הסמינר השבועי של המרכז לחקר המוח
+LOCATION:בניין 901\, קומה 1\, חדר 101
+DESCRIPTION:שעת הסיום משוערת. מקור: gondabrain.biu.ac.il/
+ node/578
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:gonda-seminar-20270104@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20270104T120000Z
+DTEND:20270104T133000Z
+SUMMARY:הסמינר השבועי של המרכז לחקר המוח
+LOCATION:בניין 901\, קומה 1\, חדר 101
+DESCRIPTION:שעת הסיום משוערת. מקור: gondabrain.biu.ac.il/
+ node/578
+TRANSP:OPAQUE
+END:VEVENT

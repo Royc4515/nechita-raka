@@ -190,3 +190,17 @@ DESCRIPTION:שעת הסיום משוערת. מקור: לוח הבחינות
  ני הבחינה.
 TRANSP:OPAQUE
 END:VEVENT
+BEGIN:VEVENT
+UID:cs-nvidia-20261124@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261124T160000Z
+DTEND:20261124T180000Z
+SUMMARY:NVIDIA בבר-אילן: הרצאה ופאנל\, פתיחת מצעד
+  החברות המובילות
+LOCATION:בניין מוזיקה 1005\, אודיטוריום 001
+DESCRIPTION:מתואר ראשון ועד דוקטורט\, מספר המקו
+ מות מוגבל. הרשמה: https://wkf.ms/4ijIvZZ. שעת הסיום 
+ משוערת.
+URL:https://wkf.ms/4ijIvZZ
+TRANSP:OPAQUE
+END:VEVENT
