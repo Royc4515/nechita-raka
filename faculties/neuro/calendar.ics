@@ -1,0 +1,31 @@
+BEGIN:VEVENT
+UID:neuro-workshop-week-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261204
+SUMMARY:שבוע הסדנאות המעשיות של שנה ג'
+LOCATION:בניין 901
+DESCRIPTION:לרשומים לסדנאות. מקור: משרד התוכני
+ ת למדעי המוח
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:neuro-advanced-degrees-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261130T144500Z
+DTEND:20261130T160000Z
+SUMMARY:ערב חשיפה לתארים מתקדמים במדעי המוח
+DESCRIPTION:לסטודנטים בשנה ג'. שעת הסיום משוערת
+ . מקור: משרד התוכנית למדעי המוח
+TRANSP:OPAQUE
+END:VEVENT
+BEGIN:VEVENT
+UID:neuro-alumni-panel-2026@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART:20261202T150000Z
+DTEND:20261202T163000Z
+SUMMARY:פאנל בוגרים: מה עושים אחרי התואר?
+DESCRIPTION:לכל הסטודנטים למדעי המוח. שעת הסיו
+ ם משוערת. מקור: משרד התוכנית למדעי המוח
+TRANSP:OPAQUE
+END:VEVENT

@@ -259,3 +259,26 @@ DESCRIPTION:עד 100% משכר הלימוד השנתי. הסכום מתעד
  מצעי תשלום\, biu.ac.il
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:efod-last-weeks-a-20261220@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART;VALUE=DATE:20261220
+DTEND;VALUE=DATE:20261221
+SUMMARY:מתחילים ארבעת השבועות האחרונים של סמ
+ סטר א'
+DESCRIPTION:14 ימי מילואים ברצף מכאן ועד סוף הבח
+ ינות מזכים בהארכת זמן. מקור: מתווה אפוד א
+ קדמי תשפ"ז\, dean.biu.ac.il/efod-academi
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:efod-inbar-update-20261231@{uidDomain}
+DTSTAMP:20261124T120000Z
+DTSTART;VALUE=DATE:20261231
+DTEND;VALUE=DATE:20270101
+SUMMARY:ההתאמות האישיות של האפוד האקדמי מתעד
+ כנות באינ-בר
+DESCRIPTION:עד סוף דצמבר\, לפי הנתונים מהצבא. מק
+ ור: מייל דיקן הסטודנטים מ-23.11.2026
+TRANSP:TRANSPARENT
+END:VEVENT

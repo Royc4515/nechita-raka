@@ -19,7 +19,8 @@ test("CS shows the 16 CS events merged into the shared calendar, sorted by date;
   const neuroEvents = loadContent(neuro).calendar.events;
   assert.equal(csEvents.filter(isCsEvent).length, 16);
   assert.equal(neuroEvents.filter(isCsEvent).length, 0);
-  assert.equal(csEvents.length, neuroEvents.length + 16, "the two calendars differ by exactly the CS events");
+  const neuroOwn = readScript("faculties/neuro/data.js", "SITE_DATA").calendar?.events.length || 0;
+  assert.equal(csEvents.length, neuroEvents.length - neuroOwn + 16, "the two calendars differ by exactly the faculties' own events");
   for (const events of [csEvents, neuroEvents]) {
     assert.deepEqual(events.map((e) => e.date), events.map((e) => e.date).sort(), "sorted by date");
   }
