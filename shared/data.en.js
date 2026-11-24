@@ -1083,5 +1083,6 @@ window.SITE_EN = {
     [`14 ימי מילואים ברצף מכאן ועד סוף הבחינות מזכים בהארכת זמן`, `14 consecutive reserve days from here to the end of exams entitle you to extra time`],
     [`ההתאמות האישיות של האפוד האקדמי מתעדכנות באינ-בר`, `Personal Academic Vest adjustments are updated in Inbar`],
     [`עד סוף דצמבר, לפי הנתונים מהצבא`, `By the end of December, based on data from the army`],
+    [`הרשמה`, `Registration`],
   ],
 };

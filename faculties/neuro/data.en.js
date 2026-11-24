@@ -450,5 +450,9 @@ window.SITE_EN = {
     [`לסטודנטים בשנה ג'`, `For third-year students`],
     [`פאנל בוגרים: מה עושים אחרי התואר?`, `Alumni panel: what comes after the degree?`],
     [`לכל הסטודנטים למדעי המוח`, `For all brain sciences students`],
+    [`יריד המעבדות השנתי ופאנל "איך משתלבים במעבדה?"`, `The annual lab fair and the panel "How do you join a lab?"`],
+    [`הפאנל לשנה א' וב' בהובלת Brainstorm, באולם בקומה 1-. ביריד מציגים את המעבדות של המרכז`, `The panel is for first- and second-year students, led by Brainstorm, in the hall on floor -1. At the fair, the center's labs present themselves`],
+    [`הסמינר השבועי של המרכז לחקר המוח`, `The brain research center's weekly seminar`],
+    [`בניין 901, קומה 1, חדר 101`, `Building 901, floor 1, room 101`],
   ],
 };

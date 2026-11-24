@@ -250,5 +250,7 @@ window.SITE_EN = {
     [`טופס חונכות מילואים תשפ"ז`, `Reservist tutoring form 2026-27`],
     [`הקורס "חזית המחקר" נחשב לקורסי הבחירה?`, `Does the "Research Frontier" course count toward electives?`],
     [`לא לנקודות. "חזית המחקר במדעי המחשב" (89-390) יכול להיחשב כאחד מקורסי התוכן באנגלית שנדרשים לתואר, אבל הוא נלמד מעבר למכסת הנקודות. נרשמים אליו באשכול קורסי הבחירה, ובכל זאת צריך להשלים 10 נ"ז בקורסי בחירה בלעדיו.`, `Not for credits. "Research Frontier in Computer Science" ("חזית המחקר במדעי המחשב", 89-390) can count as one of the English-taught content courses the degree requires, but it is taken beyond the required credits. You register for it in the electives cluster, yet you still need 10 elective credits without it.`],
+    [`NVIDIA בבר-אילן: הרצאה ופאנל, פתיחת מצעד החברות המובילות`, `NVIDIA at Bar-Ilan: talk and panel, opening the leading-companies series`],
+    [`בניין מוזיקה 1005, אודיטוריום 001. מתואר ראשון ועד דוקטורט, מספר המקומות מוגבל`, `Music building 1005, auditorium 001. For bachelor's to PhD students, limited places`],
   ],
 };
