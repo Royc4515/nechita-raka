@@ -2,7 +2,7 @@
   "name": "nechita-raka",
   "private": true,
   "type": "module",
-  "description": "Student hub for first-year CS students at Bar-Ilan, with the Bit and Byte chat",
+  "description": "Student hub for first-year Computer Science and Brain Sciences students at Bar-Ilan University, with an AI chat per faculty",
   "scripts": {
     "check": "node scripts/check-data.mjs",
     "test": "node --test \"api/_tests/*.test.js\"",

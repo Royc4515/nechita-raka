@@ -42,7 +42,7 @@ Every message carries the whole system prompt, about 8,000 characters of Hebrew,
 
 ## Running the API locally
 
-The `api/` functions are Vercel functions (Web-standard `POST` handlers listed in `vercel.json`); nothing in the repo serves them, and `python -m http.server` from the README serves only the static files. Locally they run through the Vercel CLI, which emulates the platform:
+The `api/` functions are Vercel functions (Web-standard `POST` handlers listed in `vercel.json`); nothing in the repo serves them, and the local server in docs/EDITING.md serves only the static files. Locally they run through the Vercel CLI, which emulates the platform:
 
 1. `npx vercel link` once, choosing the nechita-raka project (writes `.vercel/`, which is gitignored).
 2. Give the **Development** environment in Vercel the same five variables as Preview above (tick Development next to Preview when creating them). `vercel dev` downloads Development variables by itself; they must never be the production values.
