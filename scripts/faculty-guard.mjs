@@ -1,4 +1,4 @@
-// The faculty guard: a public/ built for one faculty holds nothing of another faculty (MULTI-FACULTY-PLAN.md D2, D10).
+// The faculty guard: a public/ built for one faculty holds nothing of another faculty (docs/MULTI-FACULTY-PLAN.md D2, D10).
 // It works like the WhatsApp guard in build-public.mjs: after the build, every published file is checked and one
 // hit fails the build, so a Vercel project with the wrong FACULTY, or a script that still imports faculties/cs/
 // directly, can never ship the other faculty's manifest, images, names or addresses.

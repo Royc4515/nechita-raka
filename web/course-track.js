@@ -1,5 +1,5 @@
 /*
-  The study track a student picked, for faculties whose manifest has tracks (faculty.js, MULTI-FACULTY-PLAN.md D9):
+  The study track a student picked, for faculties whose manifest has tracks (faculty.js, docs/MULTI-FACULTY-PLAN.md D9):
   remembered in this browser like the theme (localStorage, never sent anywhere but the chat request), read by
   the courses page (course-browser.js) and the chat (chat.js). Storage can be blocked (private mode), so every
   read and write is guarded: the page then works for the visit, just unsaved, and never nags about choosing.

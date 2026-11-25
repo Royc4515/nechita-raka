@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 15.10.2026 by the orchestrator, from [MULTI-FACULTY-PLAN.md](../MULTI-FACULTY-PLAN.md) and [MANAGEMENT-PLAN.md](../MANAGEMENT-PLAN.md). The academic year תשפ"ז started on 12.10.2026 (change period 14.10 to 28.10).
+Updated 15.10.2026 by the orchestrator, from [docs/MULTI-FACULTY-PLAN.md](../docs/MULTI-FACULTY-PLAN.md) and [docs/MANAGEMENT-PLAN.md](../docs/MANAGEMENT-PLAN.md). The academic year תשפ"ז started on 12.10.2026 (change period 14.10 to 28.10).
 
 ## Now (October to December 2026)
 

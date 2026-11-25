@@ -1,353 +1,212 @@
-# נחיתה רכה - מדמ"ח בר אילן
+# נחיתה רכה (Soft Landing)
 
-מרכז מידע קטן לסטודנטים בשנה א' במדעי המחשב באוניברסיטת בר אילן: קישורים חשובים, קבוצות וואטסאפ, לוח השנה האקדמי ותשובות לשאלות נפוצות.
+**One student hub per faculty for first-year students at Bar-Ilan University: links, WhatsApp groups, guides, the academic calendar, a course browser and an AI chat with its own mascots.**
 
-נבנה על ידי רועי כרמלי, תשפ"ז.
+[![Check](https://github.com/Royc4515/nechita-raka/actions/workflows/check-data.yml/badge.svg)](https://github.com/Royc4515/nechita-raka/actions/workflows/check-data.yml)
+[![Deploy](https://github.com/Royc4515/nechita-raka/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/Royc4515/nechita-raka/actions/workflows/deploy.yml)
+[![Node.js 22](https://img.shields.io/badge/node-22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CS site](https://img.shields.io/website?url=https%3A%2F%2Fnechita-raka.vercel.app&label=CS%20site&logo=vercel)](https://nechita-raka.vercel.app)
+[![Brain Sciences site](https://img.shields.io/website?url=https%3A%2F%2Fnechita-raka-neuro.vercel.app&label=neuro%20site&logo=vercel)](https://nechita-raka-neuro.vercel.app)
+[![Last commit](https://img.shields.io/github/last-commit/Royc4515/nechita-raka)](https://github.com/Royc4515/nechita-raka/commits/main)
 
-אתר עצמאי, יוזמה של סטודנט. אינו אתר רשמי של אוניברסיטת בר אילן או של אגודת הסטודנטים.
+| Computer Science | Brain Sciences |
+| :---: | :---: |
+| <img src="docs/assets/cs-desktop.jpg" alt="The Computer Science site on a desktop: header, important notices and the parachuting student illustration" width="420"> | <img src="docs/assets/neuro-desktop.jpg" alt="The Brain Sciences site on a desktop: purple theme, important notices and the brain illustration" width="420"> |
+| <img src="docs/assets/cs-phone.jpg" alt="The Computer Science site on a phone in dark mode, with the bottom navigation and a mascot peeking from the corner" width="200"> | <img src="docs/assets/neuro-phone.jpg" alt="The Brain Sciences site on a phone in dark mode, with the bottom navigation and a mascot peeking from the corner" width="200"> |
 
-## הקבצים
+**Live:** [Computer Science](https://nechita-raka.vercel.app) · [Brain Sciences](https://nechita-raka-neuro.vercel.app)
 
-| קובץ | מה יש בו |
-|---|---|
-| `shared/data.js` | **התוכן המשותף לכל בר-אילן**: רישום, תשלומים, קמפוס, בחינות, מילואים, האוכל, לוח השנה והשאלות הכלליות. |
-| `faculties/cs/data.js` | **התוכן של מדעי המחשב**: מדריך הקורסים, מרחב הלמידה, חומרי הלימוד, קבוצות הוואטסאפ, שורת "הכי שימושי", פרטי החונך והשאלות של המחלקה. הבנייה מאחדת את שני הקבצים ל-`public/data.js`. ראו "שני קבצי התוכן" למטה. |
-| `index.html` | הדף עצמו (עיצוב וקוד). לא צריך לגעת בו כדי לעדכן תוכן. |
-| `shared/data.en.js`, `faculties/cs/data.en.js` | האנגלית של האתר (כפתור EN למעלה), לכל קובץ תוכן הקובץ שלו. ראו "אנגלית" למטה. |
-| `shared/calendar.ics`, `faculties/<id>/calendar.ics` | קובצי היומן (נבנים ל-`biu-5787.ics`) עם כל התאריכים. |
-| `faculties/cs/faculty.js` | **הפקולטה**: שם האתר והכותרת, צבעי ההדגשה, שני הקמעים (שמות, ברכות, משפטי הבועה, ההנחיות למודל), חלון הטרמינל שבראש הדף, הקטגוריות של הקורסים, מילים נרדפות לחיפוש וביצי פסחא. ראו "פקולטות" למטה. |
-| `faculties/cs/courses/` | **קובצי הקורסים**: `catalog.json` (הסריקה של קטלוג הקורסים: קבוצות, שעות, חדרים, מרצים, מועדי בחינות) ו-`yearbook.json` (המיפוי מהידיעון: איזה קורס שייך לאיזו שנה או אשכול). מהם נבנים דף הקורסים, החיפוש והצ'אט, והבנייה מפרסמת את הסריקה כ-`courses-cs-2027.json`. איך ומתי סורקים: `faculties/cs/courses/README.md`. |
-| `icons/` | האייקונים להוספה למסך הבית (`manifest.webmanifest` נוצר בבנייה מ-`faculty.js`). |
-| `track.js` | סופר צפיות בעמודים, לחיצות על קישורים, מקור ההגעה ומה חיפשו באתר, בשביל לוח הבקרה. בלי עוגיות ובלי שום מזהה של המבקר. |
-| `admin.html`, `admin.js` | לוח הבקרה ב-`/admin` (ראו למטה). |
-| `chat.js`, `chat.css`, `peek.js` | הצ'אט של ביט ובייט: הדמות שמציצה מהפינה, וחלון הצ'אט שנטען רק כשפותחים אותו. |
-| `api/` | השרת של הצ'אט (פונקציה ב-Vercel) והבדיקות שלו. |
-| `scripts/build-public.mjs` | מעתיק ל-`public/` רק את הקבצים שהדפדפן צריך. Vercel מגיש רק את `public/`, כך שקוד השרת לא חשוף. קובץ חדש שהדף משתמש בו צריך להיכנס לרשימה שם. הוא גם מסתיר את קישורי הוואטסאפ (`chat.whatsapp.com`) מכל קובץ שמתפרסם, כדי שבוטים שסורקים אתרים לא ימצאו את הקבוצות. סטודנטים רואים אותם כרגיל, בקבצי התוכן הם נשארים רגילים לעריכה, והבנייה נכשלת אם קישור כזה מופיע בקובץ מפורסם. |
-| `scripts/prerender.mjs` | כותב את התוכן (שני קבצי ה-`data.js`, מאוחדים) לתוך ה-HTML בזמן הבנייה, ויוצר עמוד לכל מדריך, `sitemap.xml` ו-`llms.txt`. ככה גוגל, בינג, מנועי AI והתצוגה המקדימה בוואטסאפ רואים את כל התוכן גם בלי JavaScript. ראו "חיפוש בגוגל ובמנועי AI" למטה. |
-| `redirect/` | הדף שנשאר בכתובת הישנה ב-GitHub Pages ומעביר לכתובת החדשה. |
-| `robots.txt` | מתיר לכל מנועי החיפוש ולעוזרי ה-AI לסרוק את האתר, חוץ מהשרת של הצ'אט (`/api/`). |
+An independent student initiative. Not an official site of Bar-Ilan University or the student union.
 
-## איך מעדכנים מהטלפון
+## Contents
 
-1. באתר של GitHub פותחים את קובץ התוכן ולוחצים על העיפרון (Edit): `shared/data.js` למשהו שנכון לכל בר-אילן (רישום, תשלומים, קמפוס, בחינות, לוח השנה), או `faculties/cs/data.js` למשהו של מדעי המחשב (קורסים, קבוצות וואטסאפ, המזכירות, "הכי שימושי").
-2. עורכים, ולמטה לוחצים **Commit changes**.
-3. אחרי דקה או שתיים האתר מתעדכן ב-https://nechita-raka.vercel.app, אם הבדיקה האוטומטית עברה (למטה). אם הדפדפן עדיין מציג את הגרסה הקודמת, מרעננים.
+- [About](#about)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+- [Editing content](#editing-content)
+- [Known limitations and roadmap](#known-limitations-and-roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
-כמה כללים כדי שלא יישבר:
+## About
 
-- כל טקסט נכתב בין גרשיים הפוכים: `` `כך` ``. בתוכם אפשר לכתוב `"` ו-`'` בחופשיות (למשל `` `מדמ"ח` `` או `` `שנה א'` ``).
-- אחרי כל שדה ואחרי כל `}` של פריט יש פסיק.
-- קישורים חייבים להתחיל ב-`https://`. פריט עם קישור אחר לא יוצג.
-- תאריכים בפורמט שנה-חודש-יום: `` `2027-03-01` ``.
+**The problem.** A first-year student at Bar-Ilan needs a dozen official systems, a long academic calendar, a course catalog that is hard to search, and WhatsApp groups that are passed around by word of mouth. The answers exist, but they are scattered.
 
-אם משהו נשבר (חסר פסיק או גרש), הבדיקה האוטומטית (למטה) תגיד באיזה קובץ ובאיזו שורה, והאתר לא יתעדכן. מספיק לתקן או לבטל את השינוי האחרון.
+**The solution.** One fast, Hebrew-first page per faculty that collects all of it, keeps it current from official sources, and answers questions in a chat that only uses that content.
 
-## שני קבצי התוכן
+Key features:
 
-התוכן מחולק לשניים כדי שאותו קוד ישמש גם פקולטות אחרות (ראו "פקולטות" למטה): `shared/data.js` לכל מה שנכון לכל סטודנט בבר-אילן, ו-`faculties/cs/data.js` למה שנכון רק במדעי המחשב. שניהם באותו פורמט, והבנייה מאחדת אותם לקובץ אחד, `public/data.js`, שהדף קורא. כמה כללים:
+- **Links, groups and guides**: categorized links, step-by-step guides with their own pages, and an FAQ, all with sources.
+- **Course browser**: search the faculty's course catalog by year, semester, day and track, build a weekly schedule, export it to a calendar, or hand it to an AI assistant with a ready prompt.
+- **Academic calendar**: upcoming dates on the page and a downloadable `.ics` file with the university's and the faculty's dates.
+- **AI chat**: two mascots per faculty (ביט ובייט for CS, נוי ורון for Brain Sciences) answer from the site's content only, with daily rate limits, a prompt-guard model and answer checks.
+- **Search**: ranked instant search with faculty synonyms (`Ctrl K`).
+- **English mode, dark mode, installable**: a full English toggle, light and dark themes, and a PWA manifest for the home screen.
+- **Search engines and AI crawlers**: every page is prerendered with JSON-LD, plus `sitemap.xml` and `llms.txt`.
+- **Respectful by design**: no tracking cookies, no stored IP addresses or chat text; WhatsApp links are hidden from scrapers in every published file. The site closes itself for Shabbat and changes its look on holidays and memorial days.
+- **Private dashboard**: anonymous daily counters, searches that found nothing, Google Search Console data and a weekly email, behind Google sign-in.
 
-- **הסדר בדף** של המדריכים והקטגוריות נקבע ברשימה `content.order` ב-`faculties/cs/faculty.js`, לא לפי הסדר בקבצים. מדריך או קטגוריה חדשים מוסיפים גם לרשימה הזאת, אחרת הבנייה נכשלת (כדי שלא ייעלמו בשקט).
-- **מדריך של הפקולטה עם id של מדריך משותף** (למשל `help` ו-`campus-map`) מחליף את הגרסה המשותפת כולה. ככה מדמ"ח מוסיפה את המזכירות ואת הבניינים שלה בלי לגעת בקובץ המשותף.
-- **שורת "הכי שימושי" (`featured`) והבלוק `site`** (רועי, שנת הלימודים, הוואטסאפ של החונך) נמצאים רק בקובץ הפקולטה.
-- **תאריכים** של הפקולטה אפשר להוסיף גם ב-`calendar: { events: [...] }` בקובץ הפקולטה; הם משתלבים לפי התאריך בין התאריכים המשותפים.
-- **שאלה של הפקולטה** מופיעה בסוף רשימת השאלות, אלא אם כותבים לה `after` (או `before`) עם הנוסח המדויק של השאלה המשותפת שאחריה (או לפניה) היא צריכה להופיע.
-- **טקסט משותף שמזכיר את הפקולטה** כותבים עם `{mascots}` (שמות שני הקמעים, "ביט ובייט") ו-`{coursesFile}` (איך קוראים לקובץ הקורסים, `courses.fileLabel` ב-`faculty.js`); הבנייה ממלאת אותם מהמניפסט, בעברית ובאנגלית.
+## Tech stack
 
-## הודעה חשובה בראש הדף
+| Layer | Technology |
+| --- | --- |
+| Frontend | Vanilla HTML, CSS and JavaScript (ES modules), no framework or bundler |
+| Build | Node.js 22 scripts: content check, prerender, static output in `public/` |
+| Backend | [Vercel Functions](https://vercel.com/docs/functions) (`api/`), region `fra1`, two daily [cron jobs](https://vercel.com/docs/cron-jobs) |
+| Database | [Neon](https://neon.tech/) serverless Postgres ([`@neondatabase/serverless`](https://www.npmjs.com/package/@neondatabase/serverless)) |
+| AI | [Groq](https://console.groq.com/) models for answers and a prompt guard |
+| Auth | Google sign-in, sessions signed with [`jose`](https://www.npmjs.com/package/jose) |
+| Integrations | Google Search Console through Workload Identity ([`google-auth-library`](https://www.npmjs.com/package/google-auth-library), [`@vercel/oidc`](https://www.npmjs.com/package/@vercel/oidc)), [Resend](https://resend.com/) for email |
+| Tests and CI | Node's built-in test runner, GitHub Actions per faculty |
+| Hosting | Vercel (one project per faculty); GitHub Pages serves only a redirect for old links |
 
-מוסיפים בלוק לרשימה `notices` בראש `shared/data.js` (לכל האתרים) או בראש `faculties/<id>/data.js` (לפקולטה אחת):
+## Architecture
 
-```js
-{
-  id: `labfinder`,                        // באנגלית, בלי רווחים. גם הכתובת: /notice-labfinder
-  from: `2026-11-24`,                     // מאיזה יום מוצגת
-  until: `2026-12-08`,                    // עד איזה יום (כולל). ברירת מחדל: שבועיים
-  title: `חדש: LabFinder`,               // השורה הבולטת
-  text: `משפט או שניים.`,
-  guide: `gonda-building`,               // לא חובה: כפתור "לכל הפרטים" למדריך
-  link: { label: `ל-LabFinder`, url: `https://...` },  // לא חובה
-  share: `נוסח לשיתוף בוואטסאפ`,           // לא חובה. בלי זה נשלחים 📢, הכותרת והטקסט, ואחריהם "לכל הפרטים:" והקישור
-},
+```mermaid
+flowchart LR
+  subgraph Content["Content (edited in Git)"]
+    S["shared/<br/>data.js, data.en.js, calendar.ics"]
+    F["faculties/{id}/<br/>data.js, faculty.js,<br/>courses/*.json, images"]
+  end
+  subgraph Build["npm run build (FACULTY=cs or neuro)"]
+    C["check-data.mjs<br/>content validation"]
+    T["api/_tests<br/>node --test"]
+    P["build-public.mjs<br/>+ prerender.mjs"]
+  end
+  W["web/<br/>page template, scripts, styles"]
+  subgraph Vercel["Vercel, one project per faculty"]
+    PUB["public/<br/>static pages, sitemap, llms.txt"]
+    API["api/<br/>chat, track, admin, cron"]
+  end
+  DB[("Neon Postgres")]
+  LLM["Groq"]
+  EXT["Search Console, Resend"]
+  GH["GitHub Pages<br/>redirect only"]
+
+  S --> C
+  F --> C
+  C --> T --> P --> PUB
+  W --> P
+  S -. bundled .-> API
+  F -. bundled .-> API
+  PUB -- "fetch /api/*" --> API
+  API --> DB
+  API --> LLM
+  API --> EXT
+  GH -- "old links" --> PUB
 ```
 
-ההודעה מופיעה מתחת לשם האתר, החדשה ראשונה (שלוש במלואן והשאר מקופלות), ונעלמת לבד אחרי `until`. בכל הודעה יש כפתור שיתוף ששולח את `/notice-<id>`: עמוד הבית עם ההודעה בראשו, ותצוגה מקדימה בוואטסאפ עם הכותרת, הטקסט ותמונה משלה. את התמונות מייצרים במחשב עם `node scripts/notice-images.mjs` (צריך Playwright), והן נשמרות ב-`faculties/<id>/notices/` ונכנסות ל-git. בלי תמונה מופיעה התמונה הרגילה של האתר, ו-`npm run check` מזהיר.
+- **One codebase, many faculties.** The `FACULTY` environment variable picks a manifest ([`faculties/index.js`](faculties/index.js)). Everything that differs between faculties (name, colors, mascots, hero, course categories, tracks, search synonyms) lives in `faculties/<id>/faculty.js`. Shared Bar-Ilan content is merged with the faculty's own by [`faculties/content.js`](faculties/content.js).
+- **Build.** [`scripts/check-data.mjs`](scripts/check-data.mjs) validates the content, the test suite runs, then [`scripts/build-public.mjs`](scripts/build-public.mjs) copies [`web/`](web/) flat into `public/` and [`scripts/prerender.mjs`](scripts/prerender.mjs) writes the content into the HTML, one page per guide and notice. Guards fail the build if a WhatsApp link or another faculty's data reaches `public/`.
+- **Server.** Thin handlers in [`api/`](api/) call the logic in [`api/_lib/`](api/_lib/): the chat ([`chat/handler.js`](api/_lib/chat/handler.js): retrieval over the content, rate limiter, guard, answer checks), anonymous counters ([`stats/`](api/_lib/stats/)), the dashboard ([`admin/`](api/_lib/admin/)) and the Search Console sync ([`search/`](api/_lib/search/)).
+- **Deploy.** Vercel builds each faculty with `npm run build` ([`vercel.json`](vercel.json)). GitHub Actions run the same build for both faculties on every branch ([`check-data.yml`](.github/workflows/check-data.yml)) and publish the [`redirect/`](redirect/) page to GitHub Pages from `main` ([`deploy.yml`](.github/workflows/deploy.yml)).
 
-## הוספת פריט
+## Project structure
 
-מוסיפים בלוק לתוך `items` של הקטגוריה המתאימה:
-
-```js
-{
-  id: `wa-data-structures`,                 // מזהה באנגלית, ייחודי, בלי רווחים
-  desc: `מבני נתונים`,                       // מה עושים בזה, בשפה פשוטה. מופיע ראשון ובגדול
-  name: `קבוצת וואטסאפ של הקורס`,            // השם הרשמי. מופיע מתחת
-  url: `https://chat.whatsapp.com/XXXXXXXX`,
-  keywords: [`מבני נתונים`, `whatsapp`],    // מילים נוספות שהחיפוש ימצא. לא חובה
-},
+```text
+.
+├── web/                  Browser source, published flat to public/
+│   ├── index.html        Page template (markup, styles, page script)
+│   ├── chat.js, peek.js  The chat panel and the peeking mascot
+│   ├── course-*.js       The courses page: browser, schedule, calendar export, AI prompt
+│   ├── shabbat*.js       Shabbat times and the Shabbat rest screen
+│   ├── track.js          Anonymous page-view and click counters
+│   ├── admin.html/.js    The private dashboard (/admin)
+│   └── icons/            Shared app icons
+├── shared/               Bar-Ilan content shared by every faculty (Hebrew, English, calendar)
+├── faculties/
+│   ├── index.js          Faculty registry and manifest validation
+│   ├── content.js        Merges shared and faculty content
+│   ├── cs/               Computer Science: manifest, content, courses, mascots, images
+│   └── neuro/            Brain Sciences: same shape, plus catalog tools
+├── api/                  Vercel Functions
+│   ├── _lib/             Chat, stats, admin, search and course logic
+│   └── _tests/           Test suite (node --test)
+├── scripts/              Build, prerender, content check, simulations, review tier
+├── docs/                 Editing manual (Hebrew), plans, audit, screenshots
+├── management/           Working memory of the AI agent team: roadmap, backlog, decisions, reviews
+├── redirect/             GitHub Pages page that forwards old links
+├── .claude/              Role agents and the /board skill
+└── vercel.json           Build, functions, crons and headers
 ```
 
-אפשר להוסיף גם `note` עם הערה קצרה שתופיע בתוך הכרטיס (כמו התנאים של Gemini).
+## Getting started
 
-כדי שפריט יופיע גם בשורת "הכי שימושי", מוסיפים את ה-`id` שלו לרשימה `featured` בראש הקובץ.
+### Prerequisites
 
-## הוספת קטגוריה
+- [Node.js](https://nodejs.org/) 22 and npm
+- Python 3 (optional, only for the quick local server below)
 
-מוסיפים בלוק לרשימה `categories`, במקום שבו רוצים שהיא תופיע בדף:
-
-```js
-{
-  id: `courses-b`,
-  title: `קבוצות הקורסים של סמסטר ב'`,
-  items: [
-    {
-      id: `wa-data-structures`,
-      desc: `מבני נתונים`,
-      name: `קבוצת וואטסאפ של הקורס`,
-      url: `https://chat.whatsapp.com/XXXXXXXX`,
-    },
-  ],
-},
-```
-
-קטגוריה ארוכה (למשל רשימת מסעדות) אפשר לכווץ עם `collapsed: true`. היא תופיע בדף כשורה אחת עם מספר הפריטים, ותיפתח בלחיצה. בחיפוש היא נפתחת לבד כשיש בה תוצאה.
-
-## הוספת תאריך
-
-מוסיפים שורה לרשימה `calendar.events`. הסדר לא משנה, הדף ממיין לפי תאריך.
-
-```js
-{ date: `2027-01-05`, title: `מועד הגשת פרויקט במבוא` },
-{ date: `2027-02-10`, until: `2027-02-12`, title: `סדנת הכנה לבחינות`, note: `הערה קצרה` },
-{ date: `2027-01-20`, time: `10:00`, title: `פתיחת רישום לסמסטר ב'` },
-```
-
-- `until` רק לתקופות של כמה ימים.
-- `time` ו-`note` לא חובה.
-- `kind: \`birthday\`` (לא חובה): מעצב את האירוע כיום הולדת, עם עוגה משלו בפס השנה. `celebrate` (לא חובה): היום שבו מופיעה בכרטיס העליון חגיגה עם קונפטי וכפתור "שלחו מזל טוב". ברירת המחדל היא תאריך האירוע, ואפשר להזיז אותו כשהיום חל, למשל, בצום.
-- `guide` (לא חובה): מזהה של מדריך. ליד התאריך יופיע "איך עושים את זה", ובזמן שהתקופה פתוחה המדריך יקבל תווית "פתוח עכשיו".
-- `link` (לא חובה): כפתור לקישור חיצוני, למשל טופס הרשמה: `` link: { label: `להרשמה למפגש`, url: `https://...` } ``. הכפתור מופיע עד שהאירוע עובר.
-
-הפס הגרפי בראש הדף (סמסטרים ובחינות, ו"שבוע X") נבנה מהרשימה `calendar.terms`. בתחילת שנה חדשה מעדכנים שם את התאריכים.
-
-שימו לב: קובץ היומן `biu-5787.ics` לא מתעדכן לבד. תאריך שנוסף ל-`shared/data.js` יופיע בציר הזמן באתר, אבל לא בקובץ שמורידים ליומן. הבדיקה האוטומטית (למטה) מזהירה כשתאריך חסר ביומן.
-
-## הוספת מדריך
-
-כל מדריך נפתח בעמוד משלו, בכתובת שאפשר לשלוח בקבוצה: `https://nechita-raka.vercel.app/registration` (סוף הכתובת הוא ה-`id`). קישורים ישנים בצורה `/#guide-registration` ממשיכים לעבוד ומגיעים לאותו מדריך. מוסיפים בלוק לרשימה `guides`:
-
-```js
-{
-  id: `exams`,                                  // באנגלית, בלי רווחים. זה גם סוף הכתובת של המדריך
-  title: `איך נרשמים למועד ב'`,
-  summary: `שורה אחת שמסבירה על מה המדריך.`,
-  steps: [
-    `צעד ראשון.`,
-    `צעד שני.`,
-  ],
-  stepLinks: { 2: [`inbar`, { label: `שם הכפתור`, url: `https://...` }] },  // לא חובה. קישורים בתוך הצעד: מספר הצעד (מתחיל מ-1) ורשימה באותו פורמט כמו links. הוסיפו at: `ביטוי מהצעד` כדי להפוך את הביטוי לקישור, בלי at הקישור מופיע מתחת לצעד
-  tips: [`משהו שכדאי לדעת.`],                   // לא חובה
-  links: [`inbar`, { label: `שם הכפתור`, url: `https://...` }, { label: `מדריך: רישום`, guide: `registration` }],  // לא חובה. guide פותח מדריך אחר באתר
-  sources: [{ label: `שם הדף הרשמי`, url: `https://www.biu.ac.il/...` }],
-  checkedOn: `1.11.2026`,                        // מתי בדקתם שהמידע עדיין נכון
-  map: { url: `https://www.google.com/maps/d/viewer?mid=...`, embed: `https://www.google.com/maps/d/embed?mid=...` },  // לא חובה. מפה (Google My Maps או מערכת הניווט של האוניברסיטה): בעמוד המדריך יופיעו "הצגת המפה כאן" (נטענת רק בלחיצה) וכפתור לפתיחה. אפשר להוסיף label לכפתור, ברירת המחדל: "פתיחה בגוגל מפות"
-  keywords: [`מועד ב`],                          // לא חובה
-},
-```
-
-הצעדים במדריכים הקיימים נכתבו ממה שמופיע בדפים הרשמיים שב-`sources`, ונבדקו ב-7.10.2026 (המדריכים "מפת הקמפוס והתמצאות" ו"השאטל בקמפוס": ב-8.10.2026, המדריך "איפה אוכלים בקמפוס ובסביבה": ב-11.10.2026, והמדריך "כניסה בשערים האוטומטיים": ב-13.10.2026, מתוך המדריך הרשמי של Bar-Gate להולכי רגל). כדאי לעבור עליהם בתחילת כל סמסטר, במיוחד את שעות השאטל, את מספרי הבניינים ואת המסעדות והשעות שלהן (עסקים בפארק ה-100 וברמת אילן מתחלפים). חלק מהטיפים והתשובות הם מהניסיון של רועי ושל חברים, ולא מדף רשמי, למשל שבמדעי המחשב בדרך כלל לא בודקים נוכחות, או ההטבה של Gemini לסטודנטים. גם המדריך "מרחב הלמידה של מדמ"ח" כולו מהניסיון, כי אין עליו דף רשמי, ולכן הבדיקה האוטומטית מזהירה שאין לו `sources`. אם תשובה בשאלות הנפוצות לא מופיעה במקור הרשמי, כדאי לתת לה `sources` משלה (או `sources: []`), אחרת יופיעו מתחתיה המקורות של המדריך.
-
-לכל מדריך יש אייקון בדף הבית. מדריך חדש יקבל אייקון ברירת מחדל (ניצוץ). כדי לתת לו אחר, מוסיפים את ה-`id` שלו ל-`GUIDE_ICON` ב-`index.html`.
-
-הצ'אט של ביט ובייט קורא את אותו תוכן מאוחד, ולכן כל מדריך או שאלה שנוספים נכנסים אליו אוטומטית, בלי שום עדכון נוסף.
-
-סטודנטים יכולים לסמן צעדים שסיימו, ולשמור פריטים בכוכב. שני הדברים נשמרים רק במכשיר שלהם ולא נשלחים לשום מקום.
-
-## מפת האוכל (Google My Maps)
-
-המפה במדריך האוכל, "איפה אוכלים בבר-אילן", היא מפה ב-Google My Maps של רועי. האתר מציג אותה לפי המזהה שלה (`mid=...` בשדה `map` של המדריך `food` ב-`shared/data.js`, ובכרטיס `food-gmap`).
-
-- **לא מוחקים את המפה ולא יוצרים אותה מחדש.** מפה חדשה מקבלת מזהה חדש, והמפה הישנה באתר מציגה "המפה לא זמינה" עד שמעדכנים את `data.js`.
-- כדי לשנות משהו (להוסיף מקום, להזיז נקודה, לשנות צבע או שעות), עורכים את המפה הקיימת ב-My Maps. השינוי מופיע באתר לבד, בלי לגעת בקוד.
-- המפה צריכה להישאר משותפת כ"כל מי שיש לו את הקישור יכול לצפות". אחרת היא לא תיטען באתר.
-- אם בכל זאת נוצרה מפה חדשה: מחליפים את המזהה הישן בחדש בכל המקומות ב-`shared/data.js` (גם ב-`url` וגם ב-`embed`).
-- My Maps מגביל ל-10 שכבות במפה. היום יש 8: שבעה סוגי אוכל ומיקרוגלים.
-
-המפה במדריך "מפת הקמפוס" היא מערכת הניווט של האוניברסיטה, והאוניברסיטה מתחזקת אותה. אין מה לעדכן בה.
-
-## הוספת שאלה ל"שאלות נפוצות"
-
-השאלות מופיעות בתחתית הדף, וכל אחת נפתחת בלחיצה. מוסיפים בלוק לרשימה `faq`, במקום שבו רוצים שהשאלה תופיע:
-
-```js
-{
-  q: `איבדתי את כרטיס הסטודנט, מה עושים?`,   // כמו שסטודנט היה מקליד בגוגל, עם סימן שאלה
-  a: `תשובה ישירה של משפט עד שלושה.`,          // זה מה שגוגל ומנועי AI מצטטים, אז היא צריכה לעמוד בפני עצמה
-  more: `הרחבה: פרטים נוספים מהמדריך.`,        // לא חובה
-  links: [`guide`, { label: `שם הכפתור`, url: `https://...` }],  // כפתורים מתחת לתשובה: מזהים של פריטים, או קישור ישיר. לא חובה
-  guide: `lemida-365`,       // מדריך מלא בנושא. לא חובה
-  sources: [{ label: `שם הדף הרשמי`, url: `https://www.biu.ac.il/...` }],  // מקור רשמי שמופיע מתחת לתשובה. בלי sources מופיעים המקורות של המדריך
-  keywords: [`כרטיס`],       // לא חובה
-},
-```
-
-## אנגלית
-
-כפתור EN בראש הדף מעביר את כל האתר לאנגלית (משמאל לימין), והבחירה נשמרת במכשיר. אפשר גם לשלוח קישור עם `?lang=en`. עברית נשארת ברירת המחדל, ומי שבעברית לא טוען את קובץ האנגלית בכלל.
-
-התרגום נמצא בשני קבצים, כזוגות של `[עברית, אנגלית]`: `shared/data.en.js` עם `content` לטקסטים של `shared/data.js` ו-`ui` לטקסטים הקבועים של הדף והצ'אט, ו-`faculties/cs/data.en.js` עם `content` לטקסטים של `faculties/cs/data.js`. הזוג יושב ליד הקובץ שהעברית שלו באה ממנו, והעברית בזוג צריכה להיות זהה בדיוק לטקסט בקובץ התוכן. הבנייה מאחדת את שניהם ל-`public/data.en.js`.
-
-- **שיניתם או הוספתם טקסט בקובץ תוכן?** האתר לא נשבר: טקסט בלי תרגום פשוט מופיע בעברית גם במצב אנגלית. הבדיקה האוטומטית תראה אזהרה עם הטקסטים שחסר להם תרגום. מוסיפים זוג חדש, או מעדכנים את העברית בזוג הישן.
-- מילות החיפוש (`keywords`) לא מתורגמות, כך שחיפוש בעברית עובד גם במצב אנגלית.
-- הצ'אט עונה באנגלית למי שכותב לו באנגלית.
-
-## בדיקה אוטומטית
-
-בכל שינוי, GitHub בודק את קבצי התוכן לפני שהוא מפרסם את האתר (בלשונית Actions): כל קובץ לבד, ואז התוכן המאוחד. אם משהו לא תקין, האתר **לא** מתעדכן והגרסה הקודמת נשארת באוויר. ליד הקומיט יופיע X אדום, ו-GitHub ישלח מייל עם הבעיה, הקובץ ומספר השורה: פסיק או גרש חסרים, גרשיים "חכמים" מהמקלדת בטלפון, id שמופיע פעמיים, תאריך לא קיים, קישור שלא מתחיל ב-https:// או מזהה של מדריך שלא קיים. אפשר להריץ אותה גם מקומית:
+### Install, test and build
 
 ```bash
-node scripts/check-data.mjs
+npm ci
 ```
-
-## הצ'אט: ביט ובייט
-
-בפינה של המסך מציצים ביט או בייט (בביקור הראשון באקראי, ומשם כל ביקור מתחלף; אפשר גם להחליף בתוך הצ'אט). כשעוברים עליהם עם העכבר מופיע משפט קצר. יש להם אופי משלהם (ביט הנלהב והכאוטי, בייט המסודרת עם ההומור היבש), הם מדברים כמו חברים ונותנים גם טיפים כלליים, אבל **פרטים על בר אילן** (תאריכים, כללים, אנשי קשר) הם לוקחים **רק מקבצי התוכן**: המדריכים, השאלות, הקישורים ולוח השנה. כל שינוי בתוכן מגיע לצ'אט אוטומטית.
-
-איך זה עובד: `api/chat.js` מקבל את השאלה, בודק שהיא מהאתר, סופר אותה (15 שאלות ליום לכל מבקר ו-150 לכל האתר), מחפש את 3 הקטעים הכי רלוונטיים ב-`data.js`, ושולח אותם למודל ב-Groq. כל תשובה עוברת בדיקות: בלי טלפונים, רק מיילים וקישורים שמופיעים ב-`data.js`, ובלי דליפה של ההוראות. לא נשמר כלום מהשיחה, רק מונה מוצפן ליום, ולוח הבקרה (למטה) סופר איך הסתיימה כל שאלה ועל איזה מקור ב-`data.js` התשובה נשענה.
-
-משתני סביבה ב-Vercel (Settings > Environment Variables):
-
-| משתנה | מה זה |
-|---|---|
-| `GROQ_API_KEY` | המפתח מ-console.groq.com (חשבון בלי אמצעי תשלום, כך שאין חיוב). |
-| `DATABASE_URL` | נוסף לבד כשמחברים את Neon בלשונית Storage. |
-| `CHAT_SALT` | מחרוזת אקראית של 64 תווים, למונה המוצפן. |
-| `CHAT_ENABLED` | `false` מכבה את הצ'אט מיד (אחרי Redeploy). |
-| `FACULTY` | הפקולטה שהפרויקט בונה ומגיש (`cs` או `neuro`). לא חובה לפרויקט הזה; פרויקט של פקולטה אחרת חייב להגדיר אותו ב-Production וב-Preview, וערך לא מוכר מפיל את הבנייה. ראו "פקולטות" למטה. |
-| `CHAT_GLOBAL_DAILY`, `CHAT_PER_VISITOR_DAILY` | לא חובה. המגבלה היומית של כל האתר (ברירת מחדל 150) ושל מבקר אחד (ברירת מחדל 15). מספר שלם חיובי; כל ערך אחר מתעלמים ממנו. מיועד רק לסביבת Preview, כדי שסימולציה (`management/simulations/`) תיכנס ביום אחד. ב-Production משאירים ריק. |
-
-לכבות מיד: לבטל את המפתח ב-console.groq.com. הצ'אט יענה שהוא לא זמין, ושאר האתר ממשיך לעבוד.
-
-הבדיקות של השרת רצות עם `npm test`, וגם לפני כל פרסום.
-
-## לוח בקרה (`/admin`)
-
-בכתובת https://nechita-raka.vercel.app/admin יש לוח בקרה פרטי: מבקרים, צפיות לפי עמוד, לחיצות לפי קישור, מה חיפשו באתר (וגם מה חיפשו ולא מצאו, כלומר מה חסר), מאיפה הגיעו, מאיזה מכשיר, כמה שאלו בצ'אט, על אילו נושאים, ואיך הסתיימו השאלות (נענו, אין על זה מידע באתר, נחסמו, מגבלה יומית). הוא מתעדכן לבד כל 30 שניות, ו"הורדת CSV" מוריד את כל המונים של הטווח שנבחר (נפתח ב-Excel עם עברית תקינה).
-
-נכנסים עם Google, ורק המיילים שב-`ADMIN_EMAILS` מורשים. בכניסה הראשונה מהמכשיר, הביקורים שלכם ממנו מפסיקים להיספר (אפשר לשנות בתחתית הדף).
-
-מה נשמר: רק מונים יומיים בטבלה `site_stats` ב-Neon (יום, סוג, מה נספר, כמה). אין כתובות IP, אין עוגיות מעקב ואין טקסט של שאלות בצ'אט. נספרים רק עמודים וקישורים שקיימים ב-`data.js`, כך שאי אפשר למלא את הטבלה בזבל. הימים לפי שעון ישראל.
-
-- **חיפושים באתר**: נשמר הטקסט שמישהו הפסיק עליו להקליד (2–40 תווים). חיפוש שנראה כמו מייל, טלפון או תעודת זהות (`@` או 5 ספרות ברצף) לא נשלח ולא נשמר. עד 300 חיפושים שונים ביום.
-- **מבקרים**: כל מבקר נספר פעם ביום לפי קוד מוצפן של הכתובת שלו (עם `CHAT_SALT`), שנמחק אחרי יום, כמו המונה של הצ'אט. נשמר רק המספר וסוג המכשיר (טלפון, טאבלט או מחשב).
-- **מאיפה הגיעו**: רק הסוג (וואטסאפ, לינקדאין, גוגל, ישיר...), לא הכתובת. וואטסאפ לא מגלה מאיפה הגיעו, אז בקבוצות כדאי לשתף את `https://nechita-raka.vercel.app/?src=wa` (הקישור מופיע גם בתחתית לוח הבקרה). התג נמחק מהכתובת אחרי הכניסה.
-
-הגדרה חד-פעמית:
-
-1. ב-[Google Cloud Console](https://console.cloud.google.com/apis/credentials): Create credentials > OAuth client ID > Web application. ב-Authorized JavaScript origins מוסיפים `https://nechita-raka.vercel.app` (ולבדיקה מקומית גם `http://localhost` ו-`http://localhost:3000`). אין צורך ב-Redirect URI ולא בסוד של הלקוח.
-2. ב-Vercel מוסיפים את המשתנים למטה ועושים Redeploy.
-
-| משתנה | מה זה |
-|---|---|
-| `GOOGLE_CLIENT_ID` | ה-Client ID מהשלב הקודם (נגמר ב-`.apps.googleusercontent.com`). |
-| `ADMIN_EMAILS` | המיילים שמורשים להיכנס, מופרדים בפסיק. |
-| `ADMIN_SESSION_SECRET` | לא חובה. מחרוזת אקראית של לפחות 32 תווים. בלעדיה המפתח נגזר מ-`CHAT_SALT`. החלפה של אחד מהם מנתקת את כל מי שמחובר. |
-
-החיבור נשמר 7 ימים. מחיקת מייל מ-`ADMIN_EMAILS` מנתקת אותו מיד.
-
-בכל כרטיס מופיע השינוי לעומת תקופה באותו אורך שלפניה (למשל 7 הימים הקודמים). על הגרף מסומנים אירועים מלוח השנה של `data.js`, כך שרואים מה גרם לעליות, ובראש הדף יש "מה בולט": כמה משפטים על מה השתנה, מה חיפשו ולא מצאו, ומאיפה הגיעו.
-
-### גוגל (Search Console)
-
-כל בוקר (`/api/cron/search-console`, שעה לפני המייל השבועי) השרת מעתיק מ-Google Search Console את 30 הימים האחרונים: כמה פעמים האתר הופיע בתוצאות (חשיפות), כמה לחצו, מיקום ממוצע, על מה חיפשו ואילו עמודים גוגל הציג. גוגל משלים כל יום תוך יומיים־שלושה, ולכן כל העתקה מחליפה את הקודמת. בלוח הבקרה זה כרטיס "גוגל", וגם במייל השבועי.
-
-אין בזה שום מפתח או סיסמה: הפונקציה מזדהה מול גוגל עם טוקן ה-OIDC של Vercel (Workload Identity Federation), מקבלת טוקן קצר של חשבון שירות, וחשבון השירות הוא משתמש מוגבל (קריאה בלבד) ב-Search Console. ההגדרה בפרויקט `nechita-raka` ב-Google Cloud:
-
-| משתנה ב-Vercel | מה זה |
-|---|---|
-| `GCP_PROJECT_NUMBER` | מספר הפרויקט ב-Google Cloud (לא ה-ID). |
-| `GCP_SERVICE_ACCOUNT_EMAIL` | חשבון השירות שמשתמש מוגבל ב-Search Console. |
-| `GCP_WORKLOAD_IDENTITY_POOL_ID`, `GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID` | ה-pool וה-provider שסומכים על ה-OIDC של Vercel, רק לפרויקט הזה ורק ל-Production. |
-| `GSC_SITE_URL` | הנכס ב-Search Console, `https://nechita-raka.vercel.app/`. |
-
-### סיכום שבועי במייל
-
-כל יום ראשון בבוקר (`crons` ב-`vercel.json`) השרת שולח מייל עם השבוע שעבר (ראשון עד שבת) לעומת השבוע שלפניו, "מה בולט", העמודים, הקישורים והחיפושים המובילים, ומה מתקרב בלוח השנה. השליחה דרך [Resend](https://resend.com) בחינם (עד 3,000 מיילים בחודש). ה-cron רץ כל בוקר: ביום ראשון הוא שולח, ובשאר הימים רק משלים שליחה שנכשלה (ניסיון חוזר אחרי 6 שעות לפחות). נשלח מייל אחד בשבוע גם אם מישהו קורא לכתובת שוב. השוואה לשבוע הקודם מופיעה רק כשהשבוע הקודם כולו אחרי 7.10, היום שבו התחילה הספירה.
-
-| משתנה | מה זה |
-|---|---|
-| `RESEND_API_KEY` | המפתח מ-resend.com (API Keys). בלעדיו המייל לא נשלח, ושאר הדשבורד עובד כרגיל. |
-| `REPORT_EMAIL` | לא חובה. לאן לשלוח. ברירת המחדל היא המייל הראשון ב-`ADMIN_EMAILS`. עם השולח המשותף של Resend אפשר לשלוח רק למייל של חשבון ה-Resend עצמו. |
-| `CRON_SECRET` | לא חובה. מחרוזת אקראית. כשהיא מוגדרת, רק ה-cron של Vercel יכול להפעיל את השליחה. |
-
-## בדיקה מקומית
 
 ```bash
-python -m http.server 8000
+npm test
 ```
-
-ואז לפתוח את `http://localhost:8000`. כדי לראות איך הדף ייראה בתאריך אחר, מוסיפים לכתובת למשל `?today=2027-01-20`.
-
-ככה רואים את הדף כמו שהוא נבנה בדפדפן. כתובת ישירה של מדריך (למשל `/exams`) עובדת רק אחרי בנייה (`npm run build`), כי העמודים האלה נוצרים בתיקייה `public/`. בדף הבית אפשר ללחוץ על מדריך כרגיל.
-
-## חיפוש בגוגל ובמנועי AI
-
-האתר פתוח לאינדוקס. בכל פרסום הבנייה (`scripts/prerender.mjs`) עושה את זה לבד, בלי לגעת בשום דבר:
-
-- כותבת את כל התוכן לתוך ה-HTML, כך שגם סורק שלא מריץ JavaScript רואה הכול. הדף בדפדפן נראה בדיוק כמו קודם.
-- יוצרת עמוד לכל מדריך, עם כותרת ותיאור משלו, ומפת אתר (`sitemap.xml`) עם כל העמודים.
-- מוסיפה נתונים מובנים (JSON-LD) לגוגל: האתר, השאלות הנפוצות, המדריכים, תאריכי הבחינות והקרדיט לרועי.
-- כותבת בתחתית כל עמוד "עודכן לאחרונה" (התאריך של השינוי האחרון באחד מקבצי התוכן) ואת שנת הלימודים (`site.academicYear`).
-
-מה כן כדאי לעשות: לעדכן את `checkedOn` במדריך כשבודקים שהוא עדיין נכון, ואת `site.academicYear` בתחילת כל שנה. הדוח המלא, כולל צעדים ידניים (Google Search Console ו-Bing Webmaster Tools), נמצא ב-`SEO_REPORT.md`.
-
-## ימים מיוחדים והפתעות
-
-כמו ב-Google, בימים מיוחדים האתר משתנה מעצמו, בלי לערוך כלום:
-
-- **חגים ומועדים** מחושבים מהלוח העברי, כך שהם מגיעים כל שנה מחדש: ראש השנה, סוכות, שמחת תורה, חנוכה (חנוכייה עם מספר הנרות של הערב), ט"ו בשבט, פורים (הכותרת מתהפכת, "ונהפוכו"), פסח, יום העצמאות, ל"ג בעומר, יום ירושלים, שבועות וט"ו באב. ביום כזה יש אימוג'י על הלוגו (Doodle), כרטיס בראש הדף ואפקט קצר (קונפטי, אימוג'י שנופלים או גחלים) שמתנגן פעם ביום. לחיצה על האימוג'י מנגנת אותו שוב.
-- **ימי זיכרון** (יום השואה, יום הזיכרון, תשעה באב, 7 באוקטובר): הצבעים באתר הופכים לאפורים, מופיע נר, ואין שום אפקט חגיגי. הימים עוברים לפי כללי הדחייה (למשל יום הזיכרון כשה' באייר חל בשישי, שבת או שני).
-- **שבת**: מכניסת שבת (הדלקת נרות, 20 דקות לפני השקיעה) ועד צאתה (צאת הכוכבים, שמש 8.5 מעלות מתחת לאופק) האתר מציג מסך סגור במקום התוכן, ונפתח לבד כשהשבת יוצאת. השעות מחושבות בדפדפן, בלי שירות חיצוני ובלי עדכון שנתי (`shabbat-times.js`, אותה שיטה כמו Hebcal; הערים וההיסטים נקבעים במקום אחד, `CITY` באותו קובץ; רמת גן, geonameid 293788). ה-HTML נשאר האתר המלא (גוגל ובלי JS רואים תוכן; בוטים לא נחסמים), `shabbat.js` מניח מעליו חלון מלא לפני הצביעה הראשונה, והצ'אט בשרת עונה "שבת שלום" בלי לפנות למודל. הטקסט מ-`site.shabbat` בקובץ הפקולטה, עם תרגום ב-`data.en.js`.
-  לבדיקה: `?today=2027-01-22T19:30` קובע שעה (שעון ישראל, והיא ממשיכה לרוץ); `?open=1` מדלג על המסך, לבדיקות בלבד. חגים (יום טוב) עדיין לא מטופלים.
-- **צומות** (גדליה, עשרה בטבת, תענית אסתר, י"ז בתמוז) וימי שישי ("שבת שלום") מקבלים כרטיס שקט בלבד.
-- **אבני דרך** מתוך `calendar.terms`: יום ראשון של סמסטר, יום אחרון של סמסטר ויום אחרון של תקופת הבחינות.
-
-כל האפקטים כבויים למי שביקש במכשיר להפחית תנועה. כדי לראות יום מסוים: `?today=2026-12-08` (חנוכה), `?today=2027-03-23` (פורים), `?today=2027-05-11` (יום הזיכרון).
-
-ויש כמה ביצי פסחא בתיבת החיפוש: `do a barrel roll`, `askew`, `hello world`, `sudo`, `42`, וגם קוד קונמי במקלדת (↑↑↓↓←→←→BA).
-
-## פקולטות (`faculties/`)
-
-האתר בנוי כך שאותו קוד ישמש גם פקולטות אחרות (התוכנית ב-`MULTI-FACULTY-PLAN.md`). כל מה שמבדיל פקולטה מפקולטה יושב בקובץ אחד, `faculties/<id>/faculty.js`. יש שתיים: `faculties/cs/` (מדעי המחשב, האתר החי) ו-`faculties/neuro/` (מדעי המוח), שכרגע היא עותק של מדעי המחשב עם זהות משלה בלבד: שם, כותרת, צבעים סגולים, הקמעים נוי ורון ורשימת מסלולים, עד שיגיע התוכן שלה. הבנייה בוחרת פקולטה לפי משתנה הסביבה `FACULTY` (ברירת המחדל `cs`, כך שבלי לשנות כלום הכול עובד כמו תמיד).
-
-מה יש בקובץ, בסגנון של `data.js` עם הערה בעברית ליד כל שדה:
-
-- **זהות האתר**: הכתובת, שם האתר, כותרת דף הבית והתיאור שלו לגוגל, תמונת השיתוף (`faculties/cs/og-image.jpg`) והאיור שליד הכותרת (`site.heroArt`: התמונה במסך רחב והעיגול הקטן בטלפון, שניהם בתיקיית הפקולטה; סמל המצנח של המותג משותף).
-- **הוספה למסך הבית**: השם, השם הקצר, התיאור והצבע. `manifest.webmanifest` נוצר מהם בבנייה.
-- **צבעי ההדגשה**: שישה ערכים למצב בהיר ושישה לכהה. הבנייה כותבת אותם לתוך ה-HTML; כל שאר הצבעים משותפים.
-- **התווית בסגנון טרמינל**: השורה בראש הצ'אט.
-- **החלון שבראש הדף** (`hero`): הסוג (`terminal`, חלון טרמינל שמקליד קוד, או `eeg`, אותו חלון עם גל EEG שמצייר את עצמו ואז שלוש שורות מוקלדות), השורה בפס העליון שלו והשורות שמוקלדות, עם הצבע של כל קטע. הבנייה כותבת אותן לתוך ה-HTML; האנימציה עצמה משותפת.
-- **הקורסים** (`courses`): קובץ הסריקה והמיפוי מהידיעון (ב-`faculties/cs/courses/`), השם שבו הסריקה מתפרסמת ואיך התוכן קורא לה (`fileLabel`, במקום `{coursesFile}` בתוכן המשותף), רשימת הקטגוריות לפי הסדר בדף (עם `short` לכפתורי הסינון), ושם המקור הרשמי שהצ'אט מצטט. דף הקורסים, החיפוש והצ'אט קוראים את כולם דרך `api/_lib/courses/model.js`.
-- **חיפוש וביצי פסחא** (`search.synonyms`, `eggs`): מילים נרדפות של הפקולטה לחיפוש באתר ("מדמ"ח" מוצא "מדעי המחשב") וביצי הפסחא שלה ("hello world" בתיבת החיפוש), שנוספות למשותפות שב-`index.html`.
-- **שני הקמעים**: לכל אחד מזהה, שם בעברית ובאנגלית, לשון זכר או נקבה, הברכות בצ'אט, משפטי הבועה, והאופי שלו להנחיות למודל (ההנחיות נשארות בשרת ולא מגיעות לדפדפן). התמונות יושבות ב-`faculties/cs/mascot/` (שבע פוזות לכל דמות, תמונה קטנה לצ'אט ותמונה שמציצה מהפינה).
-- **הסדר של התוכן** (`content.order`): מזהי המדריכים והקטגוריות, משני קבצי התוכן, לפי הסדר בדף. ראו "שני קבצי התוכן" למעלה.
-- **מסלולי לימוד** (`tracks`, לא חובה; במדעי המוח שמונה): כשיש כאלה, הקטגוריות של הקורסים הן `<מסלול>:<שנה>` (למשל `cs:1`), דף הקורסים מציע בורר מסלול (נשמר בדפדפן כמו ערכת הצבעים, מוצע פעם אחת בביקור הראשון), מסנן לפי המסלול ומוצא את השנה של כל קורס בו, ובלי בחירה מראה הכול וכותב על כל קורס את המסלולים והשנים שלו. הצ'אט מקבל את המסלול שנבחר (`track` בבקשה, מאומת מול הרשימה) ומעדיף את העובדות שלו. `theme.mascotShadow: true` מוסיף צל בהיר דק לתמונות הקמעים במצב כהה.
-- **אלמנטים בעיצוב** (`decor`, לא חובה; במדעי המוח שישה): מקום בדף וסגנון מתוך הרשימה `DECOR_STYLES` ב-`faculties/index.js`, למשל `background: "synapses"` (רשת נוירונים ברקע). הבנייה כותבת `data-decor-<מקום>` על `<html>`, ה-CSS ב-`index.html` מצייר לפיו, והקבצים מ-`faculties/<id>/decor/` מתפרסמים תחת `assets/decor/`. בלי `decor` האתר נראה כמו של מדעי המחשב. ההסבר המלא: `management/neuro/decor-brief.md`.
-
-הבנייה מעתיקה את התמונות ל-`public/assets/`, כותבת את `public/faculty.js` עם החלק שהדפדפן צריך, מאחדת את `shared/data.js` עם `faculties/cs/data.js` ל-`public/data.js` (וכך גם את האנגלית), ונכשלת אם קובץ שהמניפסט מצביע עליו חסר. הבדיקות (`npm test`) בודקות שלמניפסט יש את המבנה הנכון ושהאיחוד עובד לפי הכללים. `node scripts/compare-content.mjs` משווה את התוכן המאוחד לקובץ `data.js` היחיד שהיה לפני החלוקה. טקסט חדש בעברית בקמעים צריך תרגום ב-`faculties/<id>/data.en.js` (ברשימת `ui`), ו-`npm run check` מזכיר אם חסר.
-
-### בנייה לפקולטה אחרת
 
 ```bash
-FACULTY=neuro npm run build
+FACULTY=cs npm run build
 ```
 
-(ב-PowerShell: `$env:FACULTY="neuro"; npm run build`.) אותו משתנה עובד גם ל-`npm test` ול-`npm run check`; בלי המשתנה הכול רץ על `cs`, וערך לא מוכר נכשל מיד עם רשימת הפקולטות. ב-GitHub הבדיקה (Actions) רצה פעמיים, פעם לכל פקולטה: בדיקת התוכן, הבדיקות והבנייה. בסוף כל בנייה יש שומר: אם ב-`public/` נשאר משהו של פקולטה אחרת (המניפסט, תמונות הקמעים, השמות, הכתובת או צבעי ההדגשה), הבנייה נכשלת, כך שפרויקט עם `FACULTY` שגוי לא יפרסם את הנתונים של הפקולטה השנייה. התוכן המשותף (`shared/`) מוצג בכל האתרים, ולכן `npm run check` מזהיר כשהוא מזכיר קמע או כתובת של פקולטה אחת.
+`npm run build` runs the content check, the full test suite and the static build into `public/`. Use `FACULTY=neuro` for the Brain Sciences site. `npm run check` runs only the content check.
 
-## ניהול הפרויקט וסוכנים
+### Run locally
 
-התוכנית להרחבה לפקולטות נוספות נמצאת ב-`MULTI-FACULTY-PLAN.md`, ותוכנית הניהול ב-`MANAGEMENT-PLAN.md` (שתיהן באנגלית). הזיכרון של הניהול (מפת דרכים, backlog, יומן החלטות, סיכומי ישיבות, פרסונות לבדיקות) יושב ב-`management/`, והתפקידים (בעלי התוכן לכל פקולטה, עיצוב, UX, הנדסה, QA, אבטחה, רשתות, משתמשים מדומים) הם סוכנים ב-`.claude/agents/`. הפקודה `/board` מריצה ישיבת הנהלה. אף סוכן לא מפרסם ולא ממזג בלי הכללים שב-`management/DECISIONS.md`.
+```bash
+python3 -m http.server 8000 -d public
+```
 
-## קיצורים שימושיים
+Open <http://localhost:8000>. Guide pages open with their extension locally (`/exams.html`); on Vercel they also open without it (`/exams`). Add `?today=2027-01-20` to the address to see the page on another date.
 
-- קישור לחיפוש מוכן: `.../nechita-raka/?q=אישור לימודים` פותח את האתר עם החיפוש כבר מסונן. נוח לשלוח בקבוצה.
-- במחשב: `/` מתמקד בחיפוש, `Ctrl+K` (או `Cmd+K` במק) פותח חיפוש מהיר עם ניווט במקלדת.
+The static server does not run the `api/` functions, so the chat and the dashboard are off locally. To run them, use the Vercel CLI as described in [management/simulations/README.md](management/simulations/README.md#running-the-api-locally).
+
+## Configuration
+
+The static site needs no configuration. The server reads its settings from Vercel environment variables, one set per faculty project; every variable is listed with a short description in [`.env.example`](.env.example). Without them the chat, the counters and the dashboard answer `503` instead of failing. The main groups:
+
+| Feature | Variables |
+| --- | --- |
+| Faculty | `FACULTY` (`cs` by default, `neuro`) |
+| Chat | `GROQ_API_KEY`, `DATABASE_URL`, `CHAT_SALT` (all required), optional caps and models |
+| Dashboard | `GOOGLE_CLIENT_ID`, `ADMIN_EMAILS`, optional `ADMIN_SESSION_SECRET` |
+| Weekly email | `RESEND_API_KEY`, optional `REPORT_EMAIL`, `REPORT_FROM`, `CRON_SECRET` |
+| Search Console | `GCP_*` Workload Identity settings and `GSC_SITE_URL` |
+
+The full setup, in Hebrew, is in [docs/EDITING.md](docs/EDITING.md).
+
+## Editing content
+
+Content is plain JavaScript that can be edited from the GitHub web UI, even on a phone: [`shared/data.js`](shared/data.js) for everything Bar-Ilan-wide, `faculties/<id>/data.js` for one faculty. The build checks every change before it goes live, and the chat picks it up automatically.
+
+The step-by-step manual (Hebrew) is **[docs/EDITING.md](docs/EDITING.md)**: adding links, categories, dates, guides, notices, FAQ answers and English pairs, the chat, the dashboard, special days and faculties. Course catalog scans are documented per faculty ([CS](faculties/cs/courses/README.md), [Brain Sciences](faculties/neuro/courses/README.md)).
+
+## Known limitations and roadmap
+
+- The Shabbat rest screen does not yet cover Yom Tov (festival days); see "ימים מיוחדים" in [docs/EDITING.md](docs/EDITING.md).
+- Course data comes from periodic catalog scans, so groups and rooms can lag behind the official catalog between scans.
+- The chat runs on Groq's free tier with daily caps (150 messages a day per site, 15 per visitor), so it can answer "busy" on peak days.
+- Search Console and the weekly email are not yet set up for the Brain Sciences site ([roadmap](management/ROADMAP.md)).
+
+The roadmap and backlog are kept in [management/ROADMAP.md](management/ROADMAP.md) and [management/BACKLOG.md](management/BACKLOG.md); planning documents are in [docs/](docs/). Changes are listed in the [changelog](CHANGELOG.md).
+
+## Contributing
+
+Corrections with an official source are the most useful contribution. See [CONTRIBUTING.md](CONTRIBUTING.md) for reporting issues, editing content and changing code.
+
+## License
+
+[MIT](LICENSE) © 2026 Roy Carmelli
+
+## Author
+
+**Roy Carmelli** · [GitHub](https://github.com/Royc4515) · [LinkedIn](https://www.linkedin.com/in/roy-carmelli)
+
+The course catalog data was collected with [biu-courses-crawler](https://github.com/Royc4515/biu-courses-crawler).

@@ -1,11 +1,11 @@
-// Which reviews a change needs, from the files it touches (MANAGEMENT-PLAN.md, "Review ladder").
+// Which reviews a change needs, from the files it touches (docs/MANAGEMENT-PLAN.md, "Review ladder").
 // Usage: node scripts/review-tier.mjs [base]   (base defaults to origin/main; compares to the working tree)
 // Prints the tier, the reason, and the exact agents to run, so a review never costs more than the change.
 import { execFileSync } from "node:child_process";
 
 const TIERS = [
   { tier: 3, reason: "server, env, prompt, limiter, admin or build", test: (f) => /^api\/(?!_tests\/)|^vercel\.json$|^scripts\/(build-public|prerender)\.mjs$|^\.github\//.test(f) },
-  { tier: 2, reason: "browser code", test: (f) => /^(index\.html|chat\.js|peek\.js|track\.js|admin\.(html|js)|course-[\w-]+\.js|.*\.css|manifest\.webmanifest)$/.test(f) || /^faculties\/[^/]+\/faculty\.js$/.test(f) },
+  { tier: 2, reason: "browser code", test: (f) => /^web\/(index\.html|chat\.js|peek\.js|track\.js|admin\.(html|js)|course-[\w-]+\.js|.*\.css|manifest\.webmanifest)$/.test(f) || /^faculties\/[^/]+\/faculty\.js$/.test(f) },
   { tier: 1, reason: "scripts, tests, agents or docs", test: (f) => /^(scripts\/|api\/_tests\/|\.claude\/|package(-lock)?\.json$|README\.md$|.*\.md$)/.test(f) },
   { tier: 0, reason: "content only", test: (f) => /^(data\.js|data\.en\.js|management\/|shared\/|faculties\/[^/]+\/data(\.en)?\.js$|courses-[\w-]+\.json$|biu-\d+\.ics$)/.test(f) },
 ];

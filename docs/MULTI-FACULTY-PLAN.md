@@ -53,7 +53,7 @@ Rejected: a CLI flag (Vercel builds run `npm run build` with no arguments), a br
 
 ### D3. Directory layout
 
-```
+```text
 faculties/
   cs/
     faculty.js        the manifest (section D4)

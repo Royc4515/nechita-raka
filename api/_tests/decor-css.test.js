@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { FACULTIES } from "../../faculties/index.js";
 import { withDecorCss } from "../../scripts/prerender.mjs";
 
-const template = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
+const template = readFileSync(new URL("../../web/index.html", import.meta.url), "utf8");
 const START = "/* decor:start */";
 const END = "/* decor:end */";
 const block = template.slice(template.indexOf(START), template.indexOf(END));

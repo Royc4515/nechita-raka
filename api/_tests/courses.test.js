@@ -40,7 +40,7 @@ test("the CS yearbook gives each course its year, and the year list drives cours
   assert.equal(yearOf(["1"]), 1, "the model exports the year helpers of course-years.js");
 });
 
-// The brain sciences yearbook: "<track>:<year>" categories (MULTI-FACULTY-PLAN.md D9), as a fixture whatever FACULTY runs.
+// The brain sciences yearbook: "<track>:<year>" categories (docs/MULTI-FACULTY-PLAN.md D9), as a fixture whatever FACULTY runs.
 const neuro = FACULTIES.neuro;
 const neuroFile = (key) => facultyFile(neuro, neuro.courses[key]);
 const neuroShaped = loadCourses(neuroFile("catalog"), neuroFile("yearbook"));

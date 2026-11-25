@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { bySoonest, clash, currentSemester, groupsByNext, minutesUntil, nextMeeting, upcomingExams } from "../../course-time.js";
-import { createStore } from "../../course-store.js";
+import { bySoonest, clash, currentSemester, groupsByNext, minutesUntil, nextMeeting, upcomingExams } from "../../web/course-time.js";
+import { createStore } from "../../web/course-store.js";
 
 // Thursday 15.10.2026, 10:30 (Thursday is day 4; Sunday is 0, like ב' is Monday)
 const now = new Date(2026, 9, 15, 10, 30);
@@ -85,12 +85,12 @@ test("malformed saved state is cleaned, not trusted, and an empty catalog drops 
 
 test("every module of the courses page loads (catches a syntax error the browser would hit)", async () => {
   for (const file of ["course-ai.js", "course-ai-dialog.js", "course-calendar.js", "course-calendar-dialog.js", "course-browser.js", "course-card.js", "course-schedule.js", "course-store.js", "course-time.js", "course-track.js", "course-week.js", "course-years.js"]) {
-    await assert.doesNotReject(import(`../../${file}`), file);
+    await assert.doesNotReject(import(`../../web/${file}`), file);
   }
 });
 
 // ---------- lecturers (the site search and the lecturers' emails page) ----------
-import { bareTeacher, courseSearchEntries, lecturersOf } from "../../course-browser.js";
+import { bareTeacher, courseSearchEntries, lecturersOf } from "../../web/course-browser.js";
 
 test("lecturers are listed once each, with the published email and every course they teach", () => {
   const list = {

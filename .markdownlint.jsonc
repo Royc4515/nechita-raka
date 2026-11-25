@@ -1,0 +1,10 @@
+// Markdown lint rules for the docs (markdownlint-cli2). Prose is not wrapped, so no line limit.
+// Inline HTML is allowed for the README screenshots. Some files open with a status note or bold
+// labels on purpose, and issue/PR templates start at H2 because the title is the H1.
+{
+  "default": true,
+  "MD013": false,
+  "MD033": { "allowed_elements": ["p", "img", "br"] },
+  "MD036": false,
+  "MD041": false
+}

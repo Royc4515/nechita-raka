@@ -1,7 +1,7 @@
 // The faculties the site can be built for, and which one this build or server is.
 //
 // Each faculty is a manifest in faculties/<id>/faculty.js (hand-edited, see faculties/cs/faculty.js).
-// The id comes from the FACULTY env var (MULTI-FACULTY-PLAN.md D2), default "cs", so every local
+// The id comes from the FACULTY env var (docs/MULTI-FACULTY-PLAN.md D2), default "cs", so every local
 // command and the existing Vercel project behave as before. The manifests are imported statically so
 // Vercel's function bundler sees them; adding a faculty is one line in FACULTIES.
 import cs from "./cs/faculty.js";
@@ -15,7 +15,7 @@ export const MASCOT_POSES = Object.freeze(["wave", "think", "celebrate", "point"
 /** The accent set a theme mode holds (index.html :root). */
 export const THEME_KEYS = Object.freeze(["accent", "accentHover", "accentInk", "accentText", "accentSoft", "focus"]);
 /**
- * The hero blocks the prerender can render (MULTI-FACULTY-PLAN.md D8): "terminal" is the typing terminal of index.html;
+ * The hero blocks the prerender can render (docs/MULTI-FACULTY-PLAN.md D8): "terminal" is the typing terminal of index.html;
  * "eeg" is the same window with a trace that draws itself above the typed lines (scripts/prerender.mjs).
  */
 export const HERO_VARIANTS = Object.freeze(["terminal", "eeg"]);

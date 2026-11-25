@@ -2,7 +2,7 @@
   A course's years and tracks from its yearbook categories, shared by the server (api/_lib/courses/model.js,
   the chat) and the courses page (course-browser.js, course-card.js). Pure functions, no DOM and no files.
 
-  Two id shapes (MULTI-FACULTY-PLAN.md D9): a plain year, "1", "2", "3" (the CS yearbook), and a track
+  Two id shapes (docs/MULTI-FACULTY-PLAN.md D9): a plain year, "1", "2", "3" (the CS yearbook), and a track
   with a year, "<track>:<year>" (the brain sciences yearbook: "cs:1", "single-comp:1"). Anything else
   ("cluster1", "ai") is a pool, not a year.
 */

@@ -8,6 +8,6 @@ const SCRIPTS = ["chat.js", "peek.js", "track.js", "admin.js"];
 
 for (const file of SCRIPTS) {
   test(`${file} parses`, () => {
-    assert.doesNotThrow(() => execFileSync(process.execPath, ["--check", file], { stdio: "pipe" }));
+    assert.doesNotThrow(() => execFileSync(process.execPath, ["--check", `web/${file}`], { stdio: "pipe" }));
   });
 }

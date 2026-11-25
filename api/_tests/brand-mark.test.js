@@ -8,8 +8,8 @@ import { iconVersions, versionedIcon, webmanifest } from "../../scripts/faculty-
 import { withBrandMark, withIconLinks } from "../../scripts/prerender.mjs";
 
 // index.html is written with the CS values (it opens locally without a build), so these tests start from the template.
-const template = readFileSync("index.html", "utf8");
-const admin = readFileSync("admin.html", "utf8");
+const template = readFileSync("web/index.html", "utf8");
+const admin = readFileSync("web/admin.html", "utf8");
 const { cs, neuro } = FACULTIES;
 const SYMBOL_RE = /<symbol id="plane-icon"[\s\S]*?<\/symbol>/;
 const symbolOf = (html) => html.match(SYMBOL_RE)[0];

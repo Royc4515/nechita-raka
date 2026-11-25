@@ -1,0 +1,5 @@
+// Lints the project docs. management/ holds dated records (meeting notes, recorded chat
+// transcripts) and .claude/ holds agent prompts with front matter; both are kept verbatim.
+{
+  "ignores": ["node_modules/**", "public/**", "management/**", ".claude/**"]
+}

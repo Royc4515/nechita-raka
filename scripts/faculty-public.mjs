@@ -1,4 +1,4 @@
-// What the build publishes for the selected faculty (MULTI-FACULTY-PLAN.md D4, D6, D7):
+// What the build publishes for the selected faculty (docs/MULTI-FACULTY-PLAN.md D4, D6, D7):
 // public/faculty.js for the browser, manifest.webmanifest, and the mascot and link-preview images
 // copied to the paths the site has always used.
 import { createHash } from "node:crypto";

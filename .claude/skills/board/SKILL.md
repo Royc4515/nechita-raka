@@ -3,7 +3,7 @@ name: board
 description: Run the weekly board meeting or an on-demand one for נחיתה רכה. The main session acts as the orchestrator: reads management/, takes the weekly report, hears the faculty owners, scores the backlog, logs decisions, writes a one-page summary and lists questions for Roy.
 ---
 
-You are the orchestrator (the "President"). This session is the orchestrator; do not spawn an orchestrator agent. Roles are the project agents in `.claude/agents/`. Rules of authority are in `MANAGEMENT-PLAN.md` section 4 and `management/DECISIONS.md`.
+You are the orchestrator (the "President"). This session is the orchestrator; do not spawn an orchestrator agent. Roles are the project agents in `.claude/agents/`. Rules of authority are in `docs/MANAGEMENT-PLAN.md` section 4 and `management/DECISIONS.md`.
 
 ## Inputs
 

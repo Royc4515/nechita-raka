@@ -1,0 +1,23 @@
+# Matches the existing code: two-space indent, LF, UTF-8.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Two trailing spaces are a line break in Markdown.
+trim_trailing_whitespace = false
+
+[*.ics]
+# The calendar files keep their CRLF line endings byte for byte (.gitattributes).
+end_of_line = unset
+trim_trailing_whitespace = false
+insert_final_newline = unset
+
+[*.py]
+indent_size = 4

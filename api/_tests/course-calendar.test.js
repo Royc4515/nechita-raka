@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildIcs, eventType } from "../../course-calendar.js";
-import { applyCustom, createStore } from "../../course-store.js";
+import { buildIcs, eventType } from "../../web/course-calendar.js";
+import { applyCustom, createStore } from "../../web/course-store.js";
 import { loadContent } from "../../faculties/content.js";
 import { loadCourses } from "../_lib/courses/model.js";
 import { FACULTIES, facultyFile } from "../../faculties/index.js";
@@ -77,7 +77,7 @@ test("a manual time makes an untimed group a real meeting everywhere, and is val
 });
 
 test("a manual time never overrides a catalog time, and travels with a backup", async () => {
-  const { exportSchedule, parseSchedule } = await import("../../course-ai.js");
+  const { exportSchedule, parseSchedule } = await import("../../web/course-ai.js");
   // 89110 group 01 has a real time: a stale manual entry for it is ignored.
   const live = applyCustom(courses, { "89110|01": [{ day: "ו'", start: "08:00", end: "09:00", building: "", room: "", custom: true }] });
   assert.equal(live.find((c) => c.code === "89110").groups.find((g) => g.group === "01").slots[0].day, "ג'");

@@ -1,16 +1,16 @@
 /**
  * The faculty's courses, shaped once for every reader: the chat (api/_lib/chat/courses.js), the courses
  * page (course-browser.js reads public/course-list.json, written by scripts/build-public.mjs) and their
- * tests. Two inputs, named by the manifest's courses block (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md
+ * tests. Two inputs, named by the manifest's courses block (faculties/<id>/faculty.js, docs/MULTI-FACULTY-PLAN.md
  * D9): the catalog scan (unofficial) and the department yearbook, which says which categories each
  * course belongs to.
  */
 import { existsSync, readFileSync } from "node:fs";
-import { yearOf, yearsOf } from "../../../course-years.js";
+import { yearOf, yearsOf } from "../../../web/course-years.js";
 import { FACULTY, facultyFile } from "../../../faculties/index.js";
 
 // The year helpers live in course-years.js (repo root) because the courses page needs the same rules.
-export { inTrack, tracksOf, yearOf, yearsOf } from "../../../course-years.js";
+export { inTrack, tracksOf, yearOf, yearsOf } from "../../../web/course-years.js";
 
 export const CATALOG_FILE = facultyFile(FACULTY, FACULTY.courses.catalog);
 export const YEARBOOK_FILE = facultyFile(FACULTY, FACULTY.courses.yearbook);

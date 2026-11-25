@@ -40,7 +40,7 @@ test("the manifest's chat block is validated", () => {
 });
 
 test("chat.js reads its chips from the manifest, not from a list of its own", () => {
-  const source = readFileSync(new URL("../../chat.js", import.meta.url), "utf8");
+  const source = readFileSync(new URL("../../web/chat.js", import.meta.url), "utf8");
   assert.match(source, /FACULTY\.chat\.suggestions/);
   assert.doesNotMatch(source, /למדעי המחשב/);
 });
