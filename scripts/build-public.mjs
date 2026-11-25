@@ -56,6 +56,7 @@ mkdirSync(OUT);
 for (const file of [...FILES, "index.html"]) {
   if (!existsSync(`${WEB}/${file}`)) throw new Error(`build-public: ${WEB}/${file} is missing`);
 }
+// don't touch - files land flat at the root of public/: index.html, links shared in WhatsApp and installed home-screen apps use these addresses.
 for (const file of FILES) cpSync(`${WEB}/${file}`, `${OUT}/${file}`, { recursive: true });
 // The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way, plus its name and share link.
 writeFileSync(`${OUT}/admin.html`, withIconLinks(withAdminIdentity(withTheme(readFileSync(`${WEB}/admin.html`, "utf8"), FACULTY.theme), FACULTY.site), ICON_VERSIONS));
@@ -115,6 +116,7 @@ writeFileSync(`${OUT}/llms.txt`, llmsTxt(data, updated));
 
 // The guard: a WhatsApp link in any published file fails the build.
 const walk = (dir) => readdirSync(dir).flatMap((name) => (statSync(`${dir}/${name}`).isDirectory() ? walk(`${dir}/${name}`) : [`${dir}/${name}`]));
+// don't touch - the last line of defense against spam bots harvesting the WhatsApp groups; it must fail the build, not warn.
 const leaks = walk(OUT).filter((file) => /\.(html|js|txt|xml|json|webmanifest|ics|css)$/.test(file) && readFileSync(file, "utf8").includes("chat.whatsapp.com"));
 if (leaks.length) throw new Error(`build-public: WhatsApp links are exposed in ${leaks.join(", ")}`);
 // The faculty guard: a bundle built for one faculty never carries another faculty's manifest, images,

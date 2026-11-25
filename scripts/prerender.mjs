@@ -111,6 +111,7 @@ export function lastUpdated(data, faculty = FACULTY) {
   const checked = [data.calendar && data.calendar.checkedOn, ...data.guides.map((g) => g.checkedOn)].map(isoFromDmy).filter(Boolean);
   let committed = null;
   try {
+    // don't touch - any commit to a data.js file, even a comment, moves the "last updated" date shown on the site and in the JSON-LD.
     committed = execFileSync("git", ["log", "-1", "--format=%cs", "--", ...contentFiles(faculty).data], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() || null;
   } catch {
     committed = null; // no git history in this build: fall back to the checked-on dates
