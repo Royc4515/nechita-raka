@@ -6,11 +6,11 @@
  * course belongs to.
  */
 import { existsSync, readFileSync } from "node:fs";
-import { yearOf, yearsOf } from "../../../course-years.js";
+import { yearOf, yearsOf } from "../../../web/course-years.js";
 import { FACULTY, facultyFile } from "../../../faculties/index.js";
 
 // The year helpers live in course-years.js (repo root) because the courses page needs the same rules.
-export { inTrack, tracksOf, yearOf, yearsOf } from "../../../course-years.js";
+export { inTrack, tracksOf, yearOf, yearsOf } from "../../../web/course-years.js";
 
 export const CATALOG_FILE = facultyFile(FACULTY, FACULTY.courses.catalog);
 export const YEARBOOK_FILE = facultyFile(FACULTY, FACULTY.courses.yearbook);

@@ -8,9 +8,9 @@ name: Check the content and the chat
 on:
   push:
     branches-ignore: [main]
-    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/**", "api/**", "index.html", "admin.html", "*.js", "*.css", "robots.txt", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
+    paths: ["shared/**", "faculties/**", "web/**", "scripts/**", "api/**", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   pull_request:
-    paths: ["shared/**", "faculties/**", "biu-5787.ics", "scripts/**", "api/**", "index.html", "admin.html", "*.js", "*.css", "robots.txt", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
+    paths: ["shared/**", "faculties/**", "web/**", "scripts/**", "api/**", "vercel.json", "package.json", "package-lock.json", ".github/workflows/check-data.yml"]
   workflow_dispatch:
 
 permissions:

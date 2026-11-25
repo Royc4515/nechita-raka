@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { facultyTracks, readTrack, saveTrack, trackAsked, TRACK_KEY, trackName } from "../../course-track.js";
+import { facultyTracks, readTrack, saveTrack, trackAsked, TRACK_KEY, trackName } from "../../web/course-track.js";
 
 const TRACKS = [{ id: "single", label: "חד-חוגי" }, { id: "cs", label: "משולב עם מדעי המחשב", short: "מדמ\"ח" }];
 

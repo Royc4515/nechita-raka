@@ -1,6 +1,6 @@
 // The server's view of Shabbat: the same times the page uses (shabbat-times.js at the repo root, a plain script
 // that puts its functions on globalThis.NR_SHABBAT so the browser can load it synchronously), plus the chat's answer.
-import "../../../shabbat-times.js";
+import "../../../web/shabbat-times.js";
 import { FACULTY } from "../../../faculties/index.js";
 
 export const { CITY, candleLighting, havdalah, clock, shabbatState, parseClockOverride } = globalThis.NR_SHABBAT;

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { dayHours, dayTimeline, defaultDay, shortName, weekDates, weekLayout } from "../../course-week.js";
+import { dayHours, dayTimeline, defaultDay, shortName, weekDates, weekLayout } from "../../web/course-week.js";
 
 const entry = (code, day, start, end) => ({ course: { code }, group: { kind: "הרצאה", group: "01" }, slot: { day, start, end } });
 

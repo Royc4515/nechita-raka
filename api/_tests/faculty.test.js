@@ -242,11 +242,11 @@ test("the web app manifest carries the faculty's name, description and color", (
   assert.equal(parsed.lang, "he");
   assert.equal(parsed.dir, "rtl");
   assert.equal(parsed.icons.length, 4);
-  for (const icon of parsed.icons) assert.ok(existsSync(icon.src.replace(/^\.\//, "")), icon.src);
+  for (const icon of parsed.icons) assert.ok(existsSync(icon.src.replace(/^\.\//, "web/")), icon.src);
 });
 
 test("the prerender writes the manifest's accent colors into the :root blocks and leaves the memorial override alone", () => {
-  const template = readFileSync("index.html", "utf8");
+  const template = readFileSync("web/index.html", "utf8");
   const theme = { light: { ...cs.theme.light, accent: "#111111" }, dark: { ...cs.theme.dark, accent: "#222222" } };
   const out = withTheme(template, theme);
   assert.equal(out.split(accentLine(theme.light)).length - 1, 1, "one light line");
@@ -255,13 +255,13 @@ test("the prerender writes the manifest's accent colors into the :root blocks an
   assert.equal(withTheme(template, cs.theme), template, "the CS values give the template back unchanged");
   assert.throws(() => withTheme(template.replace(DARK_SPLIT_TEXT, "@media (x)"), cs.theme), /dark-mode/);
   // admin.html has the same three accent lines, so the build themes it the same way.
-  const admin = readFileSync("admin.html", "utf8");
+  const admin = readFileSync("web/admin.html", "utf8");
   assert.equal(withTheme(admin, cs.theme), admin, "the CS values give the admin page back unchanged");
   assert.equal(withTheme(admin, theme).split(accentLine(theme.dark)).length - 1, 2, "the admin page takes the dark lines too");
 });
 
 test("the prerender writes the manifest's hero, site name and sitemap address; the CS values give the template back unchanged", () => {
-  const template = readFileSync("index.html", "utf8");
+  const template = readFileSync("web/index.html", "utf8");
   assert.ok(withHero(template, { ...cs.hero, path: "~/biu/x/year-1" }).includes(`<span>~/biu/x/year-1</span></div>`));
   assert.ok(withHero(template, { ...cs.hero, path: "a<b" }).includes(`<span>a&lt;b</span></div>`), "escaped");
   assert.equal(withHero(template, cs.hero), template, "the CS hero gives the template back unchanged");
@@ -308,7 +308,7 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
   assert.ok(withStatusPath(template, `x"</script>`).includes(`el("span", { text: "x\\"\\u003c/script> › status" })`), "a JS string, with no way out of the script");
   assert.throws(() => withStatusPath(template.replace("~/year-1 › status", "~/year-1 > status"), cs.labels.chatPath), /status label/);
   // robots.txt: its Sitemap line points at the faculty's address.
-  const robots = readFileSync("robots.txt", "utf8");
+  const robots = readFileSync("web/robots.txt", "utf8");
   const out = robotsTxt(robots);
   assert.ok(out.includes(`Sitemap: ${FACULTY.site.url}/sitemap.xml`));
   assert.equal((out.match(/^Sitemap:/gm) || []).length, 1);
@@ -319,7 +319,7 @@ test("the prerender writes the manifest's hero, site name and sitemap address; t
 });
 
 test("the prerender turns decor into data-decor attributes on <html>, in a fixed order; no decor gives the page back", () => {
-  const template = readFileSync("index.html", "utf8");
+  const template = readFileSync("web/index.html", "utf8");
   const tag = `<html lang="he" dir="rtl"`;
   assert.equal(withDecor(template, undefined), template, "CS has no decor: the template comes back unchanged");
   assert.equal(withDecor(template, {}), template);
@@ -342,7 +342,7 @@ test("the prerender turns decor into data-decor attributes on <html>, in a fixed
 });
 
 test("the pages, the structured data and llms.txt describe the manifest's audience; the CS build says first-year CS as before", () => {
-  const template = readFileSync("index.html", "utf8");
+  const template = readFileSync("web/index.html", "utf8");
   const data = loadData();
   const { people, scope, scopeShort } = audienceOf(FACULTY);
   const home = homePage(template, data, "2026-10-18");
@@ -549,7 +549,7 @@ test("the faculty guard passes a clean bundle and fails one that carries another
 
 test("the dashboard takes its faculty line and share link from the manifest, and CS's page is as it was", async () => {
   const { withAdminIdentity } = await import("../../scripts/prerender.mjs");
-  const admin = readFileSync(new URL("../../admin.html", import.meta.url), "utf8");
+  const admin = readFileSync(new URL("../../web/admin.html", import.meta.url), "utf8");
   assert.equal(withAdminIdentity(admin, FACULTIES.cs.site), admin, "the template is written with the CS values");
   const neuroAdmin = withAdminIdentity(admin, FACULTIES.neuro.site);
   assert.ok(neuroAdmin.includes(`<small>נחיתה רכה · מדעי המוח בר אילן</small>`));
@@ -559,7 +559,7 @@ test("the dashboard takes its faculty line and share link from the manifest, and
 });
 
 test("a notice's page is the home page with the notice's own link preview, marked for the page and kept out of search", () => {
-  const template = readFileSync("index.html", "utf8");
+  const template = readFileSync("web/index.html", "utf8");
   const data = loadData();
   const notice = { id: "test-notice", from: "2026-11-25", until: "2026-12-09", title: "כותרת \"בדיקה\"", text: "טקסט <ההודעה>" };
   const withImage = noticePage(template, data, notice, "2026-11-25", true);

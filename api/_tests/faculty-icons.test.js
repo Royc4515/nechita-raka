@@ -20,7 +20,7 @@ test("neuro has its own icons (tab, home screen, installed app), not the shared 
   for (const [file, size] of Object.entries(sizes)) {
     const own = read(`faculties/neuro/icons/${file}`);
     assert.deepEqual(pngSize(own), [size, size], file);
-    assert.ok(!own.equals(read(`icons/${file}`)), `${file} differs from the shared one`);
+    assert.ok(!own.equals(read(`web/icons/${file}`)), `${file} differs from the shared one`);
   }
   assert.match(read("faculties/neuro/icons/icon.svg").toString("utf8"), /^<svg[^>]*viewBox="0 0 512 512"/);
 });

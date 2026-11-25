@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { aiLink, buildPrompt, courseDataText, exportSchedule, FORMAT, inYear, parseSchedule } from "../../course-ai.js";
-import { createStore } from "../../course-store.js";
+import { aiLink, buildPrompt, courseDataText, exportSchedule, FORMAT, inYear, parseSchedule } from "../../web/course-ai.js";
+import { createStore } from "../../web/course-store.js";
 import { loadCourses } from "../_lib/courses/model.js";
 import { FACULTIES, facultyFile } from "../../faculties/index.js";
 

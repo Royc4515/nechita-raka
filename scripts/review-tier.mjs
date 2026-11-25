@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 
 const TIERS = [
   { tier: 3, reason: "server, env, prompt, limiter, admin or build", test: (f) => /^api\/(?!_tests\/)|^vercel\.json$|^scripts\/(build-public|prerender)\.mjs$|^\.github\//.test(f) },
-  { tier: 2, reason: "browser code", test: (f) => /^(index\.html|chat\.js|peek\.js|track\.js|admin\.(html|js)|course-[\w-]+\.js|.*\.css|manifest\.webmanifest)$/.test(f) || /^faculties\/[^/]+\/faculty\.js$/.test(f) },
+  { tier: 2, reason: "browser code", test: (f) => /^web\/(index\.html|chat\.js|peek\.js|track\.js|admin\.(html|js)|course-[\w-]+\.js|.*\.css|manifest\.webmanifest)$/.test(f) || /^faculties\/[^/]+\/faculty\.js$/.test(f) },
   { tier: 1, reason: "scripts, tests, agents or docs", test: (f) => /^(scripts\/|api\/_tests\/|\.claude\/|package(-lock)?\.json$|README\.md$|.*\.md$)/.test(f) },
   { tier: 0, reason: "content only", test: (f) => /^(data\.js|data\.en\.js|management\/|shared\/|faculties\/[^/]+\/data(\.en)?\.js$|courses-[\w-]+\.json$|biu-\d+\.ics$)/.test(f) },
 ];

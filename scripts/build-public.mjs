@@ -15,6 +15,8 @@ import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifes
 import { ICON_VERSIONS, NOTICE_PREFIX, guidePage, homePage, noticeImagePath, noticePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withIconLinks, withTheme } from "./prerender.mjs";
 
 const OUT = "public";
+// The browser source lives in web/ and is published flat: web/chat.js is served as /chat.js.
+const WEB = "web";
 const FILES = [
   "chat.js",
   "chat.css",
@@ -39,7 +41,6 @@ const FILES = [
   "shabbat.js",
   "shabbat.css",
   "shabbat-times.js",
-  "assets",
   "icons",
 ];
 // Written by the build for the selected faculty (FACULTY env var, default cs; see faculties/index.js):
@@ -48,17 +49,17 @@ const FILES = [
 const GENERATED = [BROWSER_FILES.SITE_DATA, BROWSER_FILES.SITE_EN, "faculty.js", "manifest.webmanifest", FACULTY.calendar.file];
 // Names a guide's address must not take: they are files the site already serves, or generated ones. The
 // faculty's catalog scan, published under courses.download, joins them and must not take one of them itself.
-const RESERVED = reserveDownload(new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", ...[...FILES, ...GENERATED].map(nameStem)]), FACULTY.courses.download);
+const RESERVED = reserveDownload(new Set(["index", "sitemap", "llms", "api", "_vercel", "course-list", "assets", ...[...FILES, ...GENERATED].map(nameStem)]), FACULTY.courses.download);
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT);
 for (const file of [...FILES, "index.html"]) {
-  if (!existsSync(file)) throw new Error(`build-public: ${file} is missing`);
+  if (!existsSync(`${WEB}/${file}`)) throw new Error(`build-public: ${WEB}/${file} is missing`);
 }
-for (const file of FILES) cpSync(file, `${OUT}/${file}`, { recursive: true });
+for (const file of FILES) cpSync(`${WEB}/${file}`, `${OUT}/${file}`, { recursive: true });
 // The dashboard has the same three accent lines as index.html and takes the faculty's colors the same way, plus its name and share link.
-writeFileSync(`${OUT}/admin.html`, withIconLinks(withAdminIdentity(withTheme(readFileSync("admin.html", "utf8"), FACULTY.theme), FACULTY.site), ICON_VERSIONS));
-writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync("robots.txt", "utf8")));
+writeFileSync(`${OUT}/admin.html`, withIconLinks(withAdminIdentity(withTheme(readFileSync(`${WEB}/admin.html`, "utf8"), FACULTY.theme), FACULTY.site), ICON_VERSIONS));
+writeFileSync(`${OUT}/robots.txt`, robotsTxt(readFileSync(`${WEB}/robots.txt`, "utf8")));
 
 // The faculty: the browser's copy of the manifest (names, lines, theme; never the model prompts),
 // the "add to home screen" descriptor, and the mascot and link-preview images at their usual addresses.
@@ -90,7 +91,7 @@ writeFileSync(`${OUT}/data.js`, `var __wa = ["https:", "", ["chat", "whatsapp", 
 copyFileSync(CATALOG_FILE, `${OUT}/${FACULTY.courses.download}`);
 const courses = loadCourses();
 writeFileSync(`${OUT}/course-list.json`, JSON.stringify(courses));
-const template = readFileSync("index.html", "utf8");
+const template = readFileSync(`${WEB}/index.html`, "utf8");
 const updated = lastUpdated(data);
 writeFileSync(`${OUT}/index.html`, hideWhatsAppInHtml(homePage(template, data, updated)));
 for (const guide of data.guides) {

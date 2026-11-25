@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { inTrack, trackOf, tracksOf, yearOf, yearOfId, yearsOf } from "../../course-years.js";
+import { inTrack, trackOf, tracksOf, yearOf, yearOfId, yearsOf } from "../../web/course-years.js";
 
 test("a plain year id and a track:year id both give a year; pools give none", () => {
   assert.equal(yearOfId("1"), 1);
