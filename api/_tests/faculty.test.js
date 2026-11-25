@@ -563,7 +563,7 @@ test("a notice's page is the home page with the notice's own link preview, marke
   const data = loadData();
   const notice = { id: "test-notice", from: "2026-11-25", until: "2026-12-09", title: "כותרת \"בדיקה\"", text: "טקסט <ההודעה>" };
   const withImage = noticePage(template, data, notice, "2026-11-25", true);
-  assert.match(withImage, /<html lang="he" dir="rtl" data-notice="test-notice">/);
+  assert.match(withImage, /<html lang="he" dir="rtl"[^>]* data-notice="test-notice">/, "marked on <html>, after any decor attributes the faculty adds");
   assert.ok(withImage.includes(`<meta property="og:url" content="${noticeUrl("test-notice")}">`));
   assert.ok(withImage.includes("/assets/notices/test-notice.jpg"), "the notice's own image");
   assert.ok(withImage.includes('<meta name="robots" content="noindex, follow">'));
