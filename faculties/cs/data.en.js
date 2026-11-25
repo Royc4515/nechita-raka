@@ -252,5 +252,8 @@ window.SITE_EN = {
     [`לא לנקודות. "חזית המחקר במדעי המחשב" (89-390) יכול להיחשב כאחד מקורסי התוכן באנגלית שנדרשים לתואר, אבל הוא נלמד מעבר למכסת הנקודות. נרשמים אליו באשכול קורסי הבחירה, ובכל זאת צריך להשלים 10 נ"ז בקורסי בחירה בלעדיו.`, `Not for credits. "Research Frontier in Computer Science" ("חזית המחקר במדעי המחשב", 89-390) can count as one of the English-taught content courses the degree requires, but it is taken beyond the required credits. You register for it in the electives cluster, yet you still need 10 elective credits without it.`],
     [`NVIDIA בבר-אילן: הרצאה ופאנל, פתיחת מצעד החברות המובילות`, `NVIDIA at Bar-Ilan: talk and panel, opening the leading-companies series`],
     [`בניין מוזיקה 1005, אודיטוריום 001. מתואר ראשון ועד דוקטורט, מספר המקומות מוגבל`, `Music building 1005, auditorium 001. For bachelor's to PhD students, limited places`],
+    [`חונכות למילואימניקים במדמ"ח, תשפ"ז`, `Tutoring for reservists in CS, 2026-27`],
+    [`שירתתם לפחות 21 ימי מילואים מ-11.10.2026? המחלקה מעמידה חונכים וסיוע לימודי. צריך טופס חדש השנה.`, `Served at least 21 reserve days since 11.10.2026? The department offers tutors and study support. You need a new form this year.`],
+    [`לטופס`, `To the form`],
   ],
 };

@@ -282,3 +282,15 @@ DESCRIPTION:עד סוף דצמבר\, לפי הנתונים מהצבא. מק
  ור: מייל דיקן הסטודנטים מ-23.11.2026
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:traffic-webb-20261125@{uidDomain}
+DTSTAMP:20261125T120000Z
+DTSTART;VALUE=DATE:20261125
+DTEND;VALUE=DATE:20261126
+SUMMARY:מתחילים שינויי תנועה ליד הקמפוס\, לכש
+ לושה חודשים
+DESCRIPTION:מקס ואנה ווב והצומת עם ז'בוטינסקי. 
+ בין השאר אין פנייה שמאלה לחניון וואהל ממ
+ זרח
+TRANSP:TRANSPARENT
+END:VEVENT

@@ -5,7 +5,7 @@
 // page sees it, and every message points at the file and line where the value is written.
 // Errors (exit code 1) are things that break or hide content on the site.
 // Warnings are worth a look but do not fail the check.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import vm from "node:vm";
 import { contentFiles, contentPlaceholders, mergeContent, mergeEnglish } from "../faculties/content.js";
 import { FACULTIES, FACULTY } from "../faculties/index.js";
@@ -179,6 +179,22 @@ function checkStepLinks(g, where) {
 data.guides.forEach(checkGuide);
 if (data.guides.filter((g) => g.lecturers === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת המרצים (lecturers: true).", "lecturers: true");
 if (data.guides.filter((g) => g.courses === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת הקורסים (courses: true).", "courses: true");
+
+// Notices: the announcements at the top of the page, each shown from `from` to `until` (both included).
+const noticeIds = new Set();
+for (const n of data.notices || []) {
+  const where = (n && (n.title || n.id)) || "notice";
+  if (!/^[a-z0-9-]+$/.test((n && n.id) || "")) error(`להודעה "${where}" צריך id באנגלית קטנה, בלי רווחים.`, where);
+  else if (noticeIds.has(n.id)) error(`המזהה של ההודעה "${n.id}" מופיע פעמיים.`, `id: \`${n.id}\``);
+  noticeIds.add(n && n.id);
+  if (!isText(n.title) || !isText(n.text)) error(`להודעה "${where}" חסר title או text.`, where);
+  if (!isRealDate(n.from) || !isRealDate(n.until)) error(`בהודעה "${where}" צריך from ו-until בפורמט שנה-חודש-יום.`, where);
+  else if (n.until < n.from) error(`בהודעה "${where}" until לפני from.`, where);
+  if (n.guide != null && !guideIds.has(n.guide)) error(`ההודעה "${where}" מקושרת למדריך "${n.guide}" שלא קיים.`, where);
+  if (n.link != null && (!isText(n.link.label) || !isHttps(n.link.url))) error(`בהודעה "${where}" השדה link צריך להיות { label, url } עם קישור שמתחיל ב-https://.`, where);
+  if (n.share != null && !isText(n.share)) error(`בהודעה "${where}" השדה share (נוסח השיתוף) צריך להיות טקסט.`, where);
+  if (n && n.id && !existsSync(`faculties/${FACULTY.id}/notices/${n.id}.jpg`)) warn(`להודעה "${where}" אין תמונת תצוגה מקדימה לשיתוף. מריצים node scripts/notice-images.mjs ומוסיפים את התמונה ל-git.`, where);
+}
 
 const cal = data.calendar;
 for (const t of cal.terms || []) {

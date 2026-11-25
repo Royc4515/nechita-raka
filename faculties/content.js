@@ -9,6 +9,7 @@
 //   A faculty entry with a shared id replaces the shared one whole (no deep merge).
 // - featured and site: faculty only.
 // - calendar: the shared calendar, with the faculty's events added and everything sorted by date.
+// - notices: the announcements at the top of the page, from both files, newest (latest `from`) first.
 // - faq: the shared questions in their order; a faculty question goes after the shared question its
 //   `after` names, before the one its `before` names, or at the end when it has neither. Neither is published.
 // - placeholders: shared text may say {mascots} (the faculty's two names, "ביט ובייט") and {coursesFile}
@@ -22,8 +23,8 @@ import vm from "node:vm";
 import { FACULTY } from "./index.js";
 
 const ROOT = new URL("../", import.meta.url);
-const SHARED_KEYS = new Set(["guides", "categories", "calendar", "faq"]);
-const FACULTY_KEYS = new Set(["site", "featured", "guides", "categories", "calendar", "faq"]);
+const SHARED_KEYS = new Set(["notices", "guides", "categories", "calendar", "faq"]);
+const FACULTY_KEYS = new Set(["site", "featured", "notices", "guides", "categories", "calendar", "faq"]);
 const FACULTY_CALENDAR_KEYS = new Set(["events"]);
 const ENGLISH_KEYS = new Set(["ui", "content"]);
 
@@ -147,11 +148,17 @@ export function mergeContent(shared, faculty, order, placeholders = null) {
   return fillPlaceholders({
     site: faculty.site,
     featured: asList(faculty.featured),
+    notices: mergeNotices(shared.notices, faculty.notices),
     guides: mergeById(shared.guides, faculty.guides, order.guides, "guides"),
     categories: mergeById(shared.categories, faculty.categories, order.categories, "categories"),
     calendar: mergeCalendar(shared.calendar, faculty.calendar),
     faq: mergeFaq(shared.faq, faculty.faq),
   }, placeholders && placeholders.he);
+}
+
+/** Both files' notices, newest first (by `from`, a stable sort, so a tie keeps shared before faculty). */
+function mergeNotices(shared, faculty) {
+  return [...asList(shared), ...asList(faculty)].sort((a, b) => String(b && b.from).localeCompare(String(a && a.from)));
 }
 
 /** The merged English pairs: ui and content from both files, shared first; each pair filled in its own language. */

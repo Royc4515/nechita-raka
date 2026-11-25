@@ -142,3 +142,11 @@ test("the merged script survives the build's WhatsApp hiding step", () => {
   vm.runInNewContext(hidden, sandbox);
   assert.equal(sandbox.window.SITE_DATA.items[0].url, "https://chat.whatsapp.com/abc");
 });
+
+test("notices come from both files, newest first, and a faculty may have none", () => {
+  const notice = (id, from) => ({ id, from, until: "2026-12-31", title: `t-${id}`, text: "x" });
+  const merged = mergeContent({ ...shared(), notices: [notice("old", "2026-11-01"), notice("tie", "2026-11-20")] },
+    { ...faculty(), notices: [notice("new", "2026-11-25"), notice("tie2", "2026-11-20")] }, ORDER);
+  assert.deepEqual(merged.notices.map((n) => n.id), ["new", "tie", "tie2", "old"]);
+  assert.deepEqual(mergeContent(shared(), faculty(), ORDER).notices, []);
+});

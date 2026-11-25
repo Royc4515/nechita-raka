@@ -8,8 +8,8 @@ import { withCalendarFile } from "../../scripts/prerender.mjs";
 
 const { cs, neuro } = FACULTIES;
 // The sha256 of the CS biu-5787.ics: first the hand-written file this generator replaced (faculty PR 6g), updated on
-// 24.11.2026 for two university dates of the reservists' framework and the NVIDIA event. A change here must be a deliberate content change.
-const CS_ICS_SHA256 = "0a207de8681d02fb030ef263a795f3c3ed0a89c2c040fa0b8abe85bf2154d612";
+// 24.11.2026 for two university dates of the reservists' framework, the NVIDIA event, and the traffic changes of 25.11. A change here must be a deliberate content change.
+const CS_ICS_SHA256 = "98293443d2aa4d5d6dc2ec9fa615e3699002158a66c990a377dd12e07a1b3b2e";
 const sha = (text) => createHash("sha256").update(text, "utf8").digest("hex");
 const events = (ics) => ics.split("\r\n").filter((l) => l === "BEGIN:VEVENT").length;
 const block = (uid, extra = []) => ["BEGIN:VEVENT", `UID:${uid}`, ...extra, "END:VEVENT"].join("\r\n") + "\r\n";
@@ -19,7 +19,7 @@ const block = (uid, extra = []) => ["BEGIN:VEVENT", `UID:${uid}`, ...extra, "END
 test("the CS calendar file is byte-identical to the hand-written file it replaced", () => {
   const ics = loadIcs(cs);
   assert.equal(sha(ics), CS_ICS_SHA256);
-  assert.equal(events(ics), 46);
+  assert.equal(events(ics), 47);
   assert.ok(ics.startsWith("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//BIU CS Year 1//"), "CS keeps its producer name");
   assert.ok(ics.endsWith("END:VEVENT\r\nEND:VCALENDAR\r\n"));
 });
@@ -28,7 +28,7 @@ test("the neuro calendar file has its own name and producer, the university's da
   const ics = loadIcs(neuro);
   assert.match(ics, /PRODID:-\/\/BIU Brain Sciences\/\//);
   assert.match(ics.replaceAll("\r\n ", ""), /X-WR-CALNAME:בר אילן - לוח אקדמי תשפ"ז\\, מדעי המוח/);
-  assert.equal(events(ics), 36, "the 28 university-wide events and neuro's own 8, none of CS's 18");
+  assert.equal(events(ics), 37, "the 29 university-wide events and neuro's own 8, none of CS's 18");
   assert.ok(!/BIU CS|biu-cs|exam-|cs-year-opening|בחינה:|למדעי המחשב|503|forms\.gle/.test(ics), "no CS wording in the neuro file");
   assert.ok(ics.includes("@biu-neuro-5787"), "UIDs carry the faculty's own suffix");
   assert.ok(!ics.includes("{uidDomain}"), "every placeholder is filled");
