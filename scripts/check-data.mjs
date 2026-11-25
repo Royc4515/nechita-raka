@@ -192,6 +192,7 @@ for (const n of data.notices || []) {
   else if (n.until < n.from) error(`בהודעה "${where}" until לפני from.`, where);
   if (n.guide != null && !guideIds.has(n.guide)) error(`ההודעה "${where}" מקושרת למדריך "${n.guide}" שלא קיים.`, where);
   if (n.link != null && (!isText(n.link.label) || !isHttps(n.link.url))) error(`בהודעה "${where}" השדה link צריך להיות { label, url } עם קישור שמתחיל ב-https://.`, where);
+  if (n.share != null && !isText(n.share)) error(`בהודעה "${where}" השדה share (נוסח השיתוף) צריך להיות טקסט.`, where);
   if (n && n.id && !existsSync(`faculties/${FACULTY.id}/notices/${n.id}.jpg`)) warn(`להודעה "${where}" אין תמונת תצוגה מקדימה לשיתוף. מריצים node scripts/notice-images.mjs ומוסיפים את התמונה ל-git.`, where);
 }
 
