@@ -4,6 +4,10 @@ Notable changes, newest first. The project ships continuously from `main` (no ve
 
 ## Unreleased
 
+### Fixed
+
+- A stray "null" under the important notices on the home page when there were three notices or fewer.
+
 ### Changed
 
 - Browser source moved from the repository root into [`web/`](web/); published addresses are unchanged.
