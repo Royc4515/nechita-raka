@@ -207,6 +207,6 @@ Corrections with an official source are the most useful contribution. See [CONTR
 
 ## Author
 
-**Roy Carmelli** · [GitHub](https://github.com/Royc4515) · [LinkedIn](https://www.linkedin.com/in/roy-carmelli)
+**Roy Carmelli** · [GitHub](https://github.com/Royc4515) · [LinkedIn](https://www.linkedin.com/in/roy-carmelli) · [Portfolio](https://roy-carmelli-portfolio.vercel.app/)
 
 The course catalog data was collected with [biu-courses-crawler](https://github.com/Royc4515/biu-courses-crawler).

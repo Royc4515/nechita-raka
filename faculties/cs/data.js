@@ -33,6 +33,8 @@ window.SITE_DATA = {
     authorUrl: `https://www.linkedin.com/in/roy-carmelli`,
     // הקישור לפורטפוליו. כל עוד הוא ריק, הקישור לא יופיע בתחתית האתר.
     portfolioUrl: `https://roy-carmelli-portfolio.vercel.app/`,
+    // הקישור לגיטהאב. מופיע רק בנתונים לגוגל (JSON-LD), לא בתחתית האתר.
+    githubUrl: `https://github.com/Royc4515`,
     // וואטסאפ פרטי לרועי: מספר בפורמט בינלאומי, בלי + ובלי מקפים, למשל `972501234567`.
     // כל עוד הוא ריק, כפתורי "וואטסאפ פרטי לרועי" לא יופיעו באתר.
     whatsapp: `972547287807`,

@@ -322,8 +322,9 @@ function headHtml({ title, description, url, type, modified, graph }) {
   ].filter(Boolean).join("\n");
 }
 
-function personNode(site) {
-  const sameAs = [site.authorUrl, site.portfolioUrl].filter(isSafeUrl);
+// The author in JSON-LD. sameAs also carries the GitHub profile, which is not shown in the footer.
+export function personNode(site) {
+  const sameAs = [site.authorUrl, site.portfolioUrl, site.githubUrl].filter(isSafeUrl);
   return {
     "@type": "Person",
     "@id": `${SITE_URL}/#author`,
