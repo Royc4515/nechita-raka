@@ -419,3 +419,17 @@ test("prompt guard reads a probability and fails open to null", async () => {
   assert.equal(await new PromptGuard({ complete: async () => ({ content: "0.12" }) }).score("שאלה"), 0.12);
   assert.equal(await new PromptGuard({ complete: async () => { throw new Error("down"); } }).score("שאלה"), null);
 });
+
+test("the style hook fixes the Lemida misspelling with its prefixes, and leaves real words alone", () => {
+  const cases = [["תיכנסי למלדה עם הסיסמה", "תיכנסי ללמדה עם הסיסמה"], ["סיסמה ל-365 (ולכן גם למלדה)", "סיסמה ל-365 (ולכן גם ללמדה)"], ["במלדה יש הכול", "בלמדה יש הכול"], ["מלדה זה המודל", "למדה זה המודל"]];
+  for (const [text, want] of cases) {
+    const out = runOutputHooks({ answer: text, inScope: true, sources: [] }, hooksCtx);
+    assert.equal(out.draft.answer, want);
+  }
+  const keep = runOutputHooks({ answer: "המרצה מלמדת את הקורס בלמדה", inScope: true, sources: [] }, hooksCtx);
+  assert.equal(keep.draft.answer, "המרצה מלמדת את הקורס בלמדה");
+});
+
+test("the prompt spells Lemida", () => {
+  assert.match(systemPrompt(M.id, "core", canaryFor(SALT)), /never "מלדה"/);
+});
