@@ -2167,8 +2167,9 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const ordered = linked ? [...(notices || [])].sort((a, b) => (b && b.id === linked) - (a && a.id === linked)) : notices;
     const cards = noticeBanners(ordered, today);
     const more = cards.slice(3);
-    box.replaceChildren(...cards.slice(0, 3), more.length ? el("details", { class: "notices-more" },
-      el("summary", { text: more.length === 1 ? tr("עוד הודעה אחת") : tr("עוד {n} הודעות", { n: more.length }) }), ...more) : null);
+    // replaceChildren() writes a null argument as the text "null" (unlike el()), so the fold is spread in only when there is one.
+    box.replaceChildren(...cards.slice(0, 3), ...(more.length ? [el("details", { class: "notices-more" },
+      el("summary", { text: more.length === 1 ? tr("עוד הודעה אחת") : tr("עוד {n} הודעות", { n: more.length }) }), ...more)] : []));
     box.hidden = !cards.length;
   }
   function noticeBanners(notices, today) {
