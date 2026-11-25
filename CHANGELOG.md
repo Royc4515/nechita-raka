@@ -6,6 +6,7 @@ Notable changes, newest first. The project ships continuously from `main` (no ve
 
 ### Fixed
 
+- Removed the "Lemida Video Finder" item from Tools and perks: its GitHub repository was deleted or made private, so the link led to a 404.
 - A stray "null" under the important notices on the home page when there were three notices or fewer.
 
 ### Changed
