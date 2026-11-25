@@ -10,10 +10,10 @@
 [![Brain Sciences site](https://img.shields.io/website?url=https%3A%2F%2Fnechita-raka-neuro.vercel.app&label=neuro%20site&logo=vercel)](https://nechita-raka-neuro.vercel.app)
 [![Last commit](https://img.shields.io/github/last-commit/Royc4515/nechita-raka)](https://github.com/Royc4515/nechita-raka/commits/main)
 
-<p align="center">
-  <img src="docs/assets/screenshot-desktop.jpg" alt="The Computer Science site on a desktop: header, important notices and the mascot illustration" width="68%">
-  <img src="docs/assets/screenshot-phone.jpg" alt="The same site on a phone in dark mode, with the bottom navigation and a mascot peeking from the corner" width="24%">
-</p>
+| Computer Science | Brain Sciences |
+| :---: | :---: |
+| <img src="docs/assets/cs-desktop.jpg" alt="The Computer Science site on a desktop: header, important notices and the parachuting student illustration" width="420"> | <img src="docs/assets/neuro-desktop.jpg" alt="The Brain Sciences site on a desktop: purple theme, important notices and the brain illustration" width="420"> |
+| <img src="docs/assets/cs-phone.jpg" alt="The Computer Science site on a phone in dark mode, with the bottom navigation and a mascot peeking from the corner" width="200"> | <img src="docs/assets/neuro-phone.jpg" alt="The Brain Sciences site on a phone in dark mode, with the bottom navigation and a mascot peeking from the corner" width="200"> |
 
 **Live:** [Computer Science](https://nechita-raka.vercel.app) · [Brain Sciences](https://nechita-raka-neuro.vercel.app)
 
