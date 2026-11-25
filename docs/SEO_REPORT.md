@@ -166,7 +166,7 @@
 
 ### Google Search Console
 
-1. נכנסים ל-https://search.google.com/search-console ומוסיפים נכס מסוג **URL prefix** עם `https://nechita-raka.vercel.app/`. נכס מסוג Domain לא אפשרי, כי `vercel.app` לא בבעלותך.
+1. נכנסים ל-<https://search.google.com/search-console> ומוסיפים נכס מסוג **URL prefix** עם `https://nechita-raka.vercel.app/`. נכס מסוג Domain לא אפשרי, כי `vercel.app` לא בבעלותך.
 2. אימות: הכי פשוט בשיטת **HTML tag**. מעתיקים את `<meta name="google-site-verification" content="...">` ומוסיפים אותו ב-`index.html` מתחת ל-`<!-- /seo:head -->`, כדי שייכנס לכל העמודים. אחרי ה-deploy לוחצים Verify. (אפשר גם קובץ HTML: שמים אותו בשורש ומוסיפים אותו לרשימה `FILES` ב-`scripts/build-public.mjs`.)
 3. **Sitemaps**: מגישים `sitemap.xml`.
 4. **URL Inspection**: בודקים את `/` ואת `/exams`, לוחצים "Test live URL" ומוודאים שהעמוד המרונדר כולל את התוכן. אחר כך לוחצים "Request indexing" לעמוד הבית ולמדריכים החשובים: `/registration`, `/exams`, `/payments`, `/lemida-365`, `/first-week`.
@@ -174,7 +174,7 @@
 
 ### Bing Webmaster Tools
 
-1. נכנסים ל-https://www.bing.com/webmasters. הדרך הכי מהירה היא **Import from Google Search Console**, שמעבירה את האימות ואת ה-sitemap.
+1. נכנסים ל-<https://www.bing.com/webmasters>. הדרך הכי מהירה היא **Import from Google Search Console**, שמעבירה את האימות ואת ה-sitemap.
 2. אחרת: מוסיפים את האתר, מאמתים ב-meta tag (`msvalidate.01`) באותו מקום ב-`index.html`, ומגישים את `sitemap.xml`.
 3. זה חשוב יותר ממה שנראה: ChatGPT search ו-Copilot נשענים במידה רבה על האינדקס של בינג.
 

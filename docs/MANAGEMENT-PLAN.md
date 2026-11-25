@@ -6,7 +6,7 @@ Goal: run one site for several faculties with a team of AI agents in fixed roles
 
 ## 1. Structure
 
-```
+```text
 Roy (owner: decides, approves, publishes)
 └── President Orchestrator
     ├── CS CEO            owns the content, data and student needs for CS
@@ -125,6 +125,7 @@ Still open: the weekly agent budget (low, medium, high) and whether the agents k
 ## 7a. The original questions (kept for the record)
 
 **Scope and authority**
+
 1. Is the organization for development only, or also ongoing operations (content updates, reacting to the weekly report, answering students)?
 2. What may the President do without you: merge content-only PRs? merge code after QA and Security? deploy? Or does every merge go through you?
 3. Is the backlog scoring rule (students × urgency ÷ effort) acceptable, or do you want to arbitrate between faculties yourself?
