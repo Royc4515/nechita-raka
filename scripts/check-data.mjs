@@ -180,6 +180,20 @@ data.guides.forEach(checkGuide);
 if (data.guides.filter((g) => g.lecturers === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת המרצים (lecturers: true).", "lecturers: true");
 if (data.guides.filter((g) => g.courses === true).length > 1) error("רק מדריך אחד יכול להציג את רשימת הקורסים (courses: true).", "courses: true");
 
+// Notices: the announcements at the top of the page, each shown from `from` to `until` (both included).
+const noticeIds = new Set();
+for (const n of data.notices || []) {
+  const where = (n && (n.title || n.id)) || "notice";
+  if (!/^[a-z0-9-]+$/.test((n && n.id) || "")) error(`להודעה "${where}" צריך id באנגלית קטנה, בלי רווחים.`, where);
+  else if (noticeIds.has(n.id)) error(`המזהה של ההודעה "${n.id}" מופיע פעמיים.`, `id: \`${n.id}\``);
+  noticeIds.add(n && n.id);
+  if (!isText(n.title) || !isText(n.text)) error(`להודעה "${where}" חסר title או text.`, where);
+  if (!isRealDate(n.from) || !isRealDate(n.until)) error(`בהודעה "${where}" צריך from ו-until בפורמט שנה-חודש-יום.`, where);
+  else if (n.until < n.from) error(`בהודעה "${where}" until לפני from.`, where);
+  if (n.guide != null && !guideIds.has(n.guide)) error(`ההודעה "${where}" מקושרת למדריך "${n.guide}" שלא קיים.`, where);
+  if (n.link != null && (!isText(n.link.label) || !isHttps(n.link.url))) error(`בהודעה "${where}" השדה link צריך להיות { label, url } עם קישור שמתחיל ב-https://.`, where);
+}
+
 const cal = data.calendar;
 for (const t of cal.terms || []) {
   if (!isRealDate(t.from) || !isRealDate(t.to)) error(`תאריך לא תקין בתקופה "${t.label}". הפורמט: שנה-חודש-יום.`, t.label);
