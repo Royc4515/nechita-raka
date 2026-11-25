@@ -1,4 +1,4 @@
-// The site's content, merged from two hand-edited files (MULTI-FACULTY-PLAN.md D3 and D5):
+// The site's content, merged from two hand-edited files (docs/MULTI-FACULTY-PLAN.md D3 and D5):
 // shared/data.js (general Bar-Ilan content) and faculties/<id>/data.js (the faculty's own). The same
 // for the English pairs in data.en.js. Every reader of the content (the build, the prerender, the
 // chat's knowledge base, the tests) goes through loadContent(), so they all see the same merged data;

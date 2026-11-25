@@ -16,7 +16,7 @@ const cs = FACULTIES.cs;
 const ALL = Object.values(FACULTIES);
 const OTHER = ALL.find((f) => f.id !== FACULTY.id);
 
-// The facts of each faculty that the active run asserts (MULTI-FACULTY-PLAN.md D13): keyed by id, so the
+// The facts of each faculty that the active run asserts (docs/MULTI-FACULTY-PLAN.md D13): keyed by id, so the
 // same tests run for whichever FACULTY the env names. A new faculty adds a row here.
 const CS_CATEGORIES = ["1", "2", "3", "cluster1", "cluster2", "complement", "ai"];
 const NEURO_TRACKS = ["single", "single-comp", "cs", "psychology", "biology", "philosophy", "linguistics", "physics"];

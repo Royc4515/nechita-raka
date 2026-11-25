@@ -1,6 +1,6 @@
 # management/
 
-The memory of the agent organization described in [MANAGEMENT-PLAN.md](../MANAGEMENT-PLAN.md). Agents have no memory between runs; what is not written here did not happen.
+The memory of the agent organization described in [docs/MANAGEMENT-PLAN.md](../docs/MANAGEMENT-PLAN.md). Agents have no memory between runs; what is not written here did not happen.
 
 | File | What it is | Who writes it |
 | --- | --- | --- |

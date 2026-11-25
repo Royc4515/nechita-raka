@@ -8,7 +8,7 @@ Everything below is merged into main and live, with no visible change on the CS 
 
 | Step | PR | What it gave us |
 | --- | --- | --- |
-| Plans | #69 | `MULTI-FACULTY-PLAN.md`, `MANAGEMENT-PLAN.md`, this folder, nine role agents, `/board`. |
+| Plans | #69 | `docs/MULTI-FACULTY-PLAN.md`, `docs/MANAGEMENT-PLAN.md`, this folder, nine role agents, `/board`. |
 | Simulations | #70, #71, #73 | `scripts/simulate.mjs`, the first graded baseline (24 answered, 11 invented facts, 0 broke character), the four defects it found fixed. |
 | Chat facts | #74, #76 | Facts and keywords the chat was missing, fact-checked by the CS owner; the Inbar group-change steps confirmed by Roy. |
 | Review ladder | #77 | `scripts/review-tier.mjs`: reviews by touched files, so small changes cost no agents. |

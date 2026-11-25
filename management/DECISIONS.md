@@ -4,7 +4,7 @@ Append only. Newest at the bottom. Format: date, decision, who, why. Roy's decis
 
 | Date | Decision | Who | Why |
 | --- | --- | --- | --- |
-| 15.10.2026 | One repo, the faculty chosen at build time (`FACULTY` env, default `cs`), one Vercel project per faculty with its own env and database. | Roy | Prerendered site, server already configured per deployment, SEO per faculty. Alternatives (fork, runtime multi-tenant) in MULTI-FACULTY-PLAN.md D1. |
+| 15.10.2026 | One repo, the faculty chosen at build time (`FACULTY` env, default `cs`), one Vercel project per faculty with its own env and database. | Roy | Prerendered site, server already configured per deployment, SEO per faculty. Alternatives (fork, runtime multi-tenant) in docs/MULTI-FACULTY-PLAN.md D1. |
 | 15.10.2026 | Keep the vercel.app addresses; domain decision after neuro has traffic. | Roy | Moving CS off its address costs rankings and breaks shared links. |
 | 15.10.2026 | The neuro site serves all brain sciences programs: single major and the combined tracks (CS, psychology, others), with a track selector. | Roy ("brain science all programs, single, combined cs, combined psychology, etc") | One site per faculty, not per track. |
 | 15.10.2026 | Roy is the mentor on the neuro site and the human behind the neuro owner for now. | Roy | No neuro maintainer yet. |

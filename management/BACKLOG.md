@@ -71,4 +71,4 @@ Columns: S = students, U = urgency, E = effort.
 | Faculty manifest, CS only (PR 1, #78) | 16.10.2026 | Theme, mascots, meta from `faculties/cs/faculty.js`. No visible change. |
 | Inbar group-change mechanics confirmed by Roy and restored to the FAQ (#76) | 16.10.2026 | |
 | Yearbook categories (#68), chat facts from the baseline (#74) | 16.10.2026 | #74 merged after the CS owner's fact check. |
-| Plans written and decided | 15.10.2026 | `MULTI-FACULTY-PLAN.md`, `MANAGEMENT-PLAN.md`. |
+| Plans written and decided | 15.10.2026 | `docs/MULTI-FACULTY-PLAN.md`, `docs/MANAGEMENT-PLAN.md`. |

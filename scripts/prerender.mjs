@@ -15,7 +15,7 @@ import { iconVersions, versionedIcon } from "./faculty-public.mjs";
 import { contentFiles, loadContent } from "../faculties/content.js";
 import { DECOR_STYLES, FACULTY, HERO_VARIANTS, TERMINAL_TOKEN_KINDS, THEME_KEYS } from "../faculties/index.js";
 
-// The page identity comes from the faculty manifest (faculties/<id>/faculty.js, MULTI-FACULTY-PLAN.md D4).
+// The page identity comes from the faculty manifest (faculties/<id>/faculty.js, docs/MULTI-FACULTY-PLAN.md D4).
 export const SITE_URL = FACULTY.site.url;
 const OG_IMAGE = { ...FACULTY.site.ogImage, url: `${SITE_URL}/${FACULTY.site.ogImage.path}` };
 const BRAND = FACULTY.site.brand;
@@ -39,7 +39,7 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // ---------- Data ----------
 
-/** The site's content: shared/data.js and faculties/<id>/data.js merged (faculties/content.js, MULTI-FACULTY-PLAN.md D5). */
+/** The site's content: shared/data.js and faculties/<id>/data.js merged (faculties/content.js, docs/MULTI-FACULTY-PLAN.md D5). */
 export function loadData(faculty = FACULTY) {
   const data = loadContent(faculty);
   if (!Array.isArray(data.categories) || !Array.isArray(data.guides)) throw new Error("prerender: the merged content has no categories or guides");
@@ -487,7 +487,7 @@ function withHead(html, head) {
   return html.slice(0, start) + head + html.slice(end + "<!-- /seo:head -->".length);
 }
 
-// ---------- The faculty's look: accent colors and the hero (MULTI-FACULTY-PLAN.md D6, D8) ----------
+// ---------- The faculty's look: accent colors and the hero (docs/MULTI-FACULTY-PLAN.md D6, D8) ----------
 
 const CSS_VAR = { accent: "--accent", accentHover: "--accent-hover", accentInk: "--accent-ink", accentText: "--accent-text", accentSoft: "--accent-soft", focus: "--focus" };
 // A whole line holding only the six variables: the :root blocks. The memorial-day override (one line with its selector) is not touched.

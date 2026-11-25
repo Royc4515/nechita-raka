@@ -1,4 +1,4 @@
-// Which reviews a change needs, from the files it touches (MANAGEMENT-PLAN.md, "Review ladder").
+// Which reviews a change needs, from the files it touches (docs/MANAGEMENT-PLAN.md, "Review ladder").
 // Usage: node scripts/review-tier.mjs [base]   (base defaults to origin/main; compares to the working tree)
 // Prints the tier, the reason, and the exact agents to run, so a review never costs more than the change.
 import { execFileSync } from "node:child_process";

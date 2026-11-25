@@ -4,7 +4,7 @@ node_modules/
 .env*
 .orch/
 public/
-# The role agents and the /board skill are part of the project (MANAGEMENT-PLAN.md); a global
+# The role agents and the /board skill are part of the project (docs/MANAGEMENT-PLAN.md); a global
 # gitignore may hide .claude/, so it is re-included here. Machine-specific files stay out.
 !.claude/
 .claude/launch.json
