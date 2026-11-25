@@ -12,7 +12,7 @@ Date: 25.11.2026. Branch: `chore/repo-polish`. Based on `main` at `f39d8c6`.
 flowchart LR
   subgraph Content["Content (edited in Git)"]
     S["shared/data.js<br/>shared/data.en.js<br/>shared/calendar.ics"]
-    F["faculties/&lt;id&gt;/<br/>data.js, faculty.js,<br/>courses/*.json, images"]
+    F["faculties/{id}/<br/>data.js, faculty.js,<br/>courses/*.json, images"]
   end
   subgraph Build["npm run build (FACULTY=cs|neuro)"]
     C["scripts/check-data.mjs<br/>content validation"]
@@ -90,6 +90,8 @@ Live: <https://nechita-raka.vercel.app> (CS, 200), <https://nechita-raka-neuro.v
 | 12 | info | No committed secrets found (scanned for API key, token, private key and credentialed DB URL patterns; the one hit is a dummy `postgres://u:p@host` in a test). `.env*` is gitignored. |
 | 13 | info | `management/` holds 2.1 MB of screenshots used as review evidence. Kept as is: it is the agents' working memory. |
 | 14 | info | Editing comments in `shared/data.js` or `faculties/*/data.js` changes the site's "last updated" date (`scripts/prerender.mjs` `lastUpdated` uses `git log` on those files). So this polish must not touch those files, even in comments. |
+| 15 | medium | Live bug, found while taking the README screenshots: the home page shows a stray "null" under the notices on both sites. `renderNotices` in `web/index.html` passes `null` to `replaceChildren` when there are three notices or fewer, and the DOM turns it into the text "null". Not fixed here (behavior must not change); one-line fix: spread the optional `<details>` only when it exists. |
+| 16 | info | Markdown link check: every dead link is inside `management/simulations/` transcripts (expired preview URLs, and URLs the chat model produced, which the grades mark as errors). They are records and stay verbatim. |
 
 ## 5. Proposed structure
 
