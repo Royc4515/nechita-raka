@@ -12,7 +12,7 @@ import { loadIcs } from "./calendar-ics.mjs";
 import { FACULTY } from "../faculties/index.js";
 import { foreignFacultyLeaks } from "./faculty-guard.mjs";
 import { copyFacultyAssets, facultyScript, nameStem, reserveDownload, webmanifest } from "./faculty-public.mjs";
-import { ICON_VERSIONS, guidePage, homePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withIconLinks, withTheme } from "./prerender.mjs";
+import { ICON_VERSIONS, NOTICE_PREFIX, guidePage, homePage, noticeImagePath, noticePage, lastUpdated, llmsTxt, loadData, robotsTxt, sitemapXml, withAdminIdentity, withIconLinks, withTheme } from "./prerender.mjs";
 
 const OUT = "public";
 const FILES = [
@@ -96,6 +96,18 @@ writeFileSync(`${OUT}/index.html`, hideWhatsAppInHtml(homePage(template, data, u
 for (const guide of data.guides) {
   if (RESERVED.has(guide.id)) throw new Error(`build-public: the guide id "${guide.id}" is taken by a file of the site; pick another id`);
   writeFileSync(`${OUT}/${guide.id}.html`, hideWhatsAppInHtml(guidePage(template, data, guide, updated, courses)));
+}
+// Each notice gets its own address (/notice-<id>) with its own link preview, for the share button on the notice;
+// its image comes from faculties/<id>/notices/ (scripts/notice-images.mjs makes them).
+for (const notice of data.notices) {
+  if (data.guides.some((g) => g.id === `${NOTICE_PREFIX}${notice.id}`)) throw new Error(`build-public: a guide is named like the notice "${notice.id}"`);
+  const image = `faculties/${FACULTY.id}/notices/${notice.id}.jpg`;
+  const hasImage = existsSync(image);
+  if (hasImage) {
+    mkdirSync(`${OUT}/assets/notices`, { recursive: true });
+    copyFileSync(image, `${OUT}/${noticeImagePath(notice.id)}`);
+  }
+  writeFileSync(`${OUT}/${NOTICE_PREFIX}${notice.id}.html`, hideWhatsAppInHtml(noticePage(template, data, notice, updated, hasImage)));
 }
 writeFileSync(`${OUT}/sitemap.xml`, sitemapXml(data, updated));
 writeFileSync(`${OUT}/llms.txt`, llmsTxt(data, updated));

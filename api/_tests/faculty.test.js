@@ -7,7 +7,7 @@ import { DECOR_STYLES, DEFAULT_FACULTY, FACULTIES, FACULTY, HERO_VARIANTS, MASCO
 import { loadContent, loadEnglish } from "../../faculties/content.js";
 import { browserFaculty, copyFacultyAssets, decorFiles, facultyImageFiles, facultyImageTargets, facultyScript, heroArtFiles, nameStem, reserveDownload, webmanifest } from "../../scripts/faculty-public.mjs";
 import { facultyImageNames, foreignFacultyLeaks, mascotImageNames } from "../../scripts/faculty-guard.mjs";
-import { accentLine, audienceOf, esc, guidePage, homeDescription, homePage, llmsTxt, loadData, robotsTxt, withDecor, withHero, withHeroArt, withMascotShadow, withSiteName, withStatusPath, withTagline, withTheme } from "../../scripts/prerender.mjs";
+import { accentLine, audienceOf, esc, guidePage, homeDescription, homePage, llmsTxt, loadData, noticePage, noticeUrl, robotsTxt, withDecor, withHero, withHeroArt, withMascotShadow, withSiteName, withStatusPath, withTagline, withTheme } from "../../scripts/prerender.mjs";
 
 const clone = (value) => structuredClone(value);
 const DARK_SPLIT_TEXT = "@media (prefers-color-scheme: dark)";
@@ -556,4 +556,17 @@ test("the dashboard takes its faculty line and share link from the manifest, and
   assert.ok(neuroAdmin.includes(`id="share-link">${FACULTIES.neuro.site.url}/?src=wa</code>`));
   assert.ok(!/מדמ"ח|nechita-raka\.vercel\.app/.test(neuroAdmin));
   assert.throws(() => withAdminIdentity("<html></html>", FACULTIES.cs.site), /admin\.html is missing/);
+});
+
+test("a notice's page is the home page with the notice's own link preview, marked for the page and kept out of search", () => {
+  const template = readFileSync("index.html", "utf8");
+  const data = loadData();
+  const notice = { id: "test-notice", from: "2026-11-25", until: "2026-12-09", title: "כותרת \"בדיקה\"", text: "טקסט <ההודעה>" };
+  const withImage = noticePage(template, data, notice, "2026-11-25", true);
+  assert.match(withImage, /<html lang="he" dir="rtl" data-notice="test-notice">/);
+  assert.ok(withImage.includes(`<meta property="og:url" content="${noticeUrl("test-notice")}">`));
+  assert.ok(withImage.includes("/assets/notices/test-notice.jpg"), "the notice's own image");
+  assert.ok(withImage.includes('<meta name="robots" content="noindex, follow">'));
+  assert.ok(withImage.includes("כותרת &quot;בדיקה&quot;") && withImage.includes("טקסט &lt;ההודעה&gt;"), "escaped");
+  assert.ok(!noticePage(template, data, notice, "2026-11-25", false).includes("/assets/notices/"), "no image: the site's own preview");
 });

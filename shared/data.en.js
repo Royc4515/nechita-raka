@@ -109,6 +109,7 @@ window.SITE_EN = {
     [`שלחו מזל טוב בוואטסאפ 🎂`, `Send a WhatsApp birthday wish 🎂`],
     [`איך מתכוננים ←`, `How to prepare →`],
     [`לכל הפרטים ←`, `Full details →`],
+    [`הקישור להודעה הועתק`, `Link to the notice copied`],
     [`עוד הודעה אחת`, `One more notice`],
     [`עוד {n} הודעות`, `{n} more notices`],
     [`אחר כך:`, `After that:`],

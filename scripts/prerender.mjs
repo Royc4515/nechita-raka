@@ -709,8 +709,11 @@ function common(html, data, updated) {
 }
 
 export function homePage(template, data, updated) {
+  return homeBody(withHead(template, homeHead(data, updated)), data, updated);
+}
+
+function homeBody(html, data, updated) {
   const items = itemsById(data);
-  let html = withHead(template, homeHead(data, updated));
   html = fill(html, "pre:featured", featuredHtml(data, items));
   html = fill(html, "pre:guides-count", `<span class="count" aria-hidden="true" data-pre>${data.guides.length}</span>`);
   html = fill(html, "pre:guides", guideCardsHtml(data));
@@ -722,6 +725,42 @@ export function homePage(template, data, updated) {
   html = fill(html, "pre:faq", faqHtml(data, items));
   html = fill(html, "pre:guide", "");
   return common(html, data, updated);
+}
+
+// ---------- A notice's own page: the home page under its own address, with the notice's link preview ----------
+// /notice-<id> is what the share button on a notice sends: WhatsApp and the like show the notice's title, text and
+// image (faculties/<id>/notices/<notice-id>.jpg, made by scripts/notice-images.mjs; the site's image when there is none).
+// The page is the home page; the notice shows at the top while its dates last. Not for search engines: it is temporary.
+export const NOTICE_PREFIX = "notice-";
+export const noticeImagePath = (id) => `assets/notices/${id}.jpg`;
+export const noticeUrl = (id) => `${SITE_URL}/${NOTICE_PREFIX}${id}`;
+
+function noticeHead(notice, hasImage) {
+  const title = `${notice.title} | ${SITE_NAME}`;
+  const image = hasImage ? { url: `${SITE_URL}/${noticeImagePath(notice.id)}`, width: 1200, height: 630, alt: notice.title } : OG_IMAGE;
+  return [
+    `<title>${esc(title)}</title>`,
+    `<meta name="description" content="${esc(notice.text)}">`,
+    `<link rel="canonical" href="${esc(noticeUrl(notice.id))}">`,
+    `<meta name="robots" content="noindex, follow">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="${esc(SITE_NAME)}">`,
+    `<meta property="og:title" content="${esc(notice.title)}">`,
+    `<meta property="og:description" content="${esc(notice.text)}">`,
+    `<meta property="og:url" content="${esc(noticeUrl(notice.id))}">`,
+    `<meta property="og:image" content="${esc(image.url)}">`,
+    `<meta property="og:image:width" content="${image.width}">`,
+    `<meta property="og:image:height" content="${image.height}">`,
+    `<meta property="og:image:alt" content="${esc(image.alt)}">`,
+    `<meta property="og:locale" content="he_IL">`,
+    `<meta name="twitter:card" content="${image.width === image.height ? "summary" : "summary_large_image"}">`,
+  ].join("\n");
+}
+
+export function noticePage(template, data, notice, updated, hasImage) {
+  let html = withHead(template, noticeHead(notice, hasImage));
+  html = swap(html, `<html lang="he" dir="rtl">`, `<html lang="he" dir="rtl" data-notice="${esc(notice.id)}">`);
+  return homeBody(html, data, updated);
 }
 
 /** A guide's own page: the same page, opened on the guide, as /#guide-<id> used to look. */

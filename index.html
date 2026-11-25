@@ -679,8 +679,9 @@ footer { padding-block-end: 0; }
 .notice-text { flex: 1; min-inline-size: 0; }
 .notice-title { font-weight: 800; line-height: 1.35; }
 .notice-body { margin-block-start: 2px; font-size: var(--fs-meta); }
-.notice-links { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); margin-block-start: var(--s1, 4px); }
+.notice-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin-block-start: var(--s1, 4px); }
 .notice-links .ev-guide { margin: 0; }
+.notice-share { margin-inline-start: auto; min-block-size: 36px; padding-block: 4px; font-size: var(--fs-meta); }
 .special { position: relative; overflow: hidden; display: flex; align-items: center; gap: var(--s3); margin-block-end: var(--s3); padding: var(--s3) var(--s4); border-radius: var(--r); border: 1px solid color-mix(in srgb, var(--sp-a) 40%, var(--border)); background: linear-gradient(120deg, color-mix(in srgb, var(--sp-a) 14%, var(--surface)), color-mix(in srgb, var(--sp-b) 18%, var(--surface))); }
 .special.tone-quiet, .special.tone-memorial { border-color: var(--border); background: var(--surface-2); }
 .special-icon { flex: none; display: grid; place-items: center; inline-size: 44px; block-size: 44px; padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--surface) 70%, transparent); font-size: 24px; line-height: 1; }
@@ -1435,7 +1436,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     });
     return btn;
   }
-  function shareButton(url, title) {
+  function shareButton(url, title, copiedMsg = tr("הקישור למדריך הועתק")) {
     const canShare = typeof navigator.share === "function";
     const idle = canShare ? tr("שיתוף") : tr("העתק קישור");
     const btn = el("button", { type: "button", class: "btn", "aria-label": `${idle}: ${title}` });
@@ -1449,7 +1450,7 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
       }
       const ok = await copyText(url);
       flashButton(btn, ok, canShare ? "share" : "copy", idle, tr("הקישור הועתק"));
-      announce(ok ? tr("הקישור למדריך הועתק") : tr("ההעתקה נכשלה"));
+      announce(ok ? copiedMsg : tr("ההעתקה נכשלה"));
     });
     return btn;
   }
@@ -2160,7 +2161,10 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
     const box = $("#notices");
     if (!box) return;
     // The newest three in full; the rest fold under "more", so the page doesn't start with a wall of cards on a phone.
-    const cards = noticeBanners(notices, today);
+    // Opened from a shared link (/notice-<id>, data-notice on <html>): that notice comes first.
+    const linked = document.documentElement.dataset.notice;
+    const ordered = linked ? [...(notices || [])].sort((a, b) => (b && b.id === linked) - (a && a.id === linked)) : notices;
+    const cards = noticeBanners(ordered, today);
     const more = cards.slice(3);
     box.replaceChildren(...cards.slice(0, 3), more.length ? el("details", { class: "notices-more" },
       el("summary", { text: more.length === 1 ? tr("עוד הודעה אחת") : tr("עוד {n} הודעות", { n: more.length }) }), ...more) : null);
@@ -2173,9 +2177,16 @@ body.kb .peek, body.kb .peek-bubble, body.chat-open .peek, body.chat-open .peek-
         el("div", { class: "notice-text" },
           el("p", { class: "notice-title", text: n.title }),
           el("p", { class: "notice-body" }, bidiText(n.text)),
-          n.guide || (n.link && isSafeUrl(n.link.url)) ? el("p", { class: "notice-links" },
+          el("p", { class: "notice-links" },
             n.guide ? el("a", { class: "ev-guide", href: guideHref(n.guide), text: tr("לכל הפרטים ←") }) : null,
-            n.link && isSafeUrl(n.link.url) ? el("a", { class: "ev-guide", href: n.link.url, target: "_blank", rel: "noopener noreferrer", text: `${n.link.label} ←` }) : null) : null)));
+            n.link && isSafeUrl(n.link.url) ? el("a", { class: "ev-guide", href: n.link.url, target: "_blank", rel: "noopener noreferrer", text: `${n.link.label} ←` }) : null,
+            noticeShare(n)))));
+  }
+  // Shares /notice-<id>: a page whose link preview carries the notice's own title, text and image.
+  function noticeShare(n) {
+    const btn = shareButton(new URL(`./notice-${encodeURIComponent(n.id)}`, location.href).href, n.title, tr("הקישור להודעה הועתק"));
+    btn.classList.add("notice-share");
+    return btn;
   }
   // ---------- Special days: a Doodle on the logo, a banner and a short effect, like Google's ----------
   // Holidays come from the Hebrew calendar, so they arrive every year without editing data.js.

@@ -5,7 +5,7 @@
 // page sees it, and every message points at the file and line where the value is written.
 // Errors (exit code 1) are things that break or hide content on the site.
 // Warnings are worth a look but do not fail the check.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import vm from "node:vm";
 import { contentFiles, contentPlaceholders, mergeContent, mergeEnglish } from "../faculties/content.js";
 import { FACULTIES, FACULTY } from "../faculties/index.js";
@@ -192,6 +192,7 @@ for (const n of data.notices || []) {
   else if (n.until < n.from) error(`בהודעה "${where}" until לפני from.`, where);
   if (n.guide != null && !guideIds.has(n.guide)) error(`ההודעה "${where}" מקושרת למדריך "${n.guide}" שלא קיים.`, where);
   if (n.link != null && (!isText(n.link.label) || !isHttps(n.link.url))) error(`בהודעה "${where}" השדה link צריך להיות { label, url } עם קישור שמתחיל ב-https://.`, where);
+  if (n && n.id && !existsSync(`faculties/${FACULTY.id}/notices/${n.id}.jpg`)) warn(`להודעה "${where}" אין תמונת תצוגה מקדימה לשיתוף. מריצים node scripts/notice-images.mjs ומוסיפים את התמונה ל-git.`, where);
 }
 
 const cal = data.calendar;
